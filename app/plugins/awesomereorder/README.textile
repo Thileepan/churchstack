@@ -1,0 +1,30 @@
+h1. awesomereorder — a lightweight, simple, drag-and-drop list reordering plugin
+
+h2. why bother?
+
+There are a million different jQuery plugins out there that do different things with ordering lists, but they're all more focused on fancy animations and contextual sorting than they are on a simple, friendly, "I want to drag these elements around" sort of thing. They're just lists, right? It shouldn't be difficult to write a plugin that'll just take any old HTML list and make it so that you can drag around the elements and reorder them.
+
+And in fact, it's not difficult. It's just tedious and annoying to account for all the edge cases. I finally got sick of writing a version of this for every project that needed one, so here it is wrapped into a reusable plugin.
+
+h2. prerequisites
+
+* *jQuery*. I develop against jQuery 1.4.4+. It's been known to work on 1.9.x.
+* *jQuery UI Draggable*. Doesn't matter how you include it, as long as it's there. I support jQuery UI 1.8.6+. It's been known to work on 1.10.x.
+* *a list*. @<ul>@, @<ol>@, bunch of @<div>@s in a @<div>@, in block layout. @<dl>@s are a bit out there, though, I can't really deal with those properly.
+
+h2. usage
+
+Usually as simple as @$('#my-ul').awesomereorder()@.
+
+h2. demo
+
+"Go here":http://dev.dontexplain.com/awesomereorder/example/index.html for a couple of demos. It'll look nicer if you have a modern browser, since all the pretty stuff is in CSS3.
+
+h2. browsers
+
+I test on Chrome latest -1, Safari latest -1, Firefox latest -1, and IE 7, 8, 9, and 10. More will come if requested.
+
+h2. licensing
+
+Licensed under the "WTFPL":http://sam.zoy.org/wtfpl/
+
