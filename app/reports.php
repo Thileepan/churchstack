@@ -1,0 +1,55 @@
+<?php
+//reports page
+session_start();
+if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESSION['password']) || $_SESSION['password'] == '')
+{
+	header('Location: signin.php');
+	exit;
+}
+include "header.php";
+?>
+<script src="<?php echo $APPLICATION_PATH; ?>js/reports.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/js/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/js/TableTools.js"></script>
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/css/TableTools.css" rel="stylesheet" media="screen">
+
+<div class="btn-group pull-right" id="divReportsBy">
+	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	Reports By
+	<span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu">
+		<li><a href="#" onclick="showProfileReportsScreen(1);">Profile Reports</a></li>
+		<li><a href="#" onclick="showSubscriptionReportsScreen();">Subscription Reports</a></li>
+	</ul>
+</div>
+
+<div class="page-header">
+    <h4 id="pageHeader">Profile Reports</h4>	
+</div>
+
+<div class="pull-right" id="divOptionBtn" style="display:none">
+	<button class="btn btn-small btn-primary" type="button" onclick="showListReportsDiv();">List Report Templates</button>
+</div>
+    
+<div class="row-fluid">
+    <div class="span12">
+		<div class="row-fluid" id="alertRow" style="display:none">
+			<div id="alertDiv" class="span12">
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div id="pageContent" class="span12">
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+include "footer.php";
+?>
+<script type='text/javascript'>
+	menuLinkClicked(5);
+	showProfileReportsScreen(1);
+	//showSubscriptionReportsScreen();
+	$('.datepicker').datepicker();
+</script>

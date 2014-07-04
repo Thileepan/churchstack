@@ -1,0 +1,73 @@
+What is ChurchStack?
+====================
+ChurchStack is an online church management software (CMS). It is used to manage church members in an effective way and other to keep track church activities such as subscription, harvest festival and many more.
+
+Why Cloud?
+==========
+1. Hosted in the world most secured, scalable, reliable server Amazon.
+2. No data loss.
+3. Secured
+4. No maintainence required
+5. No down time (99.9% uptime)
+6. Automatic upgrade support.
+
+Features of ChurchStack
+=======================
+
+Profile Management:
+===================
+1. Add each family & dependant details with below informations
+    (a) Unique Id for each family
+    (b) name, email, dob, age, marriage date, marriage location, address, contact no, relationship, notes and other church related details.
+2. Detailed summary page for each member.
+3. Import the members from *.xls file.
+4. Quick search box to list the members.
+
+Subscription Management:
+========================
+5. Add each family subscription information.
+6. View the added subscription.
+7. Add your customized subscription fields.
+
+Harvest Management:
+===================
+8. Add harverst information.
+9. View added Harvest.
+
+Event/Calendar Management:
+==========================
+10. Add all the recurring church events
+11. View the event occurrences in a calendar view.
+12. Simple page to see upcoming events and past events.
+
+Dashboard:
+==========
+13. Dashboard for quick profile stats and monthly revenue of the church.
+14. View upcoming events of current week.
+
+Reports:
+========
+15. Extensive reporting feature allows to generate report for profile/subscription management.
+16. Generate birthday report.
+17. Generate marriage report.
+18. Download the reports in csv, excel, pdf, text file format or take print out directly.
+
+User Management:
+================
+19. Manage(add/edit/list/delete) web access users.
+20. Activate/Deactive the user to restrict the web logins.
+
+Settings:
+=========
+21. Manage profile management related settings such as salutation, relationship, marital status, profile status.
+
+Short term roadmap:
+===================
+1. Group management
+2. Assert management
+3. Fund management
+
+Long term roadmap:
+===================
+1. Web access to each families to manage their information.
+2. Mobile application

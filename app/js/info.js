@@ -1,0 +1,92 @@
+//global variables
+doInfoFile = 'server/doinfo.php';
+
+function getChurchInformationForm(isUpdate)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=1&isUpdate='+isUpdate;
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:getChurchInformationFormResponse,
+		error:HandleAjaxError
+	});	
+}
+
+function getChurchInformationFormResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "About Church";
+	document.getElementById('pageContent').innerHTML = response;
+	document.getElementById('inputChurchName').focus();
+}
+
+function addOrUpdateChurchInfo(isUpdate)
+{
+	isEdit = isUpdate;
+	var churchName = document.getElementById('inputChurchName').value;
+	var churchDesc = document.getElementById('inputChurchDesc').value;
+	var churchAddr = document.getElementById('inputChurchAddress').value;
+	var landline = document.getElementById('inputLandline').value;
+	var mobile = document.getElementById('inputMobile').value;
+	var email = document.getElementById('inputEmail').value;
+	var website = document.getElementById('inputWebsite').value;
+
+	if(churchName == "")
+	{
+		var resultToUI = getAlertDiv(2, 'Please choose a valid church name');
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		return false;
+	}
+
+	var formPostData = 'req=2';
+	formPostData += '&isUpdate='+isUpdate;
+	formPostData += '&churchName='+churchName;
+	formPostData += '&churchDesc='+churchDesc;
+	formPostData += '&churchAddr='+churchAddr;
+	formPostData += '&landline='+landline;
+	formPostData += '&mobile='+mobile;
+	formPostData += '&email='+email;
+	formPostData += '&website='+website;
+
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:addOrUpdateChurchInfoResponse,
+		error:HandleAjaxError
+	});	
+}
+
+function addOrUpdateChurchInfoResponse(response)
+{
+	if(response) {
+		getChurchInformation();
+	} else {
+		var msg = ((isEdit)?'Unable to update the church information':'Unable to add the church information');
+		var resultToUI = getAlertDiv(2, msg);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		return false;
+	}
+}
+
+function getChurchInformation()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=3';
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:getChurchInformationResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getChurchInformationResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "About Church";
+	document.getElementById('pageContent').innerHTML = response;
+}

@@ -1,0 +1,32 @@
+Release Notes (V1.1):
+=====================
+
+New Features:
+
+1. Event/Calendar Management
+2. Subscription Reports
+3. Manage your church & ministry details
+
+Enchancements:
+
+1. 
+
+Bug Fixes:
+
+1. Fixed issue in generating marriage report.
+2. Fixed invalid salutation issue in reports.
+
+Release Notes V(1.2):
+=====================
+
+New Features:
+
+1. Group Management
+
+Enchancements:
+
+1. 
+
+Bug Fixes:
+
+1. 
