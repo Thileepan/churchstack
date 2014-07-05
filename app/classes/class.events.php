@@ -270,6 +270,7 @@ class Events
 			for($i=0; $i<$total_events; $i++)
 			{
 				//$start_date = $event_details[$i][4];
+				$event_id = $event_details[$i][0];
 				$rrule = $event_details[$i][8];
 				$title = $event_details[$i][1];
 				$start_date_db = $event_details[$i][4];
@@ -302,15 +303,17 @@ class Events
 									$min = substr($start_time, 1, 2);
 								}
 								$sec = '00';
+								$event_start_date_alone = $event_date;
 								$event_date .= ' ' . $hour . ':' . $min . ':' . $sec;
-								$event_info[] = array('start'=>$event_date, 'title'=>$title, 'allDay'=>false);
+								$event_start_time_alone = $hour.''.$min;
+								$event_info[] = array('start'=>$event_date, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$start_date_db, "startTimeAlone"=>$event_start_time_alone);
 							}						
 						}
 					}
 				}
 				else
 				{
-					$event_info[] = array('start'=>$start_date_db, 'title'=>$title, 'allDay'=>false);
+					$event_info[] = array('start'=>$start_date_db, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$event_start_date_alone, "startTimeAlone"=>$start_time);
 				}
 			}
 		}

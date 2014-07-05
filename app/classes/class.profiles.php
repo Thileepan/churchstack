@@ -413,5 +413,30 @@ class Profiles
 		}
 		return false;
 	}
+
+	//Following were added by Nesan
+	public function getProfCountGroupedByStatus()
+	{
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to get the profiles count";
+		if($this->db_conn)
+		{
+			$counts_array = array();
+			$query = 'select PROFILE_STATUS, count(PROFILE_ID) from profile_details GROUP BY PROFILE_STATUS';
+			$result = $this->db_conn->Execute($query);
+			if($result) {
+				while(!$result->EOF) {
+					$profile_status = $result->fields[0];
+					$profile_count = $result->fields[1];
+					$counts_array[] = array($profile_status, $profile_count);
+					$result->MoveNext();                        
+				}
+				$to_return[0] = 1;
+				$to_return[1] = $counts_array;
+			}
+		}
+		return $to_return;
+	}
+
 }
 ?>
