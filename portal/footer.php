@@ -1,4 +1,9 @@
 <?php
+	$APPLICATION_PATH = "../";
+
+	@include_once($APPLICATION_PATH."portal/utils/auth.php");
+	validateSession($APPLICATION_PATH);
+
 //footer page
 ?>
 

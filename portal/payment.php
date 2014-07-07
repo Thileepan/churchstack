@@ -1,10 +1,13 @@
 <?php
 	$APPLICATION_PATH = "../";
+	@include_once($APPLICATION_PATH."portal/utils/auth.php");
+	validateSession($APPLICATION_PATH);
+
 	$page_id=3;
-	@include($APPLICATION_PATH."admin/header.php");
-	@include($APPLICATION_PATH."admin/includes.php");
+	@include($APPLICATION_PATH."portal/header.php");
+	@include($APPLICATION_PATH."portal/includes.php");
 ?>
-<script src="<?php echo $APPLICATION_PATH; ?>admin/js/payment.js"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>portal/js/payment.js"></script>
 
 	<div class="row-fluid">
 		<div id="paymentsList" class="span12">
@@ -68,5 +71,5 @@
 		//$('.datepicker').datepicker();
 	</script>
 <?php
-	@include($APPLICATION_PATH."admin/footer.php")
+	@include($APPLICATION_PATH."portal/footer.php")
 ?>

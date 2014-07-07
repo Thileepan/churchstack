@@ -1,10 +1,14 @@
 <?php
 	$APPLICATION_PATH = "../";
+
+	@include_once($APPLICATION_PATH."portal/utils/auth.php");
+	validateSession($APPLICATION_PATH);
+
 	$page_id=2;
-	@include($APPLICATION_PATH."admin/header.php");
-	@include($APPLICATION_PATH."admin/includes.php");
+	@include($APPLICATION_PATH."portal/header.php");
+	@include($APPLICATION_PATH."portal/includes.php");
 ?>
-<script src="<?php echo $APPLICATION_PATH; ?>admin/js/user.js"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>portal/js/user.js"></script>
 
 	<div class="row-fluid">
 		<div id="usersList" class="span12">
@@ -30,5 +34,5 @@
 		//$('.datepicker').datepicker();
 	</script>
 <?php
-	@include($APPLICATION_PATH."admin/footer.php")
+	@include($APPLICATION_PATH."portal/footer.php")
 ?>

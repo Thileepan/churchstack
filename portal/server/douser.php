@@ -1,6 +1,10 @@
 <?php
 
 $APPLICATION_PATH = "../../";
+session_start();
+@include_once($APPLICATION_PATH."portal/utils/auth.php");
+validateSession($APPLICATION_PATH);
+
 @include $APPLICATION_PATH.'app/utils/JSON.php';
 @include $APPLICATION_PATH.'app/utils/utilfunctions.php';
 @include_once $APPLICATION_PATH . 'app/classes/class.users.php';

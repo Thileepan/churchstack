@@ -1,12 +1,14 @@
 <?php
 	$APPLICATION_PATH = "../";
+	@include_once($APPLICATION_PATH."portal/utils/auth.php");
+	validateSession($APPLICATION_PATH);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
    <head>
 	<meta charset="utf-8">
-    <title>Churchstack - Online Church Management Software</title>
+    <title>ChurchStack - Admin Portal</title>
 	<meta name="viewport" content="width=device-width">
 <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	
@@ -51,11 +53,12 @@
   <body data-offset="50" data-twttr-rendered="true">
 
 <div class="container-fluid" style="padding-top:8px;">
-	<div>
+	<div class="row-fluid">
+	<div class="span10">
 		<ul class="nav nav-pills">
-			<li<?php echo (($page_id==1)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."admin/church.php"; ?>">Churches</a></li>
-			<li<?php echo (($page_id==2)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."admin/user.php"; ?>">Users</a></li>
-			<li<?php echo (($page_id==3)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."admin/payment.php"; ?>">Payments</a></li>
+			<li<?php echo (($page_id==1)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/church.php"; ?>">Churches</a></li>
+			<li<?php echo (($page_id==2)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/user.php"; ?>">Users</a></li>
+			<li<?php echo (($page_id==3)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/payment.php"; ?>">Payments</a></li>
 			<!-- li class="dropdown open">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 					Dropdown <span class="caret"></span>
@@ -69,6 +72,15 @@
 				</ul>
 			</li-->
 		</ul>
+	</div>
+	<div class="span2">
+		<div class="pull-right">
+			<ul class="nav nav-pills">
+			  <li><a href="<?php echo $APPLICATION_PATH."portal/login.php"; ?>" style="color:red;"><u><i class="icon- icon-off"></i>Logout</u></a></li>
+			  <!-- li class="disabled"><a href="#">Disabled link</a></li -->
+			</ul>
+		</div>
+	</div>
 	</div>
 <?php
 ?>
