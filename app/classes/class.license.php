@@ -9,6 +9,19 @@ class License
 
 	private $APPLICATION_PATH;
 
+	public function __construct($APPLICATION_PATH)
+	{
+		$this->APPLICATION_PATH = $APPLICATION_PATH; 
+
+		//intialize database connection
+        include_once($this->APPLICATION_PATH . 'db/dbutil.php');
+		include_once($this->APPLICATION_PATH . 'utils/utilfunctions.php');
+		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH);
+		if($conn_obj[0] == 0) {
+            $this->db_conn = $conn_obj[1];
+        }
+	}
+
 	public function getChurchID()
 	{
 		return $this->church_id;
@@ -67,20 +80,7 @@ class License
 				}
 			}
 		}
-	}
-
-	public function __construct($APPLICATION_PATH)
-	{
-		$this->APPLICATION_PATH = $APPLICATION_PATH; 
-
-		//intialize database connection
-        include_once($this->APPLICATION_PATH . 'db/dbutil.php');
-		include_once($this->APPLICATION_PATH . 'utils/utilfunctions.php');
-		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH);
-		if($conn_obj[0] == 0) {
-            $this->db_conn = $conn_obj[1];
-        }
-	}
+	}	
 
 	public function getLicenseDetails($plan_type="")
 	{
