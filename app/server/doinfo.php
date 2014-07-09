@@ -107,12 +107,13 @@ else if($req == 2)
 	$signup_time = time();
 	$last_modified_time = time();
 	$currency_id = trim($_POST['currencyID']);
+	$country_id = trim($_POST['countryID']);
 	
 	$church_obj = new Church($APPLICATION_PATH);
 	if(!$is_update) {
-		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id);
+		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id);
 	} else {
-		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time);
+		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id);
 	}
 
 	echo $status;

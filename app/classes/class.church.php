@@ -20,7 +20,7 @@ class Church
         }
 	}
 
-	public function addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id)
+	public function addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id)
 	{
 		$to_return = array();
 		$to_return[0] = 0;
@@ -34,8 +34,8 @@ class Church
 			$sharded_database = 'CS_'.$sharded_db_unique_part;
 			
 			$church_id = -1;
-			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?)';
-			$result = $this->db_conn->Execute($query, array(0,$church_name,$church_desc,$church_addr,$landline,$mobile,$email,$website,$curr_time,$curr_time,$sharded_database,$currency_id,$church_unique_hash,1));
+			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS, COUNTRY_ID) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?,?)';
+			$result = $this->db_conn->Execute($query, array(0,$church_name,$church_desc,$church_addr,$landline,$mobile,$email,$website,$curr_time,$curr_time,$sharded_database,$currency_id,$church_unique_hash,1, $country_id));
 			if($result) {
 				$query_1 = 'select CHURCH_ID, SHARDED_DATABASE from CHURCH_DETAILS where UNIQUE_HASH=? limit 1';
 				$result_1 = $this->db_conn->Execute($query_1, array($church_unique_hash));
@@ -56,12 +56,12 @@ class Church
 		return $to_return;
 	}
 
-	public function updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time)
+	public function updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id)
 	{
 		if($this->db_conn)
 		{
-			$query = 'update CHURCH_DETAILS set CHURCH_NAME=?, DESCRIPTION=?, ADDRESS=?, LANDLINE=?, MOBILE=?, EMAIL=?, WEBSITE=?, LAST_UPDATE_TIME=? where CHURCH_ID=?';
-			$result = $this->db_conn->Execute($query, array($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $church_id));
+			$query = 'update CHURCH_DETAILS set CHURCH_NAME=?, DESCRIPTION=?, ADDRESS=?, LANDLINE=?, MOBILE=?, EMAIL=?, WEBSITE=?, LAST_UPDATE_TIME=?, CURRENCY_ID=?, COUNTRY_ID=? where CHURCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $church_id));
 			if($result) {
 				return true;
 			}			
@@ -119,7 +119,8 @@ class Church
 					$currency_id = $result->fields[11];
 					$unique_hash = $result->fields[12];
 					$status = $result->fields[13];
-					$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status);
+					$country_id = $result->fields[14];
+					$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id);
 					$toReturn[0] = 1;
 					$toReturn[1] = $church_details;
 				}
@@ -198,7 +199,8 @@ class Church
 						$currency_id = $result->fields[11];
 						$unique_hash = $result->fields[12];
 						$status = $result->fields[13];
-						$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status);
+						$country_id = $result->fields[14];
+						$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id);
 						$all_churches[] = $church_details;
 
 						$result->MoveNext();

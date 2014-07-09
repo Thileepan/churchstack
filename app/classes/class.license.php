@@ -424,7 +424,7 @@ class License
 			$uniq_hash_found = 0;
 			$coupon_code_used = "";
 			$query = 'select CHURCH_ID, COUPON_CODE from INVOICE_REPORT where UNIQUE_HASH=? limit 1';
-			$result = $this->db_conn->Execute($query, array($coupon_code, $this->church_id));
+			$result = $this->db_conn->Execute($query, array($unique_hash));
 			if($result) {
 				if(!$result->EOF) {
 					$this->church_id = $result->fields[0];

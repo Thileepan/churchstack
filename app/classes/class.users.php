@@ -225,8 +225,9 @@ class Users
 
 		//Create a new church
 		$currency_id = 1;//CHANGE THIS LATER
+		$country_id = 226;//Defaulting to USA; CHANGE THIS LATER
 		$church_obj = new Church($this->APPLICATION_PATH);
-		$church_result = $church_obj->addChurchInformation($church_name, "", $church_location, "", $mobile, $email, "", $currency_id);
+		$church_result = $church_obj->addChurchInformation($church_name, "", $church_location, "", $mobile, $email, "", $currency_id, $country_id);
 		if($church_result[0] == 0) {
 			$toReturn[0] = 0;
 			$toReturn[1] = "Unable to create a dedicated setup. ".$church_result[1];
