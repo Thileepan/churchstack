@@ -188,7 +188,9 @@ class License
 			if($result_2) {
 				if(!$result_2->EOF) {
 					$plan_type_exists = 1;
-					$previous_expiry_date = $result->fields[1];
+					$prev_exp_date = $result_2->fields[1];//returns datetime format
+
+					$previous_expiry_date = strtotime($prev_exp_date);//converting to timestamp
 				}
 			}
 
@@ -274,6 +276,7 @@ class License
 
 	public function writeInitialPurchaseReport($invoice_details_array, $invoiced_items_array, $is_refund)
 	{
+		@include_once($this->APPLICATION_PATH."classes/class.church.php");
 		//"$invoice_details_array" should be in the following order : array($billing_full_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, ...)
 		//"$invoiced_items_array" is a multidimentionsal array and every item in "$invoiced_items_array" should be like : array(plan_id, plan_name, plan_desc, plan_type, validity_period_text, validity_in_seconds, plan_cost, quantity, total_cost, is_autorenewal_enabled) ; //Other details will be filled in automatically here...
 		$billing_full_name = $invoice_details_array[0];
@@ -308,6 +311,8 @@ class License
 
 		$unique_hash = strtoupper(md5(time().$billing_full_name.$net_paid_amount.$ip_address.rand(1,10000).rand(1,10000)));
 		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while initiating the purchase process";
 		if($this->church_id > 0)
 		{
 			if($this->db_conn)
@@ -376,15 +381,16 @@ class License
 					$sub_order_id = $invoice_id."_".$i;
 					$col_values_array_2[0] = $invoice_id;
 					$col_values_array_2[1] = $sub_order_id;
-					$col_values_array_2[2] = $invoiced_items_array[0];
-					$col_values_array_2[3] = $invoiced_items_array[1];
-					$col_values_array_2[4] = $invoiced_items_array[2];
-					$col_values_array_2[5] = $invoiced_items_array[3];
-					$col_values_array_2[6] = $invoiced_items_array[4];
-					$col_values_array_2[7] = $invoiced_items_array[5];
-					$col_values_array_2[8] = $invoiced_items_array[6];
-					$col_values_array_2[9] = $invoiced_items_array[7];
-					$col_values_array_2[11] = $invoiced_items_array[8];
+					$col_values_array_2[2] = $invoiced_items_array[$i][0];
+					$col_values_array_2[3] = $invoiced_items_array[$i][1];
+					$col_values_array_2[4] = $invoiced_items_array[$i][2];
+					$col_values_array_2[5] = $invoiced_items_array[$i][3];
+					$col_values_array_2[6] = $invoiced_items_array[$i][4];
+					$col_values_array_2[7] = $invoiced_items_array[$i][5];
+					$col_values_array_2[8] = $invoiced_items_array[$i][6];
+					$col_values_array_2[9] = $invoiced_items_array[$i][7];
+					$col_values_array_2[10] = $invoiced_items_array[$i][8];
+					$col_values_array_2[11] = $invoiced_items_array[$i][9];
 					$query_3 = "insert into INVOICED_ITEMS values (?,?,?,?,?,?,?,?,?,?,?,?)";
 					$result_3 = $this->db_conn->Execute($query_3, $col_values_array_2);
 					if($result_3) {
@@ -410,9 +416,12 @@ class License
 	{
 		$last_update_date = time();
 		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was some error while updating the specified purchase/invoice record";
 		if($this->db_conn)
 		{
 			//Getting the church id and coupon code used
+			$uniq_hash_found = 0;
 			$coupon_code_used = "";
 			$query = 'select CHURCH_ID, COUPON_CODE from INVOICE_REPORT where UNIQUE_HASH=? limit 1';
 			$result = $this->db_conn->Execute($query, array($coupon_code, $this->church_id));
@@ -421,7 +430,15 @@ class License
 					$this->church_id = $result->fields[0];
 					$coupon_code_used = $result->fields[1];
 					$coupon_code_used = trim($coupon_code_used);
+					$uniq_hash_found = 1;
 				}
+			}
+
+			if($uniq_hash_found != 1)
+			{
+				$toReturn[0] = 0;
+				$toReturn[1] = "Unable to find the specified transaction. Please check the transaction details";
+				return $toReturn;
 			}
 
 			$col_values_array = array();
@@ -433,31 +450,43 @@ class License
 			$col_values_array[5] = $pg_status_remarks;
 			$col_values_array[6] = $last_update_date;
 			$col_values_array[7] = $unique_hash;
-			$query_1 = "update INVOICE_REPORT set TRANSACTION_ID=?, PAYMENT_MODE=?, PURCHASE_STATUS=?, PURCHASE_STATUS_REMARKS=?, PG_STATUS_CODE=?, PG_STATUS_REMARKS=?, LAST_UPDATE_DATE=? where UNIQUE_HASH=?";
+			$query_1 = "update INVOICE_REPORT set TRANSACTION_ID=?, PAYMENT_MODE=?, PURCHASE_STATUS_CODE=?, PURCHASE_STATUS_REMARKS=?, PG_STATUS_CODE=?, PG_STATUS_REMARKS=?, LAST_UPDATE_DATE=FROM_UNIXTIME(?) where UNIQUE_HASH=?";
 			$result_1 = $this->db_conn->Execute($query_1, $col_values_array);
 			if($result_1) {
 				$toReturn[0] = 1;
 				$toReturn[1] = "Successfully updated the purchase/invoice details";
 				if($purchase_status == 1) {//Check this place once again....
+					$toReturn[0] = 0;
+					$toReturn[1] = "There was some error when trying to apply license as per the products purchased";
+					$inv_id_result = $this->getInvoiceIDFromUniqueHash($unique_hash);
+					if($inv_id_result[0]==1)
+					{
+						$invoice_id = $inv_id_result[1];
+						$invoiced_items = $this->getInvoicedItemsList($invoice_id);
+						if($invoiced_items[0]==1) {//Success case
+							$is_atleast_one_update_successful = 0;
+							for($p=0; $p < COUNT($invoiced_items[1]); $p++)
+							{
+								$plan_id = $invoiced_items[1][$p][2];
+								$plan_type = $invoiced_items[1][$p][5];
+								if($this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date)) {
+									$is_atleast_one_update_successful = 1;
+								}
+							}
 
-					$invoiced_items = $this->getInvoicedItemsList($invoice_id);
-					if($invoiced_items[0]==1) {//Success case
-						$is_atleast_one_update_successful = 0;
-						for($p=0; $p < COUNT($invoiced_items[1]); $p++)
-						{
-							$plan_id = $invoiced_items[$p][2];
-							$plan_type = $invoiced_items[$p][5];
-							if($this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date)) {
-								$is_atleast_one_update_successful = 1;
+							//Terminating the coupon code used
+							if($is_atleast_one_update_successful==1 && $coupon_code_used != "") {
+								$this->terminateCouponCode($coupon_code_used, 0);//Terminate only if code is specific to a church
+							}
+
+							if($is_atleast_one_update_successful==1) {
+								$toReturn[0] = 1;
+								$toReturn[1] = "License applied successfully";
+							} else {
+								$toReturn[0] = 0;
+								$toReturn[1] = "There was some error while applying the license, please contact support to resolve the issues.";
 							}
 						}
-
-						//Terminating the coupon code used
-						if($is_atleast_one_update_successful==1 && $coupon_code_used != "") {
-							$this->terminateCouponCode($coupon_code_used, 0);//Terminate only if code is specific to a church
-						}
-						$toReturn[0] = 0;
-						$toReturn[1] = "License updated successfully";
 					}
 				}
 			} else {
@@ -756,6 +785,27 @@ class License
 			$toReturn[1] = "No DB Connection Available";
 		}
 		return $toReturn;
+	}
+	
+	public function getInvoiceIDFromUniqueHash($unique_hash)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to get the invoice id";
+		if($this->db_conn)
+		{
+			if(trim($unique_hash) != "") {
+				$query = 'select INVOICE_ID from INVOICE_REPORT where UNIQUE_HASH=? limit 1';
+				$result = $this->db_conn->Execute($query, array(trim($unique_hash)));
+				if($result) {
+					if(!$result->EOF) {
+						$to_return[0] = 1;
+						$to_return[1] = $result->fields[0];
+					}
+				}
+			}
+		}
+		return $to_return;
 	}
 }
 

@@ -116,8 +116,11 @@ else if($req == 2)//get details of a payment
 				$to_return .= '</div>';
 				$to_return .= '<div class="row-fluid">';
 					$to_return .= '<div class="span4">Plan Cost : '.$inv_items_data[1][$p][8].'</div>';
-					$to_return .= '<div class="span4">Total Cost : '.$inv_items_data[1][$p][9].'</div>';
-					$to_return .= '<div class="span4">Auto Renewal : '.$inv_items_data[1][$p][10].'</div>';
+					$to_return .= '<div class="span4">Quantity : '.$inv_items_data[1][$p][9].'</div>';
+					$to_return .= '<div class="span4">Total Cost : '.$inv_items_data[1][$p][10].'</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="row-fluid">';
+					$to_return .= '<div class="span12">Auto Renewal : '.$inv_items_data[1][$p][11].'</div>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="row-fluid">';
 					$to_return .= '<div class="span12">&nbsp;</div>';
