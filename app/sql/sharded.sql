@@ -1,7 +1,3 @@
-create database @sharded_db_name collate latin1_general_cs;
-
-use @sharded_db_name;
-
 create table PROFILE_DETAILS (
 	PROFILE_ID INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	SALUTATION_ID VARCHAR(255),
@@ -277,6 +273,5 @@ insert into PROFILE_SETTINGS values (3, 4, 'Widower');
 
 insert into PROFILE_SETTINGS values (4, 1, 'Active');
 insert into PROFILE_SETTINGS values (4, 2, 'Inactive');
-insert into PROFILE_SETTINGS values (4, 3, 'Expired');
 
 insert into SUBSCRIPTION_FIELDS (FIELD_NAME, HIDE) values ('General', 0);

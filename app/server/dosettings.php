@@ -244,7 +244,7 @@ else if($req == 6)
 	}
 
 	if($check_user_exists) {
-		if($users_obj->isUserAlreadyExists($user_name)) {
+		if($users_obj->isUserAlreadyExists($user_name, $user_name)) {
 			echo 1;
 			exit;
 		}
@@ -254,7 +254,7 @@ else if($req == 6)
 		$user_id = trim($_POST['userID']);
 		$is_updated = $users_obj->updateUser($user_id, $user_name, $password, $role_id, $user_status);
 	} else {
-		$is_updated = $users_obj->addNewUser($church_id, $user_name, $password, $role_id, $user_status);
+		$is_updated = $users_obj->addNewUser($church_id, $user_name, $user_name, $password, $role_id, $user_status);
 	}
 	if($is_updated)
 		echo 2;

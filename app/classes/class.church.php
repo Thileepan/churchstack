@@ -20,18 +20,40 @@ class Church
         }
 	}
 
-	public function addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website)
+	public function addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to add a church to the system";
 		if($this->db_conn)
 		{
-			$query = 'insert into CHURCH_DETAILS (CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME) values (?, ?, ?, ?, ?, ?, ?)';
-			$result = $this->db_conn->Execute($query, array($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website));
-			//echo "Error:::".$this->db_conn->ErrorMsg();
+			$curr_time = time();
+			$currency_id = 1;//CHANGE THIS LATER
+			$church_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000)));
+			$sharded_db_unique_part = md5($church_unique_hash);
+			$sharded_database = 'CS_'.$sharded_db_unique_part;
+			
+			$church_id = -1;
+			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?)';
+			$result = $this->db_conn->Execute($query, array(0,$church_name,$church_desc,$church_addr,$landline,$mobile,$email,$website,$curr_time,$curr_time,$sharded_database,$currency_id,$church_unique_hash,1));
 			if($result) {
-				return true;
-			}			
+				$query_1 = 'select CHURCH_ID, SHARDED_DATABASE from CHURCH_DETAILS where UNIQUE_HASH=? limit 1';
+				$result_1 = $this->db_conn->Execute($query_1, array($church_unique_hash));
+				if($result_1) {
+					if(!$result_1->EOF) {
+						$church_id = $result_1->fields[0];
+						$sharded_database = $result_1->fields[1];
+						if($church_id > 0)
+						{
+							$to_return[0] = 1;
+							$to_return[1] = "The new church has been added successfully to the systemt";
+							$to_return[2] = array("church_id"=>$church_id, "sharded_database"=>$sharded_database);
+						}
+					}
+				}
+			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time)

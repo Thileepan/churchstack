@@ -106,10 +106,11 @@ else if($req == 2)
 	$is_update = trim($_POST['isUpdate']);
 	$signup_time = time();
 	$last_modified_time = time();
+	$currency_id = trim($_POST['currencyID']);
 	
 	$church_obj = new Church($APPLICATION_PATH);
 	if(!$is_update) {
-		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_modified_time, $sharded_db);
+		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id);
 	} else {
 		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time);
 	}

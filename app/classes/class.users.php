@@ -95,18 +95,42 @@ class Users
 		return $user_info;
 	}
 
-	public function addNewUser($church_id, $user_name, $password, $role_id=1, $user_status=1)
+	public function addNewUser($church_id, $user_name, $email, $password, $role_id=1, $user_status=1)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to add a new user.";
+		if($this->isUserAlreadyExists($user_name, $email)) {
+			$to_return[0] = 0;
+			$to_return[1] = "The specified username/email already exists in the system.";
+			return $to_return;
+		}
+		$curr_time = time();
 		if($this->db_conn)
 		{
-			$query = 'insert into USER_DETAILS (CHURCH_ID, USER_NAME, ROLE_ID, PASSWORD, STATUS) values (?, ?, ?, ?, ?)';
-			$result = $this->db_conn->Execute($query, array($church_id, $user_name, $role_id, $password, $user_status));
-			//echo $this->db_conn->ErrorMsg();
+			$user_unique_hash = strtoupper(md5($curr_time.$church_id.rand(1, 10000).rand(1, 10000).$church_id.$email.$user_name));
+			if(trim($password) == "") {
+				$random_password = md5($curr_time.rand(1, 10000).rand(1, 10000).$email.$user_name);
+				$password = $random_password;
+			}
+			$query = 'insert into USER_DETAILS (USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?)';
+			$result = $this->db_conn->Execute($query, array(0,$church_id,$user_name,$email,1,$password,$user_unique_hash,$user_status));
 			if($result) {
-				return true;
+				$query_1 = 'select USER_ID from USER_DETAILS where UNIQUE_HASH=? limit 1';
+				$result_1 = $this->db_conn->Execute($query_1, array($user_unique_hash));
+				if($result_1) {
+					if(!$result_1->EOF) {
+						$user_id = $result_1->fields[0];
+						if($user_id > 0) {
+							$toReturn[0] = 1;
+							$toReturn[1] = "User added successfully";
+							$toReturn[2] = array("user_id"=>$user_id);
+						}
+					}
+				}
 			}
 		}
-		return false;
+		return $toReturn;
 	}
 
 	public function updateUser($user_id, $user_name, $password, $role_id=1, $user_status=1)
@@ -135,17 +159,31 @@ class Users
 		return false;
 	}
 	
-	public function isUserAlreadyExists($user_name)
+	public function isUserAlreadyExists($user_name, $email)
 	{
 		if($this->db_conn)
 		{
-			$query = 'select * from USER_DETAILS where USER_NAME=?';
-			$result = $this->db_conn->Execute($query, array($user_name));
+			$user_found = false;
+			$query = 'select USER_ID from USER_DETAILS where EMAIL=? or USER_NAME=? limit 1';
+			$result = $this->db_conn->Execute($query, array($user_name, $user_name));
 			if($result) {
 				if(!$result->EOF) {
-					return true;
+					$user_found = true;
 				}
 			}
+
+			if(!$user_found)
+			{
+				$query_1 = 'select USER_ID from USER_DETAILS where EMAIL=? or USER_NAME=? limit 1';
+				$result_1 = $this->db_conn->Execute($query_1, array($email, $email));
+				if($result_1) {
+					if(!$result_1->EOF) {
+						$user_found = true;
+					}
+				}
+			}
+
+			return $user_found;
 		}
 		return false;
 	}
@@ -171,62 +209,67 @@ class Users
 //Following were added by Nesan
 	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile)
 	{
+        @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
+        @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
+        @include_once($this->APPLICATION_PATH . 'classes/class.license.php');
+
 		$toReturn = array();
-		if($this->db_conn)
-		{
-			$query = 'select * from USER_DETAILS where EMAIL=? or USER_NAME=? limit 1';
-			$result = $this->db_conn->Execute($query, array($email, $email));
-			if($result) {
-				if(!$result->EOF) {
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was some error in signing up the user.";
+		//Checking if the user already exists...
+		if($this->isUserAlreadyExists($email, $email)) {
+			$toReturn[0] = 0;
+			$toReturn[1] = "The email you have entered already exists in the system. If you have already signed up earier, you can directly login to your account and get access to it.";
+			return $toReturn;
+		}
+
+		//Create a new church
+		$currency_id = 1;//CHANGE THIS LATER
+		$church_obj = new Church($this->APPLICATION_PATH);
+		$church_result = $church_obj->addChurchInformation($church_name, "", $church_location, "", $mobile, $email, "", $currency_id);
+		if($church_result[0] == 0) {
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to create a dedicated setup. ".$church_result[1];
+			return $toReturn;
+		}
+
+		//Create a new sharded database
+		if($church_result[0] == 1) {
+			$church_id = $church_result[2]["church_id"];
+			$sharded_db_name = trim($church_result[2]["sharded_database"]);
+			$sharded_result = createShardedDB($this->APPLICATION_PATH, $sharded_db_name);
+			if($sharded_result[0]==1)
+			{
+				//Create a new user now
+				$user_result = $this->addNewUser($church_id, $email, $email, "", 1, 1);//Adding a church Admin
+				if($user_result[0]==1) {
+					$user_id = $user_result[2]["user_id"];
+
+					//Put initial trial license entry
+					$lic_obj = new License($this->APPLICATION_PATH);
+					$lic_obj->setChurchID($church_id);
+					$license_result = $lic_obj->putInitialTrialLicenseEntry();
+					if($license_result[0]==1)
+					{
+						$toReturn[0] = 1;
+						$toReturn[1] = "Signup is successful!";
+						$toReturn[2] = array("user_id"=>$user_id, "church_id"=>$church_id, "sharded_database"=>$sharded_db_name);
+						return $toReturn;
+					}
+					else
+					{
+						$toReturn[0] = 0;
+						$toReturn[1] = "An error occurred while creating the trial account";
+					}
+				} else {
 					$toReturn[0] = 0;
-					$toReturn[1] = "The email you have entered already exists in the system. If you have already signed up earier, you can directly login to your account and access your church data.";
-					return $toReturn;
+					$toReturn[1] = "Unable to create the user. ".$user_result[1];
 				}
 			}
-
-			//insert into church-details
-			$curr_time = time();
-			$currency_id = 1;//CHANGE THIS LATER
-			$church_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000)));
-			
-			$church_id = -1;
-			$query_2 = 'insert into CHURCH_DETAILS values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?)';
-			$result_2 = $this->db_conn->Execute($query_2, array(0,$church_name,'',$church_location,'','','','',$curr_time,$curr_time,'',$currency_id,$church_unique_hash,1));
-			if($result_2) {
-				$query_3 = 'select CHURCH_ID from CHURCH_DETAILS where UNIQUE_HASH=?';
-				$result_3 = $this->db_conn->Execute($query_3, array($church_unique_hash));
-				if($result_3) {
-					if(!$result_3->EOF) {
-						$church_id = $result_3->fields[0];
-						if($church_id > 0)
-						{
-							$sharded_database = 'CS_'.$church_id.'_CHURCHSTACK';
-							$up_query = 'update CHURCH_DETAILS set SHARDED_DATABASE=? where CHURCH_ID=?';
-							$up_result = $this->db_conn->Execute($up_query, array($sharded_database, $church_id));
-							if($up_result) {
-								//Successful
-							}
-							$user_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000).$church_id.$email));
-							$random_password = md5($curr_time.rand(1, 10000).rand(1, 10000).$email);
-							$query_4 = 'insert into USER_DETAILS values(?,?,?,?,?,?,?,?)';
-							$result_4 = $this->db_conn->Execute($query_4, array(0,$church_id,$email,$email,1,$random_password,$user_unique_hash,1));
-							if($result_4) {
-								$query_5 = 'select USER_ID from USER_DETAILS where UNIQUE_HASH=?';
-								$result_5 = $this->db_conn->Execute($query_5, array($user_unique_hash));
-								if($result_5) {
-									if(!$result_5->EOF) {
-										$user_id = $result_5->fields[0];
-										if($user_id > 0) {
-											$toReturn[0] = 1;
-											$toReturn[1] = "Signup is successful";
-											$toReturn[2] = array("user_id"=>$user_id,"sharded_database"=>$sharded_database);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+			else
+			{
+				$toReturn[0] = 0;
+				$toReturn[1] = "Unable to create a dedicated setup. ".$sharded_result[1];
 			}
 		}
 

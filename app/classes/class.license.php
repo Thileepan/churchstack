@@ -235,15 +235,19 @@ class License
 		return $toReturn;
 	}
 
-	public function putInitialTrialLicenseEntry($trial_start_timestamp)
+	public function putInitialTrialLicenseEntry()
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was an error while trying to create a trial account for the user.";
+		$trial_start_timestamp = time();
 		if($this->church_id > 0)
 		{
 			if($this->db_conn)
 			{
 				$plan_id = 1;//For Trial accounts
 				$plan_type = 1;//subscription type
-				$license_plan_details_arr = getLicensePlanDetails($plan_id);
+				$license_plan_details_arr = $this->getLicensePlanDetails($plan_id);
 				$trial_seconds = 30*24*60*60;//30 days
 				if($license_plan_details_arr[0] == 1) {
 					$trial_seconds = $license_plan_details_arr[1]["validity_in_seconds"];
@@ -254,12 +258,18 @@ class License
 				$result = $this->db_conn->Execute($query, array($this->church_id, $plan_id, $plan_type, $license_expiry_date, 0, $trial_start_timestamp, 1, $trial_expiry_date));
 
 				if($result) {
-					return true;
+					$to_return[0] = 1;
+					$to_return[1] = "Trial license activated";
 				}
 			}
 		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to recognize the church to create the trial account";
+		}
 
-		return false;
+		return $to_return;
 	}
 
 	public function writeInitialPurchaseReport($invoice_details_array, $invoiced_items_array, $is_refund)
