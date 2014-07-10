@@ -1,6 +1,6 @@
 <?php
 	$APPLICATION_PATH = "../";
-	@include_once($APPLICATION_PATH."portal/utils/auth.php");
+	@include_once($APPLICATION_PATH."app/utils/utilfunctions.php");
 	clearSession($APPLICATION_PATH);
 	session_start();
 ?>

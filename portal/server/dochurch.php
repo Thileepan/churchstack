@@ -3,10 +3,10 @@ $APPLICATION_PATH = "../../";
 @include_once($APPLICATION_PATH."portal/utils/auth.php");
 validateSession($APPLICATION_PATH);
 
-@include $APPLICATION_PATH.'app/utils/JSON.php';
-@include $APPLICATION_PATH.'app/utils/utilfunctions.php';
-@include_once $APPLICATION_PATH . 'app/classes/class.church.php';
-@include_once $APPLICATION_PATH . 'app/classes/class.license.php';
+include $APPLICATION_PATH.'app/utils/JSON.php';
+include $APPLICATION_PATH.'app/utils/utilfunctions.php';
+include_once $APPLICATION_PATH . 'app/classes/class.church.php';
+include_once $APPLICATION_PATH . 'app/classes/class.license.php';
 
 //process request
 $req = $_REQUEST['req'];

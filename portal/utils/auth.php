@@ -1,20 +1,5 @@
 <?php
 
-function clearSession($APPLICATION_PATH)
-{
-	session_start();
-	foreach($_SESSION as $k => $v)
-	{
-		unset($k);
-	}
-	// Unset all of the session variables.
-	$_SESSION = array();
-	session_destroy();
-
-	$_SESSION['loginPassword'] = '';
-	$_SESSION['accessPassword'] = '';
-}
-
 function validateSession($APPLICATION_PATH)
 {
 	@include($APPLICATION_PATH."portal/secure.php");
@@ -30,6 +15,7 @@ function validateSession($APPLICATION_PATH)
 
 function logOut($APPLICATION_PATH)
 {
+	@include_once($APPLICATION_PATH."app/utils/utilfunctions.php");
 	clearSession($APPLICATION_PATH);
 	header('Location:'.$APPLICATION_PATH."portal/index.php");
 	exit;
