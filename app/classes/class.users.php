@@ -188,22 +188,44 @@ class Users
 		return false;
 	}
 
-	public function isAuthenticatedUser($user_name, $password)
+	public function isAuthenticatedUser($email, $password)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to validate the account credentials, please contact support to resolve this issue.";
 		if($this->db_conn)
 		{
-			$query = 'select * from USER_DETAILS where USER_NAME=? and PASSWORD=? and STATUS=1';
-			//$password = $this->db_conn->qstr($password);
-			$result = $this->db_conn->Execute($query, array($user_name, $password));
-//			$result = $this->db_conn->Execute($query);
-			//echo 'SKTGR:::'.$this->db_conn->ErrorMsg();
+			$query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where EMAIL=? and PASSWORD=? limit 1';
+			$result = $this->db_conn->Execute($query, array($email, $password));
 			if($result) {
 				if(!$result->EOF) {
-					return true;
+					$user_id = $result->fields[0];
+					$church_id = $result->fields[1];
+					$user_name = $result->fields[2];
+					$email_output = $result->fields[3];
+					$role_id = $result->fields[4];
+					$password = $result->fields[5];
+					$status = $result->fields[9];
+					$user_details_array = array($user_id, $church_id, $user_name, $email_output, $role_id, $password, $status);
+
+					$to_return[0] = 1;
+					$to_return[1] = "Login successful";
+					$to_return[2] = $user_details_array;
+				} else {
+					$to_return[0] = 0;
+					$to_return[1] = "Invalid login credentials, unable to log you in.";
 				}
+			} else {
+				$to_return[0] = 0;
+				$to_return[1] = "Invalid authentication details, unable to log you in.";
 			}
 		}
-		return false;
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to get the system handle to validate the account credentials";
+		}
+		return $to_return;
 	}
 
 //Following were added by Nesan

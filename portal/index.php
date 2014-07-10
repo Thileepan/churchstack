@@ -2,6 +2,7 @@
 	$APPLICATION_PATH = "../";
 	@include_once($APPLICATION_PATH."portal/utils/auth.php");
 	clearSession($APPLICATION_PATH);
+	session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">

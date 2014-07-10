@@ -97,6 +97,8 @@ class Church
 	public function getInformationOfAChurch($church_id)
 	{
 		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the church details due to errors";
 		if($this->db_conn)
 		{
 		   $query = 'select * from CHURCH_DETAILS where CHURCH_ID=? limit 1';
@@ -123,9 +125,20 @@ class Church
 					$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id);
 					$toReturn[0] = 1;
 					$toReturn[1] = $church_details;
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "Unable to locate the account date right now, please try again later.";
 				}
-            }
+            } else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "Unable to fetch the church information from the system.";
+			}
         }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to connect to the system, please try again later.";
+		}
 		return $toReturn;
 	}
 
@@ -210,6 +223,47 @@ class Church
 			   }
             }
         }
+		return $toReturn;
+	}
+
+	public function getChurchMiscDetails($church_id)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while trying to get the account info.";
+		if($this->db_conn)
+		{
+		   $query = 'select A.CURRENCY_CODE, A.CURRENCY_NUMBER, A.CURRENCY_DESCRIPTION, B.COUNTRY_ISO_CODE, B.COUNTRY_NAME, B.COUNTRY_ISO3_CODE, B.COUNTRY_CALLING_CODE from CURRENCY_LIST as A, COUNTRY_LIST as B, CHURCH_DETAILS as C where C.CHURCH_ID=? and C.CURRENCY_ID=A.CURRENCY_ID and C.COUNTRY_ID=B.COUNTRY_ID';
+		   $result = $this->db_conn->Execute($query, array($church_id));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$church_misc_details = array();
+					$currency_code = $result->fields[0];
+					$currency_number = $result->fields[1];
+					$currency_desc = $result->fields[2];
+					$country_iso_code = $result->fields[3];
+					$country_name = $result->fields[4];
+					$country_iso3_code = $result->fields[5];
+					$country_calling_code = $result->fields[6];
+					$church_misc_details = array($currency_code, $currency_number, $currency_desc, $country_iso_code, $country_name, $country_iso3_code, $country_calling_code);
+
+					$toReturn[0] = 1;
+					$toReturn[1] = $church_misc_details;
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "No details associated with the account could be retrieved.";
+				}
+            } else {
+				$toReturn[0] = 0;
+				$toReturn[1] = "There was an error when fetching the account details";
+			}
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to get connection to the system.";
+		}
 		return $toReturn;
 	}
 }

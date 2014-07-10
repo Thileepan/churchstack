@@ -411,7 +411,10 @@ function addOrUpdateProfile(val)
 
 	//custom profile fields
 	var customFields = '';
-	var fieldIDAndTypeArr = document.getElementById('hidddenFieldIDAndType').value.split(",");
+	var fieldIDAndTypeArr = Array();
+	if(trim(document.getElementById('hidddenFieldIDAndType').value) != "") {
+		fieldIDAndTypeArr = trim(document.getElementById('hidddenFieldIDAndType').value).split(",");
+	}
 	if(fieldIDAndTypeArr.length > 0)
 	{
 		for(i=0; i<fieldIDAndTypeArr.length; i++)
@@ -743,23 +746,33 @@ function authenticateUser()
 		success:authenticateUserResponse,
 		error:HandleAjaxError
 	});
+	
+	return false;
 }
 
 function authenticateUserResponse(response)
 {
 	var resultToUI;
-	if(response == 1) {
+	var dataObj = eval("(" + response + ")" );
+	var isAuthValid = dataObj.isAuthValid;
+	var allowLogin = dataObj.allowLogin;
+	var loginMessage = dataObj.loginMessage;
+	var userStatusNumber = dataObj.userStatusNumber;//make use of this if needed
+	var churchStatusNumber = dataObj.churchStatusNumber;//make use of this if needed
+	if(isAuthValid == 1 && allowLogin == 1) {
 		//resultToUI = getAlertDiv(1, 'Profile has been deleted successfully!');
 		//window.location.href = 'http://localhost/Profilestack';//../index.php';
 		window.location.href = 'dashboard.php';
 	} else {
-		resultToUI = getAlertDiv(2, 'Invalid Username or Password.');
+		//resultToUI = getAlertDiv(2, 'Invalid Username or Password.');
+		resultToUI = getAlertDiv(2, loginMessage);
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
 
 		document.getElementById('divSignInBtn').style.display = '';
 		document.getElementById('divLoadingSearchImg').style.display = 'none';
 	}
+	return false;
 }
 
 function showProfileDetails(id)

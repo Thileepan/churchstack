@@ -30,4 +30,16 @@ function appendZeroInUniqueID($unique_id)
 	return $unique_id;
 }
 
+function clearSession($APPLICATION_PATH)
+{
+	session_start();
+	foreach($_SESSION as $k => $v)
+	{
+		unset($k);
+	}
+	// Unset all of the session variables.
+	$_SESSION = array();
+	session_destroy();
+}
+
 ?>

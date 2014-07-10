@@ -11,7 +11,7 @@ $req = $_REQUEST['req'];
 
 if($req == 1)
 {
-	include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
+	@include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 	//use Carbon\Carbon;
 	
 	//List all profiles

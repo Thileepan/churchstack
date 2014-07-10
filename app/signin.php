@@ -1,3 +1,9 @@
+<?php
+	$APPLICATION_PATH = "./";
+	include_once($APPLICATION_PATH."utils/utilfunctions.php");
+	clearSession($APPLICATION_PATH);
+	session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>

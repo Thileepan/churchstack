@@ -47,7 +47,7 @@
 
   <body data-offset="50" data-twttr-rendered="true">
   <?php include_once($APPLICATION_PATH . 'conf/config.php'); ?>
-  <?php include_once($APPLICATION_PATH . 'classes/class.shardeddb.php'); ?>
+  <!-- ?php include_once($APPLICATION_PATH . 'classes/class.shardeddb.php'); ? -->
 
             <!-- navigation starts here -->
 			<div class="navbar navbar-fixed-top navbar-inverse">
