@@ -24,6 +24,7 @@ class Email
 	{
 		$this->APPLICATION_PATH = $APPLICATION_PATH;
 		include_once($this->APPLICATION_PATH . 'conf/config.php');
+		include_once($this->APPLICATION_PATH . 'plugins/PHPMailer/class.phpmailer.php');
 
 		//set SMTP settings
 		$this->setSMTPSettings();
