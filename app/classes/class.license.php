@@ -546,21 +546,21 @@ class License
 		return $toReturn;
 	}
 
-	public function processCouponCode($coupon_code, $input_amount, $output_amount)
+	public function processCouponCode($coupon_code, $input_total)
 	{
 		$toReturn = array();
-
-		if($this->church_id <= 0) {
-			$toReturn[0] = 0;
-			$toReturn[1] = "Unable to recognize the account";
-			return $toReturn;
-		}
 		$toReturn[0] = 0;
-		$toReturn[1] = "You coupon/promo code you have entered is either invalid or expired. Try using another coupon/promo code.";
+		$toReturn[1] = "The coupon/promo code you have entered is either invalid or it has expired. Try using another coupon/promo code.";
+
+		$church_id = 0;
+		if($this->church_id > 0)
+		{
+			$church_id = $this->church_id;
+		}
 		if($this->db_conn)
 		{
-			$query = 'select DISCOUNT_PERCENTAGE, DISCOUNT_FLAT_AMOUNT, MINIMUM_SUBTOTAL from COUPONS where COUPON_CODE=? and (CHURCH_ID=? or VALID_FOR_ALL=1) and VALIDITY > SYSDATE()';
-			$result = $this->db_conn->Execute($query, array($coupon_code, $this->church_id));
+			$query = 'select DISCOUNT_PERCENTAGE, DISCOUNT_FLAT_AMOUNT, MINIMUM_SUBTOTAL from COUPONS where COUPON_CODE=? and (CHURCH_ID=? or VALID_FOR_ALL=1) and VALIDITY > SYSDATE() and IS_USED=0';
+			$result = $this->db_conn->Execute($query, array($coupon_code, $church_id));
 			if($result) {
                 if(!$result->EOF) {
 					$discount_details = array();
@@ -574,13 +574,14 @@ class License
 					}
 
 					//$subtotal, $additional_charge, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code
+					$discount_amount = 0;
 					if($discount_percentage > 0) {
-						$discount_amount = $input_total*($discount_percentage/100);
+						$discount_amount = round($input_total*($discount_percentage/100), 2);
 					} else if($discount_flat_amount > 0 && $input_total < $discount_flat_amount) {
-						$discount_amount = $discount_flat_amount;
+						$discount_amount = round($discount_flat_amount, 2);
 					}
 					
-					$output_total = $input_total-$discount_amount;
+					$output_total = round(($input_total-$discount_amount), 2);
 
 					$discount_details = array();
 					$discount_details[0] = $input_total;
@@ -598,6 +599,8 @@ class License
 			$toReturn[0] = 1;
 			$toReturn[1] = "No DB Connection Available";
 		}
+
+		return $toReturn;
 	}
 
 	public function generateCouponCode($length=10)
@@ -622,44 +625,42 @@ class License
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "Failed to terminate the coupon";
-		if($this->church_id > 0)
-		{
-			if($this->db_conn)
-			{
-				$is_coupon_exists = 0;
-				$is_valid_for_all = 0;
-				$query = 'select VALID_FOR_ALL from COUPONS where COUPON_CODE=? and (CHURCH_ID=? or VALID_FOR_ALL=1) limit 1';
-				$result = $this->db_conn->Execute($query, array($coupon_code, $this->church_id));
-				if($result) {
-					if(!$result->EOF) {
-						$is_valid_for_all = $result->fields[0];
-						$is_coupon_exists = 1;
-					}
-				}
 
-				if($is_coupon_exists==1 && ($is_valid_for_all != 1 || $force_termination==1)) {
-					$validity_to_set = time() - 86400;//Just to make sure the coupon is really terminated
-					$query_2 = 'update COUPONS set VALIDITY=? where COUPON_CODE=?';
-					$result_2 = $this->db_conn->Execute($query_2, array($validity_to_set, $coupon_code));
-					if($result_2) {
-						$toReturn[0] = 1;
-						$toReturn[1] = "Coupon terminated successfully";
-					}			
+		$church_id = 0;
+		if($this->church_id > 0) {
+			$church_id = $this->church_id;
+		}
+
+		if($this->db_conn)
+		{
+			$is_coupon_exists = 0;
+			$is_valid_for_all = 0;
+			$query = 'select VALID_FOR_ALL from COUPONS where COUPON_CODE=? and (CHURCH_ID=? or VALID_FOR_ALL=1) limit 1';
+			$result = $this->db_conn->Execute($query, array($coupon_code, $church_id));
+			if($result) {
+				if(!$result->EOF) {
+					$is_valid_for_all = $result->fields[0];
+					$is_coupon_exists = 1;
 				}
 			}
-			else
-			{
-				$toReturn[0] = 0;
-				$toReturn[1] = "No DB Connection Available";
+
+			if($force_termination==1 || ($is_coupon_exists==1 && $is_valid_for_all != 1)) {
+				//$validity_to_set = time() - 86400;//Just to make sure the coupon is really terminated
+				$query_2 = 'update COUPONS set IS_USED=1 where COUPON_CODE=?';
+				$result_2 = $this->db_conn->Execute($query_2, array($coupon_code));
+				if($result_2) {
+					$toReturn[0] = 1;
+					$toReturn[1] = "Coupon terminated successfully";
+				}			
 			}
 		}
 		else
 		{
 			$toReturn[0] = 0;
-			$toReturn[1] = "Unable to recognize the account";
+			$toReturn[1] = "No DB Connection Available";
 		}
 
-		return false;
+		return $toReturn;
 	}
 
 	public function createCoupon($church_id, $is_valid_for_all, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $coupon_code_length=10)
@@ -673,9 +674,9 @@ class License
 			$coupon_code = "";
 			while($attempt < 10)
 			{
-				$coupon_code = generateCouponCode($coupon_code_length);
+				$coupon_code = $this->generateCouponCode($coupon_code_length);
 				$query = 'select VALIDITY from COUPONS where COUPON_CODE=? limit 1';
-				$result = $this->db_conn->Execute($query, array($coupon_code));
+				$result = $this->db_conn->Execute($query, array(trim($coupon_code)));
 				if($result) {
 					if(!$result->EOF) {
 						//Nothing to do here...
@@ -689,11 +690,12 @@ class License
 			}
 
 			if(trim($coupon_code) != "") {
-				$query_2 = 'insert into COUPONS values(?,?,?,?,?,?,FROM_UNIXTIME(?),?)';
-				$result_2 = $this->db_conn->Execute($query, array(0, trim($coupon_code), $church_id, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $is_valid_for_all));
+				$query_2 = 'insert into COUPONS values(?,?,?,?,?,?,FROM_UNIXTIME(?),?,?)';
+				$result_2 = $this->db_conn->Execute($query_2, array(0, trim($coupon_code), $church_id, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $is_valid_for_all, 0));
 				if($result_2) {
 					$toReturn[0] = 1;
 					$toReturn[1] = "Coupon created successfully";
+					$toReturn[2] = array(trim($coupon_code), $church_id, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $is_valid_for_all);
 				} else {
 					$toReturn[0] = 0;
 					$toReturn[1] = "Unable to insert coupon to the table";
@@ -705,6 +707,8 @@ class License
 			$toReturn[0] = 0;
 			$toReturn[1] = "No DB Connection Available";
 		}
+
+		return $toReturn;
 	}
 
 	public function getAllPurchaseReports($input_inv_id=0)
