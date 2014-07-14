@@ -811,6 +811,64 @@ class License
 		}
 		return $to_return;
 	}
+	
+	public function getAllCouponsList($filterType=0)
+	{
+		/** /
+			$filterType :
+				0 or empty=> List all
+				1 => list active coupons (church specific)
+				2 => list expired (unused) coupons (church specific)
+				3 => list used/terminated (which in turn expired) coupons (church specific)
+				4 => list active coupons (which is valid for all)
+				5 => list expired/terminated coupons (which was valid for all)
+		/**/
+		$toReturn = array();
+		$all_coupons = array();
+		if($this->db_conn)
+		{
+		   $query = 'select * from COUPONS order by COUPON_ID DESC';
+		   if($filterType==0 or trim($filterType) == "") {
+			   $query = 'select * from COUPONS order by COUPON_ID DESC';
+		   } else if($filterType==1) {
+			   $query = 'select * from COUPONS where VALID_FOR_ALL!=1 and IS_USED=0 and VALIDITY > NOW()';
+		   } else if($filterType==2) {
+			   $query = 'select * from COUPONS where VALID_FOR_ALL!=1 and IS_USED=0 and VALIDITY <= NOW()';
+		   } else if($filterType==3) {
+			   $query = 'select * from COUPONS where VALID_FOR_ALL!=1 and IS_USED=1';
+		   } else if($filterType==4) {
+			   $query = 'select * from COUPONS where VALID_FOR_ALL=1 and IS_USED=0 and VALIDITY > NOW()';
+		   } else if($filterType==5) {
+			   $query = 'select * from COUPONS where VALID_FOR_ALL=1 and (IS_USED=1 or VALIDITY <= NOW())';
+		   }
+		   $result = $this->db_conn->Execute($query);
+            
+           if($result) {
+			   if(!$result->EOF)
+			   {
+					while(!$result->EOF) {
+						$coupon_details = array();
+						$coupon_id = $result->fields[0];
+						$coupon_code = $result->fields[1];
+						$church_id = $result->fields[2];
+						$disc_perc = $result->fields[3];
+						$disc_flat_amt = $result->fields[4];
+						$min_subtotal = $result->fields[5];
+						$validity = $result->fields[6];
+						$valid_for_all = $result->fields[7];
+						$is_used = $result->fields[8];
+						$coupon_details = array($coupon_id, $coupon_code, $church_id, $disc_perc, $disc_flat_amt, $min_subtotal, $validity, $valid_for_all, $is_used);
+						$all_coupons[] = $coupon_details;
+
+						$result->MoveNext();
+					}
+					$toReturn[0] = 1;
+					$toReturn[1] = $all_coupons;
+			   }
+            }
+        }
+		return $toReturn;
+	}
 }
 
 ?>
