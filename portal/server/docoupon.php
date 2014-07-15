@@ -148,4 +148,53 @@ else if($req == 2)//get details of a coupon
 	exit;
 }
 /**/
+else if($req == 8)//generate a coupon
+{
+	$is_valid_for_all = trim($_REQUEST['is_valid_for_all']);
+	$church_id = trim($_REQUEST['ch_id']);
+	$discoun_perc = trim($_REQUEST['discount_perc']);
+	$discoun_flat_amt = trim($_REQUEST['discount_flat_amt']);
+	$minimum_subtotal = trim($_REQUEST['minimum_subtotal']);
+	$valid_till = trim($_REQUEST['valid_till']);
+	$valid_till = str_replace('/', '-', $valid_till);
+	$valid_till = strtotime($valid_till);
+	$coupon_code_length=10;
+	$lic_obj = new License($APPLICATION_PATH."app/");
+	$coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discoun_perc, $discoun_flat_amt, $minimum_subtotal, $valid_till, $coupon_code_length);
+
+	$rsno = 0;
+	$msg = "Unable to generate coupon";
+	$rslt = "";
+	if($coupon_result[0]==1) {
+		$rsno = 1;
+		$msg = $coupon_result[1];
+		$rslt = 
+		$rslt .= '<div class="row-fluid">';
+			$rslt .= '<div class="span12"><u><b>Coupon generated successfully, details below:</b></u></div>';
+		$rslt .= '</div>';
+		$rslt .= '<div class="row-fluid">';
+			$rslt .= '<div class="span6">Coupon Code : <b>'.$coupon_result[2][0].'</b></div>';
+			$rslt .= '<div class="span6">Church ID : '.$coupon_result[2][1].'</div>';
+		$rslt .= '</div>';
+		$rslt .= '<div class="row-fluid">';
+			$rslt .= '<div class="span6">Discount Percentage : '.$coupon_result[2][2].' %</div>';
+			$rslt .= '<div class="span6">Discount Flat Amount : USD '.$coupon_result[2][3].'</div>';
+		$rslt .= '</div>';
+		$rslt .= '<div class="row-fluid">';
+			$rslt .= '<div class="span6">Minimum Subtotal : '.$coupon_result[2][4].' %</div>';
+			$rslt .= '<div class="span6">Valid Till : '.$coupon_result[2][5].'</div>';
+		$rslt .= '</div>';
+	} else {
+		$rsno = 0;
+		$msg = $coupon_result[1];
+	}
+
+	$to_return = array("rsno"=>1, "msg"=>$msg, "rslt"=>$rslt);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
 ?>

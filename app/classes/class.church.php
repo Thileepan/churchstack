@@ -179,9 +179,9 @@ class Church
 		$all_churches = array();
 		if($this->db_conn)
 		{
-		   $query = 'select * from CHURCH_DETAILS order by CHURCH_NAME DESC';
+		   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
 		   if($filterType==0 or trim($filterType) == "") {
-			   $query = 'select * from CHURCH_DETAILS order by CHURCH_NAME DESC';
+			   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
 		   } else if($filterType==1) {
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1';
 		   } else if($filterType==2) {
