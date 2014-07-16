@@ -9,18 +9,20 @@ function listAllCoupons(filterType)
 	if(filterType==1) {
 		formPostData += "req=1";//list all coupons
 	} else if(filterType==3) {
-		formPostData += "req=3";//list all coupons
+		formPostData += "req=3";
 	} else if(filterType==4) {
-		formPostData += "req=4";//list all coupons
+		formPostData += "req=4";
 	} else if(filterType==5) {
-		formPostData += "req=5";//list all coupons
+		formPostData += "req=5";
 	} else if(filterType==6) {
-		formPostData += "req=6";//list all coupons
+		formPostData += "req=6";
 	} else if(filterType==7) {
-		formPostData += "req=7";//list all coupons
+		formPostData += "req=7";
 	} else {
 		formPostData += "req=1";
 	}
+
+	document.getElementById("currListingType").value = filterType;
 
 	oTable = $('#couponsTable').dataTable( {
         "bAutoWidth": true,
@@ -118,6 +120,55 @@ function showGeneratedCouponFromResponse(response)
 	document.getElementById("couponInfoDiv").innerHTML = dataObj.rslt;
 	document.getElementById("couponInfoDiv").style.display = "";
 	document.getElementById("resetBtn").click();
+	return false;
+	//var profileID = dataObj.profileID;
+}
+
+function couponActions(actionType, couponID)
+{
+	var reqType = 9;//Terminate
+	if(actionType==1) {
+		reqType = 9;//Terminate
+	}
+	/** /
+	else if(actionType==2) {
+		reqType = 10;
+	}
+	/**/
+	var formPostData = "req="+reqType;
+	formPostData += "&act_num="+actionType;
+	formPostData += "&coupon_id="+couponID;
+	$.ajax({
+		type:'POST',
+		url:doCoupon,
+		data:formPostData,
+		success:respondCouponActions,
+		error:HandleAjaxError
+	});
+	return false;
+}
+
+function respondCouponActions(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.actno == 1)
+	{
+		if(dataObj.rsno==0) {
+			alert("Error : "+dataObj.msg);
+			return false;
+		} else {
+			listAllCoupons(document.getElementById("currListingType").value);
+		}
+	}
+	/** /
+	else if(dataObj.actno == 2)
+	{
+		if(dataObj.rsno==0) {
+			alert("Error : "+dataObj.msg);
+			return false;
+		}
+	}
+	/**/
 	return false;
 	//var profileID = dataObj.profileID;
 }

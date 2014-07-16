@@ -869,6 +869,84 @@ class License
         }
 		return $toReturn;
 	}
+	
+	public function getCouponInformation($coupon_id)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Error while getting the coupon information";
+		if($this->db_conn)
+		{
+		   $query = 'select COUPON_ID, COUPON_CODE, CHURCH_ID, DISCOUNT_PERCENTAGE, DISCOUNT_FLAT_AMOUNT, MINIMUM_SUBTOTAL, VALIDITY, VALID_FOR_ALL, IS_USED from COUPONS where COUPON_ID=?';
+		   $result = $this->db_conn->Execute($query, array($coupon_id));
+            
+           if($result) {
+			   if(!$result->EOF)
+			   {
+					$coupon_details = array();
+					$coupon_id = $result->fields[0];
+					$coupon_code = $result->fields[1];
+					$church_id = $result->fields[2];
+					$disc_perc = $result->fields[3];
+					$disc_flat_amt = $result->fields[4];
+					$min_subtotal = $result->fields[5];
+					$validity = $result->fields[6];
+					$valid_for_all = $result->fields[7];
+					$is_used = $result->fields[8];
+					$coupon_details = array($coupon_id, $coupon_code, $church_id, $disc_perc, $disc_flat_amt, $min_subtotal, $validity, $valid_for_all, $is_used);
+
+					$toReturn[0] = 1;
+					$toReturn[1] = $coupon_details;
+			   }
+            }
+        }
+		return $toReturn;
+	}
+
+	public function terminateCouponID($coupon_id, $force_termination=0)
+	{
+		//$force_termination has to be "1" to terminate generic coupons also. This has to be "0" if only church specific coupons have to be terminated
+
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Failed to terminate the coupon";
+
+		$church_id = 0;
+		if($this->church_id > 0) {
+			$church_id = $this->church_id;
+		}
+
+		if($this->db_conn)
+		{
+			$is_coupon_exists = 0;
+			$is_valid_for_all = 0;
+			$query = 'select VALID_FOR_ALL from COUPONS where COUPON_ID=? and (CHURCH_ID=? or VALID_FOR_ALL=1) limit 1';
+			$result = $this->db_conn->Execute($query, array($coupon_id, $church_id));
+			if($result) {
+				if(!$result->EOF) {
+					$is_valid_for_all = $result->fields[0];
+					$is_coupon_exists = 1;
+				}
+			}
+
+			if($force_termination==1 || ($is_coupon_exists==1 && $is_valid_for_all != 1)) {
+				//$validity_to_set = time() - 86400;//Just to make sure the coupon is really terminated
+				$query_2 = 'update COUPONS set IS_USED=1 where COUPON_ID=?';
+				$result_2 = $this->db_conn->Execute($query_2, array($coupon_id));
+				if($result_2) {
+					$toReturn[0] = 1;
+					$toReturn[1] = "Coupon terminated successfully";
+				}			
+			}
+		}
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "No DB Connection Available";
+		}
+
+		return $toReturn;
+	}
 }
 
 ?>

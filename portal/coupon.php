@@ -115,8 +115,8 @@
 					</div>
 					<div class="btn-group">
 						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(3);">Active</button>
-						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(4);">Used</button>
-						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(5);">Expired</button>
+						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(5);">Used</button>
+						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(4);">Expired</button>
 						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(6);">Active (Global)</button>
 						<button type="button" class="btn btn-default" onclick="JavaScript: listAllCoupons(7);">Expired (Global)</button>
 					</div>
@@ -174,6 +174,7 @@
 </div>
 	<form name="coupon_form" id="coupon_form" method="post">
 		<input type="hidden" id="hidTableContentHTML" name="hidTableContentHTML" value="<?php echo htmlentities($table_html); ?>"/>
+		<input type="hidden" id="currListingType" name="currListingType" value="1">
 	<form>
 
 	<script type="text/javascript">
