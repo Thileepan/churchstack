@@ -95,6 +95,13 @@
 					</div>
 					<div class="row-fluid">
 						<div class="span12">
+							<div style="padding-bottom:6px;">
+								<label class="control-label" for="txtCustomCouponCode" style="color:#F41A12;">Use This Coupon Code</label><div class="controls"><input type="text" id="txtCustomCouponCode" placeholder="Enter Custom Coupon Code" value="" style="color:#F41A12; font-weight:bold;">&nbsp;&nbsp;&nbsp;<span style="color:#F41A12;">Leave this empty if you want to generate a random code</span></div>
+							</div>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span12">
 							<div class="form-actions"><button class="btn btn-primary" type="submit" onclick="return generateCoupon();">Generate Coupon</button>&nbsp;<button class="btn" type="reset" id="resetBtn" onclick="Javascript: document.getElementById('selChurchDiv').style.display='';">Reset</button></div>
 						</div>
 					</div>

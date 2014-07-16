@@ -91,15 +91,23 @@ function generateCoupon()
 		return false;
 	}
 
+	
+	var customCouponCode = "";
+	document.getElementById("txtCustomCouponCode").value = trim(document.getElementById("txtCustomCouponCode").value);
+	if(document.getElementById("txtCustomCouponCode").value != "") {
+		customCouponCode = document.getElementById("txtCustomCouponCode").value;
+	}
+
 	var church_id = ((document.getElementById("selCouponFor").value==0)? document.getElementById("selChurch").value : 0);
 
 	var formPostData = "req=8";
 	formPostData += "&is_valid_for_all="+((document.getElementById("selCouponFor").value==1)? 1 : 0);
-	formPostData += "&ch_id="+document.getElementById("selChurch").value;
+	formPostData += "&ch_id="+church_id;
 	formPostData += "&discount_perc="+document.getElementById("txtDiscountPerc").value;
 	formPostData += "&discount_flat_amt="+document.getElementById("txtDiscountFlat").value;
 	formPostData += "&minimum_subtotal="+document.getElementById("txtMinSubtotal").value;
 	formPostData += "&valid_till="+document.getElementById("txtValidTill").value;
+	formPostData += "&custom_coupon_code="+customCouponCode;
 	$.ajax({
 		type:'POST',
 		url:doCoupon,
@@ -114,7 +122,7 @@ function showGeneratedCouponFromResponse(response)
 {
 	var dataObj = eval("(" + response + ")" );
 	if(dataObj.rsno==0) {
-		alert("Error : "+dataObj.rslt);
+		alert("Error : "+dataObj.msg);
 		return false;
 	}
 	document.getElementById("couponInfoDiv").innerHTML = dataObj.rslt;
@@ -124,17 +132,21 @@ function showGeneratedCouponFromResponse(response)
 	//var profileID = dataObj.profileID;
 }
 
-function couponActions(actionType, couponID)
+function couponActions(actionType, couponID, couponCode)
 {
 	var reqType = 9;//Terminate
 	if(actionType==1) {
 		reqType = 9;//Terminate
+		if(!confirm("Are you sure you want to TERMINATE the following coupon?\n\n"+couponCode)) {
+			return false;
+		}
 	}
-	/** /
 	else if(actionType==2) {
-		reqType = 10;
+		reqType = 10;//Reactivate
+		if(!confirm("Are you sure you want to REACTIVATE the following coupon?\n\n"+couponCode)) {
+			return false;
+		}
 	}
-	/**/
 	var formPostData = "req="+reqType;
 	formPostData += "&act_num="+actionType;
 	formPostData += "&coupon_id="+couponID;
@@ -160,15 +172,15 @@ function respondCouponActions(response)
 			listAllCoupons(document.getElementById("currListingType").value);
 		}
 	}
-	/** /
 	else if(dataObj.actno == 2)
 	{
 		if(dataObj.rsno==0) {
 			alert("Error : "+dataObj.msg);
 			return false;
+		} else {
+			listAllCoupons(document.getElementById("currListingType").value);
 		}
 	}
-	/**/
 	return false;
 	//var profileID = dataObj.profileID;
 }

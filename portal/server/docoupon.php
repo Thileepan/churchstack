@@ -33,14 +33,36 @@ if($req == 1 || $req == 3 || $req == 4 || $req == 5 || $req == 6 || $req == 7)
 	for($c=0; $c < COUNT($coupons[1]); $c++)
 	{
 		$curr_coupon = $coupons[1][$c];
+		$eligible_for_termination = 0;
+		if(strtotime($curr_coupon[6]) > time() & $curr_coupon[8] != 1) {
+			$eligible_for_termination = 1;
+		}
+		$eligible_for_reactivation = 0;
+		if(strtotime($curr_coupon[6]) > time() & $curr_coupon[8] == 1) {
+			$eligible_for_reactivation = 1;
+		}
 		$action_btn_html = '<div class="btn-group">';
 			$action_btn_html .= '<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>';
 			$action_btn_html .= '<ul class="dropdown-menu" role="menu">';
-				$action_btn_html .= '<li><a href="#" onclick="couponActions(1, '.$curr_coupon[0].');">Terminate</a></li>';
+				if($eligible_for_termination==1)
+				{
+					$action_btn_html .= '<li><a href="#" onclick="couponActions(1, '.$curr_coupon[0].',\''.$curr_coupon[1].'\');">Terminate</a></li>';
+				}
+				else
+				{
+					$action_btn_html .= '<li class="disabled"><a href="#">Terminate</a></li>';
+				}
 				//$action_btn_html .= '<li><a href="#">Another action</a></li>';
 				//$action_btn_html .= '<li><a href="#">Something else here</a></li>';
-				//$action_btn_html .= '<li class="divider"></li>';
-				//$action_btn_html .= '<li><a href="#" onclick="couponActions(2, '.$curr_coupon[0].');">Delete Permanently</a></li>';
+				$action_btn_html .= '<li class="divider"></li>';
+				if($eligible_for_reactivation==1)
+				{
+					$action_btn_html .= '<li><a href="#" onclick="couponActions(2, '.$curr_coupon[0].',\''.$curr_coupon[1].'\');">Reactivate</a></li>';
+				}
+				else
+				{
+					$action_btn_html .= '<li class="disabled"><a href="#">Reactivate</a></li>';
+				}
 			$action_btn_html .= '</ul>';
 		$action_btn_html .= '</div>';
 		$coupon_name_html = '<a style="cursor: pointer;" data-toggle="modal" data-target="#couponDetailsModal" onclick="loadCouponData('.$curr_coupon[0].');">'.$curr_coupon[1].'</a>';
@@ -101,9 +123,10 @@ else if($req == 8)//generate a coupon
 	$valid_till = trim($_REQUEST['valid_till']);
 	$valid_till = str_replace('/', '-', $valid_till);
 	$valid_till = strtotime($valid_till);
+	$custom_coupon_code = trim($_REQUEST['custom_coupon_code']);
 	$coupon_code_length=10;
 	$lic_obj = new License($APPLICATION_PATH."app/");
-	$coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discoun_perc, $discoun_flat_amt, $minimum_subtotal, $valid_till, $coupon_code_length);
+	$coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discoun_perc, $discoun_flat_amt, $minimum_subtotal, $valid_till, $coupon_code_length, $custom_coupon_code);
 
 	$rsno = 0;
 	$msg = "Unable to generate coupon";
@@ -117,7 +140,7 @@ else if($req == 8)//generate a coupon
 		$rslt .= '</div>';
 		$rslt .= '<div class="row-fluid">';
 			$rslt .= '<div class="span6">Coupon Code : <b>'.$coupon_result[2][0].'</b></div>';
-			$rslt .= '<div class="span6">Church ID : '.$coupon_result[2][1].'</div>';
+			$rslt .= '<div class="span6">'.(($coupon_result[2][1] > 0)? 'Church ID : '.$coupon_result[2][1] : '').'</div>';
 		$rslt .= '</div>';
 		$rslt .= '<div class="row-fluid">';
 			$rslt .= '<div class="span6">Discount Percentage : '.$coupon_result[2][2].' %</div>';
@@ -127,12 +150,15 @@ else if($req == 8)//generate a coupon
 			$rslt .= '<div class="span6">Minimum Subtotal : USD '.$coupon_result[2][4].'</div>';
 			$rslt .= '<div class="span6">Valid Till : '.date("F j, Y, g:i a", $coupon_result[2][5]).'</div>';
 		$rslt .= '</div>';
+		$rslt .= '<div class="row-fluid">';
+			$rslt .= '<div class="span12">Is Valid For All : '.$coupon_result[2][6].'</div>';
+		$rslt .= '</div>';
 	} else {
 		$rsno = 0;
 		$msg = $coupon_result[1];
 	}
 
-	$to_return = array("rsno"=>1, "msg"=>$msg, "rslt"=>$rslt);
+	$to_return = array("rsno"=>$rsno, "msg"=>$msg, "rslt"=>$rslt);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);
@@ -146,6 +172,22 @@ else if($req == 9)//Terminate coupon
 	$act_num = trim($_REQUEST['act_num']);
 	$lic_obj = new License($APPLICATION_PATH."app/");
 	$result_data = $lic_obj->terminateCouponID($coupon_id, 1);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 10)//Reactivate coupon
+{
+	$coupon_id = trim($_REQUEST['coupon_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$lic_obj = new License($APPLICATION_PATH."app/");
+	$result_data = $lic_obj->reactivateCouponID($coupon_id);
 	$rsno = $result_data[0];
 	$msg = $result_data[1];
 	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);

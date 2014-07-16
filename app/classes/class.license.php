@@ -663,8 +663,11 @@ class License
 		return $toReturn;
 	}
 
-	public function createCoupon($church_id, $is_valid_for_all, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $coupon_code_length=10)
+	public function createCoupon($church_id, $is_valid_for_all, $discount_percentage, $discount_flat_amount, $minimum_subtotal_required, $valid_till_timestamp, $coupon_code_length=10, $custom_coupon_code="")
 	{
+		if($coupon_code_length <= 0) {
+			$coupon_code_length = 10;
+		}
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "Unable to create coupon";
@@ -672,21 +675,46 @@ class License
 		{
 			$attempt = 0;
 			$coupon_code = "";
-			while($attempt < 10)
+			if(trim($custom_coupon_code) != "") {
+				$coupon_code = trim($custom_coupon_code);
+			}
+
+			if(trim($custom_coupon_code) == "")
 			{
-				$coupon_code = $this->generateCouponCode($coupon_code_length);
+				while($attempt < 10)
+				{
+					$coupon_code = $this->generateCouponCode($coupon_code_length);
+					$query = 'select VALIDITY from COUPONS where COUPON_CODE=? limit 1';
+					$result = $this->db_conn->Execute($query, array(trim($coupon_code)));
+					if($result) {
+						if(!$result->EOF) {
+							//Nothing to do here...
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+					$attempt++;
+				}
+
+				if($attempt >= 10) {
+					$toReturn[0] = 0;
+					$toReturn[1] = "Too many failures while trying to generate a random coupon code!!!";
+					return $toReturn;
+				}
+			}
+			else
+			{
 				$query = 'select VALIDITY from COUPONS where COUPON_CODE=? limit 1';
 				$result = $this->db_conn->Execute($query, array(trim($coupon_code)));
 				if($result) {
 					if(!$result->EOF) {
-						//Nothing to do here...
-					} else {
-						break;
+						$toReturn[0] = 0;
+						$toReturn[1] = "The coupon code you have entered already exists!!!";
+						return $toReturn;
 					}
-				} else {
-					break;
 				}
-				$attempt++;
 			}
 
 			if(trim($coupon_code) != "") {
@@ -938,6 +966,35 @@ class License
 					$toReturn[1] = "Coupon terminated successfully";
 				}			
 			}
+		}
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "No DB Connection Available";
+		}
+
+		return $toReturn;
+	}
+
+	public function reactivateCouponID($coupon_id)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Failed to reactivate the coupon";
+
+		$church_id = 0;
+		if($this->church_id > 0) {
+			$church_id = $this->church_id;
+		}
+
+		if($this->db_conn)
+		{
+			$query_2 = 'update COUPONS set IS_USED=0 where COUPON_ID=?';
+			$result_2 = $this->db_conn->Execute($query_2, array($coupon_id));
+			if($result_2) {
+				$toReturn[0] = 1;
+				$toReturn[1] = "Coupon reactivated successfully";
+			}			
 		}
 		else
 		{
