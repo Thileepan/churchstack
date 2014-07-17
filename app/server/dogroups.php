@@ -75,7 +75,7 @@ else if($req == 3)
 	//list all groups
 
 	$group_obj = new Groups($APPLICATION_PATH);
-	$group_details = $group_obj->getListOfGroups();
+	$group_details = $group_obj->getAllGroups();
 	//print_r($group_details);
 
 	$is_results_available = false;

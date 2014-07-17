@@ -204,7 +204,7 @@ class Events
 		return $event_details;
 	}
 
-	public function getListOfEvents($listAllEvents, $start_date, $end_date, $start_time='0000', $end_time='0000', $event_status=1)
+	public function getAllEvents($listAllEvents, $start_date, $end_date, $start_time='0000', $end_time='0000', $event_status=1)
 	{
 		$event_details = array();
 		if($this->db_conn)
@@ -255,7 +255,7 @@ class Events
 
 		$event_info = array();
 		$listAllEvents = false;
-		$event_details = $this->getListOfEvents($listAllEvents, $start_date, $end_date);
+		$event_details = $this->getAllEvents($listAllEvents, $start_date, $end_date);
 		//print_r($event_details);
 		$total_events = COUNT($event_details);
 		//echo "eventdetails::::::::".$total_events;

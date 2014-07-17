@@ -106,7 +106,7 @@ class Groups
 		return $group_details;
 	}
 
-	public function getListOfGroups()
+	public function getAllGroups()
 	{
 		$group_details = array();
 		if($this->db_conn)

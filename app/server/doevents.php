@@ -425,7 +425,7 @@ else if($req == 5)
 	//echo $today;
 
 	$events_obj = new Events($APPLICATION_PATH);
-	$event_details = $events_obj->getListOfEvents($listAllEvents, $start_date, $today, $start_time, $end_time, $event_status);
+	$event_details = $events_obj->getAllEvents($listAllEvents, $start_date, $today, $start_time, $end_time, $event_status);
 	//print_r($event_details);
 
 	$is_results_available = false;
