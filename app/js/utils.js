@@ -9,7 +9,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 2) {
 		document.getElementById('mhome').className = "";
@@ -20,7 +20,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 3) {
 		document.getElementById('mhome').className = "";
@@ -31,7 +31,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 4) {
 		document.getElementById('mhome').className = "";
@@ -42,7 +42,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettingsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 5) {
 		document.getElementById('mhome').className = "";
@@ -53,7 +53,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mreportsText').className = "label label-info";
 		document.getElementById('mreportsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 6) {
 		document.getElementById('mhome').className = "";
@@ -62,7 +62,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "active";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mdashboardText').className = "label label-info";
 		document.getElementById('mdashboardText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mgroups').className = "";
@@ -73,9 +73,9 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "active";
-		document.getElementById('mharvestText').className = "label label-info";
-		document.getElementById('mharvestText').setAttribute("style", "color:white;font-weight:bold;");
+		//document.getElementById('mharvest').className = "active";
+		//document.getElementById('mharvestText').className = "label label-info";
+		//document.getElementById('mharvestText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mgroups').className = "";
 	} else if(menuID == 8) {
 		document.getElementById('mhome').className = "";
@@ -84,7 +84,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
-		document.getElementById('mharvest').className = "";
+		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "active";
 		document.getElementById('mgroupsText').className = "label label-info";
 		document.getElementById('mgroupsText').setAttribute("style", "color:white;font-weight:bold;");

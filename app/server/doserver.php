@@ -49,7 +49,7 @@ if($req == 1)
 				$parent_head_icon = (($is_profile_head)?'<i class="icon-user"></i>':'');
 
 				$actions = '<div class="dropdown">';
-					$actions .= '<i class="curHand icon-pencil" onclick="GetAddOrEditProfileForm(1, '.$profiles[$i][0].')"></i>&nbsp;&nbsp;';
+					$actions .= '<i class="curHand icon-pencil" onclick="getAddOrEditProfileForm(1, '.$profiles[$i][0].')"></i>&nbsp;&nbsp;';
 					$actions .= '<i class="curHand icon-trash" onclick="deleteProfileConfirmation('.$profiles[$i][0].',\''. $unique_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>&nbsp;&nbsp;';
 				$actions .= '</div>';				
 				
@@ -103,6 +103,7 @@ else if($req == 2)
 	
 	$profiles_obj = new Profiles($APPLICATION_PATH);
 	$parent_list = $profiles_obj->getAllParentProfiles();
+	/*
 	//if(!$is_update)
 	{
 		$max_unique_id = $profiles_obj->getMaxProfileUniqueID();
@@ -113,6 +114,7 @@ else if($req == 2)
 			//echo "Error";exit; //TODO Error Handling
 		}
 	}
+	*/
 
 	if($is_update) {
 		$profile_id = trim($_POST['profileID']);
@@ -134,7 +136,7 @@ else if($req == 2)
 	}
 
 	//Custom Fields
-	$field_details = $settings_obj->getProfileAllCustomFields();
+	$field_details = $settings_obj->getAllCustomProfileFields();
 	$total_custom_fields = COUNT($field_details);
 
 	$toReturn = '';
@@ -165,8 +167,8 @@ else if($req == 2)
 						$toReturn .= '<label class="control-label" for="inputFirstName">Name</label>';
 							$toReturn .= '<div class="controls">';
 								$toReturn .= '<input type="text" id="inputFirstName" placeholder="First" value="'.$profile_info[2].'" style="width:16%">&nbsp;';
-								$toReturn .= '<input type="text" id="inputMiddleName" placeholder="Middle" value="'.$profile_info[2].'" style="width:16%">&nbsp;';
-								$toReturn .= '<input type="text" id="inputLastName" placeholder="Last" value="'.$profile_info[2].'" style="width:16%">&nbsp;';
+								$toReturn .= '<input type="text" id="inputMiddleName" placeholder="Middle" value="'.$profile_info[26].'" style="width:16%">&nbsp;';
+								$toReturn .= '<input type="text" id="inputLastName" placeholder="Last" value="'.$profile_info[27].'" style="width:16%">&nbsp;';
 							$toReturn .= '</div>';
 					  $toReturn .= '</div>';
 					  
@@ -232,7 +234,7 @@ else if($req == 2)
 								$toReturn .= $hidden_parent_addr;
 							$toReturn .= '</div>';
 					  $toReturn .= '</div>';
-					  $toReturn .= '<div style="padding-bottom:6px;">';
+					  $toReturn .= '<div style="padding-bottom:6px;display:none;">';
 							$toReturn .= '<label class="control-label" for="inputUniqueID">Member ID</label>';
 							$toReturn .= '<div class="controls">';
 								$toReturn .= '<input type="text" id="inputUniqueID" placeholder="Member ID" value="'.(($is_update)?$unique_id:$max_unique_id).'" disabled>';
@@ -415,7 +417,7 @@ else if($req == 2)
 					$toReturn .= '<div style="padding-bottom:6px;">';
 						$toReturn .= '<label class="control-label" for="inputWorkPhone">Work</label>';
 						$toReturn .= '<div class="controls">';
-							$toReturn .= '<input type="text" id="inputWorkPhone" placeholder="Work Phone" value="'.$profile_info[15].'" >';
+							$toReturn .= '<input type="text" id="inputWorkPhone" placeholder="Work Phone" value="'.$profile_info[28].'" >';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
 					/*
@@ -459,15 +461,15 @@ else if($req == 2)
 
 			$toReturn .= '<div class="row-fluid">';
 				$toReturn .= '<div class="span12">';
-					$toReturn .= '<p class="text-left text-info"><b>Notifications</b></p>';
+					$toReturn .= '<p class="text-left text-info"><b>Notifications</b></p>';					
 					$toReturn .= '<div style="padding-bottom:6px;">';
 						$toReturn .= '<div class="controls">';
-							$toReturn .= '<input type="checkbox" id="inputEmailNotifications">&nbsp;Receive Email Notifications';
+							$toReturn .= '<input type="checkbox" id="inputSMSNotification" '.(($profile_info[31] == 1)?'checked':'').'>&nbsp;Receive SMS Notifications';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
 					$toReturn .= '<div style="padding-bottom:6px;">';
 						$toReturn .= '<div class="controls">';
-							$toReturn .= '<input type="checkbox" id="inputSMSNotifications">&nbsp;Receive SMS Notifications';
+							$toReturn .= '<input type="checkbox" id="inputEmailNotification" '.(($profile_info[32] == 1)?'checked':'').'>&nbsp;Receive Email Notifications';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
 				$toReturn .= '</div>';
@@ -515,55 +517,76 @@ else if($req == 2)
 					$toReturn .= '<p class="text-left text-info"><b>Custom Fields</b></p>';
 					if($total_custom_fields > 0)
 					{
-						$field_id_and_type = '';
+						$field_info = '';
 						for($m=0; $m<$total_custom_fields; $m++)
 						{
+							//$profile_custom_fields
 							$field_id = 'inputCustomField-' . $field_details[$m][0];
 							$field_name = $field_details[$m][1];
 							$field_type = $field_details[$m][2];
 							$field_options = explode(",", $field_details[$m][3]);
-							$is_required = $field_details[$m][3];
+							$is_required = $field_details[$m][5];
+							$field_value = '';
+
+							if($is_update) {
+								$profile_custom_fields = $settings_obj->getProfileCustomFieldDetails($profile_id);
+								if(is_array($profile_custom_fields))
+								{
+									$total_profile_custom_fields = COUNT($profile_custom_fields);
+									if($total_profile_custom_fields > 0)
+									{
+										for($i=0; $i<$total_profile_custom_fields; $i++)
+										{
+											if($profile_custom_fields[$i][0] == $field_details[$m][0])
+											{
+												$field_value = $profile_custom_fields[$i][1];
+												break;
+											}
+										}
+									}
+								}
+							}
 
 							$toReturn .= '<div style="padding-bottom:6px;">';
 								$toReturn .= '<label class="control-label" for="'.$field_id.'">'.$field_name.'</label>';
 								$toReturn .= '<div class="controls">';
 								if($field_type == 1) {
-									$toReturn .= '<input type="text" id="'.$field_id.'" placeholder="'.$field_name.'">';
+									$toReturn .= '<input type="text" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 2) {
-									$toReturn .= '<input type="number" id="'.$field_id.'" placeholder="'.$field_name.'">';
+									$toReturn .= '<input type="number" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 3) {
-									$toReturn .= '<input type="password" id="'.$field_id.'" placeholder="'.$field_name.'">';
+									$toReturn .= '<input type="password" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 4) {
 									$toReturn .= '<input type="text" data-date-format="dd/mm/yyyy" id="'.$field_id.'" placeholder="'.$field_name.'">';
 								} else if($field_type == 5) {
-									$toReturn .= '<input type="url" id="'.$field_id.'" placeholder="'.$field_name.'">';
+									$toReturn .= '<input type="url" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 6) {
 									$toReturn .= '<select id="'.$field_id.'">';
 										for($n=0; $n<COUNT($field_options); $n++)
 										{
-											$toReturn .= '<option value="'.$n.'">'.$field_options[$n].'</option>';
+											$toReturn .= '<option value="'.$n.'" '.(($field_value == $n)?"selected":"").'>'.$field_options[$n].'</option>';
 										}
 									$toReturn .= '</select>';
 								} else if($field_type == 7) {
 									$toReturn .= '<input type="checkbox" id="'.$field_id.'">';
 								} else if($field_type == 8) {
-									$toReturn .= '<textarea id="'.$field_id.'"></textarea>';
+									$toReturn .= '<textarea id="'.$field_id.'">'.$field_value.'</textarea>';
 								}
 									
 								$toReturn .= '</div>';
 							$toReturn .= '</div>';
 
-							if($field_id_and_type != '') {
-								$field_id_and_type .= ",";
+							if($field_info != '') {
+								$field_info .= ",";
 							}
-							$field_id_and_type .= $field_id."::".$field_type."::".$field_name."::".$is_required;
+							$field_info .= $field_id."::".$field_type."::".$field_name."::".$is_required;
 						}
 					}
 					else
 					{
 						$toReturn .= '<p class="muted">No custom profile fields are available.</p>';
 					}
-					$toReturn .= '<input type="hidden" id="hidddenFieldIDAndType" value="'.$field_id_and_type.'" />';
+					$toReturn .= '<input type="hidden" id="hidddenFieldIDAndType" value="'.$field_info.'" />';
 				$toReturn .= '</div>';
 			$toReturn .= '</div>';
 
@@ -595,9 +618,12 @@ else if($req == 6)
 	//Add or Update Profile
 
 	$salutation_id = trim($_POST['salutationID']);
-	$name = trim($_POST['name']);
+	$first_name = trim($_POST['firstName']);
+	$middle_name = trim($_POST['middleName']);
+	$last_name = trim($_POST['lastName']);
+	$name = $first_name.' '.$middle_name.' '.$last_name;
 	$parent_profile_id = trim($_POST['parentID']);
-	$unique_id = trim($_POST['uniqueID']);
+	//$unique_id = trim($_POST['uniqueID']);
 	$date_of_birth = trim($_POST['dob']);
 	$gender_id = trim($_POST['genderID']);
 	$relation_ship_id = trim($_POST['relationshipID']);
@@ -610,8 +636,9 @@ else if($req == 6)
 	$area = trim($_POST['area']);
 	$pincode = trim($_POST['pincode']);
 	$landline = trim($_POST['landline']);
+	$work_phone = trim($_POST['workPhone']);
 	$mobile1 = trim($_POST['mobile1']);
-	$mobile2 = trim($_POST['mobile2']);
+	//$mobile2 = trim($_POST['mobile2']);
 	$email = trim($_POST['email']);	
 	$profile_status_id = trim($_POST['profileStatusID']);
 	$notes = trim($_POST['notes']);
@@ -620,42 +647,51 @@ else if($req == 6)
 	$occupation = trim($_POST['occupation']);
 	$is_another_church_member = trim($_POST['isAnotherChurchMember']);
 	$is_update = trim($_POST['isUpdate']);
-
-	/*************** upload starts ***************/
-//uploading file to uploads/ folder before start importing
-$upload_dir = "uploads/";
-
-echo "vvvvvv";
-print_r($_POST);
-print_r($_FILES);
-if(isset($_FILES["myPhotoPath"]))
-{
-	echo 'aaa';
-	//Filter the file types , if you want.
-	if ($_FILES["filePath"]["error"] > 0)
-	{
-	  echo "Error: " . $_FILES["file"]["error"] . "<br>";
-	}
-	else
-	{
-		//move the uploaded file to uploads folder;
-		//$file_path = $upload_dir. $_FILES["filePath"]["name"];
-		$file_path = $upload_dir. "profilelist.jpg";
-    	move_uploaded_file($_FILES["filePath"]["tmp_name"], $file_path);
-		echo "Uploaded File :".$_FILES["filePath"]["name"];
-	}
-}
-/*************** upload completes ***************/
-exit;
-
+	$sms_notification = trim($_POST['smsNotification']);
+	$email_notification = trim($_POST['emailNotification']);
+	$family_photo_location = '';
+	$profile_photo_location = '';
+		
+	$profile_id = -1;
 	$profiles_obj = new Profiles($APPLICATION_PATH);
 	if($is_update) {
 		$profile_id = trim($_POST['profileID']);
-		$status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member);
+		$status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
 	} else {
-		$status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member);
+		$unique_id = $profiles_obj->getMaxProfileUniqueID();
+		if($unique_id != -1) {
+			$unique_id++;
+			$unique_id = $name_append . appendZeroInUniqueID($unique_id);			
+		}
+		$status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+		$profile_id = $profiles_obj->profile_id;
 	}
-	echo $status;
+
+	if($profile_id > 0) {
+		//custom profile fields
+		$custom_fields_list = explode('<:|:>', trim($_POST['customFields']));	
+		if(is_array($custom_fields_list))
+		{
+			$fields_count = COUNT($custom_fields_list);
+			if($fields_count > 0)
+			{
+				for($i=0; $i<$fields_count; $i++)
+				{
+					$fields = explode('::', $custom_fields_list[$i]);
+					$field_id = $fields[0];
+					$field_value = $fields[1];
+					if($is_update) {
+						$status = $profiles_obj->updateCustomProfileFields($profile_id, $field_id, $field_value);						
+					} else {
+						$status = $profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+					}
+				}
+			}
+		}
+	}
+	
+	unset($profile_obj);
+	echo $profile_id;
 	exit;
 }
 else if($req == 7)
@@ -720,6 +756,10 @@ else if($req == 11)
 	$profiles_obj = new Profiles($APPLICATION_PATH);
 	$profile_details = $profiles_obj->getProfileInformation($profile_id);
 	//print_r($profile_details);
+
+	$family_photo_path = $profile_details[29];
+	$profile_photo_path = $profile_details[30];
+
 	$is_parent_profile = (($profile_details[25] == -1)?true:false);
 	$unique_id = 'STC'.appendZeroInUniqueID($profile_details[3]);
 
@@ -775,9 +815,15 @@ else if($req == 11)
 	
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
-		$to_return .= '<div class="span6">';
+		$to_return .= '<div class="span2">';
+			$to_return .= '<img id="imgPreviewFamilyPhoto" src="'.$APPLICATION_PATH.'app/images/'.(($profile_photo_path != '')?$profile_photo_path:'photo_rounded.png').'" class="img-rounded" width="120" height="120">';
+			$to_return .= '<BR>';
+			$to_return .= '<span style="text-align:center"><a href="#"><small>'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</small></a></span>';
+			$to_return .= '<BR><BR>';
+		$to_return .= '</div>';
+		$to_return .= '<div class="span4">';
 			$to_return .= '<address>';
-				$to_return .= '<strong>'.$salutation.". ".$profile_details[2].'</strong>&nbsp;<span class="muted">('.$unique_id.')</span>&nbsp;<a href="#" onclick="GetAddOrEditProfileForm(1, '.$profile_details[0].')"><u>Edit</u></a><br>';
+				$to_return .= '<strong>'.$salutation.". ".$profile_details[2].'</strong>&nbsp;<span class="muted">('.$unique_id.')</span>&nbsp;<a href="#" onclick="getAddOrEditProfileForm(1, '.$profile_details[0].')"><u>Edit</u></a><br>';
 				if($profile_details[10] != "") {
 					$to_return .= $profile_details[10].'<br>';
 				}
@@ -864,7 +910,7 @@ else if($req == 11)
 //			$to_return .= '</div>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
-
+/*
 	$to_return .= '<BR><div class="row-fluid">';
 		$to_return .= '<div class="span12">';
 			$to_return .= '<strong>Harvest Festival</strong><BR>';
@@ -873,7 +919,7 @@ else if($req == 11)
 			$to_return .= 'Balance : '.($total_purchased_amt - $total_paid_amt).'<BR>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
-
+*/
 	echo $to_return;
 	exit;
 }

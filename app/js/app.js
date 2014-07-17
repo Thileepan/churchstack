@@ -173,7 +173,7 @@ function listAllProfiles(opt)
 	});
 }
 
-function GetAddOrEditProfileForm(val, profileID)
+function getAddOrEditProfileForm(val, profileID)
 {
 	isEdit = val;
 	document.getElementById('listProfiles').className = '';
@@ -191,12 +191,12 @@ function GetAddOrEditProfileForm(val, profileID)
 		type:'POST',
 		url:serverFile,
 		data:formPostData,
-		success:GetAddOrEditProfileFormResponse,
+		success:getAddOrEditProfileFormResponse,
 		error:HandleAjaxError
 	});
 }
 
-function GetAddOrEditProfileFormResponse(response)
+function getAddOrEditProfileFormResponse(response)
 {
 	document.getElementById('loadingDiv').style.display = 'none';
 	document.getElementById('pageHeader').innerHTML = ((isEdit)?'Edit Profile':'Add New Profile');
@@ -397,8 +397,8 @@ function addOrUpdateProfile(val)
 	uniqueID = uniqueID.substring(3);
 
 	//notifications
-	var smsNotifications = ((document.getElementById('inputSMSNotifications').checked)?1:0);
-	var emailNotifications = ((document.getElementById('inputEmailNotifications').checked)?1:0);
+	var smsNotification = ((document.getElementById('inputSMSNotification').checked)?1:0);
+	var emailNotification = ((document.getElementById('inputEmailNotification').checked)?1:0);
 	
 	var alertMsg = '';
 	if(firstName == '')	{
@@ -411,10 +411,7 @@ function addOrUpdateProfile(val)
 
 	//custom profile fields
 	var customFields = '';
-	var fieldIDAndTypeArr = Array();
-	if(trim(document.getElementById('hidddenFieldIDAndType').value) != "") {
-		fieldIDAndTypeArr = trim(document.getElementById('hidddenFieldIDAndType').value).split(",");
-	}
+	var fieldIDAndTypeArr = document.getElementById('hidddenFieldIDAndType').value.split(",");
 	if(fieldIDAndTypeArr.length > 0)
 	{
 		for(i=0; i<fieldIDAndTypeArr.length; i++)
@@ -425,37 +422,36 @@ function addOrUpdateProfile(val)
 				var fieldID = fieldArr[0];
 				var fieldType = fieldArr[1];
 				var fieldName = fieldArr[2];
-				var isRequired = fieldArr[3];
+				var isRequired = parseInt(fieldArr[3]);
+				var fieldValue = document.getElementById(fieldID).value;
 				
 				if(isRequired) {
-					if(fieldType <= 4)
-					{
-						var fieldValue_ = document.getElementById(fieldID).value;
-						if(fieldValue == '') {
-							alertMsg = fieldName + ' is missing';
-							break;
-						}
+					if(fieldValue == '') {
+						alertMsg = fieldName + ' is missing';
+						break;
+					}
+				}
 
-						if(fieldType == 4) {
-							fieldValue = convertDateToDBFormat(fieldValue);
+				if(fieldValue != '')
+				{
+					if(fieldID == 2) {
+						if(isNaN(fieldValue))
+						{
+							alertMsg = fieldName + ' is not a valid number';
+							break;
 						}
 					}
-					else if(fieldType == 4)
-					{
-						if(document.getElementById(fieldID).value == '') {
-							alertMsg = fieldName + ' is missing';
-							break;
-						}
-					}				
 				}
 
+				if(fieldType == 4) {
+					fieldValue = convertDateToDBFormat(fieldValue);
+				}
 				if(fieldValue != '') {
-					customFields += fieldID + "::" + fieldValue;
-				}
-
-				if(customFields != '') {
-					customFields += '<:|:>';
-				}
+					if(customFields != '') {
+						customFields += '<:|:>';
+					}
+					customFields += fieldID.split('-')[1] + "::" + fieldValue;					
+				}				
 			}			
 		}
 	}
@@ -497,144 +493,29 @@ function addOrUpdateProfile(val)
 	formPostData += '&isAnotherChurchMember=' + isAnotherChurchMember;
 	formPostData += '&isUpdate=' + isUpdate;	
 	formPostData += '&profileID=' + profileID;
-//	formPostData += '&myPhotoPath=' + document.getElementById('myPhotoPath');
-
-/*
-	var data = new FormData();
-	$.each(files, function(key, value)
-	{
-		data.append(key, value);
-	});
-	console.log(data);
-*/
-	var options = {
-		beforeSend: function() 
-		{
-			/*
-			document.getElementById('spanImportBtn').style.display = 'none';
-			document.getElementById('spanImportProg').style.display = '';
-
-			//$("#progress").show();
-			//clear everything
-			$("#bar").width('0%');
-			$("#message").html("");
-			$("#percent").html("0%");
-			*/
-			//alert("111111");
-		},
-		uploadProgress: function(event, position, total, percentComplete) 
-		{
-			//$("#bar").width(percentComplete+'%');
-			//$("#percent").html(percentComplete+'%');		
-			//alert("2222222");
-		},
-		success: function() 
-		{
-			//$("#bar").width('100%');
-			//$("#percent").html('100%');
-			//document.getElementById('spanImportProg').innerHTML = 'Import is in progress. Don\'t refresh the page. Please wait...';
-			alert("Progress started...");
-//			alert("sktgr");
-			$.ajax({
-				type:'POST',
-				url:serverFile,
-				data:formPostData,
-				async: false,
-				cache: false,
-				contentType: false,
-				processData: false,
-				success:addOrUpdateProfileResponse,
-				error:addOrUpdateProfileAjaxError
-			});
-
-		},
-		complete: function(response) 
-		{
-			//$("#message").html("<font color='green'>"+response.responseText+"</font>");
-			//document.getElementById('spanImportProg').innerHTML =  (response.responseText);
-			alert("Completed...");
-		},
-		error: function()
-		{
-			$("#message").html("<font color='red'> ERROR: unable to upload files</font>");
-			//alert("33333");
-
-		}
-	};
-
-	$("#profileForm").ajaxForm(options);
-
-	//var data;
-	//data = new FormData();
-    //data.append('file', $('#myPhotoPath').files[0]);
-
-	//var formData = new FormData($('#profileForm')[0]);
-	//console.log(formData);
-    //$.post($(this).attr("action"), formData, function() {
-      //  alert("success");
-    //});
-	//alert("failure");
-    //return false;
-
-/*
-	//SET YOUR AJAX OPTION  
-       var options = {   
-          target: serverFile,
-          beforeSubmit: function(formPostData, jqForm, options){  
-              //CODE BEFORE AJAX REQ SEND  
-          },  
-          success: function(responseText, statusText, xhr, $form){  
-              //CODE FOR AJAX REQ SUCCESS  
-          }  
-       };   
-               
-       //FIRE AJAX FORM SUBMIT AFTER APPLYING VALIDATION, IF ANY
-       //HERE NO VALIDATION CHECKED BELOW CODE FIRE DIRECTLY ON FORM SUBMIT
-       //IF YOU WANT TO USE VALIDATION ADD BELOW CODE IN VALIDATION SUCCESS BLOCK 
-       $('#profileForm').ajaxForm(options);  
- /*	
+	formPostData += '&customFields=' + customFields;
+	formPostData += '&smsNotification=' + smsNotification;
+	formPostData += '&emailNotification=' + emailNotification;
+	
 	$.ajax({
 		type:'POST',
 		url:serverFile,
-		data:data,
-		async: false,
-		cache: false,
-		contentType: false,
-		processData: false,
+		data:formPostData,
 		success:addOrUpdateProfileResponse,
-		error:addOrUpdateProfileAjaxError
-		success: function(data, textStatus, jqXHR)
-		{
-			if(typeof data.error === 'undefined')
-			{
-				// Success so call function to process the form
-				submitForm(event, data);
-			}
-			else
-			{
-				// Handle errors here
-				console.log('ERRORS: ' + data.error);
-			}
-		},
-		error: function(jqXHR, textStatus, errorThrown)
-		{
-			// Handle errors here
-			console.log('ERRORS: ' + textStatus);
-			// STOP LOADING SPINNER
-		}
+		error:addOrUpdateProfileAjaxError		
 	});
-*/		
 }
 
 function addOrUpdateProfileResponse(response)
 {
-	return true;
 	if(response) {
+		var profileID = response;
 		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'Profile has been updated successfully!':'Profile has been created successfully';
+		var msgToDisplay = (isUpdate)?'Profile has been updated successfully! ':'Profile has been created successfully ';
+		msgToDisplay += '<a href="#" onclick="showProfileDetails(' + profileID +');">View Profile</a>';
 		//listAllProfiles(1);
 		if(!isUpdate) {
-			GetAddOrEditProfileForm(0);
+			getAddOrEditProfileForm(1, profileID);
 		}
 	} else {
 		var alertType = 2;
@@ -643,6 +524,7 @@ function addOrUpdateProfileResponse(response)
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
 }
 
 function getAlertDiv(alertType, alertMsg, actionToDo, actionTakenMsg, actionCancelMsg, actionTakenCallBack, actionCancelCallBack)
@@ -746,8 +628,6 @@ function authenticateUser()
 		success:authenticateUserResponse,
 		error:HandleAjaxError
 	});
-	
-	return false;
 }
 
 function authenticateUserResponse(response)
@@ -780,6 +660,7 @@ function showProfileDetails(id)
 	profileID = id;
 	var formPostData = 'req=10&profile=' + profileID;
 	document.getElementById('backBtnDiv').style.display = '';
+	document.getElementById('alertRow').style.display = 'none';
 
 	$.ajax({
 		type:'POST',

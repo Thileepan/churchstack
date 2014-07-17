@@ -30,7 +30,7 @@ include "header.php";
         <ul class="nav nav-list">
           <li class="nav-header">Profile Management</li>
           <li id="listProfiles" onclick="listAllProfiles(1);" class="active"><a href="#">List Profiles</a></li>
-          <li id="addNewProfile" onclick="GetAddOrEditProfileForm(0);"><a href="#">Add New Profile</a></li>
+          <li id="addNewProfile" onclick="getAddOrEditProfileForm(0);"><a href="#">Add New Profile</a></li>
 		  <li id="importProfiles" onclick="getImportProfileForm();"><a href="#">Import Profiles</a></li>
 	</div>
 	<div class="span10">

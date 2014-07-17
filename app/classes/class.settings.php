@@ -125,7 +125,7 @@ class ProfileSettings
 		return $option_value;
 	}
 
-	public function getProfileAllCustomFields()
+	public function getAllCustomProfileFields()
 	{
 		$options = array();
 		if($this->db_conn)
@@ -145,7 +145,7 @@ class ProfileSettings
                         $display_order = $result->fields[7];
                         $options[] = array($field_id, $field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order);
                         
-						$result->MoveNext();                        
+						$result->MoveNext();
                     }
                 }
 				$result->Close();
@@ -154,23 +154,22 @@ class ProfileSettings
 		return $options;
 	}
 
-	public function getProfileCustomFieldDetails($field_id)
+	public function getProfileCustomFieldDetails($profile_id)
 	{
 		$field_details = array();
 		if($this->db_conn)
 		{
-			$result = $this->db_conn->Execute('select FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_OPTIONS, FIELD_HELP_MESSAGE, IS_REQUIRED, VALIDATION, DISPLAY_ORDER from PROFILE_CUSTOM_FIELDS where FIELD_ID=?', array($field_id));
+			$result = $this->db_conn->Execute('select FIELD_ID, FIELD_VALUE from PROFILE_CUSTOM_FIELD_VALUES where PROFILE_ID=?', array($profile_id));
            if($result) {
                 if(!$result->EOF) {
-                    $field_id = $result->fields[0];
-					$field_name = $result->fields[1];
-					$field_type = $result->fields[2];
-					$field_options = $result->fields[3];
-					$field_help_message = $result->fields[4];
-					$is_required = $result->fields[5];
-					$validation_string = $result->fields[6];
-					$display_order = $result->fields[7];
-					$field_details = array($field_id, $field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order);
+					while(!$result->EOF)
+					{
+						$field_id = $result->fields[0];
+						$field_value = $result->fields[1];
+						$field_details[] = array($field_id, $field_value);
+						
+						$result->MoveNext();
+					}
                 }
 				$result->Close();
             }

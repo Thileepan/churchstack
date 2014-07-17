@@ -280,7 +280,7 @@ else if($req == 8)
 {
 	//list profile custom fields
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
-	$field_details = $settings_obj->getProfileAllCustomFields();
+	$field_details = $settings_obj->getAllCustomProfileFields();
 
 	$field_type = array(1=>'Text', 'Number', 'Password', 'Date', 'Link/URL', 'Drop Down', 'Tick Box', 'Text Area');
 	
