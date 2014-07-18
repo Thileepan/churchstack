@@ -816,9 +816,15 @@ else if($req == 11)
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span2">';
-			$to_return .= '<img id="imgPreviewFamilyPhoto" src="'.$APPLICATION_PATH.'app/images/'.(($profile_photo_path != '')?$profile_photo_path:'photo_rounded.png').'" class="img-rounded" width="120" height="120">';
+			$to_return .= '<img id="imgPreviewFamilyPhoto" src="'.(($profile_photo_path != '')?substr($profile_photo_path, 3):'photo_rounded.png').'" class="img-rounded" width="120" height="120">';
 			$to_return .= '<BR>';
-			$to_return .= '<span style="text-align:center"><a href="#"><small>'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</small></a></span>';
+			//$to_return .= '<span style="text-align:center"><a href="#"><input type="file" id="filePath" name="filePath"/><small>'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</small></a></span>';
+			$to_return .= '<form id="profilePhotoForm" action="server/doserver.php?req=15" method="post" enctype="multipart/form-data">';
+			$to_return .= '<input type="file" id="profilePhotoPath" name="profilePhotoPath" style="visibility: hidden; width: 1px; height: 1px" multiple />
+<a href="" onclick="document.getElementById(\'profilePhotoPath\').click(); return false">'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</a>';
+			$to_return .= '<input type="hidden" name="profileID" id="profileID" value="'.$profile_id.'" /><BR>';
+			$to_return .= '<span id="spanImportBtn"><button class="btn btn-success btn-small" type="submit">Upload</button></span>';
+			$to_return .= '</form>';
 			$to_return .= '<BR><BR>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="span4">';
@@ -1020,5 +1026,54 @@ else if($req == 14)
 	unset($profiles_obj);
 	echo $status;
 	exit;
+}
+else if($req == 15)
+{
+	//upload images
+	$church_id = $_SESSION['churchID'];
+	$profile_id = $_POST['profileID'];
+
+	$is_family_photo = false;
+	$photo_location = '../uploads/';
+	if(!file_exists($photo_location)) {
+		mkdir($photo_location, 0777, true);
+	}
+	
+	if(isset($_FILES["profilePhotoPath"]))
+	{
+		if ($_FILES["profilePhotoPath"]["error"] > 0)
+		{
+			echo "Error: " . $_FILES["file"]["error"];
+		}
+		else
+		{
+
+			$profiles_obj = new Profiles($APPLICATION_PATH);
+
+			//getting the previous photo location to delete it after upload the new one
+			$previous_photo_location = $profiles_obj->getProfilePhotoLocation($profile_id, $is_family_photo);
+
+			//delete the old photo location from file system if exists
+			if($previous_photo_location != '') {
+				unlink($previous_photo_location);
+			}
+			
+			//Get uploaded file extension
+			$ext = pathinfo($_FILES["profilePhotoPath"]["name"], PATHINFO_EXTENSION);
+
+			//construct new photo location
+			$photo_location = $photo_location. 'image_'. $profile_id. '.' . $ext;
+
+			echo 'photo_location:'.$photo_location;
+
+			//move the uploaded file to uploads folder;
+			move_uploaded_file($_FILES["profilePhotoPath"]["tmp_name"], $photo_location);
+			
+			//update the new photo location in database
+			$profiles_obj->updateProfilePhotoLocation($profile_id, $is_family_photo, $photo_location);			
+
+			echo 'Uploaded successfully.';
+		}
+	}
 }
 ?>

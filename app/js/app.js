@@ -683,6 +683,7 @@ function showProfileDetailsResponse(response)
 
 function showProfileSummary(profileID)
 {
+	_profileID = profileID;
 	document.getElementById('profileDiv').className = 'tab-pane active';
 	document.getElementById('subscriptionDiv').className = 'tab-pane';
 	document.getElementById('harvestDiv').className = 'tab-pane';
@@ -704,6 +705,46 @@ function getProfileSummaryResponse(response)
 
 	$('#existFamilyHeadLink').tooltip();
 	$('#newFamilyHeadLink').tooltip();
+
+	var options = { 
+		beforeSend: function() 
+		{
+			//document.getElementById('spanImportBtn').style.display = 'none';
+			//document.getElementById('spanImportProg').style.display = '';
+
+			//$("#progress").show();
+			//clear everything
+			//$("#bar").width('0%');
+			//$("#message").html("");
+			//$("#percent").html("0%");
+		},
+		uploadProgress: function(event, position, total, percentComplete) 
+		{
+			//$("#bar").width(percentComplete+'%');
+			//$("#percent").html(percentComplete+'%');		
+		},
+		success: function() 
+		{
+			//$("#bar").width('100%');
+			//$("#percent").html('100%');
+			//document.getElementById('spanImportProg').innerHTML = 'Import is in progress. Don\'t refresh the page. Please wait...';
+			//alert("sktgr");
+			showProfileSummary(_profileID);
+
+		},
+		complete: function(response) 
+		{
+			$("#message").html("<font color='green'>"+response.responseText+"</font>");
+			document.getElementById('spanImportProg').innerHTML =  (response.responseText);
+		},
+		error: function()
+		{
+			$("#message").html("<font color='red'> ERROR: unable to upload files</font>");
+
+		}
+	};
+
+	$("#profilePhotoForm").ajaxForm(options);
 }
 
 function getImportProfileForm()

@@ -465,7 +465,7 @@ class Profiles
 		return false;
 	}
 
-	public function updateProfilePhoto($profile_id, $is_family_photo, $photo_location)
+	public function updateProfilePhotoLocation($profile_id, $is_family_photo, $photo_location)
 	{
 		if($this->db_conn)
 		{
@@ -480,6 +480,26 @@ class Profiles
 			}
 		}
 		return false;
+	}
+
+	public function getProfilePhotoLocation($profile_id, $is_family_photo)
+	{
+		$photo_location = '';
+		if($this->db_conn)
+		{
+			if($is_family_photo) {
+				$query = 'select FAMILY_PHOTO_LOCATION from PROFILE_DETAILS where PROFILE_ID=?';
+			} else {
+				$query = 'select PROFILE_PHOTO_LOCATION from PROFILE_DETAILS where PROFILE_ID=?';
+			}
+			$result = $this->db_conn->Execute($query, array($profile_id));
+			if($result) {
+				if(!$result->EOF) {
+					$photo_location = $result->fields[0];
+				}
+			}
+		}
+		return $photo_location;
 	}
 }
 ?>
