@@ -20,7 +20,7 @@ class Email
 	private $attachments = array();
 	private $APPLICATION_PATH;
 
-	public function __construct($APPLICATION_PATH)
+	public function __construct($APPLICATION_PATH, $FROM_ADDRESS_ID=0)
 	{
 		$this->APPLICATION_PATH = $APPLICATION_PATH;
 		include_once($this->APPLICATION_PATH . 'conf/config.php');
@@ -30,7 +30,7 @@ class Email
 		$this->setSMTPSettings();
 
 		//set FROM address
-		$this->setFromAddress();
+		$this->setFromAddress($FROM_ADDRESS_ID);
 	}
 
 	public function setSMTPSettings()
@@ -40,10 +40,24 @@ class Email
 		$this->password = SMTP_PASSWORD;
 	}
 
-	public function setFromAddress()
+	public function setFromAddress($FROM_ADDRESS_ID)
 	{
-		$this->from_address = FROM_ADDRESS;
-		$this->from_name = FROM_NAME;
+		if($FROM_ADDRESS_ID==EMAIL_FROM_SALES) {
+			$this->from_address = FROM_SALES_ADDRESS;
+			$this->from_name = FROM_SALES_NAME;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_SUPPORT) {
+			$this->from_address = FROM_SUPPORT_ADDRESS;
+			$this->from_name = FROM_SUPPORT_NAME;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_DONOTREPLY) {
+			$this->from_address = FROM_DONOTREPLY_ADDRESS;
+			$this->from_name = FROM_DONOTREPLY_NAME;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_INFO) {
+			$this->from_address = FROM_INFO_ADDRESS;
+			$this->from_name = FROM_INFO_NAME;
+		} else {
+			$this->from_address = FROM_INFO_ADDRESS;
+			$this->from_name = FROM_INFO_NAME;
+		}
 	}
 
 	public function setRecipients($recipients)
@@ -72,6 +86,9 @@ class Email
 
 	public function sendEmail()
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed";
 		$mail = new PHPMailer;
 
 		$mail->isSMTP();	// Set mailer to use SMTP
@@ -106,11 +123,17 @@ class Email
 
 		if(!$mail->send()) {
 			//TODO: Log the success/failure
-			echo 'Message could not be sent.';
-			echo 'Mailer Error: ' . $mail->ErrorInfo;
+			$to_return[0] = 0;
+			$to_return[1] = "Message sending failed with error : ".$mail->ErrorInfo;
+			//echo 'Message could not be sent.';
+			//echo 'Mailer Error: ' . $mail->ErrorInfo;
 		} else {
-			echo 'Message has been sent';
+			$to_return[0] = 1;
+			$to_return[1] = "Message has been sent";
+			//echo 'Message has been sent';
 		}
+
+		return $to_return;
 	}
 }
 

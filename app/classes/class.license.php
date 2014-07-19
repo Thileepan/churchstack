@@ -277,7 +277,7 @@ class License
 	public function writeInitialPurchaseReport($invoice_details_array, $invoiced_items_array, $is_refund)
 	{
 		@include_once($this->APPLICATION_PATH."classes/class.church.php");
-		//"$invoice_details_array" should be in the following order : array($billing_full_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, ...)
+		//"$invoice_details_array" should be in the following order : array($billing_full_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, $email, ...)
 		//"$invoiced_items_array" is a multidimentionsal array and every item in "$invoiced_items_array" should be like : array(plan_id, plan_name, plan_desc, plan_type, validity_period_text, validity_in_seconds, plan_cost, quantity, total_cost, is_autorenewal_enabled) ; //Other details will be filled in automatically here...
 		$billing_full_name = $invoice_details_array[0];
 		$billing_address = $invoice_details_array[1];
@@ -300,6 +300,7 @@ class License
 		$payment_gateway = $invoice_details_array[18];
 		$payment_mode = $invoice_details_array[19];
 		$ip_address = $invoice_details_array[20];
+		$email = $invoice_details_array[21];
 
 		$invoice_date = time();
 		$church_obj = new Church($this->APPLICATION_PATH);
@@ -326,7 +327,7 @@ class License
 				$col_values_array[5] = $this->church_id;
 				$col_values_array[6] = $church_name;
 				$col_values_array[7] = $this->user_id;
-				$col_values_array[8] = $this->email_id;
+				$col_values_array[8] = $email;//$this->email_id;
 				$col_values_array[9] = $billing_full_name;
 				$col_values_array[10] = $billing_address;
 				$col_values_array[11] = $other_address;
@@ -458,15 +459,36 @@ class License
 				if($purchase_status == 1) {//Check this place once again....
 					$toReturn[0] = 0;
 					$toReturn[1] = "There was some error when trying to apply license as per the products purchased";
-					$inv_id_result = $this->getInvoiceIDFromUniqueHash($unique_hash);
-					if($inv_id_result[0]==1)
+					//$inv_id_result = $this->getInvoiceIDFromUniqueHash($unique_hash);
+					$inv_rep_result = $this->getInvoiceReportFromUniqueHash($unique_hash);
+					if($inv_rep_result[0]==1)
 					{
-						$invoice_id = $inv_id_result[1];
+						$invoice_id = $inv_rep_result[1][0];
 						$invoiced_items = $this->getInvoicedItemsList($invoice_id);
 						if($invoiced_items[0]==1) {//Success case
+							$purchase_details_arr = array();
+							$purchase_details_arr["invoice_id"] = $inv_rep_result[1][0];
+							$purchase_details_arr["invoice_date"] = date("d M Y, h:i A", strtotime($inv_rep_result[1][1]));
+							$purchase_details_arr["transaction_id"] = $inv_rep_result[1][2];
+							$purchase_details_arr["email"] = $inv_rep_result[1][8];
+							$purchase_details_arr["billing_name"] = $inv_rep_result[1][9];
+							$purchase_details_arr["billing_addr"] = $inv_rep_result[1][10];
+							$purchase_details_arr["subtotal"] = $inv_rep_result[1][14];
+							$purchase_details_arr["discount_amount"] = $inv_rep_result[1][17];
+							$purchase_details_arr["net_total"] = $inv_rep_result[1][24];
+							$purchase_details_arr["payment_gateway"] = $inv_rep_result[1][27];
+							$purchase_details_arr["payment_mode"] = $inv_rep_result[1][28];
+							$purchase_details_arr["invoiced_items_array"] = array();
 							$is_atleast_one_update_successful = 0;
 							for($p=0; $p < COUNT($invoiced_items[1]); $p++)
 							{
+								$curr_item_array = array();
+								$curr_item_array["item_name"] = $invoiced_items[1][$p][3];
+								$curr_item_array["item_desc"] = $invoiced_items[1][$p][4];
+								$curr_item_array["item_unit_price"] = $invoiced_items[1][$p][8];
+								$curr_item_array["item_quantity"] = $invoiced_items[1][$p][9];
+								$curr_item_array["item_total"] = $invoiced_items[1][$p][10];
+								$purchase_details_arr["invoiced_items_array"][] = $curr_item_array;
 								$plan_id = $invoiced_items[1][$p][2];
 								$plan_type = $invoiced_items[1][$p][5];
 								if($this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date)) {
@@ -478,6 +500,8 @@ class License
 							if($is_atleast_one_update_successful==1 && $coupon_code_used != "") {
 								$this->terminateCouponCode($coupon_code_used, 0);//Terminate only if code is specific to a church
 							}
+
+							$this->sendInvoiceEmail($purchase_details_arr);
 
 							if($is_atleast_one_update_successful==1) {
 								$toReturn[0] = 1;
@@ -840,6 +864,67 @@ class License
 		return $to_return;
 	}
 	
+	public function getInvoiceReportFromUniqueHash($unique_hash)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to get the invoice report";
+		if($this->db_conn)
+		{
+			if(trim($unique_hash) != "") {
+				$query = 'select INVOICE_ID, INVOICE_DATE, TRANSACTION_ID, REFERENCE_ID, UNIQUE_HASH, CHURCH_ID, CHURCH_NAME, USER_ID, EMAIL, BILLING_NAME, BILLING_ADDRESS, OTHER_ADDRESS, PHONE, CURRENCY_CODE, SUBTOTAL, ADDITIONAL_CHARGE, DISCOUNT_PERCENTAGE, DISCOUNT_AMOUNT, TAX_PERCENTAGE, TAX_AMOUNT, TAX_2_PERCENTAGE, TAX_2_AMOUNT, VAT_PERCENTAGE, VAT_AMOUNT, NET_TOTAL, COUPON_CODE, INVOICE_NOTES, PAYMENT_GATEWAY, PAYMENT_MODE, IP_ADDRESS, PURCHASE_STATUS_CODE, PURCHASE_STATUS_REMARKS, PG_STATUS_CODE, PG_STATUS_REMARKS, LAST_UPDATE_DATE, IS_REFUND from INVOICE_REPORT where UNIQUE_HASH=? limit 1';
+				$result = $this->db_conn->Execute($query, array(trim($unique_hash)));
+				if($result) {
+					if(!$result->EOF) {
+						$invoice_details = array();
+						$invoice_id = $result->fields[0];
+						$invoice_date = $result->fields[1];
+						$transaction_id = $result->fields[2];
+						$reference_id = $result->fields[3];
+						$unique_hash = $result->fields[4];
+						$church_id = $result->fields[5];
+						$church_name = $result->fields[6];
+						$user_id = $result->fields[7];
+						$email = $result->fields[8];
+						$billing_name = $result->fields[9];
+						$billing_address = $result->fields[10];
+						$other_address = $result->fields[11];
+						$phone = $result->fields[12];
+						$currency_code = $result->fields[13];
+						$subtotal = $result->fields[14];
+						$additional_charge = $result->fields[15];
+						$discount_percentage = $result->fields[16];
+						$discount_amount = $result->fields[17];
+						$tax_percentage = $result->fields[18];
+						$tax_amount = $result->fields[19];
+						$tax_2_percentage = $result->fields[20];
+						$tax_2_amount = $result->fields[21];
+						$vat_percentage = $result->fields[22];
+						$vat_amount = $result->fields[23];
+						$net_total = $result->fields[24];
+						$coupon_code = $result->fields[25];
+						$invoice_notes = $result->fields[26];
+						$payment_gateway = $result->fields[27];
+						$payment_mode = $result->fields[28];
+						$ip_address = $result->fields[29];
+						$purchase_status_code = $result->fields[30];
+						$purchase_status_remarks = $result->fields[31];
+						$pg_status_code = $result->fields[32];
+						$pg_status_remarks = $result->fields[33];
+						$last_update_date = $result->fields[34];
+						$is_refund = $result->fields[35];
+
+						$invoice_details = array($invoice_id, $invoice_date, $transaction_id, $reference_id, $unique_hash, $church_id, $church_name, $user_id, $email, $billing_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, $purchase_status_code, $purchase_status_remarks, $pg_status_code, $pg_status_remarks, $last_update_date, $is_refund);
+
+						$to_return[0] = 1;
+						$to_return[1] = $invoice_details;
+					}
+				}
+			}
+		}
+		return $to_return;
+	}
+
 	public function getAllCouponsList($filterType=0)
 	{
 		/** /
@@ -1003,6 +1088,80 @@ class License
 		}
 
 		return $toReturn;
+	}
+
+	public function sendInvoiceEmail($purchase_details_arr)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$inv_template_file = $this->APPLICATION_PATH."templates/email/invoice.html";
+		$invoice_report = "";
+		if(file_exists($inv_template_file))
+		{
+			$invoice_report = trim(file_get_contents($inv_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the invoice report";
+		}
+
+		//Prepare the html string for invoiced items
+		$invoiced_items_row = "";
+		$single_item_row = "";
+		$single_item_comm_start = "<!--ITEM_ROW_START";
+		$single_item_comm_end = "ITEM_ROW_END-->";
+		$single_item_html_start_pos = strpos($invoice_report, $single_item_comm_start);
+		$single_item_html = substr($invoice_report, $single_item_html_start_pos+strlen($single_item_comm_start));
+		$single_item_html_end_pos = strpos($single_item_html, $single_item_comm_end);
+		$single_item_html = substr($single_item_html, 0, strlen($single_item_html)-(strlen($single_item_html) - $single_item_html_end_pos));
+		$single_item_row = $single_item_html;
+		for($k=0; $k < COUNT($purchase_details_arr["invoiced_items_array"]); $k++)
+		{
+			$single_item_row = $single_item_html;
+			$single_item_row = str_replace("{{ITEM_NAME}}", $purchase_details_arr["invoiced_items_array"][$k]["item_name"], $single_item_row);
+			$single_item_row = str_replace("{{ITEM_DESC}}", $purchase_details_arr["invoiced_items_array"][$k]["item_desc"], $single_item_row);
+			$single_item_row = str_replace("{{ITEM_UNIT_PRICE}}", $purchase_details_arr["invoiced_items_array"][$k]["item_unit_price"], $single_item_row);
+			$single_item_row = str_replace("{{ITEM_QUANTITY}}", $purchase_details_arr["invoiced_items_array"][$k]["item_quantity"], $single_item_row);
+			$single_item_row = str_replace("{{ITEM_TOTAL}}", $purchase_details_arr["invoiced_items_array"][$k]["item_total"], $single_item_row);
+			$invoiced_items_row .= $single_item_row;
+		}
+
+		//Replacing place holder with values
+		$invoice_report = str_replace("<!--ALL_ITEMS_ROWS-->", $invoiced_items_row, $invoice_report);
+		$invoice_report = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $invoice_report);
+		$invoice_report = str_replace("{{CUSTOMER_NAME}}", $purchase_details_arr["billing_name"], $invoice_report);
+		$invoice_report = str_replace("{{BILLING_ADDRESS}}", $purchase_details_arr["billing_addr"], $invoice_report);
+		$invoice_report = str_replace("{{CUSTOMER_EMAIL}}", $purchase_details_arr["email"], $invoice_report);
+		$invoice_report = str_replace("{{ORDER_NUMBER}}", $purchase_details_arr["invoice_id"], $invoice_report);
+		$invoice_report = str_replace("{{TRANSACTION_ID}}", $purchase_details_arr["transaction_id"], $invoice_report);
+		$invoice_report = str_replace("{{ORDER_DATE}}", $purchase_details_arr["invoice_date"], $invoice_report);
+		$invoice_report = str_replace("{{AMOUNT_PAID}}", $purchase_details_arr["net_total"], $invoice_report);
+		$invoice_report = str_replace("{{SUBTOTAL}}", $purchase_details_arr["subtotal"], $invoice_report);
+		$invoice_report = str_replace("{{DISCOUNT}}", $purchase_details_arr["discount_amount"], $invoice_report);
+		$invoice_report = str_replace("{{NET_TOTAL}}", $purchase_details_arr["net_total"], $invoice_report);
+		$invoice_report = str_replace("{{PAYMENT_GATEWAY}}", $purchase_details_arr["payment_gateway"], $invoice_report);
+		$invoice_report = str_replace("{{PAYMENT_MODE}}", $purchase_details_arr["payment_mode"], $invoice_report);
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
+		$recipients = array();
+		$recipients['to_address'] = $purchase_details_arr["email"];
+		$subject = "Payment Received - Your Invoice Details";
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($invoice_report);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Invoice report sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send invoice report to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
 	}
 }
 

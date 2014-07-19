@@ -332,7 +332,7 @@ class Users
 							return $toReturn;
 						}
 
-						$email_obj = new Email($this->APPLICATION_PATH, "user_password_reset");
+						$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
 						$email_result = $email_obj->sendPasswordResetEmail($email, $pwd_reset_url);
 						if($email_result[0]==1) {
 							$toReturn[0] = 1;
