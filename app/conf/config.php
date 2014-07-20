@@ -3,6 +3,8 @@
 define('APP_VERSION', '1.0');
 define('APP_BUILD_NUMBER', '20140118');
 define('PRODUCT_NAME', 'ChurchStack');
+define('PRODUCT_WEBSITE', 'ChurchStack.com');
+define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
@@ -30,4 +32,5 @@ define('FROM_DONOTREPLY_ADDRESS', 'do-not-reply@churchstack.com');
 define('FROM_DONOTREPLY_NAME', 'ChurchStack.com');
 define('FROM_INFO_ADDRESS', 'info@churchstack.com');
 define('FROM_INFO_NAME', 'ChurchStack.com');
+define('SUPPORT_EMAIL', 'support@churchstack.com');
 ?>

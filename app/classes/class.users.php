@@ -277,6 +277,13 @@ class Users
 						$toReturn[0] = 1;
 						$toReturn[1] = "Signup is successful!";
 						$toReturn[2] = array("user_id"=>$user_id, "church_id"=>$church_id, "sharded_database"=>$sharded_db_name);
+						$signup_details = array();
+						$signup_details["customer_email"] = $email;
+						$signup_details["first_name"] = $first_name;
+						$signup_details["last_name"] = $last_name;
+						$signup_details["church_name"] = $church_name;
+						$signup_details["church_addr"] = $church_location;
+						$welcome_email_result = $this->sendSignupWelcomeEmail($signup_details);
 						return $toReturn;
 					}
 					else
@@ -390,6 +397,53 @@ class Users
 				$toReturn[1] = "Invalid email & key pair. Please recheck the URL you have loaded.";
 			}
 		}
+	}
+
+	public function sendSignupWelcomeEmail($signup_details)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$welcome_template_file = $this->APPLICATION_PATH."templates/email/welcome.html";
+		$welcome_letter = "";
+		if(file_exists($welcome_template_file))
+		{
+			$welcome_letter = trim(file_get_contents($welcome_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the welcome email";
+		}
+
+		//Replacing place holder with values
+		$welcome_letter = str_replace("{{CUSTOMER_EMAIL}}", $signup_details["customer_email"], $welcome_letter);
+		$welcome_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $welcome_letter);
+		$welcome_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $welcome_letter);
+		$welcome_letter = str_replace("{{FIRST_NAME}}", $signup_details["first_name"], $welcome_letter);
+		$welcome_letter = str_replace("{{LAST_NAME}}", $signup_details["last_name"], $welcome_letter);
+		$welcome_letter = str_replace("{{CHURCH_NAME}}", $signup_details["church_name"], $welcome_letter);
+		$welcome_letter = str_replace("{{CHURCH_ADDRESS}}", $signup_details["church_addr"], $welcome_letter);
+		$welcome_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $welcome_letter);
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, FROM_INFO_ADDRESS);
+		$recipients = array();
+		$recipients['to_address'] = $signup_details["customer_email"];
+		$subject = "Welcome to ".PRODUCT_WEBSITE;
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($welcome_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Welcome email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send welcome email to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
 	}
 }
 ?>
