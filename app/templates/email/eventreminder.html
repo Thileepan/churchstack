@@ -1,0 +1,104 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<style type="text/css">
+			* { margin: 0; padding: 0; }
+			body {background-color :#FFFFFF; background-image :none; font-family: "Trebuchet MS", Helvetica, sans-serif; color:#000000; text-decoration : none; -moz-box-sizing:border-box; box-sizing:border-box; margin: 0px; padding: 3px; }
+			.black-font-10px {font-family: Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-decoration : none;}
+			.black-font-14px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 14px; color:#000000; text-decoration : none;}
+			.black-font-15px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 15px; color:#000000; text-decoration : none;}
+			.gray-font-14px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 14px; color:gray; text-decoration : none;}
+			.borderless-table { border-collapse: collapse; border: 0; padding: 5px;}
+			.borderless-table-col { border-collapse: collapse; border: 0; padding: 5px;}
+			.order-summary-table { border-collapse: collapse; border: 1px solid black; padding: 5px;}
+			.order-summary-row { border: 1px solid black; padding: 5px;}
+			.order-summary-left-col { text-align: left; background: #eee;  padding: 5px;}
+			.order-summary-right-col { text-align: left; padding: 5px; border: 1px solid black;}
+			.order-items-table {border-collapse: collapse; width: 100%; margin: 25px 0 0 0; border: 1px solid black; }
+			.order-items-table-header-row { border: 1px solid black; padding: 5px;}
+			.order-items-header-col { border: 1px solid black; padding: 5px; background: #eee; }
+			.order-item-row{ border: 1px solid black; padding: 5px; vertical-align: middle; }
+			.order-item-col{ border: 1px solid black; padding: 5px; vertical-align: middle; }
+			.order-item-subtotal-text { border: 1px solid black; padding: 5px; text-align: left; }
+			.order-item-subtotal-value { border: 1px solid black; padding: 5px; text-align: left; }
+			.order-item-nettotal-text { border: 1px solid black; padding: 5px; text-align: left; background: #eee; font-weight:bold;}
+			.order-item-nettotal-value { border: 1px solid black; padding: 5px; text-align: left; font-weight:bold; background: #eee; }
+			.w10p {width:10%}
+			.w15p {width:15%}
+			.w20p {width:20%}
+			.w30p {width:30%}
+			.w40p {width:40%}
+		</style>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Event Reminder - {{CHURCH_NAME}}</title>
+	</head>
+
+	<body width="100%">
+		<div width="100%">
+			<div style="height:20px;"></div>
+			<table class="borderless-table" align="center" valign="top" width="100%">
+				<tr>
+					<td align="center" width="100%">
+						<div width="100%">
+							<table class="borderless-table" align="left" valign="top" width="100%">
+								<tr>
+									<td align="left">
+										<div style="float:left;">
+											<table class="borderless-table" align="left">
+												<tbody>
+													<tr>
+														<td class="borderless-table-col gray-font-14px" style="vertical-align:top;" colspan="2"><h3>Reminder : {{EVENT_TITLE}}<h3></td>
+													</tr>
+													<tr>
+														<td class="borderless-table-col gray-font-14px" style="vertical-align:top; text-align:left; width:5%;" nowrap>Description</td>
+														<td class="borderless-table-col black-font-14px" style="vertical-align:top; text-align:left;" nowrap>{{EVENT_DESC}}</td>
+													</tr>
+													<tr>
+														<td class="borderless-table-col gray-font-14px" style="vertical-align:top; text-align:left;" nowrap>Date & Time</td>
+														<td class="borderless-table-col black-font-14px" style="vertical-align:top; text-align:left;" nowrap>{{EVENT_DATE_AND_TIME}}</td>
+													</tr>
+													<tr>
+														<td class="borderless-table-col gray-font-14px" style="vertical-align:top; text-align:left;" nowrap>Place</td>
+														<td class="borderless-table-col black-font-14px" style="vertical-align:top; text-align:left;" nowrap>{{EVENT_PLACE}}</td>
+													</tr>
+													<tr>
+														<td class="borderless-table-col gray-font-14px"  style="vertical-align:top; text-align:left;" nowrap>Organizers</td>
+														<td class="borderless-table-col"  style="vertical-align:top; text-align:left;" nowrap>
+															<table class="borderless-table" style="padding: 0px;" align="left" valign="top">
+															<!--ALL_ORGANIZERS_ROWS-->
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td class="borderless-table-col gray-font-14px" style="vertical-align:top;" nowrap>Attendees</td>
+														<td class="borderless-table-col" style="vertical-align:top;">
+															<table class="borderless-table" style="padding: 0px;" align="left" valign="top">
+															<!--ALL_ATTENDEES_ROWS-->
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
+<!--ORGANIZER_ROW_START <tr>
+	<td class="borderless-table-col" style="padding: 0px;" align="left" width="1" valign="middle">
+		<span style="font-family:Courier New,monospace; font-size:25px;color:#222">&middot;</span>
+	</td>
+	<td class="borderless-table-col black-font-14px" style="padding: 0px;" align="left">{{EVENT_ORGANIZER}}</td>
+</tr> ORGANIZER_ROW_END-->
+<!--ATTENDEE_ROW_START <tr>
+	<td class="borderless-table-col" style="padding: 0px;" align="left" width="1" valign="middle">
+		<span style="font-family:Courier New,monospace; font-size:25px;color:#222">&middot;</span>
+	</td>
+	<td class="borderless-table-col black-font-14px" style="padding: 0px;" align="left">{{EVENT_ATTENDEE}}</td>
+</tr> ATTENDEE_ROW_END-->
