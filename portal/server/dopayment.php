@@ -20,8 +20,36 @@ if($req == 1)//List All Payments
 	for($c=0; $c < COUNT($purchase_list[1]); $c++)
 	{
 		$curr_purchase = $purchase_list[1][$c];
-		$view_btn_html = '<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#paymentDetailsModal" onclick="loadPaymentData('.$curr_purchase[0].');">View</button>';
-		$to_return['aaData'][] = array($curr_purchase[0], $curr_purchase[2], $curr_purchase[3], $curr_purchase[5], $curr_purchase[8], $curr_purchase[14], $curr_purchase[17], $curr_purchase[24], $curr_purchase[25], $curr_purchase[27], $curr_purchase[31], $curr_purchase[33], $curr_purchase[34], $curr_purchase[35], $view_btn_html);
+		//$view_btn_html = '<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#paymentDetailsModal" onclick="loadPaymentData('.$curr_purchase[0].');">View</button>';
+		$trans_id_html = '<a style="cursor: pointer;" data-toggle="modal" data-target="#paymentDetailsModal" onclick="loadPaymentData('.$curr_purchase[0].');">'.$curr_purchase[2].'</a>';
+		$invoice_id_html = '<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#paymentDetailsModal" onclick="loadPaymentData('.$curr_purchase[0].');">'.$curr_purchase[0].'</button>';
+
+		$is_trans_id_available = 0;
+		if(trim($curr_purchase[2]) != "") {
+			$is_trans_id_available = 1;
+		}
+		$action_btn_html = '<div class="btn-group">';
+			$action_btn_html .= '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>';
+			$action_btn_html .= '<ul class="dropdown-menu" role="menu">';
+				if($is_trans_id_available==1) {
+					$action_btn_html .= '<li><a href="#" data-toggle="modal" data-target="#emailInvoiceModal" onclick="paymentActions(1, '.$curr_purchase[0].', \''.$curr_purchase[8].'\');">Email Invoice</a></li>';
+				} else {
+					$action_btn_html .= '<li class="disabled"><a href="#">Email Invoice</a></li>';
+				}
+				//$action_btn_html .= '<li><a href="#">Another action</a></li>';
+				//$action_btn_html .= '<li><a href="#">Something else here</a></li>';
+				/** /
+				$action_btn_html .= '<li class="divider"></li>';
+				if($eligible_for_reactivation==1) {
+					$action_btn_html .= '<li><a href="#" onclick="couponActions(2, '.$curr_coupon[0].',\''.$curr_coupon[1].'\');">Reactivate</a></li>';
+				} else {
+					$action_btn_html .= '<li class="disabled"><a href="#">Reactivate</a></li>';
+				}
+				/**/
+			$action_btn_html .= '</ul>';
+		$action_btn_html .= '</div>';
+
+		$to_return['aaData'][] = array($invoice_id_html, $trans_id_html, $curr_purchase[3], $curr_purchase[5], $curr_purchase[8], $curr_purchase[14], $curr_purchase[17], $curr_purchase[24], $curr_purchase[25], $curr_purchase[27], $curr_purchase[31], $curr_purchase[33], $curr_purchase[34], $curr_purchase[35], $action_btn_html);
 
 	}
 	//insert into invoice_report values(0, CURDATE(), 'JNYYSH7923', 'BHBHBH999',  '98huhpwe', 2, 'CH shbd', 2, 'nes@wds.sd', 'Bill ane', 'bill add', 'otuer add', '21212', 'USD', 232, 2, 1.22, 4, 12.54, 5, 1.87, 6, 4.50, 8, 432, 'hiuty', 'notessd', 'Paypal', 'cred card', '1201.121.12.1', 1, 'Sucess', 'X8172', 'PGSUccc', CURDATE(), 0);
@@ -146,6 +174,23 @@ else if($req == 2)//get details of a payment
 		$to_return .= '</div>';
 	}
 	$to_return = array("rsno"=>1, "rslt"=>$to_return);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 4)//Email an Invoice
+{
+	$invoice_id = trim($_REQUEST['invoice_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$email = trim($_REQUEST['email']);
+	$lic_obj = new License($APPLICATION_PATH."app/");
+	$result_data = $lic_obj->prepareAndSendOrderDetailsEmail($invoice_id, $email);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);
