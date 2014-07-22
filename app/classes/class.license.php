@@ -466,6 +466,7 @@ class License
 						$invoice_id = $inv_rep_result[1][0];
 						$invoiced_items = $this->getInvoicedItemsList($invoice_id);
 						if($invoiced_items[0]==1) {//Success case
+							/** /
 							$purchase_details_arr = array();
 							$purchase_details_arr["invoice_id"] = $inv_rep_result[1][0];
 							$purchase_details_arr["invoice_date"] = date("d M Y, h:i A", strtotime($inv_rep_result[1][1]));
@@ -479,9 +480,11 @@ class License
 							$purchase_details_arr["payment_gateway"] = $inv_rep_result[1][27];
 							$purchase_details_arr["payment_mode"] = $inv_rep_result[1][28];
 							$purchase_details_arr["invoiced_items_array"] = array();
+							/**/
 							$is_atleast_one_update_successful = 0;
 							for($p=0; $p < COUNT($invoiced_items[1]); $p++)
 							{
+								/** /
 								$curr_item_array = array();
 								$curr_item_array["item_name"] = $invoiced_items[1][$p][3];
 								$curr_item_array["item_desc"] = $invoiced_items[1][$p][4];
@@ -489,6 +492,7 @@ class License
 								$curr_item_array["item_quantity"] = $invoiced_items[1][$p][9];
 								$curr_item_array["item_total"] = $invoiced_items[1][$p][10];
 								$purchase_details_arr["invoiced_items_array"][] = $curr_item_array;
+								/**/
 								$plan_id = $invoiced_items[1][$p][2];
 								$plan_type = $invoiced_items[1][$p][5];
 								if($this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date)) {
@@ -501,7 +505,7 @@ class License
 								$this->terminateCouponCode($coupon_code_used, 0);//Terminate only if code is specific to a church
 							}
 
-							$this->sendInvoiceEmail($purchase_details_arr);
+							$this->prepareAndSendOrderDetailsEmail($invoice_id, "");
 
 							if($is_atleast_one_update_successful==1) {
 								$toReturn[0] = 1;
@@ -1090,7 +1094,7 @@ class License
 		return $toReturn;
 	}
 
-	public function sendInvoiceEmail($purchase_details_arr)
+	public function sendInvoiceEmail($purchase_details_arr, $target_email)
 	{
 		@include_once($this->APPLICATION_PATH."classes/class.email.php");
 		$to_return = array();
@@ -1148,7 +1152,7 @@ class License
 		//Set and Send Email		
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
-		$recipients['to_address'] = $purchase_details_arr["email"];
+		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $purchase_details_arr["email"]);
 		$subject = "Payment Received - Your Invoice Details";
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
@@ -1161,6 +1165,63 @@ class License
 			$to_return[0] = 0;
 			$to_return[1] = "Unable to send invoice report to the specified email address. ".$email_result[1];
 		}
+		return $to_return;
+	}
+
+	public function prepareAndSendOrderDetailsEmail($invoice_id, $target_email="")
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some problem while preparing the invoice report and emailing it to the specified recipient";
+		$inv_rep_result = $this->getAllPurchaseReports($invoice_id);
+		if($inv_rep_result[0]==1)
+		{
+			$purchase_details_arr = array();
+			$purchase_details_arr["invoice_id"] = $inv_rep_result[1][0][0];
+			$purchase_details_arr["invoice_date"] = date("d M Y, h:i A", strtotime($inv_rep_result[1][0][1]));
+			$purchase_details_arr["transaction_id"] = $inv_rep_result[1][0][2];
+			$purchase_details_arr["email"] = $inv_rep_result[1][0][8];
+			$purchase_details_arr["billing_name"] = $inv_rep_result[1][0][9];
+			$purchase_details_arr["billing_addr"] = $inv_rep_result[1][0][10];
+			$purchase_details_arr["subtotal"] = $inv_rep_result[1][0][14];
+			$purchase_details_arr["discount_amount"] = $inv_rep_result[1][0][17];
+			$purchase_details_arr["net_total"] = $inv_rep_result[1][0][24];
+			$purchase_details_arr["payment_gateway"] = $inv_rep_result[1][0][27];
+			$purchase_details_arr["payment_mode"] = $inv_rep_result[1][0][28];
+			$purchase_details_arr["invoiced_items_array"] = array();
+
+			$invoiced_items = $this->getInvoicedItemsList($invoice_id);
+			if($invoiced_items[0]==1)
+			{
+				for($p=0; $p < COUNT($invoiced_items[1]); $p++)
+				{
+					$curr_item_array = array();
+					$curr_item_array["item_name"] = $invoiced_items[1][$p][3];
+					$curr_item_array["item_desc"] = $invoiced_items[1][$p][4];
+					$curr_item_array["item_unit_price"] = $invoiced_items[1][$p][8];
+					$curr_item_array["item_quantity"] = $invoiced_items[1][$p][9];
+					$curr_item_array["item_total"] = $invoiced_items[1][$p][10];
+					$purchase_details_arr["invoiced_items_array"][] = $curr_item_array;
+				}
+				$emailing_result = $this->sendInvoiceEmail($purchase_details_arr, $target_email);
+				if($emailing_result[0]==1) {
+					$to_return[0] = 1;
+					$to_return[1] = "Invoice report emailed successfully to the recipient";
+				} else {
+					$to_return = $emailing_result;
+				}
+			}
+			else
+			{
+				$to_return = $invoiced_items;
+			}
+		}
+		else
+		{
+			$to_return = $inv_rep_result;
+		}
+
 		return $to_return;
 	}
 }
