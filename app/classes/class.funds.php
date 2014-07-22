@@ -11,7 +11,7 @@ class Funds
 
 		//intialize database connection
         include_once($this->APPLICATION_PATH . 'db/dbutil.php');
-		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, false);
+		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, true);
 		if($conn_obj[0] == 0) {
             $this->db_conn = $conn_obj[1];
         }
@@ -112,7 +112,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'update CONTRIBUTION_SPLIT_DETAILS set CONTRIBUTION_ID=?, FUND_ID=?, AMOUNT=?, NOTES=? where CONTRIBUTION_SPLIT_ID=? and CONTRIBUTION_ID=?;
+			$query = 'update CONTRIBUTION_SPLIT_DETAILS set CONTRIBUTION_ID=?, FUND_ID=?, AMOUNT=?, NOTES=? where CONTRIBUTION_SPLIT_ID=? and CONTRIBUTION_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_id, $fund_id, $amount, $notes, $contribution_split_id));
 			if($result) {
 				return true;

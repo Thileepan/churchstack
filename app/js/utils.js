@@ -11,6 +11,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 2) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "active";
@@ -22,6 +23,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 3) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -33,6 +35,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 4) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -44,6 +47,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 5) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -55,6 +59,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 6) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -66,6 +71,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboardText').className = "label label-info";
 		document.getElementById('mdashboardText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 7) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -77,6 +83,7 @@ function menuLinkClicked(menuID)
 		//document.getElementById('mharvestText').className = "label label-info";
 		//document.getElementById('mharvestText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
 	} else if(menuID == 8) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
@@ -86,8 +93,21 @@ function menuLinkClicked(menuID)
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "active";
+		document.getElementById('mfunds').className = "";
 		document.getElementById('mgroupsText').className = "label label-info";
 		document.getElementById('mgroupsText').setAttribute("style", "color:white;font-weight:bold;");
+	} else if(menuID == 9) {
+		document.getElementById('mhome').className = "";
+		document.getElementById('msubscription').className = "";
+		document.getElementById('mevents').className = "";
+		document.getElementById('msettings').className = "";
+		document.getElementById('mreports').className = "";
+		document.getElementById('mdashboard').className = "";
+		//document.getElementById('mharvest').className = "";
+		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "active";
+		document.getElementById('mfundsText').className = "label label-info";
+		document.getElementById('mfundsText').setAttribute("style", "color:white;font-weight:bold;");
 	}
 }
 
