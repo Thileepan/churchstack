@@ -44,6 +44,7 @@ function getDatabaseConnection($APPLICATION_PATH, $connectShardDB=false)
 
 function createShardedDB($APPLICATION_PATH, $db_name)
 {
+	$APPLICATION_PATH = str_replace("\\","/",$APPLICATION_PATH);
 	$to_return = array();
 	if(trim($db_name) == "") {
 		$to_return[0] = 0;
