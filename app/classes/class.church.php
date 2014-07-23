@@ -29,8 +29,8 @@ class Church
 		{
 			$curr_time = time();
 			$currency_id = 1;//CHANGE THIS LATER
-			$church_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000)));
-			$sharded_db_unique_part = md5($church_unique_hash);
+			$church_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000).rand(1, 10000)));
+			$sharded_db_unique_part = md5($church_unique_hash.rand(1, 10000));
 			$sharded_database = 'CS_'.$sharded_db_unique_part;
 			
 			$church_id = -1;
@@ -174,6 +174,7 @@ class Church
 				2 => list trial expired churches alone
 				3 => list license expired churches alone
 				4 => list paid and active churches alone
+				5 => list On-Trial or (Paid & Active) churches
 		/**/
 		$toReturn = array();
 		$all_churches = array();
@@ -190,6 +191,8 @@ class Church
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1';
 		   } else if($filterType==4) {
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1';
+		   } else if($filterType==5) {
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and (ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1)';
 		   }
 		   $result = $this->db_conn->Execute($query);
             

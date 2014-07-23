@@ -428,7 +428,7 @@ class Users
 		$welcome_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $welcome_letter);
 
 		//Set and Send Email		
-		$email_obj = new Email($this->APPLICATION_PATH, FROM_INFO_ADDRESS);
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
 		$recipients = array();
 		$recipients['to_address'] = $signup_details["customer_email"];
 		$subject = "Welcome to ".PRODUCT_WEBSITE;

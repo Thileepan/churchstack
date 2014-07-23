@@ -1,6 +1,6 @@
 <?php
 
-function getDatabaseConnection($APPLICATION_PATH, $connectShardDB=false)
+function getDatabaseConnection($APPLICATION_PATH, $connectShardDB=false, $shardedDBName="")
 {
 	//error_reporting(E_ALL);
 	//ini_set("display_errors", "On");
@@ -26,7 +26,7 @@ function getDatabaseConnection($APPLICATION_PATH, $connectShardDB=false)
 			$dsName = (($dsName == 'localhost')? php_uname('n'):$dsName);
 		}
 		session_start();
-		$db_name = (($connectShardDB)?$_SESSION['shardedDB']:DB_NAME);
+		$db_name = (($connectShardDB)?((trim($shardedDBName)!="")?trim($shardedDBName) : $_SESSION['shardedDB']):DB_NAME);
 		$returnValue = $conn->PConnect('127.0.0.1', DB_USER_NAME, DB_PASSWORD, $db_name);
 		if($conn->IsConnected())
 		{

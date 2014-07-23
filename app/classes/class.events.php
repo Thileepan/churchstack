@@ -5,13 +5,13 @@ class Events
 	protected $db_conn;
 	private $APPLICATION_PATH;
 	
-	public function __construct($APPLICATION_PATH)
+	public function __construct($APPLICATION_PATH, $shardedDBName="")
 	{
 		$this->APPLICATION_PATH = $APPLICATION_PATH; 
 
 		//intialize database connection
         include_once($this->APPLICATION_PATH . 'db/dbutil.php');
-		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, true);
+		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, true, $shardedDBName);
 		if($conn_obj[0] == 0) {
             $this->db_conn = $conn_obj[1];
 		}
