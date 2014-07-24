@@ -659,12 +659,13 @@ else if($req == 6)
 		$status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
 	} else {
 		$unique_id = $profiles_obj->getMaxProfileUniqueID();
+		//echo "UniqueID".$unique_id;
 		if($unique_id != -1) {
 			$unique_id++;
-			$unique_id = $name_append . appendZeroInUniqueID($unique_id);			
+			//$unique_id = $name_append . appendZeroInUniqueID($unique_id);
+			$status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+			$profile_id = $profiles_obj->profile_id;
 		}
-		$status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
-		$profile_id = $profiles_obj->profile_id;
 	}
 
 	if($profile_id > 0) {

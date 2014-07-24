@@ -2,6 +2,8 @@
 $APPLICATION_PATH = "../";
 include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.events.php';
+include_once $APPLICATION_PATH . '/classes/class.profiles.php';
+include_once $APPLICATION_PATH . '/classes/class.groups.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -99,7 +101,13 @@ else if($req == 2)
 	}
 	
 	$to_return = '';
-	$to_return .= '<div class="row-fluid">';
+
+	$to_return .= '<ul class="breadcrumb">';
+	  $to_return .= '<li id="eventStepLink-1" class="active">STEP 1: Event Information <span class="divider">/</span></li>';
+	  $to_return .= '<li id="eventStepLink-2"><a href="#">STEP 2: Participants/Notifications</a></li>';
+	  //$to_return .= '<li id="eventStepLink-3"><a href="#">STEP 3: Notification</a></li>';
+	$to_return .= '</ul>';
+	$to_return .= '<div class="row-fluid" id="divEventStep-1">';
 		$to_return .= '<div class="span6">';
 			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 				$to_return .= '<p class="text-left muted">Event Information</p>';
@@ -290,6 +298,49 @@ else if($req == 2)
 						$to_return .= '</div>';
 				$to_return .= '</div>';
 				*/
+				$to_return .= '</form>';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+		
+	$to_return .= '<div class="row-fluid" id="divEventStep-2" style="display:none;">';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';				
+				$to_return .= '<p class="text-left muted">Event Participants</p>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputAddEventParticipant">Participants</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" id="inputAddEventParticipant" data-provide="typeahead" autocomplete="off" value="" placeholder="Start type profile/group name" />';
+						//$to_return .= '<HR>';
+						$to_return .= '<input type="hidden" id="maxParticipantRowID" value="0" />';
+						$to_return .= '<input type="hidden" id="participantRowIDList" value="" />';
+						$to_return .= '<input type="hidden" id="participantList" value="" />';
+					$to_return .= '</div>';	
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<div class="controls" id="participantsDiv">';
+						$to_return .= '<span class="muted" id="spanNoParticipants">No participants added yet.</span>';
+					$to_return .= '</div>';	
+				$to_return .= '</div>';
+			$to_return .= '</form>';
+		$to_return .= '</div>';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';				
+				$to_return .= '<p class="text-left muted">Event Notification</p>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputRemainderPeriod">Reminder</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" id="inputRemainderPeriod" class="input-mini" onblur="validateEventRemainder();" />&nbsp;';
+						$to_return .= '<select id="inputRemainderType" class="input-small">';
+							$to_return .= '<option value="1">Hours</option>';
+							$to_return .= '<option value="2">Days</option>';
+						$to_return .= '</select>';
+					$to_return .= '</div>';	
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<div class="controls" id="participantsDiv">';					
+					$to_return .= '</div>';	
+				$to_return .= '</div>';
 			$to_return .= '</form>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
@@ -297,10 +348,10 @@ else if($req == 2)
 	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span12">';
 			$to_return .= '<div class="form-actions" align="center">';
-				$to_return .= '<button class="btn btn-primary" onclick="addOrUpdateEvents('.$is_update.');">'.(($is_update)?'Update':'Add Event').'</button>&nbsp;';
-					if(!$is_update) {
-						$to_return .= '<button class="btn" type="reset">Reset</button>';
-					}
+				$to_return .= '<button id="btnPreviousStep" class="btn btn-primary" onclick="showpreviousEventStep();" style="display:none;">Previous</button>&nbsp;';
+				$to_return .= '<button id="btnNextStep" class="btn btn-primary" onclick="showNextEventStep();">Next</button>&nbsp;';
+				$to_return .= '<button id="btnSaveEvent" class="btn btn-primary" onclick="addOrUpdateEvents(0);" style="display:none;">Save</button>&nbsp;';
+				$to_return .= '<input type="hidden" id="currentEventStep" value="1" />';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
@@ -467,5 +518,24 @@ else if($req == 6)
 	$status = $events_obj->deleteEventDetails($event_id);
 	echo $status;
 	exit;
+}
+else if($req == 7)
+{
+	//load individual participants and groups
+
+	$participants_list = array();
+	$profiles_obj = new Profiles($APPLICATION_PATH);
+	$email_list = $profiles_obj->getAllProfileNameAndEmailIDs();
+
+	$groups_obj = new Groups($APPLICATION_PATH);
+	$groups = $groups_obj->getAllGroups();
+	
+	$participants_list = array($email_list, $groups);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($participants_list);
+	unset($json);
+
+	echo $encode_obj;
+	exit;	
 }
 ?>

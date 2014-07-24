@@ -501,5 +501,29 @@ class Profiles
 		}
 		return $photo_location;
 	}
+
+	public function getAllProfileNameAndEmailIDs()
+	{
+		$profile_emails = array();
+		if($this->db_conn)
+		{
+		   $result = $this->db_conn->Execute('select PROFILE_ID, EMAIL, CONCAT_WS("", NAME, MIDDLE_NAME, LAST_NAME) from PROFILE_DETAILS where EMAIL != ""');
+            
+           if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+						$profile_id = $result->fields[0];
+                        $email = $result->fields[1];
+						$name = trim($result->fields[2]);
+						$profile_emails[] = array($profile_id, $email, $name);
+
+						$result->MoveNext();                        
+                    }
+                }
+            }
+        }
+		return $profile_emails;
+	}
 }
 ?>

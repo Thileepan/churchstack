@@ -403,56 +403,63 @@ function addOrUpdateProfile(val)
 	var alertMsg = '';
 	if(firstName == '')	{
 		alertMsg = 'Name is missing';
-	} else if(uniqueID == '') {
-		alertMsg = 'Unique ID is missing';
-	} else if (isNaN(uniqueID)) {
-		alertMsg = 'MemberID should be numeric';
 	}
+	/*
+	else if(uniqueID == '') {
+		alertMsg = 'Unique ID is missing';
+	}
+	else if (isNaN(uniqueID)) {
+		alertMsg = 'MemberID should be numeric';
+	}*/
 
 	//custom profile fields
 	var customFields = '';
-	var fieldIDAndTypeArr = document.getElementById('hidddenFieldIDAndType').value.split(",");
-	if(fieldIDAndTypeArr.length > 0)
+	var fieldIDAndTypeArr = document.getElementById('hidddenFieldIDAndType').value;
+	if(fieldIDAndTypeArr != '')
 	{
-		for(i=0; i<fieldIDAndTypeArr.length; i++)
+		fieldIDAndTypeArr = fieldIDAndTypeArr.split(",");
+		if(fieldIDAndTypeArr.length > 0)
 		{
-			var fieldArr = fieldIDAndTypeArr[i].split("::");
-			if(fieldArr.length > 0)
+			for(i=0; i<fieldIDAndTypeArr.length; i++)
 			{
-				var fieldID = fieldArr[0];
-				var fieldType = fieldArr[1];
-				var fieldName = fieldArr[2];
-				var isRequired = parseInt(fieldArr[3]);
-				var fieldValue = document.getElementById(fieldID).value;
-				
-				if(isRequired) {
-					if(fieldValue == '') {
-						alertMsg = fieldName + ' is missing';
-						break;
-					}
-				}
-
-				if(fieldValue != '')
+				var fieldArr = fieldIDAndTypeArr[i].split("::");
+				if(fieldArr.length > 0)
 				{
-					if(fieldID == 2) {
-						if(isNaN(fieldValue))
-						{
-							alertMsg = fieldName + ' is not a valid number';
+					var fieldID = fieldArr[0];
+					var fieldType = fieldArr[1];
+					var fieldName = fieldArr[2];
+					var isRequired = parseInt(fieldArr[3]);
+					var fieldValue = document.getElementById(fieldID).value;
+					
+					if(isRequired) {
+						if(fieldValue == '') {
+							alertMsg = fieldName + ' is missing';
 							break;
 						}
 					}
-				}
 
-				if(fieldType == 4) {
-					fieldValue = convertDateToDBFormat(fieldValue);
-				}
-				if(fieldValue != '') {
-					if(customFields != '') {
-						customFields += '<:|:>';
+					if(fieldValue != '')
+					{
+						if(fieldID == 2) {
+							if(isNaN(fieldValue))
+							{
+								alertMsg = fieldName + ' is not a valid number';
+								break;
+							}
+						}
 					}
-					customFields += fieldID.split('-')[1] + "::" + fieldValue;					
-				}				
-			}			
+
+					if(fieldType == 4) {
+						fieldValue = convertDateToDBFormat(fieldValue);
+					}
+					if(fieldValue != '') {
+						if(customFields != '') {
+							customFields += '<:|:>';
+						}
+						customFields += fieldID.split('-')[1] + "::" + fieldValue;					
+					}				
+				}			
+			}
 		}
 	}
 

@@ -96,6 +96,9 @@ function getAddOrEditEventFormResponse(response)
 	$('#inputEventEndDate').datepicker({
 		autoclose: true
 	});
+
+	//load individual and groups
+	getParticipantsList();
 }
 
 function onchangeEventRepeats(obj)
@@ -291,7 +294,8 @@ function addOrUpdateEventsResponse(response)
 		var alertType = 1;
 		var msgToDisplay = (isUpdate)?'Event has been updated successfully!':'Event has been created successfully';
 		if(!isUpdate) {
-			getAddOrEditEventForm(0);
+			//getAddOrEditEventForm(0);
+			getAddOrEditEventParticipantForm();
 		}
 	} else {
 		var alertType = 2;
@@ -414,4 +418,145 @@ function deleteEventResponse(response)
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
+}
+
+function getParticipantsList()
+{
+	var formPostData = "req=7";
+
+	$.ajax({
+		type:'POST',
+		url:doEventFile,
+		data:formPostData,
+		success:getParticipantsListResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getParticipantsListResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	var individualParticipants = dataObj[0];
+	var groupParticipants = dataObj[1];
+
+	var totalIndividualParticipants = individualParticipants.length;
+	var totalGroupParticipants = groupParticipants.length;
+	var totalParticipant = totalIndividualParticipants + totalGroupParticipants;
+	if(totalParticipant > 0)
+	{
+		var sourceList = new Array();
+		var participantType = 1;
+		for(i=0; i<totalIndividualParticipants; i++)
+		{
+			var id = participantType + "<:|:>" + individualParticipants[i][0] + "<:|:>" + individualParticipants[i][1];
+			var name = individualParticipants[i][2]+" ("+individualParticipants[i][1]+")";
+			sourceList.push({"id":id, "name":name});
+		}
+
+		var participantType = 2;
+		for(i=0; i<totalGroupParticipants; i++)
+		{
+			var id = participantType + "<:|:>" + groupParticipants[i][0] + "<:|:>" + groupParticipants[i][1];
+			var name = groupParticipants[i][1];
+			sourceList.push({"id":id, "name":name});
+		}
+
+		$('#inputAddEventParticipant').typeahead({
+			source: sourceList,
+			display: 'name',
+			val: 'id',
+			itemSelected: addNewParticipant
+		});
+	}	
+}
+
+function addNewParticipant(item, val, text)
+{
+	document.getElementById('spanNoParticipants').style.display = 'none';
+
+	var participantArr = val.split("<:|:>");
+	var participantID = participantArr[0];
+	var participantType = participantArr[1];
+	var participantList = participantID + ":" + participantType;
+
+	document.getElementById('inputAddEventParticipant').value = '';
+	var maxRow = document.getElementById('maxParticipantRowID').value;
+    var newRowID = parseInt(maxRow) + 1;
+
+	var rowDiv = document.createElement('p');
+    var rowDivID = 'divParticipantRow-'+newRowID;
+    rowDiv.setAttribute('id', rowDivID);
+    document.getElementById('participantsDiv').appendChild(rowDiv);
+	document.getElementById(rowDivID).innerHTML = '<i class="icon-user"></i>&nbsp;'+ text + '&nbsp;<i class="icon-remove-sign curHand" onclick="removeParticipant('+ newRowID +');"></i>';
+	
+	document.getElementById('maxParticipantRowID').value = newRowID;
+	if(document.getElementById('participantList').value != '') {
+		document.getElementById('participantList').value += ",";
+		document.getElementById('participantRowIDList').value += ",";
+	}
+	document.getElementById('participantList').value += participantList;
+	document.getElementById('participantRowIDList').value += newRowID;
+}
+
+function removeParticipant(rowID)
+{
+	var div = document.getElementById('divParticipantRow-'+rowID);
+    if (div) {
+        div.parentNode.removeChild(div);
+    }
+
+	var participantRowIDArr = document.getElementById('participantRowIDList').value.split(',');
+	var index = participantRowIDArr.indexOf(rowID.toString());
+    participantRowIDArr.splice(index, 1);
+	console.log(participantRowIDArr);
+	document.getElementById('participantRowIDList').value = participantRowIDArr.join();
+
+	var participantArr = document.getElementById('participantList').value.split(',');
+    participantArr.splice(index, 1);
+    document.getElementById('participantList').value = participantArr.join();	
+}
+
+function showpreviousEventStep()
+{
+	document.getElementById('btnPreviousStep').style.display = 'none';
+	document.getElementById('btnNextStep').style.display = '';
+	document.getElementById('btnSaveEvent').style.display = 'none';
+	document.getElementById('divEventStep-1').style.display = '';
+	document.getElementById('divEventStep-2').style.display = 'none';	
+}
+
+function showNextEventStep()
+{
+	document.getElementById('inputAddEventParticipant').focus();
+	document.getElementById('btnPreviousStep').style.display = '';
+	document.getElementById('btnNextStep').style.display = 'none';
+	document.getElementById('btnSaveEvent').style.display = '';
+	document.getElementById('divEventStep-1').style.display = 'none';
+	document.getElementById('divEventStep-2').style.display = '';
+}
+
+function validateEventRemainder()
+{
+	var remainderPeriod = document.getElementById('inputRemainderPeriod').value;
+	var remainderTypeIndex = document.getElementById('inputRemainderType').selectedIndex;
+	var remainderType = document.getElementById('inputRemainderType').options[remainderTypeIndex].value;
+
+	if(remainderType == 1)
+	{
+		if(remainderPeriod < 1 || isNaN(remainderPeriod)) {
+			document.getElementById('inputRemainderPeriod').value = 1;
+		} else if(remainderPeriod > 23) {
+			var days = parseInt(remainderPeriod / 24);
+			document.getElementById('inputRemainderPeriod').value = days;
+			document.getElementById('inputRemainderType').selectedIndex = 1;
+		}
+	}
+	else
+	{
+		if(remainderPeriod < 1 || isNaN(remainderPeriod)) {
+			document.getElementById('inputRemainderPeriod').value = 1;
+		} else if(remainderPeriod > 7) {
+			document.getElementById('inputRemainderPeriod').value = 7;
+		}
+	}
 }
