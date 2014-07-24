@@ -170,6 +170,7 @@ class License
 
 	public function applyLicense($plan_id, $plan_type, $invoice_id, $purchase_timestamp)
 	{
+		$to_return = false;
 		$validity_in_seconds = 0;
 		if($this->db_conn)
 		{
@@ -195,22 +196,42 @@ class License
 			}
 
 			$lic_expiry_date_to_set = $previous_expiry_date+$validity_in_seconds;
+
+			//Recalculating the license expiry date for referral cases
+			$referral_bonus_seconds = 30*24*60*60;//30 days
+			$is_referral_valid = 0;
+			$referrer_church_id = 0;
+			if($plan_type==1)//Applicable only for subscription
+			{
+				$referrer_result = $this->isValidForReferralBenefits($this->church_id);
+				if($referrer_result[0]==1)
+				{
+					$is_referral_valid = 1;
+					$referrer_church_id = $referrer_result[1][0];
+					$lic_expiry_date_to_set = $lic_expiry_date_to_set+$referral_bonus_seconds;
+				}
+			}
+
 			$is_on_trial = 0;
 			if($plan_type_exists == 1) {
 				$query = 'update LICENSE_DETAILS set PLAN_ID=?, LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?), LAST_INVOICE_ID=?, LAST_PURCHASE_DATE=FROM_UNIXTIME(?), IS_ON_TRIAL=? where CHURCH_ID=? and PLAN_TYPE=?';
 				$result = $this->db_conn->Execute($query, array($plan_id, $lic_expiry_date_to_set, $invoice_id, $purchase_timestamp, $is_on_trial, $this->church_id, $plan_type));
 				if($result) {
-					return true;
+					$to_return = true;
 				}			
 			} else {
 				$query_3 = 'insert into LICENSE_DETAILS values(?,?,?,FROM_UNIXTIME(?),?,FROM_UNIXTIME(?),?,FROM_UNIXTIME(?))';
 				$result_3 = $this->db_conn->Execute($query_3, array($this->church_id, $plan_id, $plan_type, $lic_expiry_date_to_set, $invoice_id, $purchase_timestamp, $is_on_trial, $purchase_timestamp));
 				if($result_3) {
-					return true;
+					$to_return = true;
 				}			
 			}
+			if($is_referral_valid==1 && $referrer_church_id > 0)
+			{
+				$subs_extension_result = $this->extendChurchSubscriptionValidity($referrer_church_id, $referral_bonus_seconds);
+			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function getLicensePlanDetails($plan_id)
@@ -1223,6 +1244,104 @@ class License
 		}
 
 		return $to_return;
+	}
+	
+	public function isValidForReferralBenefits($church_id)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while trying to get the referral info.";
+		$referrer_church_id = 0;
+		$data_found = 0;
+		if($this->db_conn)
+		{
+		   $query = 'select cd.REFERRER_CHURCH_ID from LICENSE_DETAILS as ld, CHURCH_DETAILS as cd where ld.CHURCH_ID=? and ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.PLAN_TYPE=1 limit 1';
+		   $result = $this->db_conn->Execute($query, array($church_id));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$referrer_church_id = $result->fields[0];
+					if($referrer_church_id > 0)
+					{
+						$toReturn[0] = 1;
+						$toReturn[1] = array($referrer_church_id);
+					}
+					else
+					{
+						$toReturn[0] = 0;
+						$toReturn[1] = "No referrer is associated with the account.";
+					}
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "No details associated with the account could be retrieved.";
+				}
+            } else {
+				$toReturn[0] = 0;
+				$toReturn[1] = "There was an error when fetching the account details";
+			}
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to get connection to the system.";
+		}
+		return $toReturn;
+	}
+
+	public function extendChurchSubscriptionValidity($church_id, $seconds_to_extend)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while trying extend the subscription.";
+		if($this->db_conn)
+		{
+		   $query = 'select LICENSE_EXPIRY_DATE, IS_ON_TRIAL, TRIAL_EXPIRY_DATE from LICENSE_DETAILS where CHURCH_ID=? and PLAN_TYPE=1 limit 1';
+		   $result = $this->db_conn->Execute($query, array($church_id));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$lic_expiry_date = $result->fields[0];
+					$is_on_trial = $result->fields[1];
+					$trial_expiry_date = $result->fields[2];
+
+					$expiry_date_to_set = time();
+					if($is_on_trial==1)
+					{
+						$expiry_date_to_set = strtotime($trial_expiry_date)+$seconds_to_extend;
+						$query_2 = 'update LICENSE_DETAILS set TRIAL_EXPIRY_DATE=FROM_UNIXTIME(?), LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?) where CHURCH_ID=? and PLAN_TYPE=1';
+						$result_2 = $this->db_conn->Execute($query_2, array($expiry_date_to_set, $expiry_date_to_set, $church_id));
+						if($result_2) {
+							$toReturn[0] = 1;
+							$extended_days = floor($seconds_to_extend/(24*60*60));
+							$toReturn[1] = $extended_days." more days added to the subscription validity";
+						}
+					}
+					else
+					{
+						$expiry_date_to_set = strtotime($lic_expiry_date)+$seconds_to_extend;
+						$query_2 = 'update LICENSE_DETAILS set LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?) where CHURCH_ID=? and PLAN_TYPE=1';
+						$result_2 = $this->db_conn->Execute($query_2, array($expiry_date_to_set, $church_id));
+						if($result_2) {
+							$toReturn[0] = 1;
+							$extended_days = floor($seconds_to_extend/(24*60*60));
+							$toReturn[1] = $extended_days." more days added to the subscription validity";
+						}
+					}
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "No details associated with the account could be retrieved.";
+				}
+            } else {
+				$toReturn[0] = 0;
+				$toReturn[1] = "There was an error when fetching the account details";
+			}
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to get connection to the system.";
+		}
+		return $toReturn;
 	}
 }
 

@@ -229,7 +229,7 @@ class Users
 	}
 
 //Following were added by Nesan
-	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile)
+	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email_id)
 	{
         @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
@@ -238,6 +238,24 @@ class Users
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "There was some error in signing up the user.";
+
+		//Checking if the referrer email id is valid
+		$referrer_church_id = 0;
+		if(trim($referrer_email_id) != "")
+		{
+			$referrer_result = $this->getChurchIDFromEmailID(trim($referrer_email_id));
+			if($referrer_result[0] == 1)
+			{
+				$referrer_church_id = $referrer_result[1];
+			}
+			else
+			{
+				$toReturn[0] = 0;
+				$toReturn[1] = "We could not find the referrer email address you have mentioned, kindly check the referrer email address you have specified once again. If you are not sure that the referrer email address is registered with us, leave the box empty and proceed further to signup.";
+				return $toReturn;
+			}
+		}
+
 		//Checking if the user already exists...
 		if($this->isUserAlreadyExists($email, $email)) {
 			$toReturn[0] = 0;
@@ -249,7 +267,7 @@ class Users
 		$currency_id = 1;//CHANGE THIS LATER
 		$country_id = 226;//Defaulting to USA; CHANGE THIS LATER
 		$church_obj = new Church($this->APPLICATION_PATH);
-		$church_result = $church_obj->addChurchInformation($church_name, "", $church_location, "", $mobile, $email, "", $currency_id, $country_id);
+		$church_result = $church_obj->addChurchInformation($church_name, "", $church_location, "", $mobile, $email, "", $currency_id, $country_id, $referrer_church_id);
 		if($church_result[0] == 0) {
 			$toReturn[0] = 0;
 			$toReturn[1] = "Unable to create a dedicated setup. ".$church_result[1];
@@ -444,6 +462,72 @@ class Users
 			$to_return[1] = "Unable to send welcome email to the specified email address. ".$email_result[1];
 		}
 		return $to_return;
+	}
+	
+	public function getChurchIDFromEmailID($email)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while trying to get the account info.";
+		if($this->db_conn)
+		{
+		   $query = 'select CHURCH_ID from USER_DETAILS where EMAIL=? and ROLE_ID=1 and STATUS=1';
+		   $result = $this->db_conn->Execute($query, array($email));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$church_id = $result->fields[0];
+
+					$toReturn[0] = 1;
+					$toReturn[1] = $church_id;
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "No details associated with the account could be retrieved.";
+				}
+            } else {
+				$toReturn[0] = 0;
+				$toReturn[1] = "There was an error when fetching the account details";
+			}
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to get connection to the system.";
+		}
+		return $toReturn;
+	}
+
+	public function getReferralDetails($church_id)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "There was an error while trying to get the account info.";
+		if($this->db_conn)
+		{
+		   $query = 'select CHURCH_ID from USER_DETAILS where EMAIL=? and ROLE_ID=1 and STATUS=1';
+		   $result = $this->db_conn->Execute($query, array($email));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$church_id = $result->fields[0];
+
+					$toReturn[0] = 1;
+					$toReturn[1] = $church_id;
+				} else {
+					$toReturn[0] = 0;
+					$toReturn[1] = "No details associated with the account could be retrieved.";
+				}
+            } else {
+				$toReturn[0] = 0;
+				$toReturn[1] = "There was an error when fetching the account details";
+			}
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to get connection to the system.";
+		}
+		return $toReturn;
 	}
 }
 ?>

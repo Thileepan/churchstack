@@ -320,6 +320,89 @@ class Events
 
 		return $event_info;
 	}
+
+	public function constructEventReminderEmailBody($event_details_arr)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to prepare the event reminder";
+		$event_rem_template_file = $this->APPLICATION_PATH."templates/email/eventreminder.html";
+		$event_reminder = "";
+		if(file_exists($event_rem_template_file))
+		{
+			$event_reminder = trim(file_get_contents($event_rem_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the event reminder";
+			return $to_return;
+		}
+
+		//Prepare the html string for event organizers
+		$organizers_row = "";
+		$single_organizer_row = "";
+		$single_organizer_comm_start = "<!--ORGANIZER_ROW_START";
+		$single_organizer_comm_end = "ORGANIZER_ROW_END-->";
+		$single_organizer_html_start_pos = strpos($event_reminder, $single_organizer_comm_start);
+		$single_organizer_html = substr($event_reminder, $single_organizer_html_start_pos+strlen($single_organizer_comm_start));
+		$single_organizer_html_end_pos = strpos($single_organizer_html, $single_organizer_comm_end);
+		$single_organizer_html = substr($single_organizer_html, 0, strlen($single_organizer_html)-(strlen($single_organizer_html) - $single_organizer_html_end_pos));
+		$single_organizer_row = $single_organizer_html;
+		for($k=0; $k < COUNT($event_details_arr["event_organizers_array"]); $k++)
+		{
+			$single_organizer_row = $single_organizer_html;
+			$single_organizer_row = str_replace("{{EVENT_ORGANIZER}}", $event_details_arr["event_organizers_array"][$k], $single_organizer_row);
+			$organizers_row .= $single_organizer_row;
+		}
+
+		//Prepare the html string for event attendees
+		$attendees_row = "";
+		$single_attendee_row = "";
+		$single_attendee_comm_start = "<!--ATTENDEE_ROW_START";
+		$single_attendee_comm_end = "ATTENDEE_ROW_END-->";
+		$single_attendee_html_start_pos = strpos($event_reminder, $single_attendee_comm_start);
+		$single_attendee_html = substr($event_reminder, $single_attendee_html_start_pos+strlen($single_attendee_comm_start));
+		$single_attendee_html_end_pos = strpos($single_attendee_html, $single_attendee_comm_end);
+		$single_attendee_html = substr($single_attendee_html, 0, strlen($single_attendee_html)-(strlen($single_attendee_html) - $single_attendee_html_end_pos));
+		$single_attendee_row = $single_attendee_html;
+		for($k=0; $k < COUNT($event_details_arr["event_attendees_array"]); $k++)
+		{
+			$single_attendee_row = $single_attendee_html;
+			$single_attendee_row = str_replace("{{EVENT_ATTENDEE}}", $event_details_arr["event_attendees_array"][$k], $single_attendee_row);
+			$attendees_row .= $single_attendee_row;
+		}
+
+		//Replacing place holder with values
+		$event_reminder = str_replace("<!--ALL_ORGANIZERS_ROWS-->", $organizers_row, $event_reminder);
+		$event_reminder = str_replace("<!--ALL_ATTENDEES_ROWS-->", $attendees_row, $event_reminder);
+		$event_reminder = str_replace("{{EVENT_TITLE}}", $event_details_arr["event_title"], $event_reminder);
+		$event_reminder = str_replace("{{EVENT_DESC}}", $event_details_arr["event_desc"], $event_reminder);
+		$event_reminder = str_replace("{{EVENT_DATE_AND_TIME}}", $event_details_arr["event_date_time"], $event_reminder);
+		$event_reminder = str_replace("{{EVENT_PLACE}}", $event_details_arr["event_place"], $event_reminder);
+
+		/* * /
+		//Set and Send Email
+		for($i=0; $i < COUNT($event_details_arr["event_email_recipients"]); $i++)
+		{
+			$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
+			$recipients = array();
+			$recipients['to_address'] = $event_details_arr["event_email_recipients"][$i];
+			$subject = "Reminder: ".$event_details_arr["event_title"]." @ ".$event_details_arr["event_date_time"];
+			$email_obj->setRecipients($recipients);
+			$email_obj->setSubject($subject);
+			$email_obj->setBody($event_reminder);
+			$email_result = $email_obj->sendEmail();
+			if($email_result[0]==1) {
+				$to_return[0] = 1;
+				$to_return[1] = "Event reminder email sent.";
+			}
+		}
+		/**/
+		$to_return[0] = 1;
+		$to_return[1] = $event_reminder;
+		return $to_return;
+	}
 }
 
 ?>

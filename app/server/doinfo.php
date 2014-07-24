@@ -111,7 +111,7 @@ else if($req == 2)
 	
 	$church_obj = new Church($APPLICATION_PATH);
 	if(!$is_update) {
-		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id);
+		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id, 0);
 	} else {
 		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id);
 	}
