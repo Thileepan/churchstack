@@ -27,7 +27,7 @@ function listAllPayments()
         "bProcessing": true,
 		"bDestroy": true,
         "sAjaxSource": doPayment,
-		"iDisplayLength":2,
+		"iDisplayLength":25,
 //		"aaSorting": 2,
         "fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {

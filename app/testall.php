@@ -5,6 +5,21 @@ $PATH = __DIR__."/";
 include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
+include_once($PATH."plugins/twilio/Services/Twilio.php");
+
+/**/
+$sid = "AC8ac594144120c306d08a168840bb2ef6"; // Your Account SID from www.twilio.com/user/account
+$token = "36cf1edb845cb960fe40bb04c4e7b66b"; // Your Auth Token from www.twilio.com/user/account
+
+$client = new Services_Twilio($sid, $token);
+$message = $client->account->messages->sendMessage(
+  '+12626313131', // From a valid Twilio number
+  '+919962131353', // Text this number
+  "Hello Dude!"
+);
+
+print $message->sid;
+/**/
 
 /** /
 echo "<pre>";
@@ -66,7 +81,7 @@ $coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discount
 print_r($coupon_result);
 /**/
 
-/**/
+/** /
 $lic_obj = new License($PATH);
 $lic_obj->setChurchID(68);
 $invoice_details_array = array("Nesan R", "16 C, Thisaikaval St., Arumuganeri, Thootrhukudi Dist, Tamil Nadu, India, Chennai - 600 002", "Other", "0991901", "USD", 199, 1, 3, 6, 2, 4, 0, 0, 0, 0, 234, "S73MN4L57W", "Some notes", "PayPal", "Credit Card", "10.0.0.114", "soleetin@yeollershusrd.com");

@@ -10,7 +10,7 @@ include_once $APPLICATION_PATH . 'app/classes/class.license.php';
 
 //process request
 $req = $_REQUEST['req'];
-if($req == 1 || $req == 3 || $req == 4 || $req == 5 || $req == 6)
+if($req == 1 || $req == 3 || $req == 4 || $req == 5 || $req == 6 || $req == 11)
 {
 	$church_obj = new Church($APPLICATION_PATH."app/");
 	if($req==1) {
@@ -23,6 +23,8 @@ if($req == 1 || $req == 3 || $req == 4 || $req == 5 || $req == 6)
 		$churches = $church_obj->getAllChurchesList(3);
 	} else if($req==6){
 		$churches = $church_obj->getAllChurchesList(4);
+	} else if($req==11){
+		$churches = $church_obj->getAllChurchesList(6);
 	} else {
 		$churches = $church_obj->getAllChurchesList(0);
 	}
@@ -31,9 +33,33 @@ if($req == 1 || $req == 3 || $req == 4 || $req == 5 || $req == 6)
 	for($c=0; $c < COUNT($churches[1]); $c++)
 	{
 		$curr_church = $churches[1][$c];
+		$eligible_for_extension = 0;
+		$current_state = $curr_church[13];
+		if($current_state==1) {
+			$eligible_for_extension = 1;
+		}
+		$church_name_html = '<a style="cursor: pointer;" data-toggle="modal" data-target="#churchDetailsModal" onclick="loadChurchData('.$curr_church[0].');" nowrap>'.$curr_church[1].'</a>';
 		$view_btn_html = '<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#churchDetailsModal" onclick="loadChurchData('.$curr_church[0].');">View</button>';
+		$action_btn_html = '<div class="btn-group">';
+			$action_btn_html .= '<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>';
+			$action_btn_html .= '<ul class="dropdown-menu" role="menu">';
+				if($eligible_for_extension==1) {
+					$action_btn_html .= '<li><a href="#" data-toggle="modal" data-target="#extendValidityModal" onclick="churchActions(1, '.$curr_church[0].',\''.$curr_church[1].'\');">Extend Validity</a></li>';
+				} else {
+					$action_btn_html .= '<li class="disabled"><a href="#">Extend Validity</a></li>';
+				}
+				//$action_btn_html .= '<li><a href="#">Another action</a></li>';
+				//$action_btn_html .= '<li><a href="#">Something else here</a></li>';
+				$action_btn_html .= '<li class="divider"></li>';
+				if($current_state==1) {
+					$action_btn_html .= '<li><a href="#" onclick="churchActions(2, '.$curr_church[0].',\''.$curr_church[1].'\');">Deactivate</a></li>';
+				} else {
+					$action_btn_html .= '<li><a href="#" onclick="churchActions(3, '.$curr_church[0].',\''.$curr_church[1].'\');">Re-Activate</a></li>';
+				}
+			$action_btn_html .= '</ul>';
+		$action_btn_html .= '</div>';
 
-		$to_return['aaData'][] = array($curr_church[0], $curr_church[1], $curr_church[5], $curr_church[6], $curr_church[8], $curr_church[10], $view_btn_html);
+		$to_return['aaData'][] = array($curr_church[0], $church_name_html, $curr_church[5], $curr_church[6], $curr_church[8], $curr_church[10], $action_btn_html);
 	}
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
@@ -137,6 +163,57 @@ else if($req == 2)//get details of a church
 		}
 	}
 	$to_return = array("rsno"=>1, "rslt"=>$church_data);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 8)//Deactivate church
+{
+	$church_id = trim($_REQUEST['church_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$church_obj = new Church($APPLICATION_PATH."app/");
+	$result_data = $church_obj->deactivateChurch($church_id);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 9)//Re-activate church
+{
+	$church_id = trim($_REQUEST['church_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$church_obj = new Church($APPLICATION_PATH."app/");
+	$result_data = $church_obj->activateChurch($church_id);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 10)//Extend validity
+{
+	$church_id = trim($_REQUEST['church_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$church_name = trim($_REQUEST['church_name']);
+	$days_to_extend = trim($_REQUEST['days_to_extend']);
+	$seconds_to_extend = $days_to_extend*24*60*60;
+	$lic_obj = new License($APPLICATION_PATH."app/");
+	$result_data = $lic_obj->extendChurchSubscriptionValidity($church_id, $seconds_to_extend);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);

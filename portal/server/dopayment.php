@@ -49,7 +49,7 @@ if($req == 1)//List All Payments
 			$action_btn_html .= '</ul>';
 		$action_btn_html .= '</div>';
 
-		$to_return['aaData'][] = array($invoice_id_html, $trans_id_html, $curr_purchase[3], $curr_purchase[5], $curr_purchase[8], $curr_purchase[14], $curr_purchase[17], $curr_purchase[24], $curr_purchase[25], $curr_purchase[27], $curr_purchase[31], $curr_purchase[33], $curr_purchase[34], $curr_purchase[35], $action_btn_html);
+		$to_return['aaData'][] = array($invoice_id_html, $trans_id_html, $curr_purchase[3], $curr_purchase[5], $curr_purchase[8], $curr_purchase[14], $curr_purchase[24], $curr_purchase[31], $curr_purchase[33], $curr_purchase[34], $curr_purchase[35], $action_btn_html);
 
 	}
 	//insert into invoice_report values(0, CURDATE(), 'JNYYSH7923', 'BHBHBH999',  '98huhpwe', 2, 'CH shbd', 2, 'nes@wds.sd', 'Bill ane', 'bill add', 'otuer add', '21212', 'USD', 232, 2, 1.22, 4, 12.54, 5, 1.87, 6, 4.50, 8, 432, 'hiuty', 'notessd', 'Paypal', 'cred card', '1201.121.12.1', 1, 'Sucess', 'X8172', 'PGSUccc', CURDATE(), 0);

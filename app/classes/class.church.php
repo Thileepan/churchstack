@@ -175,6 +175,7 @@ class Church
 				3 => list license expired churches alone
 				4 => list paid and active churches alone
 				5 => list On-Trial or (Paid & Active) churches
+				6 => list deactivated churches
 		/**/
 		$toReturn = array();
 		$all_churches = array();
@@ -184,15 +185,17 @@ class Church
 		   if($filterType==0 or trim($filterType) == "") {
 			   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
 		   } else if($filterType==1) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==2) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==3) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==4) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==5) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and (ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1)';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and (ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1)';
+		   } else if($filterType==6) {
+			   $query = 'select * from CHURCH_DETAILS where STATUS!=1';
 		   }
 		   $result = $this->db_conn->Execute($query);
             
@@ -268,6 +271,40 @@ class Church
 			$toReturn[1] = "Unable to get connection to the system.";
 		}
 		return $toReturn;
+	}
+
+	public function deactivateChurch($church_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to deactivate the church";
+		if($this->db_conn)
+		{
+			$query = 'update CHURCH_DETAILS set STATUS=0 where CHURCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($church_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Church is deactivated now";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function activateChurch($church_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to activate the church";
+		if($this->db_conn)
+		{
+			$query = 'update CHURCH_DETAILS set STATUS=1 where CHURCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($church_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Church is activated now";
+			}			
+		}
+		return $to_return;
 	}
 }
 
