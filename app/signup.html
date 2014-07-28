@@ -9,18 +9,22 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     
-    <link href="css/bootstrap-custom.min.css" rel="stylesheet">            
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">            
     <link href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet">
-    <link href="./css/font-awesome.min.css" rel="stylesheet"> 
+    <link href="../css/font-awesome.min.css" rel="stylesheet"> 
        
-    <link href="./css/launched-amethyst.css" rel="stylesheet">
-    <link href="./css/launched-responsive.css" rel="stylesheet">
+    <link href="../css/launched-amethyst.css" rel="stylesheet">
+    <link href="../css/launched-responsive.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
+	<!-- JavaScript -->
+	<script src="js/app.js"></script>
+
 	<script>
+
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -30,8 +34,11 @@
 	  ga('send', 'pageview');
 
 	</script>
+
+	
     
 </head>
+
 
 <body class="fixed-header">        
         
@@ -43,21 +50,21 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="./index.html"><img src="./img/cslogo.png" alt="Logo" /></a>
+          <a class="brand" href="./index.html"><img src="../img/cslogo.png" alt="Logo" /></a>
           <div class="nav-collapse collapse">
             
           	<ul class="nav pull-left">
-				<li class=""><a href="./index.html" class="action">Home</a></li>
-				<li class=""><a href="./about.html" class="action">About Us</a></li>
-				<li class=""><a href="./contact.html" class="action">Contact Us</a></li>
-				<li class=""><a href="./pricing.html" class="action">Pricing</a></li>
+				<li class=""><a href="../index.html" class="action">Home</a></li>
+				<li class=""><a href="../about.html" class="action">About Us</a></li>
+				<li class=""><a href="../contact.html" class="action">Contact Us</a></li>
+				<li class=""><a href="../pricing.html" class="action">Pricing</a></li>
 			</ul>
 
 			
 		    <ul class="nav pull-right">	
 				<li class="divider-vertical"></li>	      
-		        <li><a href="./signup.html" class="action action-primary">Start Free Trial!</a></li>
-		        <li><a href="app/signin.php" class="action">Demo</a></li>
+		        <li><a href="signup.html" class="action action-primary">Start Free Trial!</a></li>
+		        <li><a href="signin.php" class="action">Demo</a></li>
 		    </ul>
 
 
@@ -97,10 +104,13 @@
     	
         	<div class="main">
         			
-        			
+        			<div class="row-fluid" id="alertRow" style="display:none">
+						<div id="alertDiv" class="span12">
+						</div>
+					</div>
         			
         			<div class="well">
-		    			<form class="form-vertical">
+		    			<form class="form-vertical"  onsubmit="return false;">
 		    				
 		    				<h3>About Your Church</h3>
 
@@ -109,13 +119,13 @@
 						  <div class="control-group">
 						    <label class="control-label" for="church">Church Name</label>
 						    <div class="controls">
-						      <input type="text" id="church" class="input-xlarge">
+						      <input type="text" name="church" id="church" class="input-xlarge">
 						    </div>
 						  </div>
 						  <div class="control-group">
 						    <label class="control-label" for="location">Location</label>
 						    <div class="controls">
-						      <input type="text" id="location" class="input-medium">
+						      <input type="text" name="location" id="location" class="input-medium">
 						    </div>
 						  </div>
 						  <hr />
@@ -127,21 +137,21 @@
 						  <div class="control-group">
 						    <label class="control-label" for="name">Your Name</label>
 						    <div class="controls">
-						      <input type="text" id="name" class="input-xlarge">
+						      <input type="text" name="name" id="name" class="input-xlarge">
 						    </div>
 						  </div>
 						  
 						  <div class="control-group">
 						    <label class="control-label" for="email">Email</label>
 						    <div class="controls">
-						      <input type="text" id="email" class="input-xlarge">
+						      <input type="text" name="email" id="email" class="input-xlarge">
 						    </div>
 						  </div>
 
 						  <div class="control-group">
 						    <label class="control-label" for="phone">Phone</label>
 						    <div class="controls">
-						      <input type="text" id="phone" class="input-xlarge">
+						      <input type="text" name="phone" id="phone" class="input-xlarge">
 						    </div>
 						  </div>
 						  <!--
@@ -162,7 +172,8 @@
 						  
 						  <div class="control-group">
 						    <div class="controls">
-						      <button type="submit" class="btn btn-large btn-primary">Create My Account</button>
+						      <span id="spanSignUpBtn"><button type="submit" class="btn btn-large btn-primary" id="signUpBtn" onclick="signUpNewAccount();">Create My Account</button></span>
+							  <span id="spanLoadingImg" style="display:none;"><img src="images/ajax-loader.gif" />&nbsp;Please wait...</span>
 						    </div>
 						  </div>
 						</form>
@@ -244,14 +255,13 @@
 </footer>
 
 
-<script src="./js/vendor/jquery-1.9.1.min.js"></script>
+<script src="../js/vendor/jquery-1.9.1.min.js"></script>
 
-<script src="js/vendor/bootstrap.min.js"></script>
+<script src="../js/vendor/bootstrap.min.js"></script>
 
-<script src="./js/plugins/bootstrap-dropdown/twitter-bootstrap-hover-dropdown.min.js"></script>
+<script src="../js/plugins/bootstrap-dropdown/twitter-bootstrap-hover-dropdown.min.js"></script>
 
-<script src="js/main.js"></script>
-
+<script src="../js/main.js"></script>
 </body>
 
 </html>

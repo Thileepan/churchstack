@@ -66,15 +66,15 @@
 
 						<div class="nav-collapse collapse">
 							<ul class="nav pull-left">
-								<li class="" id="mdashboard" onclick="menulinkClicked(6)"><a href="dashboard.php"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
-								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="index.php"><span id="mhomeText" style="color:white">Profiles</span></a></li>
-								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:nones"><a href="subscription.php"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>
-								<li class="" id="mfunds" onclick="menulinkClicked(9)"><a href="funds.php"><span id="mfundsText" style="color:white">Funds</span></a></li>
+								<li class="" id="mdashboard" onclick="menulinkClicked(6)"><a href="dashboard.php" id="dashboardLink"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
+								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="index.php" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
+								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:nones"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>
+								<li class="" id="mfunds" onclick="menulinkClicked(9)"><a href="funds.php" id="fundsLink"><span id="mfundsText" style="color:white">Funds</span></a></li>
 <!--								<li class="" id="mharvest" onclick="menulinkClicked(7)"><a href="harvest.php"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
-								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events.php"><span id="meventsText" style="color:white">Events</span></a></li>
-								<li class="" id="mgroups" onclick="menulinkClicked(3)"><a href="groups.php"><span id="mgroupsText" style="color:white">Groups</span></a></li>
-								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings.php"><span id="msettingsText" style="color:white;">Settings</span></a></li>
-								<li class="" id="mreports" onclick="menulinkClicked(5)"><a href="reports.php"><span id="mreportsText" style="color:white">Reports</span></a></li>
+								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events.php" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>
+								<li class="" id="mgroups" onclick="menulinkClicked(3)"><a href="groups.php" id="groupsLink"><span id="mgroupsText" style="color:white">Groups</span></a></li>
+								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings.php" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>
+								<li class="" id="mreports" onclick="menulinkClicked(5)"><a href="reports.php" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">

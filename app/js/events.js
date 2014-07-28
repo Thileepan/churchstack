@@ -154,7 +154,7 @@ function OnChangeOccursOn(opt)
 	}
 }
 
-function addOrUpdateEvents(val)
+function addOrUpdateEvents(val, doValidation)
 {
 	isUpdate = val;
 
@@ -207,6 +207,12 @@ function addOrUpdateEvents(val)
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
 		return false;
+	}
+
+	//if validation is the only purpose here 
+	//then do all the validations and return the status.
+	if(doValidation) {
+		return true;
 	}
 
 	if(freq == 1) 
@@ -525,8 +531,14 @@ function showpreviousEventStep()
 	document.getElementById('divEventStep-2').style.display = 'none';	
 }
 
-function showNextEventStep()
+function showNextEventStep(isUpdate)
 {
+	//do validation before move to next step
+	var doValidation = 1;
+	if(!addOrUpdateEvents(isUpdate, doValidation)) {
+		return false;
+	}
+	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('inputAddEventParticipant').focus();
 	document.getElementById('btnPreviousStep').style.display = '';
 	document.getElementById('btnNextStep').style.display = 'none';

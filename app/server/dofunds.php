@@ -4,6 +4,7 @@ include $APPLICATION_PATH.'utils/JSON.php';
 //include $APPLICATION_PATH.'utils/utilfunctions.php';
 include_once $APPLICATION_PATH . '/classes/class.funds.php';
 //include_once $APPLICATION_PATH . '/classes/class.profiles.php';
+include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -11,11 +12,9 @@ $req = $_REQUEST['req'];
 if($req == 1)
 {
 	//List Funds
-
 	$fund_obj = new Funds($APPLICATION_PATH);
 	$funds = $fund_obj->getAllFunds();
-	//print_r($funds);
-
+	
 	$is_results_available = false;
 	if(is_array($funds) && $funds[0] == 1)
 	{
@@ -26,8 +25,14 @@ if($req == 1)
 			$is_results_available = true;
 			for($i=0; $i<$total_funds; $i++)
 			{
-				$actions = '<i class="curHand icon-pencil" onclick="showEditFund('.$i.');"></i>&nbsp;&nbsp;<i class="curHand icon-eye-close" style="display:'.(($is_hide)?'none':'').'" onclick="hideOrShowFund(1, '.$i.');"></i><i class="curHand icon-eye-open" style="display:'.(($is_hide)?'':'none').'" onclick="hideOrShowFund(0, '.$i.');"></i>';
-				$to_return['aaData'][] = array(($i+1), $funds[$i][1], $funds[$i][2], $actions);
+				$fund_id = $funds[$i][0];
+				$fund_name = $funds[$i][1];
+				$fund_desc = $funds[$i][2];
+				$visibility = $funds[$i][3];
+
+				$visibility_string = '<span class="label '.(($visibility == 1)?"label-success":"label-important").'">'.(($visibility == 1)?"Active":"InActive").'</span>';
+				$actions = '<i class="curHand icon-pencil" onclick="getFundForm(1, '.$fund_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-eye-close" style="display:'.(($visibility == 0)?'none':'').'" onclick="changeFundVisibility('.$fund_id.', 0);"></i><i class="curHand icon-eye-open" style="display:'.(($visibility == 0)?'':'none').'" onclick="changeFundVisibility('.$fund_id.', 1);"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteFundConfirmation('.$fund_id.', \''.$fund_name.'\')"></i>';
+				$to_return['aaData'][] = array($fund_name, $fund_desc, $visibility_string, $actions);
 			}
 		}
 	}
@@ -43,318 +48,152 @@ if($req == 1)
 
 	echo $encode_obj;
 	exit;
-
-	$to_return .= '<div id="divAddFieldForm" style="display:nones">';
-		$to_return .= '<fieldset>';
-			$to_return .= '<legend>Add New Fund</legend>';
-			$to_return .= '<input type="text" id="inputFundName" placeholder="Fund Name"><BR>';
-			$to_return .= '<textarea rows="3" id="inputDescription" placeholder="Fund Description"></textarea>';
-			$to_return .= '<button type="submit" class="btn btn-primary" onclick="addOrUpdateField(0);">Add</button>&nbsp;';
-			$to_return .= '<button type="submit" class="btn" onclick="hideAddNewFieldForm();">Cancel</button>';
-		$to_return .= '</fieldset>';
-	$to_return .= '</div>';
-
-	$to_return .= '<div class="pull-right" id="divAddFieldBtn">';
-		$to_return .= '<button class="btn btn-small btn-primary" type="button" onclick="showAddNewFieldForm();">Add New Field</button>';
-	$to_return .= '</div>';
-	$to_return .= '<BR>';
-	$to_return .= '<table id="subfields" class="table table-striped">';
-		$to_return .= '<thead>';
-			$to_return .= '<tr>';
-				$to_return .= '<th>ID</th>';
-				$to_return .= '<th>Field Name</th>';
-				$to_return .= '<th>Field Visibility</th>';
-				$to_return .= '<th>Actions</th>';
-			$to_return .= '</tr>';
-		$to_return .= '</thead>';
-		$to_return .= '<tbody>';
-
-	$is_fields_available = false;
-	if(is_array($subscription_fields))
-	{
-		$total_fields = COUNT($subscription_fields);
-		if($total_fields > 0)
-		{
-			$is_fields_available = true;
-			for($i=0; $i<$total_fields; $i++)
-			{
-				$is_hide = $subscription_fields[$i][2];
-				$to_return .= '<tr>';						
-					$to_return .= '<td>'.$subscription_fields[$i][0].'</td>';
-					$to_return .= '<td>';
-						$to_return .= '<span id="spnShowFieldNameInfo-'.$i.'">'.$subscription_fields[$i][1].'</span>';
-						$to_return .= '<span id="spnEditFieldNameInfo-'.$i.'" style="display:none"><input type="hidden" value="'.$subscription_fields[$i][0].'" id="inputEditFieldID-'.$i.'" /><input type="text" value="'.$subscription_fields[$i][1].'" id="inputEditFieldName-'.$i.'" /></span>';
-					$to_return .= '</td>';
-					$to_return .= '<td><span class="label '.(($is_hide)?"label-important":"label-success").'">'.(($is_hide)?"InActive":"Active").'</span></td>';
-					$to_return .= '<td>';
-						$to_return .= '<span id="spnActionInfo-'.$i.'"><i class="curHand icon-pencil" onclick="showEditFieldInfoRow('.$i.');"></i>&nbsp;&nbsp;<i class="curHand icon-eye-close" style="display:'.(($is_hide)?'none':'').'" onclick="hideOrShowField(1, '.$i.');"></i><i class="curHand icon-eye-open" style="display:'.(($is_hide)?'':'none').'" onclick="hideOrShowField(0, '.$i.');"></i></span>';
-						$to_return .= '<span id="spnSaveButton-'.$i.'" style="display:none"><button class="btn btn-small btn-success" onclick="addOrUpdateField(1);">Save</button>&nbsp;<button class="btn btn-small" onclick="hideEditFieldInfoRow('.$i.');">Cancel</button></span>';
-					$to_return .= '</td>';
-				$to_return .= '</tr>';
-			}
-		}
-	}
-	
-	if( !$is_fields_available )
-	{
-		$to_return .= '<tr>';
-			$to_return .= '<td colspan="4" align="center">'.'No subscription fields available'.'</td>';
-		$to_return .= '</tr>';
-	}
-		$to_return .= '<tr style="display:none"><td colspan="4"><input type="hidden" value="" id="hiddenLastEditedRow" /></td></tr>';
-		$to_return .= '</tbody>';
-	$to_return .= '</table>';
-		
-	echo $to_return;
-	exit;
 }
 else if($req == 2)
 {
-	$field_name = trim($_POST['fieldName']);
-	$field_id = trim($_POST['fieldID']);
-	$is_update = trim($_POST['isUpdate']);
+	//fund add/edit form
+	$fund_visibility_values = array('Hide', 'Show');
 
-	$sub_obj = new Subscription($APPLICATION_PATH);
+	$is_update = trim($_POST['isEdit']);
+	$fund_id = trim($_POST['fundID']);
+	
 	if($is_update) {
-		$status = $sub_obj->updateField($field_id, $field_name);		
-	} else {
-		$status = $sub_obj->addNewField($field_name);
+		$error = false;
+		$fund_obj = new Funds($APPLICATION_PATH);	
+		$fund_details = $fund_obj->getFundInformation($fund_id);
+		if(is_array($fund_details) && COUNT($fund_details) > 0)
+		{
+			if($fund_details[0] == 1)
+			{
+				$fund = $fund_details[1];
+				$fund_name = $fund[1];
+				$fund_desc = $fund[2];
+				$fund_visibility = $fund[3];
+			}
+			else {
+				$error = true;
+			}
+		} else {
+			$error = true;			
+		}
+
+		if($error) {
+			$to_return = '<span class="text-error">'.$fund_details[1].'</span>';
+			echo $to_return;
+			exit;
+		}
 	}
 
-	echo $status;
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
+				$to_return .= '<div class="control-group">';
+						$to_return .= '<label class="control-label" for="inputFundName">Fund Name</label>';
+							$to_return .= '<div class="controls">';
+								$to_return .= '<input type="text" class="span10" id="inputFundName" placeholder="Fund Name" value="'.$fund_name.'">';
+							$to_return .= '</div>';
+					$to_return .= '</div>';
+					$to_return .= '<div class="control-group">';
+						$to_return .= '<label class="control-label" for="inputFundDesc">Description</label>';
+							$to_return .= '<div class="controls">';
+								$to_return .= '<textarea class="span10" id="inputFundDesc" placeholder="Fund Description">'.$fund_desc.'</textarea>';
+							$to_return .= '</div>';
+					$to_return .= '</div>';
+					$to_return .= '<div class="control-group">';
+						$to_return .= '<label class="control-label" for="inputFundVisibility">Visibility</label>';
+							$to_return .= '<div class="controls">';
+								$to_return .= '<select class="span10" id="inputFundVisibility">';
+									for($i=0; $i<COUNT($fund_visibility_values); $i++)
+									{
+										$to_return .= '<option '.(($fund_visibility == $i)?'selected':(($i==1)?'selected':'')).'>'.$fund_visibility_values[$i].'</option>';
+									}
+								$to_return .= '</select>';
+							$to_return .= '</div>';
+					$to_return .= '</div>';
+					$to_return .= '<div class="form-actions" align="center">';
+						$to_return .= '<button class="btn btn-primary" type="submit" onclick="addOrUpdateFund('.$is_update.');">'.(($is_update)?'Update Fund':'Add Fund').'</button>&nbsp;';
+						if(!$is_update) {
+							$to_return .= '<button class="btn" type="reset">Reset</button>';
+						}
+						$to_return .= '<input type="hidden" id="inputHiddenFundID" value="'.$fund_id.'" />';
+					$to_return .= '</div>';
+			$to_return .= '</form>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';	
+
+	echo $to_return;
 	exit;
 }
 else if($req == 3)
 {
-	$field_id = trim($_POST['fieldID']);
-	$is_hide = trim($_POST['isHide']);
+	//add/update fund details
+	$is_update = trim($_POST['isUpdate']);
+	$fund_id = trim($_POST['fundID']);
+	$fund_name = trim($_POST['fundName']);
+	$fund_description = trim($_POST['fundDesc']);
+	$fund_visibility = trim($_POST['visibility']);
 
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	$status = $sub_obj->hideOrShowField($field_id, $is_hide);
+	$funds_obj = new Funds($APPLICATION_PATH);
+	if($is_update) {
+		$status = $funds_obj->updateFund($fund_id, $fund_name, $fund_description, $fund_visibility);
+	} else {
+		$status = $funds_obj->addFund($fund_name, $fund_description, $fund_visibility);
+	}
 
 	echo $status;
 	exit;
 }
 else if($req == 4)
 {
-	//add/edit subscription form
-	$isUpdate = trim($_POST['isEdit']);
-	$profiles_obj = new Profiles($APPLICATION_PATH);
-	$parent_list = $profiles_obj->getAllParentProfiles();
+	//change fund visibility status
+	$fund_id = trim($_POST['fundID']);
+	$visibility = trim($_POST['visibilityStatus']);
 
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	$subscription_fields = $sub_obj->getActiveSubscriptionFields();
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$status = $funds_obj->updateFundVisibility($fund_id, $visibility);
 
-	if($isUpdate) {
-		$subscription_id = trim($_POST['subscriptionID']);
-		$prev_unique_id = trim($_POST['prevProfileID']);
-		$profile_info = $profiles_obj->getProfileInformation($prev_unique_id);
-		if(is_array($profile_info))
-		{
-			$profile_name = $profile_info[2];
-		}
-		$subscription_details = $sub_obj->getSubscriptionInformation($subscription_id);
-		$prev_unique_id_with_name = $profile_name . '-STC' . appendZeroInUniqueID($prev_unique_id);
-		$date_of_sub = formatDateOfBirth($subscription_details[0][19], false, true);
-	}
-	
-	$total = 0;
-	$to_return = '';
-	$to_return .= '<div class="span12">';
-		$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
-
-		$to_return .= '<table class="span6">';
-			$to_return .= '<tr>';
-				$to_return .= '<td class="span6" colspan="2">';
-					$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="inputProfileID">Family Head</label>';
-						$to_return .= '<div class="controls">';
-						/*
-							$to_return .= '<select class="span12" id="inputProfileID">';
-							if(is_array($parent_list))
-							{*/
-								$parent_list_count = COUNT($parent_list);
-								//$to_return .= '<option value="-1">Select Family Head</option>';
-								$parent_id = '';
-								$parent_name = '';
-								$parent_unique_id = '';
-								if($parent_list_count > 0) {
-									for($i=0; $i<$parent_list_count; $i++) {
-										//$to_return .= '<option value="'.$parent_list[$i][0].'">'.$parent_list[$i][1].'</option>';
-
-										if($parent_id != '') {
-											$parent_id .= ',';
-										}
-										if($parent_name != '') {
-											$parent_name .= ',';
-										}
-										if($parent_unique_id != '') {
-											$parent_unique_id .= ',';
-										}
-										$parent_id .= $parent_list[$i][0];
-										$parent_name .= $parent_list[$i][1];
-										$parent_unique_id .= $parent_list[$i][1].'-'.'STC' . appendZeroInUniqueID($parent_list[$i][2]);
-									}
-								}
-							//}
-							//$to_return .= '</select>';
-							$to_return .= '<input type="hidden" id="hiddenParentID" value="'.$parent_id.'" />';
-							$to_return .= '<input type="hidden" id="hiddenParentName" value="'.$parent_name.'" />';
-							$to_return .= '<input type="hidden" id="hiddenParentUniqueID" value="'.$parent_unique_id.'" />';
-							$to_return .= '<input type="hidden" id="selectedProfileID" value="'.$prev_unique_id.'" />';
-							$to_return .= '<input type="text" class="span12" id="inputProfileID" data-provide="typeahead" autocomplete="off" placeholder="Type Family Head Member ID" value="'.$prev_unique_id_with_name.'">';
-							$to_return .= '<input type="hidden" id="hiddenSubscriptionID" value="0" />';
-						$to_return .= '</div>';
-					$to_return .= '</div>';
-				$to_return .= '</td>';
-			$to_return .= '</tr>';
-			$to_return .= '<tr>';
-				$to_return .= '<td class="span6" colspan="2">';
-					$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="inputSubcriptionMonth">Subscription Date</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<input type="text" class="span6" id="inputSubcriptionMonth" value="'.(($isUpdate)?$date_of_sub:date('d/m/Y')).'" data-date-format="dd/mm/yyyy" />';
-						$to_return .= '</div>';
-					$to_return .= '</div>';
-				$to_return .= '</td>';
-			$to_return .= '</tr>';
-		$fieldIDs = '';
-		if(is_array($subscription_fields))
-		{
-			$total_fields = COUNT($subscription_fields);
-			if($total_fields > 0)
-			{
-				for($i=0; $i<$total_fields; $i++)
-				{
-					$field_id = $subscription_fields[$i][0];
-					if($isUpdate) {
-						$field_value = $subscription_details[0][$field_id-1];
-						$total = $total + $field_value;
-					}
-
-					$j = $i + 1;
-					$is_even = (($j % 2 == 0)?true:false);
-					if(!$is_even)
-					{
-						$to_return .= '<tr>';
-					}
-							$to_return .= '<td class="span3">';
-								$to_return .= '<div style="padding-bottom:2px;">';
-									$to_return .= '<label class="control-label" for="inputFieldID-'.$subscription_fields[$i][0].'">'.$subscription_fields[$i][1].'</label>';
-									$to_return .= '<div class="controls">';
-										$to_return .= '<input type="text" id="inputFieldID-'.$subscription_fields[$i][0].'" class="input-mini" onkeypress="return isNumberKey(event);" onkeyup="calSubscriptionTotal(this);" onblur="calSubscriptionTotal(this);" value="'.(($isUpdate)?$field_value:"").'" />';
-									$to_return .= '</div>';
-								$to_return .= '</div>';
-							$to_return .= '</td>';
-					if($is_even)
-					{
-						$to_return .= '</tr>';
-					}
-
-					if($fieldIDs != '') {
-						$fieldIDs .= ',';
-					}
-					$fieldIDs .= $subscription_fields[$i][0];
-				}
-				
-			}
-		}
-			$to_return .= '<tr><td class="span6" colspan="2" style="margin-top:20px;border-top: 2px solid grey;">';
-				$to_return .= '<h4><p class="text-info text-right"><strong>Total: Rs. <span id="spanSubscriptionTotal">'.$total.'</span></strong></p></h4>';
-				$to_return .= '<input type="hidden" id="hiddenFieldIDs" value="'.$fieldIDs.'">';
-			$to_return .= '</td></tr>';
-			if(!$isUpdate)
-			{
-				$to_return .= '<tr>';
-					$to_return .= '<td class="span6" colspan="2">';
-						$to_return .= '<div class="form-actions">';
-						$to_return .= '<button class="btn btn-primary" onclick="addOrUpdateNewSubscription(0, 2);">'.(($isUpdate)?'Update Subscription':'Add Subscription').'</button>&nbsp;';
-							$to_return .= '<button class="btn" type="reset">Reset</button>';							
-						$to_return .= '</div>';
-					$to_return .= '</td>';
-				$to_return .= '</tr>';
-			}
-		$to_return .= '</table>';
-		$to_return .= '</form>';
-	$to_return .= '</div>';
-
-	
-	echo $to_return;
+	echo $status;
 	exit;
 }
 else if($req == 5)
 {
-	$isUpdate = trim($_POST['isUpdate']);
-	$profile_id = trim($_POST['profileID']);
-	//$date_of_sub = date("Y-m-d");
-	$date_of_sub = trim($_POST['subscriptionDate']);
-	$fieldIDStr = trim($_POST['fieldIDStr']);
-	$fieldValStr = trim($_POST['fieldValStr']);
-	$subscription_id = trim($_POST['subscriptionID']);
-	
-	$fieldIDArr = explode(",", $fieldIDStr);
-	$fieldValArr = explode(",", $fieldValStr);
-	//print_r($fieldIDArr);
-	//print_r($fieldValArr);
+	//delete the fund
+	$fund_id = trim($_POST['fundID']);
 
-	$total_amount = 0;
-	$values = array();
-	for($i=0; $i<20; $i++)
-	{
-		if(in_array(($i+1), $fieldIDArr))
-		{
-			$total_amount = $total_amount + $fieldValArr[$i];
-			$values[] = $fieldValArr[$i];
-		} else {
-			$values[] = 0;
-		}
-		/*
-		$total_field = COUNT($fieldIDArr);
-		for($j=0; $j<$total_field; $j++)
-		{
-
-		}
-		*/
-	}
-	//print_r($values);exit;
-	//echo $val1.":::". $val2.":::". $val3.":::". $val4.":::". $val5.":::". $val6.":::". $val7.":::". $val8.":::". $val9.":::". $val10.":::". $val11.":::". $val12.":::". $val13.":::". $val14.":::". $val15.":::". $val16.":::". $val17.":::". $val18.":::". $val19.":::". $val20;exit;
-
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	if(!$isUpdate) {
-		$status = $sub_obj->addNewSubscription($profile_id, $date_of_sub, $values[0], $values[1], $values[2], $values[3], $values[4], $values[5], $values[6], $values[7], $values[8], $values[9], $values[10], $values[11], $values[12], $values[13], $values[14], $values[15], $values[16], $values[17], $values[18], $values[19], $total_amount);
-	} else {
-		$status = $sub_obj->updateSubscription($subscription_id, $profile_id, $date_of_sub, $values[0], $values[1], $values[2], $values[3], $values[4], $values[5], $values[6], $values[7], $values[8], $values[9], $values[10], $values[11], $values[12], $values[13], $values[14], $values[15], $values[16], $values[17], $values[18], $values[19], $total_amount);
-	}
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$status = $funds_obj->deleteFund($fund_id);
 
 	echo $status;
 	exit;
 }
 else if($req == 6)
 {
-	//list all subscriptions
-	$profile_id = trim($_POST['profileID']);
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	$subscriptions = $sub_obj->getAllSubscriptions($profile_id);
-	//print_r($subscriptions);
-
+	//list all batches
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$batches = $fund_obj->getAllBatches();
+	
 	$is_results_available = false;
-	if(is_array($subscriptions))
+	if(is_array($batches) && $batches[0] == 1)
 	{
-		$total_subscriptions = COUNT($subscriptions);
-		if($total_subscriptions > 0)
+		$batches = $batches[1];
+		$total_batch = COUNT($batches);
+		if($total_batch > 0)
 		{
 			$is_results_available = true;
-			for($i=0; $i<$total_subscriptions; $i++) {
-				
-				$unique_id = 'STC'.appendZeroInUniqueID($subscriptions[$i][5]);
+			for($i=0; $i<$total_batch; $i++)
+			{
+				$batch_id = $batches[$i][0];
+				$batch_name = $batches[$i][1];
+				$batch_info = $batch_name . '(<a href="#">#'.$batch_id.'</a>)';
+				$batch_desc = $batches[$i][2];
+				$batch_created_time = $batches[$i][3];
+				//$last_updated_time = $batches[$i][4];
+				$expected_amount = $batches[$i][5];
+				$received_amount = $batches[$i][6];
 
-				$actions = '<div class="dropdown">';
-				//$actions .= '<i class="curHand icon-pencil" onclick="getSubscriptionForm(1, '.$subscriptions[$i][0].')"></i>&nbsp;&nbsp;';
-				$actions .= '<a href="#subModal" role="button" data-toggle="modal"><i class="curHand icon-pencil" onclick="getSubscriptionForm(1, '.$subscriptions[$i][0].', '.$subscriptions[$i][1].')"></i></a>&nbsp;';
-				$actions .= '<i class="curHand icon-trash" onclick="deleteSubscriptionConfirmation('.$subscriptions[$i][0].','.$subscriptions[$i][1].')"></i>&nbsp;&nbsp;';
-				$actions .= '</div>';
-				
-				$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $subscriptions[$i][0], '<a href="#">'.$unique_id.'</a>', $subscriptions[$i][2], formatDateOfBirth($subscriptions[$i][3]), $subscriptions[$i][4], $actions);
+				$actions = '<i class="curHand icon-pencil" onclick="getBatchForm(1, '.$batch_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteBatchConfirmation('.$batch_id.', \''.$batch_name.'\')"></i>';
+				$to_return['aaData'][] = array($batch_info, $batch_desc, $batch_created_time, $expected_amount, $received_amount, $actions);
 			}
 		}
 	}
@@ -373,54 +212,129 @@ else if($req == 6)
 }
 else if($req == 7)
 {
-	//detailed information on subscription
-	$subscription_id = trim($_POST['subscriptionID']);
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	$subscription_fields = $sub_obj->getAllSubscriptionFields();
-	$subscription_details = $sub_obj->getSubscriptionInformation($subscription_id);
-
-	$total_fields = COUNT($subscription_fields);
-	$fields_per_row = 4;
-	$total_row = ceil($total_fields / $fields_per_row);
-	$remaining_field_count = ($total_row % $fields_per_row);
-	if(is_array($subscription_details))
-	{
-		$to_return .= '<div class="row-fluid"><div class="span12">';
-		if($total_fields > 0)
+	//get add/edit batch form
+	$is_update = trim($_POST['isEdit']);
+	$batch_id = trim($_POST['batchID']);
+	
+	if($is_update) {
+		$fund_obj = new Funds($APPLICATION_PATH);	
+		$batch_details = $fund_obj->getBatchInformation($batch_id);
+		if(is_array($batch_details) && COUNT($batch_details) > 0)
 		{
-			$j = 1;
-			for($i=0; $i<$total_fields; $i++)
+			if($batch_details[0] == 1)
 			{
-				if(($j == 1) || ($j % $fields_per_row == 1)) {
-					$to_return .= '<div class="row-fluid">';
-				}
-					$to_return .= '<div class="span2"><span class="muted pull-right">';
-						$to_return .= $subscription_fields[$i][1];
-					$to_return .= '</span></div>';
-					$to_return .= '<div class="span1"><p class="pull-left">';
-						$to_return .= $subscription_details[0][$i];
-					$to_return .= '</p></div>';
-
-				if(($j == $total_field_value) || ($j % $fields_per_row == 0)) {
-					$to_return .= '</div>';
-				}
-
-				$j++;
+				$batch = $batch_details[1];
+				$batch_name = $batch[1];
+				$batch_desc = $batch[2];
+				$expected_amount = $batch[3];
 			}
+			else {
+				$error = true;
+			}
+		} else {
+			$error = true;			
 		}
-		$to_return .= '</div></div>';
+
+		if($error) {
+			$to_return = '<span class="text-error">'.$batch_details[1].'</span>';
+			echo $to_return;
+			exit;
+		}
+		
 	}
+
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputBatchName">Batch Name</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<input type="text" class="span10" id="inputBatchName" placeholder="Batch Name" value="'.$batch_name.'">';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputBatchDesc">Description</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<textarea class="span10" id="inputBatchDesc" placeholder="Batch Description">'.$batch_desc.'</textarea>';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputExpectedAmount">Expected Amount</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<input type="text" class="span10" id="inputExpectedAmount" placeholder="Expected Amount" value="'.$expected_amount.'">';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="form-actions" align="center">';
+					$to_return .= '<button class="btn btn-primary" type="submit" onclick="addOrUpdateBatch('.$is_update.');">'.(($is_update)?'Update Batch':'Add Batch').'</button>&nbsp;';
+					if(!$is_update) {
+						$to_return .= '<button class="btn" type="reset">Reset</button>';
+					}
+					$to_return .= '<input type="hidden" id="inputHiddenBatchID" value="'.$batch_id.'" />';
+				$to_return .= '</div>';
+			$to_return .= '</form>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';	
 
 	echo $to_return;
 	exit;
 }
 else if($req == 8)
 {
-	//delete specific subscription details
-	$subscription_id = trim($_POST['subscriptionID']);
-	$sub_obj = new Subscription($APPLICATION_PATH);
-	$status = $sub_obj->deleteSubscription($subscription_id);
+	//add/edit batch details
+	$is_update = trim($_POST['isUpdate']);
+	$batch_id = trim($_POST['batchID']);
+	$batch_name = trim($_POST['batchName']);
+	$batch_description = trim($_POST['batchDesc']);
+	$expected_amount = trim($_POST['expectedAmount']);
+	
+	$dt = Carbon::now('Asia/Calcutta');
+	if($is_update) {
+		$last_updated_time = $dt->toDateTimeString();
+	} else {
+		$batch_created_time = $dt->toDateTimeString();
+	}
+	
+	$funds_obj = new Funds($APPLICATION_PATH);
+	if($is_update) {
+		$status = $funds_obj->updateBatch($batch_id, $batch_name, $batch_description, $expected_amount, $last_updated_time);
+	} else {
+		$status = $funds_obj->addBatch($batch_name, $batch_description, $expected_amount, $batch_created_time);
+	}
+
 	echo $status;
 	exit;
 }
+else if($req == 9)
+{
+	//delete the batch
+	$batch_id = trim($_POST['batchID']);
+
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$status = $funds_obj->deleteBatch($batch_id);
+
+	echo $status;
+	exit;
+}
+
+$to_return = '';
+	$to_return .= '<div class="tabbable">';
+		$to_return .= '<ul class="nav nav-tabs">';
+			$to_return .= '<li id="summaryTab" class="active" onclick="getBatchSummary('.$batch_id.')"><a href="#summaryTab" data-toggle="tab">Summary</a></li>';
+			$to_return .= '<li id="addContributionTab" onclick="getAddOrUpdateContributionForm('.$is_update.', '.$batch_id.', '.$contribution_id.');"><a href="#addContributionTab" data-toggle="tab">Add Contribution</a></li>';
+			$to_return .= '<li id="listContributionTab" onclick="listAllContributions('.$batch_id.');"><a href="#listContributionTab" data-toggle="tab">List Contributions</a></li>';
+		$to_return .= '</ul>';
+		$to_return .= '<div class="tab-content">';
+			$to_return .= '<div class="tab-pane active" id="summaryDiv">';
+			$to_return .= '</div>';
+			$to_return .= '<div class="tab-pane" id="addContributionDiv">';
+			$to_return .= '</div>';
+			$to_return .= '<div class="tab-pane" id="listContributionDiv">';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
+	exit;
+
 ?>

@@ -29,7 +29,7 @@ if($req == 1)
 	$to_return .= '<div class="widget">';
 		$to_return .= '<div class="widget-header">';
 			$to_return .= '<i class="icon-asterisk icon-white"></i>';
-			$to_return .= '<h3>Profile stats</h3>';
+			$to_return .= '<h3>Profile Stats</h3>';
 			$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(1);"></i></span>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="widget-content">';
@@ -91,7 +91,7 @@ else if($req == 2)
 		$to_return .= '<div class="widget-header">';
 			$to_return .= '<i class="icon-asterisk icon-white"></i>';
 //			$to_return .= '<h3>Subscriptions ['.$dt->year.'] - In Indian Rupees</h3>';
-			$to_return .= '<h3>Subscription Management</h3>';
+			$to_return .= '<h3>Contributions</h3>';
 			$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="widget-content">';
@@ -142,7 +142,7 @@ else if($req == 3)
 	$to_return .= '<div class="widget">';
 		$to_return .= '<div class="widget-header">';
 			$to_return .= '<i class="icon-asterisk icon-white"></i>';
-			$to_return .= '<h3>Event for this month</h3>';
+			$to_return .= '<h3>Events of the month</h3>';
 			$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(3);"></i></span>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="widget-content">';

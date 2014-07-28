@@ -14,14 +14,17 @@ include "header.php";
     <h4 id="pageHeader">Dashboard <small>Quick stats</small> </h4>
 </div>
 <div class="row-fluid">
-    <div class="span6" id="profileStats">
-    </div>
-    <div class="span6" id="subscriptionStats">
-    </div>
+	<div class="span6">
+		<div class="span12" id="profileStats">
+		</div>
+		<div class="span12" id="contributionStats" style="margin-left:0px;">
+		</div>
+	</div>    
+	<div class="span6" id="eventStats">
+    </div>    
 </div>
 <div class="row-fluid">
-    <div class="span6" id="eventStats">
-    </div>
+    
     <div class="span6" id="Stats">
     </div>
 </div>

@@ -100,4 +100,24 @@ if($req == 'authenticate')
 	echo $encode_obj;
 	exit;
 }
+else if($req == 'signup')
+{
+	$church_name = trim($_POST['churchName']);
+	$church_location = trim($_POST['churchLocation']);
+	$first_name = trim($_POST['name']);
+	$middle_name = trim($_POST['']);
+	$last_name = trim($_POST['']);
+	$email = trim($_POST['email']);
+	$mobile = trim($_POST['phone']);
+
+	$users_obj = new Users($APPLICATION_PATH);
+	$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile);
+
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($signup_result);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
 ?>

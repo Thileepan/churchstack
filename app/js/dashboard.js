@@ -125,7 +125,7 @@ function getDashboardDataResponse(response)
 
 		
 	} else if (req == 2)	{
-		document.getElementById('subscriptionStats').innerHTML = res;
+		document.getElementById('contributionStats').innerHTML = res;
 	} else if (req == 3)	{
 		document.getElementById('eventStats').innerHTML = res;
 		var reqFrom = 2;

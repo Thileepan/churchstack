@@ -17,7 +17,7 @@ include "header.php";
     <div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Contribution Management</li>
-          <li id="listFunds" onclick="listAllFunds();" class="active"><a href="#">Funds</a></li>
+          <li id="listFunds" onclick="listAllFunds();" class="active"><a href="#">Contribution Funds</a></li>
 		  <li id="listBatches" onclick="listAllBatches();" class=""><a href="#">Batches</a></li>
         <!--  <li class="divider"></li> -->
         </ul>

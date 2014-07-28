@@ -140,7 +140,7 @@ class Events
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from EVENT_PARTICIPANTS where EVENT_ID=?';
+			$query = 'delete from EVENT_PARTICIPANTS where EVENT_ID=?';
 			$result = $this->db_conn->Execute($query, array($this->event_id));
 			if($result) {
 				return true;
@@ -153,7 +153,7 @@ class Events
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from EVENT_NOTIFICATIONS where EVENT_ID=?';
+			$query = 'delete from EVENT_NOTIFICATIONS where EVENT_ID=?';
 			$result = $this->db_conn->Execute($query, array($this->event_id));
 			if($result) {
 				return true;

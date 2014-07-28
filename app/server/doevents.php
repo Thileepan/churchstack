@@ -348,9 +348,9 @@ else if($req == 2)
 	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span12">';
 			$to_return .= '<div class="form-actions" align="center">';
-				$to_return .= '<button id="btnPreviousStep" class="btn btn-primary" onclick="showpreviousEventStep();" style="display:none;">Previous</button>&nbsp;';
-				$to_return .= '<button id="btnNextStep" class="btn btn-primary" onclick="showNextEventStep();">Next</button>&nbsp;';
-				$to_return .= '<button id="btnSaveEvent" class="btn btn-primary" onclick="addOrUpdateEvents(0);" style="display:none;">Save</button>&nbsp;';
+				$to_return .= '<button id="btnPreviousStep" class="btn btn-primary" onclick="showpreviousEventStep('.$is_update.');" style="display:none;">Previous</button>&nbsp;';
+				$to_return .= '<button id="btnNextStep" class="btn btn-primary" onclick="showNextEventStep('.$is_update.');">Next</button>&nbsp;';
+				$to_return .= '<button id="btnSaveEvent" class="btn btn-primary" onclick="addOrUpdateEvents('.$is_update.', 0);" style="display:none;">Save</button>&nbsp;';
 				$to_return .= '<input type="hidden" id="currentEventStep" value="1" />';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
@@ -369,8 +369,8 @@ else if($req == 3)
 	$start_time	= trim($_POST['startTime']);
 	$end_time	= trim($_POST['endTime']);
 	$organiser	= trim($_POST['organiser']);
-	$priority	= -1;
-	$access_level= -1;
+	$priority	= 0;
+	$access_level= 0;
 
 	$freq		= trim($_POST['freq']);
 	$interval	= trim($_POST['interval']);

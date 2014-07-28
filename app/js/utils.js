@@ -2,7 +2,8 @@ function menuLinkClicked(menuID)
 {
 	if(menuID == 1) {
 		document.getElementById('mhome').className = "active";
-		document.getElementById('mhomeText').className = "label label-info";
+		//document.getElementById('mhomeText').className = "label label-info";
+		document.getElementById('homeLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mhomeText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('msubscription').className = "";
 		document.getElementById('mevents').className = "";
@@ -15,7 +16,8 @@ function menuLinkClicked(menuID)
 	} else if(menuID == 2) {
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "active";
-		document.getElementById('msubscriptionText').className = "label label-info";
+		//document.getElementById('msubscriptionText').className = "label label-info";
+		document.getElementById('subscriptionLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('msubscriptionText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mevents').className = "";
 		document.getElementById('msettings').className = "";
@@ -28,7 +30,8 @@ function menuLinkClicked(menuID)
 		document.getElementById('mhome').className = "";
 		document.getElementById('msubscription').className = "";
 		document.getElementById('mevents').className = "active";
-		document.getElementById('meventsText').className = "label label-info";
+		//document.getElementById('meventsText').className = "label label-info";
+		document.getElementById('eventsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('meventsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
@@ -41,7 +44,8 @@ function menuLinkClicked(menuID)
 		document.getElementById('msubscription').className = "";
 		document.getElementById('mevents').className = "";
 		document.getElementById('msettings').className = "active";
-		document.getElementById('msettingsText').className = "label label-info";
+		//document.getElementById('msettingsText').className = "label label-info";
+		document.getElementById('settingsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('msettingsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
@@ -54,7 +58,8 @@ function menuLinkClicked(menuID)
 		document.getElementById('mevents').className = "";
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "active";
-		document.getElementById('mreportsText').className = "label label-info";
+		//document.getElementById('mreportsText').className = "label label-info";
+		document.getElementById('reportsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mreportsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mdashboard').className = "";
 		//document.getElementById('mharvest').className = "";
@@ -68,7 +73,8 @@ function menuLinkClicked(menuID)
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "active";
 		//document.getElementById('mharvest').className = "";
-		document.getElementById('mdashboardText').className = "label label-info";
+		//document.getElementById('mdashboardText').className = "label label-info";
+		document.getElementById('dashboardLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mdashboardText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -94,7 +100,8 @@ function menuLinkClicked(menuID)
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "active";
 		document.getElementById('mfunds').className = "";
-		document.getElementById('mgroupsText').className = "label label-info";
+		//document.getElementById('mgroupsText').className = "label label-info";
+		document.getElementById('groupsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mgroupsText').setAttribute("style", "color:white;font-weight:bold;");
 	} else if(menuID == 9) {
 		document.getElementById('mhome').className = "";
@@ -106,7 +113,8 @@ function menuLinkClicked(menuID)
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "active";
-		document.getElementById('mfundsText').className = "label label-info";
+		//document.getElementById('mfundsText').className = "label label-info";
+		document.getElementById('fundsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mfundsText').setAttribute("style", "color:white;font-weight:bold;");
 	}
 }

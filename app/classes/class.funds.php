@@ -17,12 +17,13 @@ class Funds
         }
 	}
 
-	public function addFund($fund_name, $fund_description)
+	public function addFund($fund_name, $fund_description, $fund_visibility)
 	{
 		if($this->db_conn)
 		{
-			$query = 'insert into FUND_DETAILS (FUND_NAME, FUND_DESCRIPTION) values (?, ?)';
-			$result = $this->db_conn->Execute($query, array($fund_name, $fund_description));
+			$query = 'insert into FUND_DETAILS (FUND_NAME, FUND_DESCRIPTION, VISIBILITY) values (?, ?, ?)';
+			$result = $this->db_conn->Execute($query, array($fund_name, $fund_description, $fund_visibility));
+			echo $this->db_conn->ErrorMsg();
 			if($result) {
 				return true;
 			}
@@ -30,12 +31,12 @@ class Funds
 		return false;
 	}
 
-	public function updateFund($fund_id, $fund_name, $fund_description)
+	public function updateFund($fund_id, $fund_name, $fund_description, $fund_visibility)
 	{
 		if($this->db_conn)
 		{
-			$query = 'update FUND_DETAILS set FUND_NAME=?, FUND_DESCRIPTION=? where FUND_ID=?';
-			$result = $this->db_conn->Execute($query, array($fund_name, $fund_description, $fund_id));
+			$query = 'update FUND_DETAILS set FUND_NAME=?, FUND_DESCRIPTION=?, VISIBILITY=? where FUND_ID=?';
+			$result = $this->db_conn->Execute($query, array($fund_name, $fund_description, $fund_visibility, $fund_id));
 			if($result) {
 				return true;
 			}
@@ -43,12 +44,12 @@ class Funds
 		return false;
 	}
 
-	public function addBatch()
+	public function deleteFund($fund_id)
 	{
 		if($this->db_conn)
 		{
-			$query = 'insert into BATCH_DETAILS (BATCH_NAME, BATCH_DESCRIPTION) values (?, ?)';
-			$result = $this->db_conn->Execute($query, array($batch_name, $batch_description));
+			$query = 'delete from FUND_DETAILS where FUND_ID=?';
+			$result = $this->db_conn->Execute($query, array($fund_id));
 			if($result) {
 				return true;
 			}
@@ -56,14 +57,217 @@ class Funds
 		return false;
 	}
 
-	public function updateBatch()
+	public function getAllFunds()
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to list the funds.';
+
+		if($this->db_conn)
+		{
+			$fund_details = array();
+			$query = 'select FUND_ID, FUND_NAME, FUND_DESCRIPTION, VISIBILITY from FUND_DETAILS';
+			$result = $this->db_conn->Execute($query);
+			
+			if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+                        $fund_id = $result->fields[0];
+                        $fund_name = $result->fields[1];
+						$fund_description = $result->fields[2];
+						$fund_visibility = $result->fields[3];
+						$fund_details[] = array($fund_id, $fund_name, $fund_description, $fund_visibility);
+
+						$return_data[0] = 1;
+						$return_data[1] = $fund_details;
+
+						$result->MoveNext();						
+                    }
+                }
+				else
+				{
+					$return_data[0] = 0;
+					$return_data[1] = 'No fund is available.';
+				}
+            }
+		}
+		return $return_data;
+	}
+
+	public function getFundInformation($fund_id)
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to view the fund information.';
+		
+		if($this->db_conn)
+		{
+			$fund_details = array();
+			$query = 'select FUND_ID, FUND_NAME, FUND_DESCRIPTION, VISIBILITY from FUND_DETAILS where FUND_ID=?';
+			$result = $this->db_conn->Execute($query, array($fund_id));
+			
+			if($result) {
+                if(!$result->EOF) {
+                    $fund_name = $result->fields[1];
+					$fund_description = $result->fields[2];
+					$fund_visibility = $result->fields[3];
+					$fund_details = array($fund_id, $fund_name, $fund_description, $fund_visibility);
+
+					$return_data[0] = 1;
+					$return_data[1] = $fund_details;
+				}
+            }
+		}
+		return $return_data;
+	}
+
+	public function updateFundVisibility($fund_id, $visibility)
 	{
 		if($this->db_conn)
 		{
-			$query = 'update BATCH_DETAILS set BATCH_NAME=?, BATCH_DESCRIPTION=? where BATCH_ID=?';
-			$result = $this->db_conn->Execute($query, array($batch_name, $batch_description, $batch_id));
+			$query = 'update FUND_DETAILS set VISIBILITY=? where FUND_ID=?';
+			$result = $this->db_conn->Execute($query, array($visibility, $fund_id));
 			if($result) {
 				return true;
+			}
+		}
+		return false;
+	}
+
+	public function isFundUsedInContribution($fund_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'select FUND_ID CONTRIBUTION_SPLIT_DETAILS where FUND_ID=? limit 1';
+			$result = $this->db_conn->Execute($query, array($fund_id));
+			if($result) {
+				if(!$result->EOF) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public function addBatch($batch_name, $batch_description, $expected_amount, $batch_created_time)
+	{
+		if($this->db_conn)
+		{
+			$query = 'insert into BATCH_DETAILS (BATCH_NAME, BATCH_DESCRIPTION, EXPECTED_AMOUNT, BATCH_CREATED_TIME) values (?, ?, ?, ?)';
+			$result = $this->db_conn->Execute($query, array($batch_name, $batch_description, $expected_amount, $batch_created_time));
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function updateBatch($batch_id, $batch_name, $batch_description, $expected_amount, $last_updated_time)
+	{
+		if($this->db_conn)
+		{
+			$query = 'update BATCH_DETAILS set BATCH_NAME=?, BATCH_DESCRIPTION=?, EXPECTED_AMOUNT=?, LAST_UPDATED_TIME=? where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_name, $batch_description, $expected_amount, $last_updated_time, $batch_id));
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function deleteBatch($batch_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'delete from BATCH_DETAILS where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function getAllBatches()
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to list the contributions.';
+		
+		if($this->db_conn)
+		{
+			$batch_details = array();
+			//$query = 'select a.BATCH_ID, a.BATCH_NAME, a.BATCH_DESCRIPTION, a.BATCH_CREATED_TIME, a.LAST_UPDATED_TIME, a.EXPECTED_AMOUNT, SUM(c.AMOUNT) from BATCH_DETAILS as a left outer join CONTRIBUTION_DETAILS as b on a.BATCH_ID = b.BATCH_ID, CONTRIBUTION_SPLIT_DETAILS as c where b.CONTRIBUTION_ID=c.CONTRIBUTION_ID';
+			$query = 'select BATCH_ID, BATCH_NAME, BATCH_DESCRIPTION, BATCH_CREATED_TIME, LAST_UPDATED_TIME, EXPECTED_AMOUNT from BATCH_DETAILS';
+			$result = $this->db_conn->Execute($query);
+			
+			if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+                        $batch_id = $result->fields[0];
+                        $batch_name = $result->fields[1];
+						$batch_description = $result->fields[2];
+						$batch_created_time = $result->fields[3];
+						$last_updated_time = $result->fields[4];
+						$expected_amount = $result->fields[5];
+						$received_amount = 0;//$result->fields[6];
+						$batch_details[] = array($batch_id, $batch_name, $batch_description, $batch_created_time, $last_updated_time, $expected_amount, $received_amount);
+
+						$result->MoveNext();
+                    }
+					$return_data[0] = 1;
+					$return_data[1] = $batch_details;
+                }
+				else
+				{
+					$return_data[0] = 0;
+					$return_data[1] = 'No batch is available.';
+				}
+            }
+		}
+		return $return_data;
+	}
+
+	public function getBatchInformation($batch_id)
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to view the batch information.';
+		
+		if($this->db_conn)
+		{
+			$batch_details = array();
+			$query = 'select BATCH_NAME, BATCH_DESCRIPTION, EXPECTED_AMOUNT, BATCH_CREATED_TIME from BATCH_DETAILS where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			
+			if($result) {
+                if(!$result->EOF) {
+                    $batch_name = $result->fields[0];
+					$batch_description = $result->fields[1];
+					$expected_amount = $result->fields[2];
+					$batch_created_time = $result->fields[3];
+					$batch_details = array($batch_id, $batch_name, $batch_description, $expected_amount, $batch_created_time);
+					
+					$return_data[0] = 1;
+					$return_data[1] = $batch_details;
+				}
+            }
+		}
+		return $return_data;
+	}
+
+	public function isBatchUsedInContribution($fund_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'select BATCH_ID CONTRIBUTION_DETAILS where BATCH_ID=? limit 1';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			if($result) {
+				if(!$result->EOF){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -119,132 +323,7 @@ class Funds
 			}
 		}
 		return false;
-	}
-
-	public function getAllFunds()
-	{
-		$return_data = array();
-		$return_data[0] = 0;
-		$return_data[1] = 'Unable to list the funds.';
-
-		if($this->db_conn)
-		{
-			$fund_details = array();
-			$query = 'select FUND_ID, FUND_NAME, FUND_DESCRIPTION from FUND_DETAILS';
-			$result = $this->db_conn->Execute($query);
-			
-			if($result) {
-                if(!$result->EOF) {
-                    while(!$result->EOF)
-                    {
-                        $fund_id = $result->fields[0];
-                        $fund_name = $result->fields[1];
-						$fund_description = $result->fields[2];
-						$fund_details[] = array($fund_id, $fund_name, $fund_description);
-
-						$result->MoveNext();
-
-						$return_data[0] = 1;
-						$return_data[1] = $fund_details;
-                    }
-                }
-				else
-				{
-					$return_data[0] = 0;
-					$return_data[1] = 'No fund is available.';
-				}
-            }
-		}
-		return $return_data;
-	}
-
-	public function getFundInformation($fund_id)
-	{
-		$return_data = array();
-		$return_data[0] = 0;
-		$return_data[1] = 'Unable to view the fund information.';
-		
-		if($this->db_conn)
-		{
-			$fund_details = array();
-			$query = 'select FUND_NAME, FUND_DESCRIPTION from FUND_DETAILS where FUND_ID=?';
-			$result = $this->db_conn->Execute($query, array($fund_id));
-			
-			if($result) {
-                if(!$result->EOF) {
-                    $fund_name = $result->fields[1];
-					$fund_description = $result->fields[2];
-					$fund_details = array($fund_id, $fund_name, $fund_description);
-
-					$return_data[0] = 1;
-					$return_data[1] = $fund_details;
-				}
-            }
-		}
-		return $fund_details;
-	}
-
-	public function getAllBatches()
-	{
-		$return_data = array();
-		$return_data[0] = 0;
-		$return_data[1] = 'Unable to list the contributions.';
-		
-		if($this->db_conn)
-		{
-			$batch_details = array();
-			$query = 'select BATCH_ID, BATCH_NAME, BATCH_DESCRIPTION from BATCH_DETAILS';
-			$result = $this->db_conn->Execute($query);
-			
-			if($result) {
-                if(!$result->EOF) {
-                    while(!$result->EOF)
-                    {
-                        $fund_id = $result->fields[0];
-                        $fund_name = $result->fields[1];
-						$fund_description = $result->fields[2];
-						$batch_details[] = array($fund_id, $fund_name, $fund_description);
-
-						$result->MoveNext();
-                    }
-					$return_data[0] = 1;
-					$return_data[1] = $batch_details;
-                }
-				else
-				{
-					$return_data[0] = 0;
-					$return_data[1] = 'No batch is available.';
-				}
-            }
-		}
-		return $return_data;
-	}
-
-	public function getBatchInformation($batch_id)
-	{
-		$return_data = array();
-		$return_data[0] = 0;
-		$return_data[1] = 'Unable to view the batch information.';
-		
-		if($this->db_conn)
-		{
-			$batch_details = array();
-			$query = 'select BATCH_NAME, BATCH_DESCRIPTION from BATCH_DETAILS where BATCH_ID=?';
-			$result = $this->db_conn->Execute($query, array($batch_id));
-			
-			if($result) {
-                if(!$result->EOF) {
-                    $batch_name = $result->fields[0];
-					$batch_description = $result->fields[1];
-					$batch_details = array($batch_id, $batch_name, $batch_description);
-					
-					$return_data[0] = 1;
-					$return_data[1] = $batch_details;
-				}
-            }
-		}
-		return $return_data;
-	}
+	}	
 
 	public function getAllContributions()
 	{
@@ -355,32 +434,6 @@ class Funds
 		return $return_data;
 	}
 
-	public function deleteFund($fund_id)
-	{
-		if($this->db_conn)
-		{
-			$query = 'delete * from FUND_DETAILS where FUND_ID=?';
-			$result = $this->db_conn->Execute($query, array($fund_id));
-			if($result) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function deleteBatch($batch_id)
-	{
-		if($this->db_conn)
-		{
-			$query = 'delete * from BATCH_DETAILS where BATCH_ID=?';
-			$result = $this->db_conn->Execute($query, array($batch_id));
-			if($result) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public function deleteContribution($contribution_id)
 	{
 		if($this->db_conn)
@@ -405,36 +458,6 @@ class Funds
 			}
 		}
 		return false;
-	}
-
-	public function isFundUsedInContribution($fund_id)
-	{
-		if($this->db_conn)
-		{
-			$query = 'select FUND_ID CONTRIBUTION_SPLIT_DETAILS where FUND_ID=? limit 1';
-			$result = $this->db_conn->Execute($query, array($fund_id));
-			if($result) {
-				if(!$result->EOF) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	public function isBatchUsedInContribution($fund_id)
-	{
-		if($this->db_conn)
-		{
-			$query = 'select BATCH_ID CONTRIBUTION_DETAILS where BATCH_ID=? limit 1';
-			$result = $this->db_conn->Execute($query, array($batch_id));
-			if($result) {
-				if(!$result->EOF){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	}	
 }
 ?>

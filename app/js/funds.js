@@ -1,28 +1,6 @@
 //global variables
 doFundsFile = 'server/dofunds.php';
 
-/* Formating function for row details */
-function showSubscriptionDetails ( subscriptionID )
-{
-	$.when(getSubscriptionDetails(subscriptionID)).done(function(response){
-		sOut = response;
-	});
-	return sOut;
-}
-
-function getSubscriptionDetails(subscriptionID)
-{
-	var formPostData = 'req=7&subscriptionID=' + subscriptionID;
-	return $.ajax({
-		async: false,
-		type:'POST',
-		url:doFundsFile,
-		data:formPostData,
-		//success:listSubscriptionDetailsResponse,
-		//error:HandleAjaxError
-	});
-}
-
 function listAllFunds()
 {
 	document.getElementById('listFunds').className = 'active';
@@ -30,7 +8,7 @@ function listAllFunds()
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('pageHeader').innerHTML = 'Manage Funds';
 
-	var table = '<button class="btn btn-small btn-primary pull-right" onclick="">Add New Fund</button><BR><BR><table id="listFundsTable" class="table table-striped"><thead><tr><th>S.No.</th><th>Fund Name</th><th>Visibility</th><th>Description</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	var table = '<button class="btn btn-small btn-primary pull-right" onclick="getFundForm(0)">Add New Fund</button><BR><BR><table id="listFundsTable" class="table table-striped"><thead><tr><th>Fund Name</th><th>Description</th><th>Visibility</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('pageContent').innerHTML = table;
 	
 	oTable = $('#listFundsTable').dataTable( {
@@ -57,56 +35,78 @@ function listAllFunds()
 	});
 }
 
-function listAllFundsResponse(response)
-{
-	
-}
-
-function addOrUpdateField(val)
+function getFundForm(val, fundID)
 {
 	isUpdate = val;
-	var fieldID;
-	var fieldName = '';
-	if(isUpdate) {
-		var rowID = document.getElementById('hiddenLastEditedRow').value;
-		fieldName = document.getElementById('inputEditFieldName-' + rowID).value;
-		fieldID = document.getElementById('inputEditFieldID-' + rowID).value; 
-	} else {
-		fieldName = document.getElementById('inputAddFieldName').value;
-	}
 	
-	if(fieldName == "") {
-		var alertMsg = 'Field Name is missing.';
+	var formPostData = "req=2";
+	formPostData += "&isEdit=" + isUpdate;
+	if(isUpdate) {
+		formPostData += "&fundID=" + fundID;
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:getFundFormResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getFundFormResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = (isUpdate)?"Edit Fund":"Add New Fund";
+	document.getElementById('pageContent').innerHTML = response;
+	document.getElementById('inputFundName').focus();
+}
+
+function addOrUpdateFund(val)
+{
+	isUpdate = val;
+	var fundID;
+	if(isUpdate) {
+		fundID = document.getElementById('inputHiddenFundID').value; 
+	}
+	var fundName = document.getElementById('inputFundName').value;
+	var fundDesc = document.getElementById('inputFundDesc').value;
+	var visibility = document.getElementById('inputFundVisibility').selectedIndex;
+
+	if(fundName == '') {
+		var alertMsg = 'Fund Name is missing.';
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
 		return false;
 	}
 
-	var formPostData = 'req=2&isUpdate=' + isUpdate + '&fieldName=' + fieldName;
+	var formPostData = 'req=3';
+	formPostData += '&isUpdate=' + isUpdate;
+	formPostData += '&fundName=' + fundName;
+	formPostData += '&fundDesc=' + fundDesc;
+	formPostData += '&visibility=' + visibility;
 	if(isUpdate) {
-		formPostData += '&fieldID=' + fieldID;
+		formPostData += '&fundID=' + fundID;
 	}
 
 	$.ajax({
 		type:'POST',
-		url:doSubscribeFile,
+		url:doFundsFile,
 		data:formPostData,
-		success:addOrUpdateFieldResponse,
+		success:addOrUpdateFundResponse,
 		error:HandleAjaxError
 	});
 }
 
-function addOrUpdateFieldResponse(response)
+function addOrUpdateFundResponse(response)
 {
 	if(response) {
 		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'Field has been updated successfully':'Field has been added successfully';
-
-		listSubscriptionFields();
+		var msgToDisplay = (isUpdate)?'Fund has been updated successfully':'Fund has been added successfully';
+		listAllFunds();
 	}
 	else {
 		var alertType = 2;
-		var msgToDisplay = (isUpdate)?'Unable to update the field':'Unable to add the field';
+		var msgToDisplay = (isUpdate)?'Unable to update the fund':'Unable to add the fund';
 	}
 
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
@@ -114,30 +114,29 @@ function addOrUpdateFieldResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function hideOrShowField(req, rowID)
+function changeFundVisibility(fundID, visibilityStatus)
 {
-	var fieldID = document.getElementById('inputEditFieldID-' + rowID).value; 
-	var formPostData = 'req=3&fieldID=' + fieldID + '&isHide=' + req;
+	var formPostData = 'req=4&fundID=' + fundID + '&visibilityStatus=' + visibilityStatus;
 	$.ajax({
 		type:'POST',
-		url:doSubscribeFile,
+		url:doFundsFile,
 		data:formPostData,
-		success:hideOrShowFieldResponse,
+		success:changeFundVisibilityResponse,
 		error:HandleAjaxError
 	});
 }
 
-function hideOrShowFieldResponse(response)
+function changeFundVisibilityResponse(response)
 {
 	if(response) {
 		var alertType = 1;
-		var msgToDisplay = 'Updated successfully';
+		var msgToDisplay = 'Fund visibility has been updated successfully.';
 
-		listSubscriptionFields();
+		listAllFunds();
 	}
 	else {
 		var alertType = 2;
-		var msgToDisplay = 'Update failed';
+		var msgToDisplay = 'Fund visibility updated was failed.';
 	}
 
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
@@ -145,135 +144,278 @@ function hideOrShowFieldResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function showEditFieldInfoRow(rowID)
+function deleteFundConfirmation(fundID, fundName)
 {
+	var msgToDisplay = 'Please confirm to delete the fund \'' + fundName + '\'';
+	var actionTakenCallBack = "deleteFundRequest(" + fundID + ")";
+	var actionCancelCallBack = "cancelFundDeleteRequest()";
+	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCancelCallBack);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
+}
+
+function cancelFundDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
 	document.getElementById('alertRow').style.display = 'none';
-	document.getElementById('divAddFieldBtn').style.display = '';
-	document.getElementById('divAddFieldForm').style.display = 'none';
-	var lastEditedRow = document.getElementById('hiddenLastEditedRow').value;
-	if(lastEditedRow != "")
-	{
-		document.getElementById('spnShowFieldNameInfo-' + lastEditedRow).style.display = '';
-		document.getElementById('spnEditFieldNameInfo-' + lastEditedRow).style.display = 'none';
-		document.getElementById('spnActionInfo-' + lastEditedRow).style.display = '';
-		document.getElementById('spnSaveButton-' + lastEditedRow).style.display = 'none';
+}
+
+function deleteFundRequest(fundID)
+{
+	var formPostData = 'req=5&fundID=' + fundID;
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:deleteFundResponse,
+		error:HandleAjaxError
+	});
+}
+
+function deleteFundResponse(response)
+{
+	if(response) {
+		var alertType = 1;
+		var msgToDisplay = 'Fund has been deleted successfully.';
+
+		listAllFunds();
 	}
-	document.getElementById('spnShowFieldNameInfo-' + rowID).style.display = 'none';
-	document.getElementById('spnEditFieldNameInfo-' + rowID).style.display = '';
-	document.getElementById('inputEditFieldName-' + rowID).focus();
-	document.getElementById('inputEditFieldName-' + rowID).select();
-	document.getElementById('spnActionInfo-' + rowID).style.display = 'none';
-	document.getElementById('spnSaveButton-' + rowID).style.display = '';
-	document.getElementById('hiddenLastEditedRow').value = rowID;
+	else {
+		var alertType = 2;
+		var msgToDisplay = 'Unable to delete the fund.';
+	}
+
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function hideEditFieldInfoRow(rowID)
+function listAllBatches()
 {
-	document.getElementById('spnShowFieldNameInfo-' + rowID).style.display = '';
-	document.getElementById('spnEditFieldNameInfo-' + rowID).style.display = 'none';
-	document.getElementById('spnActionInfo-' + rowID).style.display = '';
-	document.getElementById('spnSaveButton-' + rowID).style.display = 'none';
-	document.getElementById('hiddenLastEditedRow').value = "";
-}
-
-function showAddNewFieldForm()
-{
+	document.getElementById('listFunds').className = '';
+	document.getElementById('listBatches').className = 'active';
 	document.getElementById('alertRow').style.display = 'none';
-	document.getElementById('divAddFieldBtn').style.display = 'none';
-	document.getElementById('divAddFieldForm').style.display = '';
-	document.getElementById('inputAddFieldName').focus();
-	var lastEditedRow = document.getElementById('hiddenLastEditedRow').value;
-	if(lastEditedRow != "")
-	{
-		document.getElementById('spnShowFieldNameInfo-' + lastEditedRow).style.display = '';
-		document.getElementById('spnEditFieldNameInfo-' + lastEditedRow).style.display = 'none';
-		document.getElementById('spnActionInfo-' + lastEditedRow).style.display = '';
-		document.getElementById('spnSaveButton-' + lastEditedRow).style.display = 'none';
-	}
+	document.getElementById('pageHeader').innerHTML = 'Manage Batches';
+
+	var table = '<button class="btn btn-small btn-primary pull-right" onclick="getBatchForm(0)">Add New Batch</button><BR><BR><table id="listBatchesTable" class="table table-striped"><thead><tr><th>Batch</th><th>Description</th><th>Created Time</th><th>Expected Amount</th><th>Received Amount</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	document.getElementById('pageContent').innerHTML = table;
+	
+	oTable = $('#listBatchesTable').dataTable( {
+		/*"aoColumns": [
+			{ "sWidth": "5%" },
+			{ "sWidth": "30%"  },
+			{ "sWidth": "20%"  },
+			{ "sWidth": "30%" },
+			{ "sWidth": "15%"  },			
+		],*/
+        "bProcessing": true,
+		"bDestroy": true,
+        "sAjaxSource": "server/dofunds.php",
+		"iDisplayLength":100,
+        "fnServerData": function ( sSource, aoData, fnCallback ) {
+            $.ajax( {
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": "req=6",
+                "success": fnCallback
+            } );
+        }
+	});
 }
 
-function hideAddNewFieldForm()
-{
-	document.getElementById('divAddFieldBtn').style.display='';
-	document.getElementById('divAddFieldForm').style.display='none';
-}
-
-function getSubscriptionForm(val, subscrID, profileID)
+function getBatchForm(val, batchID)
 {
 	isUpdate = val;
-	subscriptionID = subscrID;
-	screenID = document.getElementById('screenID').value;
-	if(!isUpdate)
-	{
-		document.getElementById('listSubscriptionFields').className = '';
-		document.getElementById('addSubscription').className = ((isUpdate)?'':'active');
-		document.getElementById('listSubscriptions').className = '';
-		document.getElementById('alertRow').style.display = 'none';
-	}
 	
-	var formPostData = "req=4";
+	var formPostData = "req=7";
 	formPostData += "&isEdit=" + isUpdate;
 	if(isUpdate) {
-		formPostData += "&subscriptionID=" + subscriptionID;
-		formPostData += "&prevProfileID=" + profileID;
+		formPostData += "&batchID=" + batchID;
 	}
 
 	$.ajax({
 		type:'POST',
-		url:doSubscribeFile,
+		url:doFundsFile,
 		data:formPostData,
-		success:getSubscriptionFormResponse,
+		success:getBatchFormResponse,
 		error:HandleAjaxError
 	});
 }
 
-function getSubscriptionFormResponse(response)
+function getBatchFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = (isUpdate)?"Edit Subscription":"Add Subscription";
+	document.getElementById('pageHeader').innerHTML = (isUpdate)?"Edit Batch":"Add New Batch";
+	document.getElementById('pageContent').innerHTML = response;
+	document.getElementById('inputBatchName').focus();
+}
+
+function addOrUpdateBatch(val)
+{
+	isUpdate = val;
+	var batchID;
 	if(isUpdate) {
-		document.getElementById('modalBody').innerHTML = response;
-		if(screenID == 1)
-		{
-			document.getElementById('subscriptionSaveBtn').style.display = '';
-			document.getElementById('harvestSaveBtn').style.display = 'none';
-		}
-		document.getElementById('hiddenSubscriptionID').value = subscriptionID;
-	} else {
-		document.getElementById('pageContent').innerHTML = response;
-	}	
-
-	var parentIDArr = (document.getElementById('hiddenParentID').value).split(",");
-	var parentNameArr = (document.getElementById('hiddenParentName').value).split(",");
-	var parentUniqueIDArr = (document.getElementById('hiddenParentUniqueID').value).split(",");
-
-	if(parentIDArr.length > 0)
-	{
-		var sourceList = new Array();
-		for(i=0; i<parentIDArr.length; i++)
-		{
-			//console.log(parentIDArr[i]);
-			//sourceList.push({"id":parentIDArr[i], "name:"parentNameArr[i]});
-			//sourceList.push({"id":parentIDArr[i], "name":parentNameArr[i]+"-"+parentUniqueIDArr[i]});
-			sourceList.push({"id":parentIDArr[i], "name":parentUniqueIDArr[i]});
-		}
+		batchID = document.getElementById('inputHiddenBatchID').value; 
 	}
-	
-	$('#inputProfileID').typeahead({
-		source: sourceList,
-		display: 'name',
-		val: 'id',
-		itemSelected: onSelectingProfileID
-	});
-	document.getElementById('inputProfileID').focus();
+	var batchName = document.getElementById('inputBatchName').value;
+	var batchDesc = document.getElementById('inputBatchDesc').value;
+	var expectedAmount = document.getElementById('inputExpectedAmount').value;
 
-	$('#inputSubcriptionMonth').datepicker({
-		autoclose: true
+	if(batchName == '') {
+		var alertMsg = 'Batch Name is missing.';
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+		return false;
+	}
+
+	var formPostData = 'req=8';
+	formPostData += '&isUpdate=' + isUpdate;
+	formPostData += '&batchName=' + batchName;
+	formPostData += '&batchDesc=' + batchDesc;
+	formPostData += '&expectedAmount=' + expectedAmount;
+	if(isUpdate) {
+		formPostData += '&batchID=' + batchID;
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:addOrUpdateBatchResponse,
+		error:HandleAjaxError
 	});
 }
 
-function onSelectingProfileID(item, val, text) {
-	document.getElementById('selectedProfileID').value = val;
+function addOrUpdateBatchResponse(response)
+{
+	if(response) {
+		var alertType = 1;
+		var msgToDisplay = (isUpdate)?'Batch has been updated successfully':'Batch has been added successfully';
+		listAllBatches();
+	}
+	else {
+		var alertType = 2;
+		var msgToDisplay = (isUpdate)?'Unable to update the batch':'Unable to add the batch';
+	}
+
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
+
+function deleteBatchConfirmation(batchID, batchName)
+{
+	var msgToDisplay = 'Please confirm to delete the batch \'' + batchName + '\'';
+	var actionTakenCallBack = "deleteBatchRequest(" + batchID + ")";
+	var actionCancelCallBack = "cancelBatchDeleteRequest()";
+	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCancelCallBack);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
+}
+
+function cancelBatchDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+function deleteBatchRequest(batchID)
+{
+	var formPostData = 'req=9&batchID=' + batchID;
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:deleteBatchResponse,
+		error:HandleAjaxError
+	});
+}
+
+function deleteBatchResponse(response)
+{
+	if(response) {
+		var alertType = 1;
+		var msgToDisplay = 'Batch has been deleted successfully.';
+
+		listAllBatches();
+	}
+	else {
+		var alertType = 2;
+		var msgToDisplay = 'Unable to delete the batch.';
+	}
+
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+}
+
+function showBatchDetails(batchID)
+{
+	_batchID = batchID;
+	var formPostData = 'req=6';
+	document.getElementById('alertRow').style.display = 'none';
+
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:showBatchDetailsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function showBatchDetailsResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = 'Batch Summary';
+	document.getElementById('pageContent').style.display = '';
+	document.getElementById('pageContent').innerHTML = response;
+	getBatchSummary(_batchID);
+}
+
+function getBatchSummary(batchID)
+{
+	document.getElementById('summaryDiv').className = 'tab-pane active';
+	document.getElementById('addContributionDiv').className = 'tab-pane';
+	document.getElementById('listContributionDiv').className = 'tab-pane';
+}
+
+function getBatchSummaryResponse(response)
+{
+
+}
+
+function addOrUpdateBatchDetails(isUpdate, batchID, contributionID)
+{
+	document.getElementById('summaryDiv').className = 'tab-pane active';
+	document.getElementById('addContributionDiv').className = 'tab-pane';
+	document.getElementById('listContributionDiv').className = 'tab-pane';
+}
+
+function addOrUpdateBatchDetailsResponse(response)
+{
+	if(response)
+	{
+	}
+}
+
+function listAllContributions()
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function listAllSubscriptions(profileID)
 {

@@ -912,3 +912,63 @@ function previewProfileImage(input, previewImgID) {
 		reader.readAsDataURL(input.files[0]);
 	}
 }
+
+function signUpNewAccount()
+{
+	var churchName = document.getElementById('church').value;
+	var churchLocation = document.getElementById('location').value;
+	var name = document.getElementById('name').value;
+	var email = document.getElementById('email').value;
+	var phone = document.getElementById('phone').value;
+
+	var formPostData = 'req=signup';
+	formPostData += '&churchName=' + churchName;
+	formPostData += '&churchLocation=' + churchLocation;
+	formPostData += '&name=' + name;
+	formPostData += '&email=' + email;
+	formPostData += '&phone=' + phone;
+
+	var errorMessage = '';
+	if(churchName == '') {
+		errorMessage = 'Church Name can\'t be empty.';
+	} else if(email == '') {
+		errorMessage = 'Email can\'t be empty.';
+	}
+
+	if(errorMessage != '') {
+		var resultToUI = getAlertDiv(2, errorMessage);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		return false;
+	}
+
+	document.getElementById('spanSignUpBtn').style.display = 'none';
+	document.getElementById('spanLoadingImg').style.display = '';
+
+	$.ajax({
+		type:'POST',
+		url:'server/doauth.php',
+		data:formPostData,
+		success:signUpNewAccountResponse,
+		error:HandleAjaxError
+	});
+}
+
+function signUpNewAccountResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	var resultCode = dataObj[0];
+	var resultMessage = dataObj[1];
+
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('spanSignUpBtn').style.display = '';
+	document.getElementById('spanLoadingImg').style.display = 'none';
+
+	if(resultCode == 1) {
+		var resultToUI = getAlertDiv(1, resultMessage);
+		//var accountDetails = dataObj[2];
+	} else {
+		var resultToUI = getAlertDiv(2, resultMessage);
+	}
+	document.getElementById('alertDiv').innerHTML = resultToUI;	
+}
