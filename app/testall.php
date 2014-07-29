@@ -6,8 +6,32 @@ include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
+include_once($PATH."classes/class.sms.php");
 
 /**/
+$sms_obj = new SMS($PATH, "cs_f81c2dd2c35ea985c3987c1ad9784330");
+//$res = $sms_obj->getSMSConfiguration();
+//$res = $sms_obj->enableSMSFeature();
+//$res = $sms_obj->disableSMSFeature();
+//$res = $sms_obj->updateSMSProvider(1);
+$res = $sms_obj->getTwilioConfig(0);
+$account_sid="AC8ac594144120c306d08a168840bb2ef6";
+$auth_token="36cf1edb845cb960fe40bb04c4e7b66b";
+$from_number="+12626313131";
+$status=1;
+$config_id = 1;
+//$res = $sms_obj->addTwilioConfig($account_sid, $auth_token, $from_number, $status);
+//$res = $sms_obj->modifyTwilioConfig($config_id, $account_sid, $auth_token, $from_number, $status);
+//$res = $sms_obj->disableTwilioConfig(1);
+//$res = $sms_obj->enableTwilioConfig(2);
+//$res = $sms_obj->deleteTwilioConfig(3);
+
+
+
+print_r($res);
+/**/
+
+/** /
 $sid = "AC8ac594144120c306d08a168840bb2ef6"; // Your Account SID from www.twilio.com/user/account
 $token = "36cf1edb845cb960fe40bb04c4e7b66b"; // Your Auth Token from www.twilio.com/user/account
 

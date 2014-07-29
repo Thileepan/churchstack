@@ -13,7 +13,7 @@
 	$churches_result = $church_obj->getAllChurchesList(5);//List On-Trial or Paid+Active Churches alone; For others, we need not send notifications.
 	/** /
 	$churches_result[0]=1;
-	$churches_result[1] = array(0=>array(10=>"DB_1"), 1=>array(10=>"DB_2"), 2=>array(10=>"DB_3"));
+	$churches_result[1] = array(0=>array(10=>"cs_f81c2dd2c35ea985c3987c1ad9784330"));
 	/**/
 	if($churches_result[0]==1)
 	{
@@ -28,9 +28,9 @@
 		/** /
 		foreach ( $threads->commands as $key=>$command )
 		{
-			echo "Command: ".$command."\n";
-			echo "Output: ".$threads->output[$key];
-			echo "Error: ".$threads->error[$key]."\n\n";
+			//echo "Command: ".$command."\n";
+			//echo "Main Output: ".$threads->output[$key]."\n";
+			//echo "Error: ".$threads->error[$key]."\n\n";
 		}
 		/**/
 	}
