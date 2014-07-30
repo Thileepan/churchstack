@@ -85,6 +85,24 @@
 		}
 		$sms_sending_file = $APPLICATION_PATH."notify/sendbhashsms.php";
 	}
+	else if($sms_provider_id==3)//Nexmo
+	{
+		$nexmo_api_key = "";
+		$nexmo_api_secret = "";
+		$nexmo_from_number = "";
+		$nexmo_config_result = $sms_obj->getNexmoConfig(1);//list active alone
+		if($nexmo_config_result[0]==1)
+		{
+			if(COUNT($nexmo_config_result[1]) > 0)
+			{
+				//taking the first config alone
+				$nexmo_api_key = $nexmo_config_result[1][0][1];
+				$nexmo_api_secret = $nexmo_config_result[1][0][2];
+				$nexmo_from_number = $nexmo_config_result[1][0][3];
+			}
+		}
+		$sms_sending_file = $APPLICATION_PATH."notify/sendnexmosms.php";
+	}
 	//SMS Stuff
 
 	if($events_list[0]==1)
@@ -139,6 +157,10 @@
 					else if($sms_provider_id==2)//BhashSMS
 					{
 						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' username='.base64_encode($bhashsms_username).' password='.base64_encode($bhashsms_password).' senderid='.base64_encode($bhashsms_senderid).' priority='.base64_encode($bhashsms_priority).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
+					}
+					else if($sms_provider_id==3)//Nexmo
+					{
+						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' apiKey='.base64_encode($nexmo_api_key).' apiSecret='.base64_encode($nexmo_api_secret).' fromNumber='.base64_encode($nexmo_from_number).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
 					}
 				}
 			}

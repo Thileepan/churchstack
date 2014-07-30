@@ -29,7 +29,7 @@
 		foreach ( $threads->commands as $key=>$command )
 		{
 			//echo "Command: ".$command."\n";
-			//echo "Main Output: ".$threads->output[$key]."\n";
+			echo "Main Output: ".$threads->output[$key]."\n";
 			//echo "Error: ".$threads->error[$key]."\n\n";
 		}
 		/**/

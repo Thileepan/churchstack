@@ -362,6 +362,135 @@ class SMS
 		}
 		return $to_return;
 	}
+
+	public function getNexmoConfig($list_type=0)
+	{
+		/** /
+		$list_type:
+		0 => all
+		1 => active
+		2 => inactive
+		/**/
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the Nexmo configuration";
+		if($this->db_conn)
+		{
+		   $query = 'select CONFIG_ID, API_KEY, API_SECRET, FROM_NUMBER, STATUS from NEXMO_CONFIGURATION';
+		   if($list_type==1) {
+			   $query = 'select CONFIG_ID, API_KEY, API_SECRET, FROM_NUMBER, STATUS from NEXMO_CONFIGURATION where STATUS=1';
+		   } else if($list_type==2) {
+			   $query = 'select CONFIG_ID, API_KEY, API_SECRET, FROM_NUMBER, STATUS from NEXMO_CONFIGURATION where STATUS=0';
+		   }
+		   $result = $this->db_conn->Execute($query);
+            
+           if($result) {
+			   $nexmo_details = array();
+                while(!$result->EOF) {
+					$config_id = $result->fields[0];
+					$api_key = $result->fields[1];
+					$api_secret = $result->fields[2];
+					$from_number = $result->fields[3];
+					$status = $result->fields[4];
+					$nexmo_details[] = array($config_id, $api_key, $api_secret, $from_number, $status);
+					$result->MoveNext();
+				}
+				$toReturn[0] = 1;
+				$toReturn[1] = $nexmo_details;
+            }
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to connect to the system, please try again later.";
+		}
+		return $toReturn;
+	}
+
+	public function addNexmoConfig($api_key, $api_secret, $from_number, $status)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to add nexmo config";
+		if($this->db_conn)
+		{
+			$query = 'insert into NEXMO_CONFIGURATION (CONFIG_ID, API_KEY, API_SECRET, FROM_NUMBER, STATUS) values (?,?,?,?,?) ON DUPLICATE KEY UPDATE STATUS=VALUES(STATUS)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array(0, $api_key, $api_secret, $from_number, $status));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Nexmo configuration saved";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function modifyNexmoConfig($config_id, $api_key, $api_secret, $from_number, $status)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to update nexmo config";
+		if($this->db_conn)
+		{
+			$query = 'update NEXMO_CONFIGURATION set API_KEY=?, API_SECRET=?, FROM_NUMBER=?, STATUS=? where CONFIG_ID=?';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array($api_key, $api_secret, $from_number, $status, $config_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Nexmo configuration updated successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function deleteNexmoConfig($config_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to delete the nexmo config";
+		if($this->db_conn)
+		{
+			$query = 'delete from NEXMO_CONFIGURATION where CONFIG_ID=?';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array($config_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Nexmo configuration deleted successfully";
+			}			
+		}
+		return $to_return;
+	}
+	
+	public function enableNexmoConfig($config_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to enable nexmo config";
+		if($this->db_conn)
+		{
+			$query = 'update NEXMO_CONFIGURATION set STATUS=1 where CONFIG_ID=?';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array($config_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Nexmo configuration enabled successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function disableNexmoConfig($config_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to disable nexmo config";
+		if($this->db_conn)
+		{
+			$query = 'update NEXMO_CONFIGURATION set STATUS=0 where CONFIG_ID=?';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array($config_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Nexmo configuration disabled successfully";
+			}			
+		}
+		return $to_return;
+	}
 }
 
 ?>
