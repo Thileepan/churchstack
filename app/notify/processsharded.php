@@ -57,6 +57,26 @@
 		}
 		$sms_sending_file = $APPLICATION_PATH."notify/sendtwiliosms.php";
 	}
+	else if($sms_provider_id==2)//BhashSMS
+	{
+		$bhashsms_username="";
+		$bhashsms_password="";
+		$bhashsms_senderid="";
+		$bhashsms_priority="";
+		$bhashsms_config_result = $sms_obj->getBhashSMSConfig(1);//list active alone
+		if($bhashsms_config_result[0]==1)
+		{
+			if(COUNT($bhashsms_config_result[1]) > 0)
+			{
+				//taking the first config alone
+				$bhashsms_username = $bhashsms_config_result[1][0][1];
+				$bhashsms_password = $bhashsms_config_result[1][0][2];
+				$bhashsms_senderid = $bhashsms_config_result[1][0][3];
+				$bhashsms_priority = $bhashsms_config_result[1][0][4];
+			}
+		}
+		$sms_sending_file = $APPLICATION_PATH."notify/sendbhashsms.php";
+	}
 	//SMS Stuff
 
 	if($events_list[0]==1)
@@ -83,7 +103,7 @@
 				}
 				else
 				{
-						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.base64_encode($comma_separated_email_list).' subject='.base64_encode($subject).' emailBody='.base64_encode($body).' fromAddressType='.$fromAddressType;
+					$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.base64_encode($comma_separated_email_list).' subject='.base64_encode($subject).' emailBody='.base64_encode($body).' fromAddressType='.$fromAddressType;
 					$comma_separated_email_list = "";
 				}
 			}
@@ -106,6 +126,10 @@
 							{
 								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' accountSID='.base64_encode($twilio_account_sid).' authToken='.base64_encode($twilio_auth_token).' fromNumber='.base64_encode($twilio_from_number).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
 							}
+							else if($sms_provider_id==2)//BhashSMS
+							{
+								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' username='.base64_encode($bhashsms_username).' password='.base64_encode($bhashsms_password).' senderid='.base64_encode($bhashsms_senderid).' priority='.base64_encode($bhashsms_priority).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
+							}
 							$comma_separated_num_list = "";
 						}
 					}
@@ -114,6 +138,10 @@
 							if($sms_provider_id==1)//Twilio: Repeat this for other providers
 							{
 								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' accountSID='.base64_encode($twilio_account_sid).' authToken='.base64_encode($twilio_auth_token).' fromNumber='.base64_encode($twilio_from_number).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
+							}
+							else if($sms_provider_id==2)//BhashSMS
+							{
+								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sms_sending_file.' username='.base64_encode($bhashsms_username).' password='.base64_encode($bhashsms_password).' senderid='.base64_encode($bhashsms_senderid).' priority='.base64_encode($bhashsms_priority).' smsBody='.base64_encode($sms_body).' csvToNumbers='.base64_encode($comma_separated_num_list);
 							}
 							$comma_separated_num_list = "";
 					}

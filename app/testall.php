@@ -7,8 +7,46 @@ include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
 include_once($PATH."classes/class.sms.php");
+include_once($PATH."plugins/phpcurl/src/Curl/Curl.php");
+
+/** /
+use \Curl\Curl;
+$curl = new Curl();
+$url_to_access = "http://bhashsms.com/api/sendmsg.php";
+$get_array = array("user"=>"nesanjoseph", "pass"=>"gosdsgrace1", "sender"=>"demo", "phone"=>"9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353","text"=>"nice test","priority"=>"dnd","stype"=>"normal");
+$curl->get($url_to_access,$get_array);
+if ($curl->error) {
+    echo 'Error: ' . $curl->error_code . ': ' . $curl->error_message;
+}
+else {
+    echo $curl->response;
+}/**/
 
 /**/
+$sms_obj = new SMS($PATH, "cs_f81c2dd2c35ea985c3987c1ad9784330");
+$res = $sms_obj->getSMSConfiguration();
+//$res = $sms_obj->enableSMSFeature();
+//$res = $sms_obj->disableSMSFeature();
+//$res = $sms_obj->updateSMSProvider(2);
+//$res = $sms_obj->getBhashSMSConfig(0);
+$username="nesanjoseph";
+$password="godsgrace---";
+$senderid="TESTTOs";
+$priority="ndnd";
+$status=1;
+$config_id = 1;
+$res = $sms_obj->addBhashSMSConfig($username, $password, $senderid, $priority, $status);
+//$res = $sms_obj->modifyBhashSMSConfig($config_id, $username, $password, $senderid, $priority, $status);
+//$res = $sms_obj->disableBhashSMSConfig(1);
+//$res = $sms_obj->enableBhashSMSConfig(1);
+//$res = $sms_obj->deleteBhashSMSConfig(1);
+
+
+
+print_r($res);
+/**/
+
+/** /
 $sms_obj = new SMS($PATH, "cs_f81c2dd2c35ea985c3987c1ad9784330");
 //$res = $sms_obj->getSMSConfiguration();
 //$res = $sms_obj->enableSMSFeature();
