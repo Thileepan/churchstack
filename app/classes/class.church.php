@@ -193,7 +193,7 @@ class Church
 		   } else if($filterType==4) {
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==5) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and (ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1)';
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ((ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1)) GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==6) {
 			   $query = 'select * from CHURCH_DETAILS where STATUS!=1';
 		   }

@@ -34,9 +34,9 @@
 			{
 				$curr_email = $events_list[1][$e][0][$k];
 				$comma_separated_email_list .= ((trim($comma_separated_email_list)=="")? $curr_email : ",".$curr_email); 
-				if($emails_count > 10)
+				if($emails_count > 25)
 				{
-					if(($k%10==0 && $k > 0) || $k+10 > $emails_count)
+					if(($k%25==0 && $k > 0) || $k+25 > $emails_count)
 					{
 						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.base64_encode($comma_separated_email_list).' subject='.base64_encode($subject).' emailBody='.base64_encode($body).' fromAddressType='.$fromAddressType;
 						$comma_separated_email_list = "";
@@ -44,7 +44,7 @@
 				}
 				else
 				{
-						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.base64_encode($comma_separated_email_list).' subject='.base64_encode($subject).' emailBody='.base64_encode($body).' fromAddressType='.$fromAddressType;
+					$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.base64_encode($comma_separated_email_list).' subject='.base64_encode($subject).' emailBody='.base64_encode($body).' fromAddressType='.$fromAddressType;
 					$comma_separated_email_list = "";
 				}
 			}
