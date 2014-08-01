@@ -1,5 +1,5 @@
-create database CHURCHSTACK collate latin1_general_cs;
-use CHURCHSTACK;
+create database churchstack collate latin1_general_cs;
+use churchstack;
 
 create table CURRENCY_LIST (
 	CURRENCY_ID SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,

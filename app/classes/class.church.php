@@ -31,7 +31,7 @@ class Church
 			$currency_id = 1;//CHANGE THIS LATER
 			$church_unique_hash = strtoupper(md5($curr_time.$church_name.rand(1, 10000).rand(1, 10000).rand(1, 10000)));
 			$sharded_db_unique_part = md5($church_unique_hash.rand(1, 10000));
-			$sharded_database = 'CS_'.$sharded_db_unique_part;
+			$sharded_database = 'cs_'.$sharded_db_unique_part;
 			
 			$church_id = -1;
 			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS, COUNTRY_ID, REFERRER_CHURCH_ID) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?,?,?)';
