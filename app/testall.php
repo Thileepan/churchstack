@@ -7,7 +7,7 @@ include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
 
-/**/
+/** /
 $sid = "AC8ac594144120c306d08a168840bb2ef6"; // Your Account SID from www.twilio.com/user/account
 $token = "36cf1edb845cb960fe40bb04c4e7b66b"; // Your Auth Token from www.twilio.com/user/account
 
@@ -33,7 +33,7 @@ $signup_details = array();
 $signup_details["customer_email"] = "nesanjoseph@yahoo.com";
 $signup_details["first_name"] = "Nesan";
 $signup_details["last_name"] = "Rajendran";
-$signup_details["church_name"] = "CSI Good Shepherd Church";
+$signup_details["church_name"] = "Great church";
 $signup_details["church_addr"] = "Nanmangalam";
 $res = $users_obj->sendSignupWelcomeEmail($signup_details);
 print_r($res);
@@ -96,11 +96,11 @@ $ivs = $lic_obj->updatePurchaseReport($unique_hash, $transaction_id, "cr3edi=t",
 print_r($ivs);
 /**/
 
-/** /
+/**/
 $users_obj = new Users($PATH);
 //$email_to_create = "nesanjoseesoseoshshs".rand(1,1000)."@yahoossstrss.com";
-$email_to_create = "multis@soletttin.com";
-$res = $users_obj->signUpWithChurchDetails("St. Andrews ", "Madras", "sss", "jjnjn", "uhhu", $email_to_create, "9810374244", "12345@12345.com");
+$email_to_create = "nesanjoseph@yahoo.com";
+$res = $users_obj->signUpWithChurchDetails("Great New Church", "Madras", "sss", "jjnjn", "uhhu", $email_to_create, "9810374244", "12345@12345.com");
 
 print_r($res);
 /**/

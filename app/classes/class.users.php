@@ -328,26 +328,34 @@ class Users
 	{
 		$email = trim($email);
 		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "The email address specified is not found in the system";
 		if($this->db_conn)
 		{
-			$query = 'select STATUS from USER_DETAILS where EMAIL=?';
+			$query = 'select STATUS from USER_DETAILS where EMAIL=? limit 1';
 			$result = $this->db_conn->Execute($query, array($email));
 			if($result) {
 				if(!$result->EOF) {
 					$status = $result->fields[0];
 					if($status != 1) {
 						$toReturn[0] = 0;
-						$toReturn[1] = "Your account is not active. If you wish to continue using your account using the same email id, please contact the support.";
+						$toReturn[1] = "Access to the system with the specified email address has been deactivated. If you wish to continue using your account using the same email id, please contact support.";
 					} else {
 						//Constructing a hash to set in URL get value
 						$curr_time = time();
 						$pwd_rst_expiry_time = $curr_time+259200;//adding 3 days
 						$hash_1 = md5($email.time().rand(1,10000).rand(1,10000));
 						$hash_2 = md5($email.(time()+100).rand(1,10000).rand(1,10000));
-						$hash_3 = md5($email.(time()+1000).rand(1,10000).rand(1,10000));
-						$hash_for_url = strtoupper($hash_1.$hash_2.$hash_3);
+						$hash_for_url = strtoupper($hash_1.$hash_2);
 						$hash_to_store = md5(md5($hash_for_url));
-						$pwd_reset_url = "http://churchstack.com/account/verify.php?email=".$email."&key=".$hash_for_url;
+						$key_1 = base64_encode($email);
+						$key_2 = base64_encode($hash_for_url);
+						$pwd_reset_url = CS_LOGIN_WEBSITE;
+						$last_character = substr($pwd_reset_url, strlen($pwd_reset_url)-1, 1);
+						if($last_character != "/") {
+							$pwd_reset_url .= "/";
+						}
+						$pwd_reset_url .= "user/resetpwd.php?key1=".$key_1."&key2=".$key_2;
 
 						$query_2 = 'update USER_DETAILS set PASSWORD_RESET_HASH=?, PASSWORD_RESET_EXPIRY=? where EMAIL=?';
 						$result_2 = $this->db_conn->Execute($query_2, array($hash_to_store, $pwd_rst_expiry_time, $email));
@@ -357,8 +365,7 @@ class Users
 							return $toReturn;
 						}
 
-						$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
-						$email_result = $email_obj->sendPasswordResetEmail($email, $pwd_reset_url);
+						$email_result = $this->constructAndSendForgotPasswordEmail($email, $pwd_reset_url);
 						if($email_result[0]==1) {
 							$toReturn[0] = 1;
 							$toReturn[1] = "An email has been sent to <b>".$email."</b> which has the instructions to reset your password. Follow the instructions given in the mail to proceed further to reset the password";
@@ -369,7 +376,7 @@ class Users
 					}
 				} else {
 					$toReturn[0] = 0;
-					$toReturn[1] = "We could not recognize the email address you have entered. Kindly recheck the eamil you have entered.";
+					$toReturn[1] = "We could not recognize the email address you have entered. Kindly recheck the email you have entered.";
 				}
 			}
 		}
@@ -380,10 +387,12 @@ class Users
 	public function verifyPasswordResetURLValidity($email, $key)
 	{
 		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "The URL is invalid";
 		$email = trim($email);
 		$key = trim($key);
 		$current_time = time();
-		if(strlen($email) < 6 || strlen($key) < 96) {
+		if(strlen($email) < 6 || strlen($key) < 64) {
 			$toReturn[0] = 0;
 			$toReturn[1] = "Invalid email or key specified";
 		}
@@ -415,6 +424,7 @@ class Users
 				$toReturn[1] = "Invalid email & key pair. Please recheck the URL you have loaded.";
 			}
 		}
+		return $toReturn;
 	}
 
 	public function sendSignupWelcomeEmail($signup_details)
@@ -528,6 +538,108 @@ class Users
 			$toReturn[1] = "Unable to get connection to the system.";
 		}
 		return $toReturn;
+	}
+
+	public function getUserInformationUsingEmail($email)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "The email address specified is not found in the system";
+		if($this->db_conn)
+		{
+		   $query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where EMAIL=? limit 1';
+		   $result = $this->db_conn->Execute($query, array($user_name));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$user_info = array();
+					$user_id = $result->fields[0];
+					$church_id = $result->fields[1];
+					$user_name = $result->fields[2];
+					$email = $result->fields[3];
+					$role_id = $result->fields[4];
+					$unique_hash = $result->fields[5];
+					$pwd_reset_hash = $result->fields[6];
+					$pwd_reset_expiry = $result->fields[7];
+					$status = $result->fields[8];
+					$user_info = array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $pwd_reset_hash, $pwd_reset_expiry, $status);
+					$to_return[0] = 1;
+					$to_return[1] = $user_info;
+				}
+            }
+        }
+		return $to_return;
+	}
+
+	public function constructAndSendForgotPasswordEmail($email, $pwd_reset_url)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$forgot_pwd_template_file = $this->APPLICATION_PATH."templates/email/forgotpassword.html";
+		$forgot_pwd_letter = "";
+		if(file_exists($forgot_pwd_template_file))
+		{
+			$forgot_pwd_letter = trim(file_get_contents($forgot_pwd_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the password reset email";
+		}
+
+		//Replacing place holder with values
+		$forgot_pwd_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $forgot_pwd_letter);
+		$forgot_pwd_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $forgot_pwd_letter);
+		$forgot_pwd_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $forgot_pwd_letter);
+		$forgot_pwd_letter = str_replace("{{PASSWORD_RESET_LINK}}", $pwd_reset_url, $forgot_pwd_letter);
+		$forgot_pwd_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $forgot_pwd_letter);
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
+		$recipients = array();
+		$recipients['to_address'] = $email;
+		$subject = "Instructions : Resetting the password for your account in ".PRODUCT_WEBSITE;
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($forgot_pwd_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Password reset email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send password reset email to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
+	}
+
+	public function changeUserPassword($email, $new_password, $is_from_forgot_password=0)
+	{
+		$to_return = array() ;
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to set the password";
+		if($this->db_conn)
+		{
+			$query = 'update USER_DETAILS set PASSWORD=? where EMAIL=?';
+			$result = $this->db_conn->Execute($query, array($new_password, $email));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Password has been set successfully";
+
+				if($is_from_forgot_password==1)//To make the forgot password link invalid
+				{
+					$pwd_reset_hash_to_set = md5(time().rand(1,1000).rand(1,1000).$new_password);
+					$query_2 = 'update USER_DETAILS set PASSWORD_RESET_HASH=? where EMAIL=?';
+					$result_2 = $this->db_conn->Execute($query_2, array($pwd_reset_hash_to_set, $email));
+					if($result_2) {
+						//Do something if really needed.
+					}
+				}
+			}
+		}
+		return $to_return;
 	}
 }
 ?>
