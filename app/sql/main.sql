@@ -604,4 +604,14 @@ insert into COUNTRY_LIST values (252, 'SX', 'SINT MAARTEN', 'Sint Maarten', 'SXM
 insert into COUNTRY_LIST values (253, 'SS', 'SOUTH SUDAN', 'South Sudan', 'SSD', 728, 211);
 
 
-insert into USER_ROLES values (1,'Church Admin');
+insert into USER_ROLES (ROLE_ID, ROLE_DESCRIPTION) values (1,'Church Admin');
+
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (1, 'Trial - Full Featured', 'Full featured trial with no limitations', 1, 250, 0, 2592000, 30);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (2, 'Startup - Monthly', 'Monthly plan for a church that has just started to grow', 1, 250, 9.95, 2592000, 30);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (3, 'Startup - Yearly', 'Yearly plan for a church that has just started up', 1, 250, 99, 31536000, 365);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (4, 'Standard - Monthly', 'Monthly plan for a church that has started growing', 1, 750, 19.95, 2592000, 30);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (5, 'Standard - Yearly', 'Yearly plan for a church that has started growing', 1, 750, 199, 31536000, 365);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (6, 'Premium - Monthly', 'Monthly plan for a church that is growing at a rapid rate', 1, 1500, 29.95, 2592000, 30);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (7, 'Premium - Yearly', 'Yearly plan for a church that is growing at a rapid rate', 1, 750, 299, 31536000, 365);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (8, 'Infinite - Monthly', 'Monthly plan for a church that has grown good and will grow forever', 1, -1, 49.95, 2592000, 30);
+insert into LICENSE_PLANS (PLAN_ID, PLAN_NAME, PLAN_DESCRIPTION, PLAN_TYPE, MAX_COUNT, PRICING, VALIDITY_IN_SECONDS, VALIDITY_IN_DAYS) values (9, 'Premium - Yearly', 'Yearly plan for a church that has grown good and will grow forever', 1, -1, 499, 31536000, 365);

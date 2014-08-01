@@ -109,9 +109,12 @@ else if($req == 'signup')
 	$last_name = trim($_POST['']);
 	$email = trim($_POST['email']);
 	$mobile = trim($_POST['phone']);
+	$referrer_email = trim($_POST['referrerEmail']);
+	$password = trim($_POST['password']);
+	$password = md5($password);
 
 	$users_obj = new Users($APPLICATION_PATH);
-	$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile);
+	$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email, $password);
 
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($signup_result);

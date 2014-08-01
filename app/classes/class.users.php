@@ -229,7 +229,7 @@ class Users
 	}
 
 //Following were added by Nesan
-	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email_id)
+	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email_id, $password)
 	{
         @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
@@ -282,7 +282,7 @@ class Users
 			if($sharded_result[0]==1)
 			{
 				//Create a new user now
-				$user_result = $this->addNewUser($church_id, $email, $email, "", 1, 1);//Adding a church Admin
+				$user_result = $this->addNewUser($church_id, $email, $email, $password, 1, 1);//Adding a church Admin
 				if($user_result[0]==1) {
 					$user_id = $user_result[2]["user_id"];
 

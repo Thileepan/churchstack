@@ -920,6 +920,9 @@ function signUpNewAccount()
 	var name = document.getElementById('name').value;
 	var email = document.getElementById('email').value;
 	var phone = document.getElementById('phone').value;
+	var referrerEmail = trim(document.getElementById('referrerEmail').value);
+	document.getElementById('password').value = trim(document.getElementById('password').value);
+	var password = document.getElementById('password').value;
 
 	var formPostData = 'req=signup';
 	formPostData += '&churchName=' + churchName;
@@ -927,12 +930,18 @@ function signUpNewAccount()
 	formPostData += '&name=' + name;
 	formPostData += '&email=' + email;
 	formPostData += '&phone=' + phone;
+	formPostData += '&referrerEmail=' + referrerEmail;
+	formPostData += '&password=' + password;
 
 	var errorMessage = '';
 	if(churchName == '') {
-		errorMessage = 'Church Name can\'t be empty.';
+		errorMessage = 'Church Name cannot be empty.';
 	} else if(email == '') {
-		errorMessage = 'Email can\'t be empty.';
+		errorMessage = 'Email cannot be empty.';
+	} else if(document.getElementById('password').value == "") {
+		errorMessage = 'Password cannot be empty';
+	} else if(document.getElementById('password').value != document.getElementById('confirmPassword').value) {
+		errorMessage = 'Passwords do not match.';
 	}
 
 	if(errorMessage != '') {
