@@ -102,6 +102,7 @@ if($req == 'authenticate')
 }
 else if($req == 'signup')
 {
+	session_start();
 	$church_name = trim($_POST['churchName']);
 	$church_location = trim($_POST['churchLocation']);
 	$first_name = trim($_POST['name']);
@@ -112,10 +113,21 @@ else if($req == 'signup')
 	$referrer_email = trim($_POST['referrerEmail']);
 	$password = trim($_POST['password']);
 	$password = md5($password);
+	$security_text = trim($_POST['securityText']);
 
-	$users_obj = new Users($APPLICATION_PATH);
-	$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email, $password);
-
+	$signup_result = array();
+	$signup_result[0] = 0;
+	$signup_result[1] = "Unable to sign you up because the system has encountered some error";
+	if($security_text == trim($_SESSION['cap_sec_text']))
+	{
+		$users_obj = new Users($APPLICATION_PATH);
+		$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email, $password);
+	}
+	else
+	{
+		$signup_result[0] = 0;
+		$signup_result[1] = "The security code you have entered is wrong. Correct it or get new image if you are not able to read the shown image.";
+	}
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($signup_result);
 	unset($json);

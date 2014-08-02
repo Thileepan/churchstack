@@ -39,7 +39,6 @@
     
 </head>
 
-
 <body class="fixed-header">        
         
 	<div class="navbar">
@@ -119,19 +118,19 @@
 						  <div class="control-group">
 						    <label class="control-label" for="church">Church Name</label>
 						    <div class="controls">
-						      <input type="text" name="church" id="church" class="input-xlarge">
+						      <input type="text" name="church" id="church" class="input-xlarge" placeholder="Church Name">
 						    </div>
 						  </div>
 						  <div class="control-group">
 						    <label class="control-label" for="location">Location</label>
 						    <div class="controls">
-						      <input type="text" name="location" id="location" class="input-medium">
+						      <input type="text" name="location" id="location" class="input-xlarge" placeholder="Church Location">
 						    </div>
 						  </div>
 						  <div class="control-group">
-						    <label class="control-label" for="location">Referrer Email</label>
+						    <label class="control-label" for="location">Referrer's Email</label>
 						    <div class="controls">
-						      <input type="text" name="referrerEmail" id="referrerEmail" class="input-medium">
+						      <input type="text" name="referrerEmail" id="referrerEmail" class="input-xlarge"  placeholder="Referrer's Email Address (if any)">
 						    </div>
 						  </div>
 						  <hr />
@@ -168,6 +167,16 @@
 						    <label class="control-label" for="confirmPassword">Repeat Password</label>
 						    <div class="controls">
 						      <input type="password" id="confirmPassword" class="input-xlarge" placeholder="Same Password Again">
+						    </div>
+						  </div>
+						  <div class="control-group">
+						    <label class="control-label" for="securityText">Type the characters you see below</label>
+						    <div class="controls">
+								<span id="captchaSpan"><img src="plugins/simplecaptcha/image.php" alt="security image" /></span>&nbsp;&nbsp;
+								<button class="btn btn-medium" onclick="Javascript: return reloadSignupCaptcha();"><span><img src="images/captcha_reload.png" alt="Reload Security Image" /> Get Another Image</span></button>
+							</div>
+						    <div class="controls" style="padding-top:5px;">
+						      <input type="text" name="securityText" id="securityText" class="input-xlarge" placeholder="Type the characters shown in picture">
 						    </div>
 						  </div>
 						  <!--

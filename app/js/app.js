@@ -915,6 +915,7 @@ function previewProfileImage(input, previewImgID) {
 
 function signUpNewAccount()
 {
+	document.getElementById('alertRow').style.display = 'none';
 	var churchName = document.getElementById('church').value;
 	var churchLocation = document.getElementById('location').value;
 	var name = document.getElementById('name').value;
@@ -923,6 +924,7 @@ function signUpNewAccount()
 	var referrerEmail = trim(document.getElementById('referrerEmail').value);
 	document.getElementById('password').value = trim(document.getElementById('password').value);
 	var password = document.getElementById('password').value;
+	var securityText = trim(document.getElementById('securityText').value);
 
 	var formPostData = 'req=signup';
 	formPostData += '&churchName=' + churchName;
@@ -932,6 +934,7 @@ function signUpNewAccount()
 	formPostData += '&phone=' + phone;
 	formPostData += '&referrerEmail=' + referrerEmail;
 	formPostData += '&password=' + password;
+	formPostData += '&securityText=' + securityText;
 
 	var errorMessage = '';
 	if(churchName == '') {
@@ -980,4 +983,10 @@ function signUpNewAccountResponse(response)
 		var resultToUI = getAlertDiv(2, resultMessage);
 	}
 	document.getElementById('alertDiv').innerHTML = resultToUI;	
+}
+
+function reloadSignupCaptcha()
+{
+	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image.php" alt="security image" />';
+	return false;
 }
