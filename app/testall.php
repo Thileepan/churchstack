@@ -6,6 +6,12 @@ include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
+include_once($PATH."classes/class.sharded.php");
+
+$sharded_obj = new Sharded($PATH, "CS_95a18fe48afd74aef574ed917d30b853");
+$result = $sharded_obj->cleanupAllTables();
+print_r($result);
+
 
 /** /
 $sid = "AC8ac594144120c306d08a168840bb2ef6"; // Your Account SID from www.twilio.com/user/account
@@ -96,7 +102,7 @@ $ivs = $lic_obj->updatePurchaseReport($unique_hash, $transaction_id, "cr3edi=t",
 print_r($ivs);
 /**/
 
-/**/
+/** /
 $users_obj = new Users($PATH);
 //$email_to_create = "nesanjoseesoseoshshs".rand(1,1000)."@yahoossstrss.com";
 $email_to_create = "nesanjoseph@yahoo.com";
