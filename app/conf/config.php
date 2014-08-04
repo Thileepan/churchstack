@@ -5,6 +5,7 @@ define('APP_BUILD_NUMBER', '20140118');
 define('PRODUCT_NAME', 'ChurchStack');
 define('PRODUCT_WEBSITE', 'ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
+define('REFERRAL_PROGRAM_URL', 'http://churchstack.com/ref/referralpg.html');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
@@ -20,8 +21,8 @@ define('EMAIL_FROM_DONOTREPLY', 3);
 define('EMAIL_FROM_INFO', 4);
 
 define('SMTP_SERVER', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'help@churchstack.com');
-define('SMTP_PASSWORD', 'churchstack123$');
+define('SMTP_USERNAME', 'nesanjoseph@gmail.com');
+define('SMTP_PASSWORD', 'godsgrace1');
 define('FROM_ADDRESS', 'help@churchstack.com');
 define('FROM_NAME', 'ChurchStack');
 define('FROM_SALES_ADDRESS', 'sales@churchstack.com');

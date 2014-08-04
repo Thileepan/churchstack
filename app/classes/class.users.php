@@ -234,6 +234,7 @@ class Users
         @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.license.php');
+		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
 
 		$toReturn = array();
 		$toReturn[0] = 0;
@@ -301,7 +302,37 @@ class Users
 						$signup_details["last_name"] = $last_name;
 						$signup_details["church_name"] = $church_name;
 						$signup_details["church_addr"] = $church_location;
-						$welcome_email_result = $this->sendSignupWelcomeEmail($signup_details);
+
+						//$welcome_email_result = $this->sendSignupWelcomeEmail($signup_details);
+
+						/************************************************************************************** /
+						Sending email asynchronously
+						/**************************************************************************************/
+						$email_sending_file = __DIR__."/../notify/sendemail.php";//Take care of this part
+						$email_sending_file = str_replace("\\", "/", $email_sending_file);
+						$commands = array();
+
+						$welcome_email_content = $this->sendSignupWelcomeEmail($signup_details, 1);
+						$fromAddressType = "info";
+						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType;
+						
+						$referral_prog_email_content = $this->sendReferralProgramEmail($signup_details, 1);
+						$fromAddressType = "info";
+						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType;
+
+						$threads = new Multithread( $commands );
+						$threads->run();
+
+						/** /
+						foreach ( $threads->commands as $key=>$command )
+						{
+							//echo "Command: ".$command."\n";
+							//echo "\nOutput: ".$threads->output[$key]."\n";
+							//echo "Error: ".$threads->error[$key]."\n\n";
+						}
+						/**/
+						/**************************************************************************************/
+
 						return $toReturn;
 					}
 					else
@@ -427,7 +458,7 @@ class Users
 		return $toReturn;
 	}
 
-	public function sendSignupWelcomeEmail($signup_details)
+	public function sendSignupWelcomeEmail($signup_details, $just_return_contents=0)
 	{
 		@include_once($this->APPLICATION_PATH."classes/class.email.php");
 		$to_return = array();
@@ -455,11 +486,22 @@ class Users
 		$welcome_letter = str_replace("{{CHURCH_ADDRESS}}", $signup_details["church_addr"], $welcome_letter);
 		$welcome_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $welcome_letter);
 
+		$subject = "Welcome to ".PRODUCT_WEBSITE;
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = $signup_details["customer_email"];
+			$contents_array[1] = $subject;
+			$contents_array[2] = $welcome_letter;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+
 		//Set and Send Email		
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
 		$recipients = array();
 		$recipients['to_address'] = $signup_details["customer_email"];
-		$subject = "Welcome to ".PRODUCT_WEBSITE;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($welcome_letter);
@@ -507,22 +549,33 @@ class Users
 		return $toReturn;
 	}
 
-	public function getReferralDetails($church_id)
+	public function getChurchAdminDetails($church_id)
 	{
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "There was an error while trying to get the account info.";
 		if($this->db_conn)
 		{
-		   $query = 'select CHURCH_ID from USER_DETAILS where EMAIL=? and ROLE_ID=1 and STATUS=1';
-		   $result = $this->db_conn->Execute($query, array($email));
+		   $query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where CHURCH_ID=? and ROLE_ID=1';
+		   $result = $this->db_conn->Execute($query, array($church_id));
             
            if($result) {
                 if(!$result->EOF) {
-					$church_id = $result->fields[0];
+					$admin_details_array = array();
+					$user_id = $result->fields[0];
+					$church_id = $result->fields[1];
+					$user_name = $result->fields[2];
+					$email = $result->fields[3];
+					$role_id = $result->fields[4];
+					$unique_hash = $result->fields[5];
+					$password_reset_hash = $result->fields[6];
+					$password_reset_expiry = $result->fields[7];
+					$status = $result->fields[8];
+
+					$admin_details_array = array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $password_reset_hash, $password_reset_expiry, $status);
 
 					$toReturn[0] = 1;
-					$toReturn[1] = $church_id;
+					$toReturn[1] = $admin_details_array;
 				} else {
 					$toReturn[0] = 0;
 					$toReturn[1] = "No details associated with the account could be retrieved.";
@@ -638,6 +691,63 @@ class Users
 					}
 				}
 			}
+		}
+		return $to_return;
+	}
+
+	public function sendReferralProgramEmail($user_details, $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$referral_prog_template_file = $this->APPLICATION_PATH."templates/email/referralprogram.html";
+		$referral_prog_letter = "";
+		if(file_exists($referral_prog_template_file))
+		{
+			$referral_prog_letter = trim(file_get_contents($referral_prog_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the referral program email";
+		}
+
+		//Replacing place holder with values
+		$referral_prog_letter = str_replace("{{CUSTOMER_EMAIL}}", $user_details["customer_email"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{FIRST_NAME}}", $user_details["first_name"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{LAST_NAME}}", $user_details["last_name"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $referral_prog_letter);
+
+		$subject = PRODUCT_NAME."'s Referral Program";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = $user_details["customer_email"];
+			$contents_array[1] = $subject;
+			$contents_array[2] = $referral_prog_letter;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
+		$recipients = array();
+		$recipients['to_address'] = $user_details["customer_email"];
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($referral_prog_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Referral program email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send referral program email to the specified email address. ".$email_result[1];
 		}
 		return $to_return;
 	}

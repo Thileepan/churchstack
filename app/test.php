@@ -1,5 +1,6 @@
 <?php
 
+phpinfo();
 echo md5("admin");
 exit;
 /*

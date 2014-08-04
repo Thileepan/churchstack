@@ -14,17 +14,21 @@
 //	print_r($_GET);
 	//echo $argv[1]."<BR>";
 
-	$emails_list_csv = base64_decode($_GET["csvToEmails"]);
+	$emails_list_csv = urldecode($_GET["csvToEmails"]);
 	if(trim($emails_list_csv) != "")
 	{
 		$emails_list_array = explode(",", $emails_list_csv);
 	}
-	$subject = base64_decode($_GET["subject"]);
-	$body = base64_decode($_GET["emailBody"]);
-	$from_addr_type = base64_decode($_GET["fromAddressType"]);
+	$subject = urldecode($_GET["subject"]);
+	$body = urldecode($_GET["emailBody"]);
+	$from_addr_type = $_GET["fromAddressType"];
 	$from_address = EMAIL_FROM_INFO;
 	if($from_addr_type=="eventreminder") {
 		$from_address = EMAIL_FROM_DONOTREPLY;
+	} else if($from_addr_type=="info") {
+		$from_address = EMAIL_FROM_INFO;
+	} else if($from_addr_type=="sales") {
+		$from_address = EMAIL_FROM_SALES;
 	}
 
 	//Set and Send Email		

@@ -170,7 +170,10 @@ class License
 
 	public function applyLicense($plan_id, $plan_type, $invoice_id, $purchase_timestamp)
 	{
-		$to_return = false;
+		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while applying the license";
 		$validity_in_seconds = 0;
 		if($this->db_conn)
 		{
@@ -201,6 +204,8 @@ class License
 			$referral_bonus_seconds = 30*24*60*60;//30 days
 			$is_referral_valid = 0;
 			$referrer_church_id = 0;
+			$referral_church_name = "";
+			$referrer_church_name = "";
 			if($plan_type==1)//Applicable only for subscription
 			{
 				$referrer_result = $this->isValidForReferralBenefits($this->church_id);
@@ -208,7 +213,9 @@ class License
 				{
 					$is_referral_valid = 1;
 					$referrer_church_id = $referrer_result[1][0];
+					$referral_church_name = $referrer_result[1][1];
 					$lic_expiry_date_to_set = $lic_expiry_date_to_set+$referral_bonus_seconds;
+					$referral_new_validity = $lic_expiry_date_to_set;
 				}
 			}
 
@@ -217,18 +224,26 @@ class License
 				$query = 'update LICENSE_DETAILS set PLAN_ID=?, LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?), LAST_INVOICE_ID=?, LAST_PURCHASE_DATE=FROM_UNIXTIME(?), IS_ON_TRIAL=? where CHURCH_ID=? and PLAN_TYPE=?';
 				$result = $this->db_conn->Execute($query, array($plan_id, $lic_expiry_date_to_set, $invoice_id, $purchase_timestamp, $is_on_trial, $this->church_id, $plan_type));
 				if($result) {
-					$to_return = true;
+					$to_return[0] = 1;
+					$to_return[1] = "License applied successfully";
 				}			
 			} else {
 				$query_3 = 'insert into LICENSE_DETAILS values(?,?,?,FROM_UNIXTIME(?),?,FROM_UNIXTIME(?),?,FROM_UNIXTIME(?))';
 				$result_3 = $this->db_conn->Execute($query_3, array($this->church_id, $plan_id, $plan_type, $lic_expiry_date_to_set, $invoice_id, $purchase_timestamp, $is_on_trial, $purchase_timestamp));
 				if($result_3) {
-					$to_return = true;
+					$to_return[0] = 1;
+					$to_return[1] = "License applied successfully";
 				}			
 			}
 			if($is_referral_valid==1 && $referrer_church_id > 0)
 			{
 				$subs_extension_result = $this->extendChurchSubscriptionValidity($referrer_church_id, $referral_bonus_seconds);
+				if($subs_extension_result[0] == 1)
+				{
+					$referrer_new_validity = $subs_extension_result[2];
+					$referrer_church_name = $subs_extension_result[3];
+					$to_return[2] = array($this->church_id, $referral_church_name, $referral_new_validity, $referrer_church_id, $referrer_church_name, $referrer_new_validity);
+				}
 			}
 		}
 		return $to_return;
@@ -503,6 +518,7 @@ class License
 							$purchase_details_arr["invoiced_items_array"] = array();
 							/**/
 							$is_atleast_one_update_successful = 0;
+							$referral_stuff = array();
 							for($p=0; $p < COUNT($invoiced_items[1]); $p++)
 							{
 								/** /
@@ -516,8 +532,12 @@ class License
 								/**/
 								$plan_id = $invoiced_items[1][$p][2];
 								$plan_type = $invoiced_items[1][$p][5];
-								if($this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date)) {
+								$apply_lic_result = $this->applyLicense($plan_id, $plan_type, $invoice_id, $last_update_date);
+								if($apply_lic_result[0]==1) {
 									$is_atleast_one_update_successful = 1;
+									if(COUNT($apply_lic_result) > 2) {
+										$referral_stuff = $apply_lic_result[2];
+									}
 								}
 							}
 
@@ -526,7 +546,57 @@ class License
 								$this->terminateCouponCode($coupon_code_used, 0);//Terminate only if code is specific to a church
 							}
 
-							$this->prepareAndSendOrderDetailsEmail($invoice_id, "");
+							/************************************************************************************** /
+							Sending email asynchronously
+							/**************************************************************************************/
+							$email_sending_file = __DIR__."/../notify/sendemail.php";//Take care of this part
+							$email_sending_file = str_replace("\\", "/", $email_sending_file);
+							$commands = array();
+
+							$invoice_rep_email_content =  $this->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
+							$fromAddressType = "sales";
+							$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType;
+
+							if(COUNT($referral_stuff) > 0)
+							{
+								$referral_rewards_mail_details = array();
+								$referral_rewards_mail_details["customer_email"] = $invoice_rep_email_content[1][0];//To Email
+								$referral_rewards_mail_details["referrer_church_name"] = $referral_stuff[4];
+								$referral_rewards_mail_details["referral_church_name"] = $referral_stuff[1];
+								$referral_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[2]);
+								$referral_rew_email_content = $this->sendReferralRewardedSuccessEmail($referral_rewards_mail_details, 1);
+								$fromAddressType = "info";
+								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referral_rew_email_content[1][0]).' subject='.urlencode($referral_rew_email_content[1][1]).' emailBody='.urlencode($referral_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+								
+								$referrer_church_id = $referral_stuff[3];
+								$users_obj = new Users($this->APPLICATION_PATH);
+								$church_admin_details = $users_obj->getChurchAdminDetails($referrer_church_id);
+								$referrer_email_address = "";
+								if($church_admin_details[0]==1) {
+									$referrer_email_address = $church_admin_details[1][3];
+									$referrer_rewards_mail_details = array();
+									$referrer_rewards_mail_details["customer_email"] = $referrer_email_address;//To Email
+									$referrer_rewards_mail_details["referrer_church_name"] = $referral_stuff[4];
+									$referrer_rewards_mail_details["referral_church_name"] = $referral_stuff[1];
+									$referrer_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[5]);
+									$referrer_rew_email_content = $this->sendReferrerRewardedSuccessEmail($referrer_rewards_mail_details, 1);
+									$fromAddressType = "info";
+									$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referrer_rew_email_content[1][0]).' subject='.urlencode($referrer_rew_email_content[1][1]).' emailBody='.urlencode($referrer_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+								}
+							}
+
+							$threads = new Multithread( $commands );
+							$threads->run();
+
+							/** /
+							foreach ( $threads->commands as $key=>$command )
+							{
+								//echo "Command: ".$command."\n";
+								//echo "\nOutput: ".$threads->output[$key]."\n";
+								//echo "Error: ".$threads->error[$key]."\n\n";
+							}
+							/**/
+							/**************************************************************************************/
 
 							if($is_atleast_one_update_successful==1) {
 								$toReturn[0] = 1;
@@ -1115,7 +1185,7 @@ class License
 		return $toReturn;
 	}
 
-	public function sendInvoiceEmail($purchase_details_arr, $target_email)
+	public function sendInvoiceEmail($purchase_details_arr, $target_email, $just_return_contents=0)
 	{
 		@include_once($this->APPLICATION_PATH."classes/class.email.php");
 		$to_return = array();
@@ -1170,11 +1240,22 @@ class License
 		$invoice_report = str_replace("{{PAYMENT_GATEWAY}}", $purchase_details_arr["payment_gateway"], $invoice_report);
 		$invoice_report = str_replace("{{PAYMENT_MODE}}", $purchase_details_arr["payment_mode"], $invoice_report);
 
+
+		$subject = "Payment Received - Your Invoice Details";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = ((trim($target_email) != "")? trim($target_email) : $purchase_details_arr["email"]);
+			$contents_array[1] = $subject;
+			$contents_array[2] = $invoice_report;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
 		//Set and Send Email		
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
 		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $purchase_details_arr["email"]);
-		$subject = "Payment Received - Your Invoice Details";
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($invoice_report);
@@ -1189,7 +1270,7 @@ class License
 		return $to_return;
 	}
 
-	public function prepareAndSendOrderDetailsEmail($invoice_id, $target_email="")
+	public function prepareAndSendOrderDetailsEmail($invoice_id, $target_email="", $just_return_contents=0)
 	{
 		@include_once($this->APPLICATION_PATH."classes/class.email.php");
 		$to_return = array();
@@ -1225,7 +1306,10 @@ class License
 					$curr_item_array["item_total"] = $invoiced_items[1][$p][10];
 					$purchase_details_arr["invoiced_items_array"][] = $curr_item_array;
 				}
-				$emailing_result = $this->sendInvoiceEmail($purchase_details_arr, $target_email);
+				$emailing_result = $this->sendInvoiceEmail($purchase_details_arr, $target_email, $just_return_contents);
+				if($just_return_contents==1) {
+					return $emailing_result;
+				}
 				if($emailing_result[0]==1) {
 					$to_return[0] = 1;
 					$to_return[1] = "Invoice report emailed successfully to the recipient";
@@ -1255,16 +1339,17 @@ class License
 		$data_found = 0;
 		if($this->db_conn)
 		{
-		   $query = 'select cd.REFERRER_CHURCH_ID from LICENSE_DETAILS as ld, CHURCH_DETAILS as cd where ld.CHURCH_ID=? and ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.PLAN_TYPE=1 limit 1';
+		   $query = 'select cd.REFERRER_CHURCH_ID, cd.CHURCH_NAME from LICENSE_DETAILS as ld, CHURCH_DETAILS as cd where ld.CHURCH_ID=? and ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.PLAN_TYPE=1 limit 1';
 		   $result = $this->db_conn->Execute($query, array($church_id));
             
            if($result) {
                 if(!$result->EOF) {
 					$referrer_church_id = $result->fields[0];
+					$curr_church_name = $result->fields[1];
 					if($referrer_church_id > 0)
 					{
 						$toReturn[0] = 1;
-						$toReturn[1] = array($referrer_church_id);
+						$toReturn[1] = array($referrer_church_id, $curr_church_name);
 					}
 					else
 					{
@@ -1295,7 +1380,7 @@ class License
 		$toReturn[1] = "There was an error while trying extend the subscription.";
 		if($this->db_conn)
 		{
-		   $query = 'select LICENSE_EXPIRY_DATE, IS_ON_TRIAL, TRIAL_EXPIRY_DATE from LICENSE_DETAILS where CHURCH_ID=? and PLAN_TYPE=1 limit 1';
+		   $query = 'select LD.LICENSE_EXPIRY_DATE, LD.IS_ON_TRIAL, LD.TRIAL_EXPIRY_DATE, CD.CHURCH_NAME from LICENSE_DETAILS as LD, CHURCH_DETAILS as CD where LD.CHURCH_ID=? and LD.PLAN_TYPE=1 and LD.CHURCH_ID=CD.CHURCH_ID limit 1';
 		   $result = $this->db_conn->Execute($query, array($church_id));
             
            if($result) {
@@ -1303,6 +1388,7 @@ class License
 					$lic_expiry_date = $result->fields[0];
 					$is_on_trial = $result->fields[1];
 					$trial_expiry_date = $result->fields[2];
+					$church_name = $result->fields[3];
 
 					$expiry_date_to_set = time();
 					if($is_on_trial==1)
@@ -1314,6 +1400,8 @@ class License
 							$toReturn[0] = 1;
 							$extended_days = floor($seconds_to_extend/(24*60*60));
 							$toReturn[1] = $extended_days." more days added to the subscription validity";
+							$toReturn[2] = $expiry_date_to_set;
+							$toReturn[3] = $church_name;
 						}
 					}
 					else
@@ -1325,6 +1413,8 @@ class License
 							$toReturn[0] = 1;
 							$extended_days = floor($seconds_to_extend/(24*60*60));
 							$toReturn[1] = $extended_days." more days added to the subscription validity";
+							$toReturn[2] = $expiry_date_to_set;
+							$toReturn[3] = $church_name;
 						}
 					}
 				} else {
@@ -1342,6 +1432,120 @@ class License
 			$toReturn[1] = "Unable to get connection to the system.";
 		}
 		return $toReturn;
+	}
+
+	public function sendReferralRewardedSuccessEmail($user_details, $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$referral_prog_template_file = $this->APPLICATION_PATH."templates/email/referralrewarded.html";
+		$referral_prog_letter = "";
+		if(file_exists($referral_prog_template_file))
+		{
+			$referral_prog_letter = trim(file_get_contents($referral_prog_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the referral program email";
+		}
+
+		//Replacing place holder with values
+		$referral_prog_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{NEW_VALIDITY}}", $user_details["new_validity"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRER_CHURCH_NAME}}", $user_details["referrer_church_name"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRAL_CHURCH_NAME}}", $user_details["referral_church_name"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRAL_PROGRAM_URL}}", REFERRAL_PROGRAM_URL, $referral_prog_letter);
+
+		$subject = "You have been rewarded - ".PRODUCT_NAME."'s Referral Program";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = $user_details["customer_email"];
+			$contents_array[1] = $subject;
+			$contents_array[2] = $referral_prog_letter;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
+		$recipients = array();
+		$recipients['to_address'] = $user_details["customer_email"];
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($referral_prog_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Referral rewards email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send referral rewards email to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
+	}
+
+	public function sendReferrerRewardedSuccessEmail($user_details, $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$referral_prog_template_file = $this->APPLICATION_PATH."templates/email/referrerrewarded.html";
+		$referral_prog_letter = "";
+		if(file_exists($referral_prog_template_file))
+		{
+			$referral_prog_letter = trim(file_get_contents($referral_prog_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the referrer rewards email";
+		}
+
+		//Replacing place holder with values
+		$referral_prog_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{NEW_VALIDITY}}", $user_details["new_validity"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRER_CHURCH_NAME}}", $user_details["referrer_church_name"], $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRAL_CHURCH_NAME}}", $user_details["referral_church_name"], $referral_prog_letter);
+
+
+		$subject = "You have been rewarded - ".PRODUCT_NAME."'s Referral Program";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = $user_details["customer_email"];
+			$contents_array[1] = $subject;
+			$contents_array[2] = $referral_prog_letter;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+		
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
+		$recipients = array();
+		$recipients['to_address'] = $user_details["customer_email"];
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($referral_prog_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Referrer rewards email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send referrer rewards email to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
 	}
 }
 

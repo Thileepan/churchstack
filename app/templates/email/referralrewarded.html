@@ -1,0 +1,47 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<style type="text/css">
+			* { margin: 0; padding: 0; }
+			body {background-color :#FFFFFF; background-image :none; font-family: "Trebuchet MS", Helvetica, sans-serif; color:#000000; text-decoration : none; -moz-box-sizing:border-box; box-sizing:border-box; margin: 0px; padding: 3px; }
+			.black-font-10px {font-family: Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-decoration : none;}
+			.black-font-14px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 14px; color:#000000; text-decoration : none;}
+			.black-font-15px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 15px; color:#000000; text-decoration : none;}
+			.borderless-table { border-collapse: collapse; border: 0; padding: 5px;background-color :#FFFFFF;}
+			.borderless-table-col { border-collapse: collapse; border: 0; padding: 5px;}
+			.borderless-table-gray-bg { border-collapse: collapse; border: 0; padding: 5px; background-color:gray;}
+			.order-summary-table { border-collapse: collapse; border: 1px solid black; padding: 5px;}
+			.order-summary-row { border: 1px solid black; padding: 5px;}
+			.order-summary-left-col { text-align: left; background: #eee;  padding: 5px;}
+			.order-summary-right-col { text-align: left; padding: 5px; border: 1px solid black;}
+			.order-items-table {border-collapse: collapse; width: 100%; margin: 25px 0 0 0; border: 1px solid black; }
+			.order-items-table-header-row { border: 1px solid black; padding: 5px;}
+			.order-items-header-col { border: 1px solid black; padding: 5px; background: #eee; }
+			.order-item-row{ border: 1px solid black; padding: 5px; vertical-align: middle; }
+			.order-item-col{ border: 1px solid black; padding: 5px; vertical-align: middle; }
+			.order-item-subtotal-text { border: 1px solid black; padding: 5px; text-align: left; }
+			.order-item-subtotal-value { border: 1px solid black; padding: 5px; text-align: left; }
+			.order-item-nettotal-text { border: 1px solid black; padding: 5px; text-align: left; background: #eee; font-weight:bold;}
+			.order-item-nettotal-value { border: 1px solid black; padding: 5px; text-align: left; font-weight:bold; background: #eee; }
+			.w10p {width:10%}
+			.w15p {width:15%}
+			.w20p {width:20%}
+			.w30p {width:30%}
+			.w40p {width:40%}
+		</style>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>You have been rewarded - {{PRODUCT_NAME}}'s Referral Program</title>
+	</head>
+
+	<body width="100%">
+		<div width="100%">
+			<div>Congratulations {{REFERRAL_CHURCH_NAME}}, We are pleased to tell you that your church account's validity has been extended to 30 more days as you have been rewarded by {{PRODUCT_WEBSITE}}'s Referral Program.</div>
+			<div>&nbsp;</div>
+			<div><b>Your new validity : </b>Till {{NEW_VALIDITY}}</div>
+			<div><b>Your referrer's church name : </b>{{REFERRER_CHURCH_NAME}}</div>
+			<div>&nbsp;</div>
+			<div><b>Want to get rewarded more and more?</b></div>
+			<div>visit <a href="{{REFERRAL_PROGRAM_URL}}" target="_blank">{{REFERRAL_PROGRAM_URL}}</a> to get more details on our referral program</div>
+		</div>
+	</body>
+</html>

@@ -119,14 +119,14 @@
 						<div class="control-group">
 							<label class="control-label" for="inputUser">Username</label>
 							<div class="controls">
-								<input type="text" id="inputUser" class="span4" name="inputUser" placeholder="Username" value="admin">
+								<input type="text" id="inputUser" class="span4" name="inputUser" placeholder="Username" value="">
 							</div>
 						</div> <!-- /.control-group -->
 						
 						<div class="control-group">
 							<label class="control-label" for="inputPwd">Password</label>
 							<div class="controls">
-								<input type="password" id="inputPwd" class="span4" name="inputPwd" placeholder="Password" value="admin">
+								<input type="password" id="inputPwd" class="span4" name="inputPwd" placeholder="Password" value="">
 							</div>
 						</div> <!-- /.control-group -->
 						<div id="divSignInBtn">

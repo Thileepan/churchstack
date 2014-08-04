@@ -21,7 +21,7 @@
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
 			$shardedDB = $churches_result[1][$i][10];
-			$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sharded_db_processing_file.' shardedDB='.base64_encode($shardedDB);
+			$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$sharded_db_processing_file.' shardedDB='.urlencode($shardedDB);
 		}
 		$threads = new Multithread( $commands );
 		$threads->run();
