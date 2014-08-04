@@ -337,16 +337,22 @@ class Users
 					}
 					else
 					{
+						//Remove church entries completely
+						$this->removeChurchEntryOrderly($church_id, $sharded_db_name);
 						$toReturn[0] = 0;
-						$toReturn[1] = "An error occurred while creating the trial account";
+						$toReturn[1] = "An error occurred while creating the account";
 					}
 				} else {
+					//Remove church entries completely
+					$this->removeChurchEntryOrderly($church_id, $sharded_db_name);
 					$toReturn[0] = 0;
 					$toReturn[1] = "Unable to create the user. ".$user_result[1];
 				}
 			}
 			else
 			{
+				//Remove church entries completely
+				$this->removeChurchEntryOrderly($church_id, $sharded_db_name);
 				$toReturn[0] = 0;
 				$toReturn[1] = "Unable to create a dedicated setup. ".$sharded_result[1];
 			}
@@ -750,6 +756,35 @@ class Users
 			$to_return[1] = "Unable to send referral program email to the specified email address. ".$email_result[1];
 		}
 		return $to_return;
+	}
+
+	public function removeChurchEntryOrderly($church_id, $sharded_db_name)
+	{
+		if($this->db_conn)
+		{
+			$query = 'delete from LICENSE_DETAILS where CHURCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($church_id));
+			if($result) {
+			}
+
+			$query_1 = 'delete from USER_DETAILS where CHURCH_ID=?';
+			$result_1 = $this->db_conn->Execute($query_1, array($church_id));
+			if($result_1) {
+			}
+
+			$query_2 = 'delete from CHURCH_DETAILS where CHURCH_ID=?';
+			$result_2 = $this->db_conn->Execute($query_2, array($church_id));
+			if($result_2) {
+			}
+
+			if($sharded_db_name != "")
+			{
+				$query_3 = 'drop database '.$sharded_db_name;
+				$result_3 = $this->db_conn->Execute($query_3);
+				if($result_3) {
+				}
+			}
+		}
 	}
 }
 ?>
