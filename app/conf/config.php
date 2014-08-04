@@ -21,8 +21,8 @@ define('EMAIL_FROM_DONOTREPLY', 3);
 define('EMAIL_FROM_INFO', 4);
 
 define('SMTP_SERVER', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'nesanjoseph@gmail.com');
-define('SMTP_PASSWORD', 'godsgrace1');
+define('SMTP_USERNAME', 'help@churchstack.com');
+define('SMTP_PASSWORD', 'churchstack123$');
 define('FROM_ADDRESS', 'help@churchstack.com');
 define('FROM_NAME', 'ChurchStack');
 define('FROM_SALES_ADDRESS', 'sales@churchstack.com');
