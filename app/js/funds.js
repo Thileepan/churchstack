@@ -354,7 +354,7 @@ function deleteBatchResponse(response)
 function showBatchDetails(batchID)
 {
 	_batchID = batchID;
-	var formPostData = 'req=6';
+	var formPostData = 'req=10';
 	document.getElementById('alertRow').style.display = 'none';
 
 	$.ajax({

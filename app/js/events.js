@@ -270,6 +270,57 @@ function addOrUpdateEvents(val, doValidation)
 		var month = document.getElementById('month').options[monthIndex].value;
 	}
 
+	var emailRemainder = 0;
+	var smsRemainder = 0;
+	if(document.getElementById('inputEventNotifications').checked)
+	{
+		var isAtleastOneSelected = false;
+		emailRemainder = document.getElementById('inputRemainderPeriod1').value;
+		smsRemainder = document.getElementById('inputRemainderPeriod2').value;
+
+		if(emailRemainder != '') {
+			if(isNaN(emailRemainder)) {
+				errMsg = 'Please enter a valid remainder value for email notification';
+				var resultToUI = getAlertDiv(2, errMsg);
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = resultToUI;
+				return false;
+			} else {
+				isAtleastOneSelected = true;
+				emailRemainder = emailRemainder * 60 * 60;
+				var index = document.getElementById('inputRemainderType1').selectedIndex;
+				if(index == 1) {
+					emailRemainder = emailRemainder * 60;
+				}
+			}
+		}
+
+		if(smsRemainder != '') {
+			if(isNaN(smsRemainder)) {
+				errMsg = 'Please enter a valid remainder value for sms notification';
+				var resultToUI = getAlertDiv(2, errMsg);
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = resultToUI;
+				return false;
+			} else {
+				isAtleastOneSelected = true;
+				smsRemainder = smsRemainder * 60 * 60;
+				var index = document.getElementById('inputRemainderType2').selectedIndex;
+				if(index == 1) {
+					smsRemainder = smsRemainder * 60;
+				}
+			}
+		}
+
+		if(!isAtleastOneSelected)
+		{
+			var resultToUI = getAlertDiv(2, 'Please enter a valid remainder value for email/sms notifications');
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = resultToUI;
+			return false;
+		}
+	}
+
 	var formPostData = "req=3";
 	formPostData += "&title=" + title;
 	formPostData += "&desc=" + desc;
@@ -284,6 +335,9 @@ function addOrUpdateEvents(val, doValidation)
 	formPostData += "&day=" + day;
 	formPostData += "&monthDay=" + monthDay;
 	formPostData += "&month=" + month;
+	formPostData += "&participantList=" + document.getElementById('participantList').value;
+	formPostData += "&notifications=" + emailRemainder + ',' + smsRemainder;
+	
 
 	$.ajax({
 		type:'POST',
@@ -296,16 +350,18 @@ function addOrUpdateEvents(val, doValidation)
 
 function addOrUpdateEventsResponse(response)
 {
-	if(response) {
+	var dataObj = eval("(" + response + ")" );
+	var result = dataObj[0];
+	var msgToDisplay = dataObj[1];
+
+	if(result) {
 		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'Event has been updated successfully!':'Event has been created successfully';
 		if(!isUpdate) {
 			//getAddOrEditEventForm(0);
 			getAddOrEditEventParticipantForm();
 		}
 	} else {
 		var alertType = 2;
-		var msgToDisplay = (isUpdate)?'Event failed to update.':'Event failed to create.';		
 	}
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
@@ -547,28 +603,28 @@ function showNextEventStep(isUpdate)
 	document.getElementById('divEventStep-2').style.display = '';
 }
 
-function validateEventRemainder()
+function validateEventRemainder(option)
 {
-	var remainderPeriod = document.getElementById('inputRemainderPeriod').value;
-	var remainderTypeIndex = document.getElementById('inputRemainderType').selectedIndex;
-	var remainderType = document.getElementById('inputRemainderType').options[remainderTypeIndex].value;
+	var remainderPeriod = document.getElementById('inputRemainderPeriod' + option).value;
+	var remainderTypeIndex = document.getElementById('inputRemainderType' + option).selectedIndex;
+	var remainderType = document.getElementById('inputRemainderType' + option).options[remainderTypeIndex].value;
 
 	if(remainderType == 1)
 	{
 		if(remainderPeriod < 1 || isNaN(remainderPeriod)) {
-			document.getElementById('inputRemainderPeriod').value = 1;
+			document.getElementById('inputRemainderPeriod' + option).value = 1;
 		} else if(remainderPeriod > 23) {
 			var days = parseInt(remainderPeriod / 24);
-			document.getElementById('inputRemainderPeriod').value = days;
-			document.getElementById('inputRemainderType').selectedIndex = 1;
+			document.getElementById('inputRemainderPeriod' + option).value = days;
+			document.getElementById('inputRemainderType' + option).selectedIndex = 1;
 		}
 	}
 	else
 	{
 		if(remainderPeriod < 1 || isNaN(remainderPeriod)) {
-			document.getElementById('inputRemainderPeriod').value = 1;
+			document.getElementById('inputRemainderPeriod' + option).value = 1;
 		} else if(remainderPeriod > 7) {
-			document.getElementById('inputRemainderPeriod').value = 7;
+			document.getElementById('inputRemainderPeriod' + option).value = 7;
 		}
 	}
 }

@@ -4,6 +4,7 @@ include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.events.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';
 include_once $APPLICATION_PATH . '/classes/class.groups.php';
+include_once $APPLICATION_PATH . '/classes/class.recurr.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -27,7 +28,7 @@ if($req == 1)
 //	echo $start_date;
 //	$start_date = "2014-03-05";
 //	$end_date = "2014-03-25";
-
+	
 	$events_obj = new Events($APPLICATION_PATH);
 	$event_occurrences = $events_obj->getEventOccurrences($start_date, $end_date, $time_zone);
 	//print_r($event_occurrences);
@@ -326,19 +327,26 @@ else if($req == 2)
 		$to_return .= '</div>';
 		$to_return .= '<div class="span6">';
 			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';				
-				$to_return .= '<p class="text-left muted">Event Notification</p>';
+				$to_return .= '<p class="text-left muted">Event Notifications <input type="checkbox" id="inputEventNotifications" /></p>';
+				
 				$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="inputRemainderPeriod">Reminder</label>';
+					$to_return .= '<label class="control-label" for="inputRemainderPeriod1">Email Reminder</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="text" id="inputRemainderPeriod" class="input-mini" onblur="validateEventRemainder();" />&nbsp;';
-						$to_return .= '<select id="inputRemainderType" class="input-small">';
+						$to_return .= '<input type="text" id="inputRemainderPeriod1" class="input-mini" onblur="validateEventRemainder(1);" value="1" />&nbsp;';
+						$to_return .= '<select id="inputRemainderType1" class="input-small">';
 							$to_return .= '<option value="1">Hours</option>';
 							$to_return .= '<option value="2">Days</option>';
 						$to_return .= '</select>';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
-					$to_return .= '<div class="controls" id="participantsDiv">';					
+					$to_return .= '<label class="control-label" for="inputRemainderPeriod2">SMS Reminder</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" id="inputRemainderPeriod2" class="input-mini" onblur="validateEventRemainder(2);" value="1" />&nbsp;';
+						$to_return .= '<select id="inputRemainderType2" class="input-small">';
+							$to_return .= '<option value="1">Hours</option>';
+							$to_return .= '<option value="2">Days</option>';
+						$to_return .= '</select>';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 			$to_return .= '</form>';
@@ -378,6 +386,36 @@ else if($req == 3)
 	$month_day	= trim($_POST['monthDay']);
 	$month		= trim($_POST['month']);
 
+	//event participants
+	$participant_details = array();
+	$participant_list = trim($_POST['participantList']);
+	if($participant_list != '')
+	{
+		$participant_list = explode(',', $participant_list);
+		if(is_array($participant_details)) 
+		{
+			$total_participants = COUNT($participant_list);
+			if($total_participants > 0)
+			{
+				for($i=0; $i<$total_participants; $i++)
+				{
+					$participants = explode(":", $participant_list[$i]);
+					$participant_details[] = array($participants[0], $participants[1]);
+				}
+			}
+		}
+	}
+
+	//event notifications
+	$notification_details = array();
+	$notifications = explode(',', trim($_POST['notifications']));
+	for($i=0; $i<2; $i++)
+	{
+		if($notifications[$i] != 0) {
+			$notification_details[] = array(($i+1), $notifications[$i]);
+		}
+	}	
+	
 	if($freq == 1)
 	{
 		//no repeat
@@ -386,53 +424,68 @@ else if($req == 3)
 	else if($freq == 2)
 	{
 		//daily
-		$rrule = 'FREQ=DAILY;';
+		$freq_str = 'DAILY';
 	}
 	else if($freq == 3)
 	{
 		//monthly
-		$rrule = 'FREQ=WEEKLY;';
+		$freq_str = 'WEEKLY';
 	}
 	else if($freq == 4)
 	{
 		//yearly
-		$rrule = 'FREQ=MONTHLY;';
+		$freq_str = 'MONTHLY';
 	}
 	else if($freq == 5)
 	{
 		//yearly
-		$rrule = 'FREQ=YEARLY;';
+		$freq_str = 'YEARLY';
 	}
 
-	if($freq != 1) {
-		$until = explode("-", $end_date);
-		//print_r($end_date);
-		$until = $until[0].$until[1].$until[2];
-		$rrule .= 'INTERVAL='.$interval.';UNTIL='.$until.';';
-		//$rrule .= 'INTERVAL='.$interval.';COUNT=10;';
-	}
-	
-	if($freq == 3 || $freq == 4 || $freq == 5) {
-		if($freq == 3) {
-			$rrule .= 'BYDAY='.$day.';';
-		} else {
-			if($month_day == "") {
-				$rrule .= 'BYDAY='.$day.';';
-				if($freq == 5) {
-					$rrule .= 'BYMONTH='.$month.';';
-				}
+	if($freq != 1) 
+	{
+		$type = 1;
+		$end_date_time = '';
+		if($end_date != '0000-00-00')
+		{
+			$end_date_time = $end_date . ' 23:59:00';
+			$end_date_time = new \DateTime($end_date_time, new \DateTimeZone('Asia/Calcutta'));
+		}
+
+		$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+		$recurr_obj->setUp($type);
+		$recurr_obj->setFreq($freq_str);
+		$recurr_obj->setInterval($interval);
+		if($end_date != '0000-00-00') {
+			$recurr_obj->setUntil($end_date_time);
+		}
+		
+		if($freq == 3 || $freq == 4 || $freq == 5) {
+			if($freq == 3) {
+				$recurr_obj->setByDay(explode(',', $day));
 			} else {
-				$rrule .= 'BYMONTHDAY='.$month_day.';';
+				if($month_day == "") {
+					$recurr_obj->setByDay(explode(',', $day));
+					if($freq == 5) {
+						$recurr_obj->setByMonth(explode(',', $month));
+					}
+				} else {
+					$recurr_obj->setByMonthDay(explode(',', $month_day));
+				}
 			}
 		}
+		$rrule = $recurr_obj->getRRule();
 	}
 
-	echo $rrule;
-
+	//echo $rrule;exit;
 	$events_obj = new Events($APPLICATION_PATH);
-	$status = $events_obj->addEventDetails($title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level);
+	$status = $events_obj->addEvent($title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details);
 
-	echo $status;
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($status);
+	unset($json);
+
+	echo $encode_obj;
 	exit;
 }
 else if($req == 4)
@@ -460,7 +513,7 @@ else if($req == 5)
 {
 	//list all events
 
-	$listAllEvents = true;
+	$list_all_events = true;
 	$start_date = "";
 	//$end_date = "";
 
@@ -476,7 +529,7 @@ else if($req == 5)
 	//echo $today;
 
 	$events_obj = new Events($APPLICATION_PATH);
-	$event_details = $events_obj->getAllEvents($listAllEvents, $start_date, $today, $start_time, $end_time, $event_status);
+	$event_details = $events_obj->getAllEvents($list_all_events, $start_date, $today, $start_time, $end_time, $event_status);
 	//print_r($event_details);
 
 	$is_results_available = false;
