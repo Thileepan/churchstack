@@ -85,16 +85,8 @@ use Recurr\Weekday;
  * @package Recurr
  * @author  Shaun Simmons <shaun@envysphere.com>
  */
-class RecurrenceRule
+class Rule
 {
-    const FREQ_SECONDLY = 6;
-    const FREQ_MINUTELY = 5;
-    const FREQ_HOURLY   = 4;
-    const FREQ_DAILY    = 3;
-    const FREQ_WEEKLY   = 2;
-    const FREQ_MONTHLY  = 1;
-    const FREQ_YEARLY   = 0;
-
     public static $freqs = array(
         'YEARLY'   => 0,
         'MONTHLY'  => 1,
@@ -105,11 +97,17 @@ class RecurrenceRule
         'SECONDLY' => 6,
     );
 
-    /** @var string|null */
+    /** @var string */
     protected $timezone;
 
     /** @var \DateTime|null */
     protected $startDate;
+
+    /** @var \DateTime|null */
+    protected $endDate;
+
+    /** @var bool */
+    protected $isStartDateFromDtstart = false;
 
     /** @var string */
     protected $freq;
@@ -164,24 +162,56 @@ class RecurrenceRule
     /** @var int */
     protected $bySetPosition;
 
+    /** @var array */
+    protected $exDates = array();
+
     /**
-     * Construct a new RecurrenceRule.
+     * Construct a new Rule.
      *
-     * @param null|string    $rrule RRULE string
-     * @param null|\DateTime $startDate
-     * @param string         $timezone
+     * @param string           $rrule RRULE string
+     * @param string|\DateTime $startDate
+     * @param \DateTime|null   $endDate
+     * @param string           $timezone
      */
-    public function __construct($rrule = null, $startDate = null, $timezone = 'UTC')
+    public function __construct($rrule = null, $startDate = null, $endDate = null, $timezone = null)
     {
-        if (!empty($timezone)) {
-            $this->setTimezone($timezone);
+        if (empty($timezone)) {
+            if ($startDate instanceof \DateTime) {
+                $timezone = $startDate->getTimezone()->getName();
+            } else {
+                $timezone = date_default_timezone_get();
+            }
+        }
+        $this->setTimezone($timezone);
+
+        if (!$startDate instanceof \DateTime) {
+            $startDate  = new \DateTime($startDate, new \DateTimeZone($timezone));
         }
 
-        $this->setStartDate(empty($startDate) ? new \DateTime() : $startDate);
+        $this->setStartDate($startDate);
+        $this->setEndDate($endDate);
 
         if (!empty($rrule)) {
-            $this->createFromString($rrule);
+            $this->loadFromString($rrule);
         }
+    }
+
+    /**
+     * Create a Rule object based on a RRULE string.
+     *
+     * @param string           $rrule RRULE string
+     * @param string|\DateTime $startDate
+     * @param \DateTime|null   $endDate
+     * @param string           $timezone
+     *
+     * @return Rule
+     * @throws InvalidRRule
+     */
+    public static function createFromString($rrule, $startDate = null, $endDate = null, $timezone = null)
+    {
+        $rule = new static($rrule, $startDate, $endDate, $timezone);
+
+        return $rule;
     }
 
     /**
@@ -189,10 +219,10 @@ class RecurrenceRule
      *
      * @param string $rrule RRULE string
      *
-     * @return void
+     * @return Rule
      * @throws InvalidRRule
      */
-    public function createFromString($rrule)
+    public function loadFromString($rrule)
     {
         $rrule  = strtoupper($rrule);
         $rrule  = trim($rrule, ';');
@@ -224,15 +254,23 @@ class RecurrenceRule
             $this->setFreq(self::$freqs[$parts['FREQ']]);
         }
 
+        // DTSTART
+        if (isset($parts['DTSTART'])) {
+            $this->isStartDateFromDtstart = true;
+            $this->setStartDate(new \DateTime($parts['DTSTART'], new \DateTimeZone($this->getTimezone())));
+        }
+
+        // DTEND
+        if (isset($parts['DTEND'])) {
+            $this->setEndDate(new \DateTime($parts['DTEND'], new \DateTimeZone($this->getTimezone())));
+        }
+
         // UNTIL or COUNT
         if (isset($parts['UNTIL']) && isset($parts['COUNT'])) {
-            throw new InvalidRRule('UNTIL or COUNT may not both be in the RRULE');
+            throw new InvalidRRule('UNTIL and COUNT must not exist together in the same RRULE');
         } elseif (isset($parts['UNTIL'])) {
             $this->setUntil(
-                new \DateTime(
-                    $parts['UNTIL'],
-                    new \DateTimeZone($this->getTimezone())
-                )
+                new \DateTime($parts['UNTIL'], new \DateTimeZone($this->getTimezone()))
             );
         } elseif (isset($parts['COUNT'])) {
             $this->setCount($parts['COUNT']);
@@ -292,6 +330,11 @@ class RecurrenceRule
         if (isset($parts['WKST'])) {
             $this->setWeekStart($parts['WKST']);
         }
+
+        // EXDATE
+        if (isset($parts['EXDATE'])) {
+            $this->setExDates(explode(',', $parts['EXDATE']));
+        }
     }
 
     /**
@@ -313,6 +356,16 @@ class RecurrenceRule
             $parts[] = 'UNTIL='.$until->format('Ymd\THis');
         } elseif (!empty($count)) {
             $parts[] = 'COUNT='.$count;
+        }
+
+        // DTSTART
+        if ($this->isStartDateFromDtstart) {
+            $parts[] = 'DTSTART='.$this->getStartDate()->format('Ymd\This');
+        }
+
+        // DTEND
+        if ($this->endDate instanceof \DateTime) {
+            $parts[] = 'DTEND='.$this->getEndDate()->format('Ymd\This');
         }
 
         // INTERVAL
@@ -381,14 +434,29 @@ class RecurrenceRule
             $parts[] = 'WKST='.$weekStart;
         }
 
+        // EXDATE
+        $exDates = $this->getExDates();
+        if (!empty($exDates)) {
+            foreach ($exDates as $key => $exclusion) {
+                $format = 'Ymd';
+                if ($exclusion->hasTime) {
+                    $format .= '\This';
+                    if ($exclusion->isUtcExplicit) {
+                        $format .= '\Z';
+                    }
+                }
+                $exDates[$key] = $exclusion->date->format($format);
+            }
+            $parts[] = 'EXDATE='.implode(',', $exDates);
+        }
+
         return implode(';', $parts);
     }
 
     /**
-     * This is the timezone to use in \DateTime() objects.
+     * @param string $timezone
      *
-     * @param null|string $timezone Timezone Identifier
-     *
+     * @see http://www.php.net/manual/en/timezones.php
      * @return $this
      */
     public function setTimezone($timezone)
@@ -423,41 +491,52 @@ class RecurrenceRule
     }
 
     /**
-     * Get the user-provided date of the first instance in the recurrence set.
-     *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getStartDate()
     {
-        $date = $this->startDate;
+        return $this->startDate;
+    }
 
-        if (!empty($date)
-            && $date->getTimezone()->getName() == 'UTC'
-            && $this->getTimezone() != 'UTC'
-        ) {
-            $date->setTimezone(new \DateTimeZone($this->getTimezone()));
-        }
+    /**
+     * This date specifies the last possible instance in the recurrence set.
+     *
+     * @param \DateTime|null $endDate Date of the last possible instance in the recurrence
+     *
+     * @return $this
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
 
-        return $date;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 
     /**
      * Identifies the type of recurrence rule.
      *
      * May be one of:
-     *  - RecurrenceRule::FREQ_SECONDLY to specify repeating events based on an
+     *  - Frequency::SECONDLY to specify repeating events based on an
      *    interval of a second or more.
-     *  - RecurrenceRule::FREQ_MINUTELY to specify repeating events based on an
+     *  - Frequency::MINUTELY to specify repeating events based on an
      *    interval of a minute or more.
-     *  - RecurrenceRule::FREQ_HOURLY to specify repeating events based on an
+     *  - Frequency::HOURLY to specify repeating events based on an
      *    interval of an hour or more.
-     *  - RecurrenceRule::FREQ_DAILY to specify repeating events based on an
+     *  - Frequency::DAILY to specify repeating events based on an
      *    interval of a day or more.
-     *  - RecurrenceRule::FREQ_WEEKLY to specify repeating events based on an
+     *  - Frequency::WEEKLY to specify repeating events based on an
      *    interval of a week or more.
-     *  - RecurrenceRule::FREQ_MONTHLY to specify repeating events based on an
+     *  - Frequency::MONTHLY to specify repeating events based on an
      *    interval of a month or more.
-     *  - RecurrenceRule::FREQ_YEAR to specify repeating events based on an
+     *  - Frequency::YEAR to specify repeating events based on an
      *    interval of a year or more.
      *
      * @param string $freq Frequency of recurrence.
@@ -584,21 +663,6 @@ class RecurrenceRule
         }
 
         return $date;
-    }
-
-    /**
-     * This is a convenience method meant to complement setStartDate().
-     *
-     * It is just an alias of setUntil
-     *
-     * @param \DateTime $endDate The upper bound of the recurrence.
-     *
-     * @return $this
-     * @see setUntil
-     */
-    public function setEndDate(\DateTime $endDate)
-    {
-        return $this->setUntil($endDate);
     }
 
     /**
@@ -985,5 +1049,65 @@ class RecurrenceRule
     public function getBySetPosition()
     {
         return $this->bySetPosition;
+    }
+
+    /**
+     * This rule specifies an array of exception dates that will not be
+     * included in a recurrence set.
+     *
+     * @param string[]|DateExclusion[] $exDates Array of dates that will not be
+     *                                          included in the recurrence set.
+     *
+     * @return $this
+     */
+    public function setExDates(array $exDates)
+    {
+        $timezone = new \DateTimeZone($this->getTimezone());
+
+        foreach ($exDates as $key => $val) {
+            if ($val instanceof DateExclusion) {
+                $val->date = $this->convertZtoUtc($val->date);
+            } else {
+                $date          = new \DateTime($val, $timezone);
+                $exDates[$key] = new DateExclusion(
+                    $this->convertZtoUtc($date),
+                    strpos($val, 'T') !== false,
+                    strpos($val, 'Z') !== false
+                );
+            }
+        }
+
+        $this->exDates = $exDates;
+    }
+
+    /**
+     * DateTime::setTimezone fails if the timezone does not have an ID.
+     * "Z" is the same as "UTC", but "Z" does not have an ID.
+     *
+     * This is necessary for exclusion dates to be handled properly.
+     *
+     * @param \DateTime $date
+     *
+     * @return \DateTime
+     */
+    private function convertZtoUtc(\DateTime $date)
+    {
+        if ($date->getTimezone()->getName() !== 'Z') {
+            return $date;
+        }
+
+        $date->setTimezone(new \DateTimeZone('UTC'));
+
+        return $date;
+    }
+
+    /**
+     * Get the array of dates that will not be included in a recurrence set.
+     *
+     * @return DateExclusion[]
+     */
+    public function getExDates()
+    {
+        return $this->exDates;
     }
 }

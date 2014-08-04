@@ -1,5 +1,0 @@
-[22-Feb-2014 18:19:52 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement in the script in D:\Projects\churchstack\app\plugins\recurr\src\Recurr\test.php on line 15
-[22-Feb-2014 18:20:01 UTC] PHP Fatal error:  Class 'Recurr\RecurrenceRule' not found in D:\Projects\churchstack\app\plugins\recurr\src\Recurr\test.php on line 24
-[22-Feb-2014 18:20:02 UTC] PHP Fatal error:  Class 'Recurr\RecurrenceRule' not found in D:\Projects\churchstack\app\plugins\recurr\src\Recurr\test.php on line 24
-[22-Feb-2014 18:20:12 UTC] PHP Fatal error:  Class 'Recurr\RecurrenceRule' not found in D:\Projects\churchstack\app\plugins\recurr\src\Recurr\test.php on line 24
-[22-Feb-2014 18:20:13 UTC] PHP Fatal error:  Class 'Recurr\RecurrenceRule' not found in D:\Projects\churchstack\app\plugins\recurr\src\Recurr\test.php on line 24

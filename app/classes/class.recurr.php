@@ -7,10 +7,11 @@
 
 //error_reporting(E_ALL);
 //ini_set("display_errors", "On");
+//namespace Recurr;
 
-use Recurr\RecurrenceRule;
-use Recurr\RecurrenceRuleTransformer;
-use Recurr\TransformerConfig;
+use Recurr\Rule;
+//use Recurr\Recurrence;
+use Recurr\RecurrenceCollection;
 
 class RecurrInterface
 {
@@ -25,27 +26,34 @@ class RecurrInterface
 
 	public function setUp($type)
 	{
-		include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/RecurrenceRule.php";		
+		//autoloading the vendor classes
+		require $this->APPLICATION_PATH."plugins/recurr/vendor/autoload.php";
+		include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Rule.php";		
 		
 		if($type == 1) {
-			$this->rule = new RecurrenceRule;
+			$this->rule = new Rule;
 		} else if($type == 2) {
-			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/RecurrenceRuleTransformer.php";
-			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/TransformerConfig.php";
+//			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Recurrence.php";
+			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/RecurrenceCollection.php";
+			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/ArrayTransformer.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DateUtil.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DateInfo.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DaySet.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Time.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Weekday.php";
 
-			$this->transformer = new RecurrenceRuleTransformer;
-		}
-		
+			$this->transformer = new \Recurr\Transformer\ArrayTransformer();			
+		}		
 	}
 
 	public function setStartDate($start_date)
 	{
 		$this->start_date = $start_date;
+	}
+
+	public function setEndDate($end_date)
+	{
+		$this->end_date = $end_date;
 	}
 
 	public function setTimeZone($timezone)
@@ -58,9 +66,19 @@ class RecurrInterface
 		$this->rule->setFreq($freq);
 	}
 
+	public function setCount($count)
+	{
+		$this->rule->setCount($count);
+	}
+
 	public function setInterval($interval)
 	{
 		$this->rule->setInterval($interval);
+	}
+
+	public function setBySecond($second)
+	{
+		$this->rule->setBySecond($second);
 	}
 
 	public function setByMinute($minute)
@@ -107,6 +125,16 @@ class RecurrInterface
 	{
 		$this->rule->setWeekStart($week_start);
 	}
+
+	public function setUntil($until)
+	{
+		$this->rule->setUntil($until);
+	}
+
+	public function setVirtualLimit($limit)
+	{
+		$this->virtualLimit = $limit;
+	}
 	
 	public function setRRule($rrule)
 	{
@@ -120,19 +148,18 @@ class RecurrInterface
 
 	public function getOccurrences()
 	{
-		//$timezone    = 'America/New_York';
-		//date_default_timezone_set($timezone);
 		$start_date   = new \DateTime($this->start_date, new \DateTimeZone($this->timezone));
-		$rule        = new \Recurr\RecurrenceRule($this->rrule, $start_date, $this->timezone);
-		//$transformer = new \Recurr\RecurrenceRuleTransformer($rule);
-
-/*
-		$transformerConfig = new \Recurr\TransformerConfig();
-		//$transformerConfig->enableLastDayOfMonthFix();
-		$this->transformer->setTransformerConfig($transformerConfig);
-*/
-		$this->transformer->setRule($rule);
-		return $this->transformer->getComputedArray();
+		if($this->end_date != '0000-00-00') {
+			$end_date   = new \DateTime($this->end_date, new \DateTimeZone($this->timezone)); //optional
+		} else {
+			//$end_date = null;
+		}
+		$rule = new \Recurr\Rule($this->rrule, $start_date, $end_date, $this->timezone);
+		if($this->virtualLimit != '' || $this->virtualLimit != null) {
+			$this->transformer->setVirtualLimit($this->virtualLimit);
+		}
+		
+		return $this->transformer->transform($rule)->toArray();
 	}
 }
 
