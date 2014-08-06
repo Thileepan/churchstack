@@ -1,4 +1,10 @@
 <?php
+session_start();
+$APPLICATION_PATH = "../";
+if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] == "/conf/config.php") {
+	@require $APPLICATION_PATH.'error/404.php';
+	exit;
+}
 //app configurations
 define('APP_VERSION', '1.0');
 define('APP_BUILD_NUMBER', '20140118');

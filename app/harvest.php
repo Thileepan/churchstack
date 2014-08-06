@@ -8,7 +8,8 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 	exit;
 }
 /**/
-include "header.php";
+$APPLICATION_PATH = "./";
+include $APPLICATION_PATH."header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/harvest.js"></script>
 

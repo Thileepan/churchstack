@@ -8,7 +8,8 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 	exit;
 }
 /**/
-include "header.php";
+$APPLICATION_PATH = "./";
+include $APPLICATION_PATH."header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/reports.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/js/ZeroClipboard.js"></script>

@@ -1,6 +1,12 @@
 <?php
 	$APPLICATION_PATH = __DIR__."/../";//Exclusively for running from command line 
 	$APPLICATION_PATH = str_replace("\\", "/", $APPLICATION_PATH);
+	
+	if($_SERVER['DOCUMENT_ROOT'] != "") {
+		@require $APPLICATION_PATH.'error/404.php';
+		exit;
+	}
+
 	include_once($APPLICATION_PATH."plugins/thread/class.thread.php");
 	include_once($APPLICATION_PATH."plugins/PHPMailer/class.phpmailer.php");
 	include_once($APPLICATION_PATH."classes/class.email.php");

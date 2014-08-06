@@ -1,5 +1,4 @@
 <?php
-$APPLICATION_PATH = "./";
 
 /** /
 //reports page
@@ -10,7 +9,8 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 	exit;
 }
 /**/
-include "header.php";
+$APPLICATION_PATH = "./";
+include $APPLICATION_PATH."header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/dashboard.js"></script>
 <script src="<?php echo $APPLICATION_PATH; ?>js/events.js"></script>

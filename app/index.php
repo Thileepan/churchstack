@@ -19,7 +19,7 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 }
 /**/
 $APPLICATION_PATH = "./";
-include "header.php";
+include $APPLICATION_PATH."header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/subscriptions.js"></script>
 <script src="<?php echo $APPLICATION_PATH; ?>js/harvest.js"></script>
