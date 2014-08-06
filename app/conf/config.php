@@ -9,9 +9,10 @@ if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] 
 define('APP_VERSION', '1.0');
 define('APP_BUILD_NUMBER', '20140118');
 define('PRODUCT_NAME', 'ChurchStack');
-define('PRODUCT_WEBSITE', 'ChurchStack.com');
+define('PRODUCT_WEBSITE', 'http://www.ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
-define('REFERRAL_PROGRAM_URL', 'http://churchstack.com/ref/referralpg.html');
+define('REFERRAL_PROGRAM_URL', 'http://www.churchstack.com/ref/referralpg.html');
+define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd.php');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
