@@ -33,8 +33,10 @@ if($req == 'authenticate')
 		$_SESSION['username'] = $login_result[2][2];
 		$_SESSION['email'] = $login_result[2][3];
 		$_SESSION['roleID'] = $login_result[2][4];
-		$_SESSION['password'] = $login_result[2][5];
+		//$_SESSION['password'] = $login_result[2][5];
 		$_SESSION['loginTime'] = time();
+		$_SESSION['session_token_1'] = md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']);
+		$_SESSION['session_token_2'] = md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']);
 		//$_SESSION['shardedDB'] = 'cs01_churchstack';
 		$is_auth_valid = 1;
 		$login_message = $login_result[1];

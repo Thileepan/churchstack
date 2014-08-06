@@ -1,3 +1,6 @@
+<?php
+include $APPLICATION_PATH."utils/validateauth.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 

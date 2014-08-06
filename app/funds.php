@@ -1,11 +1,13 @@
 <?php
 //subscriptions page
+/** /
 session_start();
 if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESSION['password']) || $_SESSION['password'] == '')
 {
 	header('Location: signin.php');
 	exit;
 }
+/**/
 include "header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/funds.js"></script>

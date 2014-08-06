@@ -10,12 +10,15 @@
 //
 // ***********************************************************/
 
+/** /
 session_start();
 if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESSION['password']) || $_SESSION['password'] == '')
 {
 	header('Location: signin.php');
 	exit;
 }
+/**/
+$APPLICATION_PATH = "./";
 include "header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/subscriptions.js"></script>

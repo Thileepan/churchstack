@@ -1,4 +1,7 @@
 <?php
+$APPLICATION_PATH = "./";
+
+/** /
 //reports page
 session_start();
 if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESSION['password']) || $_SESSION['password'] == '')
@@ -6,6 +9,7 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 	header('Location: signin.php');
 	exit;
 }
+/**/
 include "header.php";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/dashboard.js"></script>
