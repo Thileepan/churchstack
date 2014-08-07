@@ -121,6 +121,19 @@ class Email
 		$mail->Body    = $this->body;
 		//$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
+		if(strpos($this->body, 'cid:cs_head_logo') > 0) {
+			$mail->addEmbeddedImage($this->APPLICATION_PATH.'images/email/cs_email_head.png', 'cs_head_logo');
+		}
+		if(strpos($this->body, 'cid:cs_site_text_logo') > 0) {
+			$mail->addEmbeddedImage($this->APPLICATION_PATH.'images/email/cs-website-text.png', 'cs_site_text_logo');
+		}
+		if(strpos($this->body, 'cid:cs_vertical_stripe') > 0) {
+			$mail->addEmbeddedImage($this->APPLICATION_PATH.'images/email/cs_email_head.png', 'cs_vertical_stripe');
+		}
+		if(strpos($this->body, 'cid:cs_horizontal_stripe') > 0) {
+			$mail->addEmbeddedImage($this->APPLICATION_PATH.'images/email/cs_email_head.png', 'cs_horizontal_stripe');
+		}
+
 		if(!$mail->send()) {
 			//TODO: Log the success/failure
 			$to_return[0] = 0;

@@ -1,52 +1,90 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<style type="text/css">
-			* { margin: 0; padding: 0; }
-			body {background-color :#FFFFFF; background-image :none; font-family: "Trebuchet MS", Helvetica, sans-serif; color:#000000; text-decoration : none; -moz-box-sizing:border-box; box-sizing:border-box; margin: 0px; padding: 3px; }
-			.black-font-10px {font-family: Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-decoration : none;}
-			.black-font-14px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 14px; color:#000000; text-decoration : none;}
-			.black-font-15px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 15px; color:#000000; text-decoration : none;}
-			.borderless-table { border-collapse: collapse; border: 0; padding: 5px;background-color :#FFFFFF;}
-			.borderless-table-col { border-collapse: collapse; border: 0; padding: 5px;}
-			.borderless-table-gray-bg { border-collapse: collapse; border: 0; padding: 5px; background-color:gray;}
-			.order-summary-table { border-collapse: collapse; border: 1px solid black; padding: 5px;}
-			.order-summary-row { border: 1px solid black; padding: 5px;}
-			.order-summary-left-col { text-align: left; background: #eee;  padding: 5px;}
-			.order-summary-right-col { text-align: left; padding: 5px; border: 1px solid black;}
-			.order-items-table {border-collapse: collapse; width: 100%; margin: 25px 0 0 0; border: 1px solid black; }
-			.order-items-table-header-row { border: 1px solid black; padding: 5px;}
-			.order-items-header-col { border: 1px solid black; padding: 5px; background: #eee; }
-			.order-item-row{ border: 1px solid black; padding: 5px; vertical-align: middle; }
-			.order-item-col{ border: 1px solid black; padding: 5px; vertical-align: middle; }
-			.order-item-subtotal-text { border: 1px solid black; padding: 5px; text-align: left; }
-			.order-item-subtotal-value { border: 1px solid black; padding: 5px; text-align: left; }
-			.order-item-nettotal-text { border: 1px solid black; padding: 5px; text-align: left; background: #eee; font-weight:bold;}
-			.order-item-nettotal-value { border: 1px solid black; padding: 5px; text-align: left; font-weight:bold; background: #eee; }
-			.w10p {width:10%}
-			.w15p {width:15%}
-			.w20p {width:20%}
-			.w30p {width:30%}
-			.w40p {width:40%}
-		</style>
-
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Welcome to {{PRODUCT_WEBSITE}}</title>
-	</head>
-
-	<body width="100%">
-		<div width="100%">
-			<div>You have received this email because you have signed up with the email address <b>{{CUSTOMER_EMAIL}}</b> on {{PRODUCT_WEBSITE}}. If you did not sign up on {{PRODUCT_WEBSITE}}, kindly notify us by emailing to <a href="mailto:{{SUPPORT_EMAIL}}" target="_top">{{SUPPORT_EMAIL}}</a></div>
-			<div>&nbsp;</div>
-			<div>Dear {{FIRST_NAME}} {{LAST_NAME}}, Thank you for joining {{PRODUCT_WEBSITE}}, an efficient and a fastest growing Online Church Management Software.</div>
-			<div>&nbsp;</div>
-			<div><b>Your Church Details : </b></div>
-			<div>{{CHURCH_NAME}}<BR/>{{CHURCH_ADDRESS}}</div>
-			<div>&nbsp;</div>
-			<div><b>How do I access my church account?</b></div>
-			<div>Logon to {{CS_LOGIN_WEBSITE}} and use your email address ({{CUSTOMER_EMAIL}}) and the password you have set while signing up to get access to your church account</div>
-			<div>&nbsp;</div>
-			<div><b>Have more queries?</b></div>
-			<div>Just send an email to <a href="mailto:{{SUPPORT_EMAIL}}" target="_top">{{SUPPORT_EMAIL}}</a> asking all your queries, we will get back to you within 24 hours and clarify them all!</div>
-		</div>
-	</body>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Welcome to {{PRODUCT_NAME}}</title>
+</head>
+<body>
+	<table width="100%" height="100%" border="0" bgcolor="#f1f1f1" cellspacing="0" cellpadding="0">
+        <tbody>
+			<tr>
+				<td valign="top" align="center" style="padding:20px 0 20px 0">
+					<table width="600" border="0" bgcolor="#ffffff" cellspacing="0" cellpadding="0">
+						<tbody>
+							<tr>
+								<td valign="top" bgcolor="#f1f1f1" style="padding-bottom:5px;padding-top:5px;" colspan="3"  width="100%">
+									<table width="100%">
+										<tr>
+											<td align="left" width="50%">
+												<a target="_blank" href="{{PRODUCT_WEBSITE}}">
+													<img border="0" align="left" style="margin:0" alt="ChurchStack" src="cid:cs_head_logo">
+												</a>
+											</td>
+											<td align="right" width="50%">
+												<a target="_blank" href="{{PRODUCT_WEBSITE}}">
+													<img border="0" align="right" style="margin:0" alt="ChurchStack" src="cid:cs_site_text_logo">
+												</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" colspan="3">
+									<img width="1" border="0" align="left" alt="ChurchStack" src="cid:cs_vertical_stripe" style="margin:0">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" valign="top" style="font-size:10px;font-weight:normal;font-family:Arial,sans-serif;margin:0;margin-bottom:10px;color:grey;padding-bottom:10px;">
+									You have received this email because someone (presumably you) have signed up with the email address {{CUSTOMER_EMAIL}} on {{PRODUCT_NAME}}. If you did not sign up on {{PRODUCT_NAME}}, kindly notify us by emailing to <a href="mailto:{{SUPPORT_EMAIL}}" target="_top">{{SUPPORT_EMAIL}}</a>
+								</td>
+							</tr>
+							<tr>
+								<td width="30" valign="top">
+									<img width="30" height="1" border="0" align="left" alt="Magento" src="cid:cs_horizontal_stripe" style="margin:0">
+								</td>
+								<td valign="top" align="left" style="font-size:13px;font-family:Arial,sans-serif;line-height:18px;color:#555555">
+									<h1 style="font-size:28px;font-weight:normal;font-family:Arial,sans-serif;line-height:34px;margin:0;margin-bottom:10px;color:#002d53">
+										Dear {{FIRST_NAME}} {{LAST_NAME}},
+									</h1>
+									<h2 style="font-size:17px;font-weight:bold;font-family:Arial,sans-serif;line-height:23px;margin:0 0 10px 0;color:#e34500">Welcome to {{PRODUCT_NAME}}, an efficient and a fastest growing Online Church Management Software. Your account has been created on {{PRODUCT_NAME}} and is now ready to use.</h2>
+									<p style="font-size:13px;font-family:Arial,sans-serif;line-height:18px;color:#555555;margin:0;margin-bottom:10px">
+										You can login to your {{PRODUCT_NAME}} account by clicking the "Signin" button on the top of the <a href="{{PRODUCT_WEBSITE}}" target="_blank">{{PRODUCT_WEBSITE}}</a> site and use the following details:
+										<br>
+										<br>
+										<b style="color:#000000">Login URL</b>:{{CS_LOGIN_WEBSITE}}
+										<br>
+										<b style="color:#000000">Email</b>: {{CUSTOMER_EMAIL}}
+										<br>
+										<b style="color:#000000">Password</b>: This is the password you created when you signed up on the website.
+										<br><br>
+										If you have forgottten your password, you can recover it from here anytime: <a target="_blank" style="text-decoration:none;color:#0068b7" href="{{FORGOT_PASSWORD_URL}}">{{FORGOT_PASSWORD_URL}}</a>
+									</p>
+									<p style="font-size:13px;font-family:Arial,sans-serif;line-height:18px;color:#555555;margin:0;margin-bottom:10px">
+									<b>Your Church Details:</b><BR/>
+									{{CHURCH_NAME}},<BR/>{{CHURCH_ADDRESS}}
+									</p>
+									<p style="font-size:13px;font-family:Arial,sans-serif;line-height:18px;color:#555555;margin:0;margin-bottom:25px">
+										If you have any questions, please contact us at <a target="_blank" style="text-decoration:none;color:#0068b7" href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a>
+									</p>
+								</td>
+								<td width="30" valign="top">
+									<img width="30" height="1" border="0" align="left" alt="Magento" src="cid:cs_horizontal_stripe" style="margin:0">
+								</td>
+							</tr>
+							<tr>
+								<td bgcolor="#c8c8c8" align="center" style="text-align:center" colspan="3">
+									<p style="font-size:13px;font-family:Arial,sans-serif;color:#000000;margin:0;padding-top:10px;padding-bottom:10px">
+										Thank you,
+										<br>
+										<b>{{PRODUCT_NAME}} Team</b>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<body>
 </html>

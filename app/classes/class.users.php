@@ -484,6 +484,7 @@ class Users
 
 		//Replacing place holder with values
 		$welcome_letter = str_replace("{{CUSTOMER_EMAIL}}", $signup_details["customer_email"], $welcome_letter);
+		$welcome_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $welcome_letter);
 		$welcome_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $welcome_letter);
 		$welcome_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $welcome_letter);
 		$welcome_letter = str_replace("{{FIRST_NAME}}", $signup_details["first_name"], $welcome_letter);
@@ -491,6 +492,7 @@ class Users
 		$welcome_letter = str_replace("{{CHURCH_NAME}}", $signup_details["church_name"], $welcome_letter);
 		$welcome_letter = str_replace("{{CHURCH_ADDRESS}}", $signup_details["church_addr"], $welcome_letter);
 		$welcome_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $welcome_letter);
+		$welcome_letter = str_replace("{{FORGOT_PASSWORD_URL}}", FORGOT_PASSWORD_URL, $welcome_letter);
 
 		$subject = "Welcome to ".PRODUCT_WEBSITE;
 		if($just_return_contents==1)
