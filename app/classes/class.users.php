@@ -494,7 +494,7 @@ class Users
 		$welcome_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $welcome_letter);
 		$welcome_letter = str_replace("{{FORGOT_PASSWORD_URL}}", FORGOT_PASSWORD_URL, $welcome_letter);
 
-		$subject = "Welcome to ".PRODUCT_WEBSITE;
+		$subject = "Welcome to ".PRODUCT_NAME;
 		if($just_return_contents==1)
 		{
 			$contents_array = array();
@@ -661,7 +661,7 @@ class Users
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
 		$recipients = array();
 		$recipients['to_address'] = $email;
-		$subject = "Instructions : Resetting the password for your account in ".PRODUCT_WEBSITE;
+		$subject = "Instructions : Resetting the password for your account in ".PRODUCT_NAME;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($forgot_pwd_letter);
