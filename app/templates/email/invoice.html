@@ -1,148 +1,175 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<style type="text/css">
-			* { margin: 0; padding: 0; }
-			body {background-color :#FFFFFF; background-image :none; font-family: "Trebuchet MS", Helvetica, sans-serif; color:#000000; text-decoration : none; -moz-box-sizing:border-box; box-sizing:border-box; margin: 0px; padding: 3px; }
-			.black-font-10px {font-family: Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-decoration : none;}
-			.black-font-14px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 14px; color:#000000; text-decoration : none;}
-			.black-font-15px {font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: 15px; color:#000000; text-decoration : none;}
-			.borderless-table { border-collapse: collapse; border: 0; padding: 5px;}
-			.borderless-table-col { border-collapse: collapse; border: 0; padding: 5px;}
-			.order-summary-table { border-collapse: collapse; border: 1px solid black; padding: 5px;}
-			.order-summary-row { border: 1px solid black; padding: 5px;}
-			.order-summary-left-col { text-align: left; background: #eee;  padding: 5px;}
-			.order-summary-right-col { text-align: left; padding: 5px; border: 1px solid black;}
-			.order-items-table {border-collapse: collapse; width: 100%; margin: 25px 0 0 0; border: 1px solid black; }
-			.order-items-table-header-row { border: 1px solid black; padding: 5px;}
-			.order-items-header-col { border: 1px solid black; padding: 5px; background: #eee; }
-			.order-item-row{ border: 1px solid black; padding: 5px; vertical-align: middle; }
-			.order-item-col{ border: 1px solid black; padding: 5px; vertical-align: middle; }
-			.order-item-subtotal-text { border: 1px solid black; padding: 5px; text-align: left; }
-			.order-item-subtotal-value { border: 1px solid black; padding: 5px; text-align: left; }
-			.order-item-nettotal-text { border: 1px solid black; padding: 5px; text-align: left; background: #eee; font-weight:bold;}
-			.order-item-nettotal-value { border: 1px solid black; padding: 5px; text-align: left; font-weight:bold; background: #eee; }
-			.w10p {width:10%}
-			.w15p {width:15%}
-			.w20p {width:20%}
-			.w30p {width:30%}
-			.w40p {width:40%}
-		</style>
-
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Invoice - {{PRODUCT_NAME}}</title>
-	</head>
-
-	<body width="100%">
-		<div width="100%">
-			<div style="height:20px;"></div>
-			<table class="borderless-table" align="center" valign="top" width="100%">
-				<tr>
-					<td align="center" width="100%">
-						<div width="100%">
-							<table class="borderless-table" align="left" valign="top" width="100%">
-								<tr>
-									<td align="left" width="50%">
-										<div style="float:left;">
-											<table class="borderless-table" align="left">
-												<tbody>
-													<tr>
-														<td class="borderless-table-col black-font-14px" nowrap><b>Customer Name</b></td>
-														<td class="borderless-table-col black-font-14px" nowrap>:<td>
-														<td class="borderless-table-col black-font-14px" nowrap>{{CUSTOMER_NAME}}</td>
-													</tr>
-													<tr>
-														<td class="borderless-table-col black-font-14px" style="vertical-align:top;" nowrap><b>Billing Address</b></td>
-														<td class="borderless-table-col black-font-14px" style="vertical-align:top;" nowrap>:<td>
-														<td class="borderless-table-col black-font-14px">{{BILLING_ADDRESS}}</td>
-													</tr>
-													<tr>
-														<td class="borderless-table-col black-font-14px" nowrap><b>Customer Email</b></td>
-														<td class="borderless-table-col black-font-14px" nowrap>:<td>
-														<td class="borderless-table-col black-font-14px" nowrap>{{CUSTOMER_EMAIL}}</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-									<td align="right">
-										<div style="float:right;">
-											<table class="order-summary-table">
-												<tbody>
-													<tr class="order-summary-row">
-														<td class="order-summary-left-col" nowrap>Order #</td>
-														<td class="order-summary-right-col" nowrap>{{ORDER_NUMBER}}</td>
-													</tr>
-													<tr class="order-summary-row">
-														<td class="order-summary-left-col" nowrap>Transaction ID</td>
-														<td class="order-summary-right-col" nowrap>{{TRANSACTION_ID}}</td>
-													</tr>
-													<tr class="order-summary-row">
-														<td class="order-summary-left-col" nowrap>Date</td>
-														<td class="order-summary-right-col" nowrap>{{ORDER_DATE}}</td>
-													</tr>
-													<tr class="order-summary-row">
-														<td class="order-summary-left-col" nowrap>Amount Paid</td>
-														<td class="order-summary-right-col" nowrap>USD {{AMOUNT_PAID}}</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</div>
-						<div style="clear:both"></div>
-						<div>
-							<table class="order-items-table">
-								<tbody>
-									<tr  class="order-items-table-header-row">
-										<th class="order-items-header-col w20p" nowrap>Item</th>
-										<th class="order-items-header-col w40p" nowrap>Description</th>
-										<th class="order-items-header-col w15p" nowrap>Unit Price (USD)</th>
-										<th class="order-items-header-col w10p" nowrap>Quantity</th>
-										<th class="order-items-header-col w15p" nowrap>Amount (USD)</th>
-									</tr>
-									<!--ALL_ITEMS_ROWS-->
-									<tr>
-										<td colspan="2">&nbsp;</td>
-										<td colspan="2" class="order-item-subtotal-text">Subtotal</td>
-										<td class="order-item-subtotal-value"><div id="subtotal">{{SUBTOTAL}}</div></td>
-									</tr>
-									<tr>
-										<td colspan="2">&nbsp;</td>
-										<td colspan="2" class="order-item-subtotal-text">Discount (less)</td>
-										<td class="order-item-subtotal-value"><div id="subtotal">{{DISCOUNT}}</div></td>
-									</tr>
-									<tr>
-										<td colspan="2">&nbsp;</td>
-										<td colspan="2" class="order-item-nettotal-text">Net Total</td>
-										<td class="order-item-nettotal-value">{{NET_TOTAL}}</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div style="float:right;">
-							<table class="order-summary-table" style="margin:20px 0 0 0;">
-								<tbody>
-									<tr class="order-summary-row">
-										<td class="order-summary-left-col" nowrap>Payment Gateway</td>
-										<td class="order-summary-right-col" nowrap>{{PAYMENT_GATEWAY}}</td>
-										<td class="order-summary-left-col" nowrap>Payment Mode</td>
-										<td class="order-summary-right-col" nowrap>{{PAYMENT_MODE}}</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</body>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Your Invoice Details - {{PRODUCT_NAME}}</title>
+</head>
+<body>
+	<table width="100%" height="100%" border="0" bgcolor="#f1f1f1" cellspacing="0" cellpadding="0">
+        <tbody>
+			<tr>
+				<td valign="top" align="center" style="padding:20px 0 20px 0">
+					<table width="600" border="0" bgcolor="#ffffff" cellspacing="0" cellpadding="0">
+						<tbody>
+							<tr>
+								<td valign="top" bgcolor="#f1f1f1" colspan="3"  width="100%">
+									<table width="100%">
+										<tr>
+											<td align="left" width="50%">
+												<a target="_blank" href="{{PRODUCT_WEBSITE}}">
+													<img border="0" align="left" style="margin:0" alt="ChurchStack" src="cid:cs_head_logo">
+												</a>
+											</td>
+											<td align="right" width="50%">
+												<a target="_blank" href="{{PRODUCT_WEBSITE}}">
+													<img border="0" align="right" style="margin:0" alt="ChurchStack" src="cid:cs_site_text_logo">
+												</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" colspan="3">
+									<img width="1" border="0" align="left" alt="ChurchStack" src="cid:cs_vertical_stripe" style="margin:0">
+								</td>
+							</tr>
+							<tr>
+								<td width="30" valign="top">
+									<img width="30" height="1" border="0" align="left" alt="Magento" src="cid:cs_horizontal_stripe" style="margin:0">
+								</td>
+								<td valign="top" align="left" style="font-size:13px;font-family:Arial,sans-serif;line-height:18px;color:#555555">
+									<table style="border-collapse: collapse; border: 0; padding: 5px; " align="center" valign="top" width="100%">
+										<tr>
+											<td align="center" width="100%">
+												<div width="100%">
+													<table style="border-collapse: collapse; border: 0; padding: 5px;" align="left" valign="top" width="100%">
+														<tr>
+															<td align="left" width="50%">
+																<div style="float:left;">
+																	<table style="border-collapse: collapse; border: 0; padding: 5px;" align="left" valign="top">
+																		<tbody>
+																			<tr>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap><b>Customer Name</b></td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>:<td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{CUSTOMER_NAME}}</td>
+																			</tr>
+																			<tr>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555; vertical-align:top" nowrap><b>Billing Address</b></td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;vertical-align:top;" nowrap>:<td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;vertical-align:top;">{{BILLING_ADDRESS}}</td>
+																			</tr>
+																			<tr>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap><b>Customer Email</b></td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>:<td>
+																				<td style="border-collapse: collapse; border: 0; padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{CUSTOMER_EMAIL}}</td>
+																			</tr>
+																		</tbody>
+																	</table>
+																</div>
+															</td>
+															<td align="right">
+																<div style="float:right;">
+																	<table style="border-collapse: collapse; border: 1px solid #A4A4A4; padding: 5px;">
+																		<tbody>
+																			<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																				<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Order #</td>
+																				<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{ORDER_NUMBER}}</td>
+																			</tr>
+																			<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																				<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Transaction ID</td>
+																				<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{TRANSACTION_ID}}</td>
+																			</tr>
+																			<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																				<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Date</td>
+																				<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{ORDER_DATE}}</td>
+																			</tr>
+																			<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																				<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Amount Paid</td>
+																				<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>USD {{AMOUNT_PAID}}</td>
+																			</tr>
+																		</tbody>
+																	</table>
+																</div>
+															</td>
+														</tr>
+													</table>
+												</div>
+												<div style="clear:both"></div>
+												<div>
+													<table style="border-collapse: collapse; width: 100%; margin: 25px 0 0 0; border: 1px solid #A4A4A4;">
+														<tbody>
+															<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																<th style="border: 1px solid #A4A4A4; padding: 5px; background: #eee; width:20%; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Item</th>
+																<th style="border: 1px solid #A4A4A4; padding: 5px; background: #eee; width:40%; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Description</th>
+																<th style="border: 1px solid #A4A4A4; padding: 5px; background: #eee; width:15%; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Unit Price (USD)</th>
+																<th style="border: 1px solid #A4A4A4; padding: 5px; background: #eee; width:10%; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Quantity</th>
+																<th style="border: 1px solid #A4A4A4; padding: 5px; background: #eee; width:15%; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Amount (USD)</th>
+															</tr>
+															<!--ALL_ITEMS_ROWS-->
+															<tr>
+																<td colspan="2">&nbsp;</td>
+																<td colspan="2" style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; font-size:13px;font-family:Arial,sans-serif;color:#555555;">Subtotal</td>
+																<td style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; font-size:13px;font-family:Arial,sans-serif;color:#555555;"><div id="subtotal">{{SUBTOTAL}}</div></td>
+															</tr>
+															<tr>
+																<td colspan="2">&nbsp;</td>
+																<td colspan="2" style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; font-size:13px;font-family:Arial,sans-serif;color:#555555;">Discount (less)</td>
+																<td style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; font-size:13px;font-family:Arial,sans-serif;color:#555555;"><div id="subtotal">{{DISCOUNT}}</div></td>
+															</tr>
+															<tr>
+																<td colspan="2">&nbsp;</td>
+																<td colspan="2" style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; background: #eee; font-weight:bold; font-size:13px;font-family:Arial,sans-serif;color:#555555;">Net Total</td>
+																<td style="border: 1px solid #A4A4A4; padding: 5px; text-align: left; font-weight:bold; background: #eee; font-size:13px;font-family:Arial,sans-serif;color:#555555;">{{NET_TOTAL}}</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div style="float:right;">
+													<table style="border-collapse: collapse; border: 1px solid #A4A4A4; padding: 5px;margin:20px 0 0 0;">
+														<tbody>
+															<tr style="border: 1px solid #A4A4A4; padding: 5px;">
+																<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Payment Gateway</td>
+																<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{PAYMENT_GATEWAY}}</td>
+																<td style="text-align: left; background: #eee;  padding: 5px; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>Payment Mode</td>
+																<td style="text-align: left; padding: 5px; border: 1px solid #A4A4A4; font-size:13px;font-family:Arial,sans-serif;color:#555555;" nowrap>{{PAYMENT_MODE}}</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="30" valign="top">
+									<img width="30" height="1" border="0" align="left" alt="Magento" src="cid:cs_horizontal_stripe" style="margin:0">
+								</td>
+							</tr>
+							<tr>
+								<td valign="top" colspan="3">
+								&nbsp;
+								</td>
+							</tr>
+							<tr bgcolor="#c8c8c8">
+								<td bgcolor="#c8c8c8" align="center" style="text-align:center" colspan="3">
+									<p style="font-size:13px;font-family:Arial,sans-serif;color:#000000;margin:0;padding-top:6px;padding-bottom:6px">
+										Thank you,
+										<br>
+										<b>{{PRODUCT_NAME}}</b>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<body>
 </html>
-<!--ITEM_ROW_START <tr class="order-item-row">
-	<td class="order-item-col">{{ITEM_NAME}}</td>
-	<td class="order-item-col">{{ITEM_DESC}}</td>
-	<td class="order-item-col">{{ITEM_UNIT_PRICE}}</td>
-	<td class="order-item-col">{{ITEM_QUANTITY}}</td>
-	<td class="order-item-col">{{ITEM_TOTAL}}</td>
+<!--ITEM_ROW_START <tr style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">
+	<td style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">{{ITEM_NAME}}</td>
+	<td style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">{{ITEM_DESC}}</td>
+	<td style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">{{ITEM_UNIT_PRICE}}</td>
+	<td style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">{{ITEM_QUANTITY}}</td>
+	<td style="border: 1px solid #A4A4A4; padding: 5px; vertical-align: middle;">{{ITEM_TOTAL}}</td>
 </tr> ITEM_ROW_END-->
