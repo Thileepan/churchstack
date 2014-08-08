@@ -9,10 +9,10 @@ function showMonthlyCalendar(reqFrom)
 		document.getElementById('listEvents').className = '';
 		document.getElementById('alertRow').style.display = 'none';
 		document.getElementById('pageContent').innerHTML = '<div id="calendarView" style="height:333px"></div>';
+		document.getElementById('pageContent').className = "span10";
 	} else {
-		document.getElementById('eventContent').innerHTML = '<div id="calendarView"></div>';
+		document.getElementById('eventContent').innerHTML = '<div id="calendarView"></div>';		
 	}
-
 	
 	$('#calendarView').fullCalendar({
 		// put your options and callbacks here
@@ -156,6 +156,8 @@ function OnChangeOccursOn(opt)
 
 function addOrUpdateEvents(val, doValidation)
 {
+	document.getElementById('pageContent').className = "span10";
+
 	isUpdate = val;
 
 	//Setting default values
@@ -241,7 +243,7 @@ function addOrUpdateEvents(val, doValidation)
 			var resultToUI = getAlertDiv(2, 'Please select atleast one day');
 			document.getElementById('alertRow').style.display = '';
 			document.getElementById('alertDiv').innerHTML = resultToUI;
-			return false;			
+			return false;
 		}
 	}
 	else if(freq == 4 || freq == 5) 
@@ -399,7 +401,7 @@ function listAllEvents(eventStatus)
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('hiddenEventTabID').value = eventStatus;
 	
-	var table = '<table id="eventList" class="table table-condensed"><thead><tr><th>Event Title ID</th><th>Description</th><th>Start Date</th><th>End Date</th><th>Location</th><th>Organiser</th><th>Actions</th></tr></thead></table>';
+	var table = '<table id="eventList" class="table table-condensed"><thead><tr><th>Event</th><th>Description</th><th>Start Date</th><th>End Date</th><th>Next Event Date</th><th>Location</th><th>Organiser</th><th>Actions</th></tr></thead></table>';
 
 	if(eventStatus == 1) {
 		document.getElementById('pageHeader').innerHTML = 'Upcoming Events';
@@ -408,17 +410,19 @@ function listAllEvents(eventStatus)
 		document.getElementById('pageHeader').innerHTML = 'Past Events';
 		document.getElementById('pastEventsDiv').innerHTML = table;
 	}
+	document.getElementById('pageContent').className = "span12";
 
 	oTable = $('#eventList').dataTable( {
-		"aoColumns": [
+/*		"aoColumns": [
 			{ "sWidth": "15%" },
 			{ "sWidth": "20%"  },
-			{ "sWidth": "15%" },
-			{ "sWidth": "15%"  },
+			{ "sWidth": "10%" },
+			{ "sWidth": "10%"  },
+			{ "sWidth": "10%"  },
 			{ "sWidth": "15%"  },
 			{ "sWidth": "15%"  },
 			{ "sWidth": "5%"  }
-		],
+		],*/
 		"bFilter":false,
         "bProcessing": true,
 		"bDestroy": true,

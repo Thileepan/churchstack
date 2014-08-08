@@ -241,12 +241,12 @@ class Events
 		return false;
 	}
 
-	public function deleteEventDetails($event_id)
+	public function deleteEventDetails()
 	{
 		if($this->db_conn)
 		{
 			$query = 'delete from EVENT_DETAILS where EVENT_ID=?';
-			$result = $this->db_conn->Execute($query, array($event_id));
+			$result = $this->db_conn->Execute($query, array($this->event_id));
 			if($result) {
 				return true;
 			}
@@ -331,7 +331,7 @@ class Events
 		return $event_details;
 	}
 
-	public function getEventOccurrences($start_date, $end_date, $time_zone)
+	public function getEventOccurrences($start_date, $end_date, $time_zone, $virtualLimit=50)
 	{
 		include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
 
@@ -365,7 +365,7 @@ class Events
 					$recurr_obj->setRRule($rrule);
 					$recurr_obj->setStartDate($start_date_db);
 					$recurr_obj->setEndDate($end_date_db);
-					$recurr_obj->setVirtualLimit(50);
+					$recurr_obj->setVirtualLimit($virtualLimit);
 					$occurrences = $recurr_obj->getOccurrences();
 					//print_r($occurrences);
 
@@ -408,87 +408,228 @@ class Events
 		return $event_info;
 	}
 
-	public function constructEventReminderEmailBody($event_details_arr)
+	public function getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit)
 	{
-		$to_return = array();
-		$to_return[0] = 0;
-		$to_return[1] = "Unable to prepare the event reminder";
-		$event_rem_template_file = $this->APPLICATION_PATH."templates/email/eventreminder.html";
-		$event_reminder = "";
-		if(file_exists($event_rem_template_file))
+		$event_date = '';
+		if(!$is_obj_initialized)
 		{
-			$event_reminder = trim(file_get_contents($event_rem_template_file));
-		}
-		else
-		{
-			$to_return[0] = 0;
-			$to_return[1] = "Unable to prepare the event reminder";
-			return $to_return;
-		}
+			include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
 
-		//Prepare the html string for event organizers
-		$organizers_row = "";
-		$single_organizer_row = "";
-		$single_organizer_comm_start = "<!--ORGANIZER_ROW_START";
-		$single_organizer_comm_end = "ORGANIZER_ROW_END-->";
-		$single_organizer_html_start_pos = strpos($event_reminder, $single_organizer_comm_start);
-		$single_organizer_html = substr($event_reminder, $single_organizer_html_start_pos+strlen($single_organizer_comm_start));
-		$single_organizer_html_end_pos = strpos($single_organizer_html, $single_organizer_comm_end);
-		$single_organizer_html = substr($single_organizer_html, 0, strlen($single_organizer_html)-(strlen($single_organizer_html) - $single_organizer_html_end_pos));
-		$single_organizer_row = $single_organizer_html;
-		for($k=0; $k < COUNT($event_details_arr["event_organizers_array"]); $k++)
-		{
-			$single_organizer_row = $single_organizer_html;
-			$single_organizer_row = str_replace("{{EVENT_ORGANIZER}}", $event_details_arr["event_organizers_array"][$k], $single_organizer_row);
-			$organizers_row .= $single_organizer_row;
-		}
-
-		//Prepare the html string for event attendees
-		$attendees_row = "";
-		$single_attendee_row = "";
-		$single_attendee_comm_start = "<!--ATTENDEE_ROW_START";
-		$single_attendee_comm_end = "ATTENDEE_ROW_END-->";
-		$single_attendee_html_start_pos = strpos($event_reminder, $single_attendee_comm_start);
-		$single_attendee_html = substr($event_reminder, $single_attendee_html_start_pos+strlen($single_attendee_comm_start));
-		$single_attendee_html_end_pos = strpos($single_attendee_html, $single_attendee_comm_end);
-		$single_attendee_html = substr($single_attendee_html, 0, strlen($single_attendee_html)-(strlen($single_attendee_html) - $single_attendee_html_end_pos));
-		$single_attendee_row = $single_attendee_html;
-		for($k=0; $k < COUNT($event_details_arr["event_attendees_array"]); $k++)
-		{
-			$single_attendee_row = $single_attendee_html;
-			$single_attendee_row = str_replace("{{EVENT_ATTENDEE}}", $event_details_arr["event_attendees_array"][$k], $single_attendee_row);
-			$attendees_row .= $single_attendee_row;
-		}
-
-		//Replacing place holder with values
-		$event_reminder = str_replace("<!--ALL_ORGANIZERS_ROWS-->", $organizers_row, $event_reminder);
-		$event_reminder = str_replace("<!--ALL_ATTENDEES_ROWS-->", $attendees_row, $event_reminder);
-		$event_reminder = str_replace("{{EVENT_TITLE}}", $event_details_arr["event_title"], $event_reminder);
-		$event_reminder = str_replace("{{EVENT_DESC}}", $event_details_arr["event_desc"], $event_reminder);
-		$event_reminder = str_replace("{{EVENT_DATE_AND_TIME}}", $event_details_arr["event_date_time"], $event_reminder);
-		$event_reminder = str_replace("{{EVENT_PLACE}}", $event_details_arr["event_place"], $event_reminder);
-
-		/* * /
-		//Set and Send Email
-		for($i=0; $i < COUNT($event_details_arr["event_email_recipients"]); $i++)
-		{
-			$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
-			$recipients = array();
-			$recipients['to_address'] = $event_details_arr["event_email_recipients"][$i];
-			$subject = "Reminder: ".$event_details_arr["event_title"]." @ ".$event_details_arr["event_date_time"];
-			$email_obj->setRecipients($recipients);
-			$email_obj->setSubject($subject);
-			$email_obj->setBody($event_reminder);
-			$email_result = $email_obj->sendEmail();
-			if($email_result[0]==1) {
-				$to_return[0] = 1;
-				$to_return[1] = "Event reminder email sent.";
+			// Recurr Transformer Initialization
+			$type = 2;
+			$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
+			$recurr_obj->setUp($type);
+			$recurr_obj->setTimeZone($time_zone);
+		} else {
+			if(!is_object($recurr_obj)) {
+				return $event_date;
 			}
 		}
-		/**/
-		$to_return[0] = 1;
-		$to_return[1] = $event_reminder;
+		
+		if($rrule != '')
+		{
+			$recurr_obj->setRRule($rrule);
+			$recurr_obj->setStartDate($start_date_db);
+			$recurr_obj->setEndDate($end_date_db);
+			$recurr_obj->setVirtualLimit($virtualLimit);
+			$occurrences = $recurr_obj->getOccurrences();
+			//print_r($occurrences);
+
+			if(is_array($occurrences))
+			{
+				$total_occurrence = COUNT($occurrences);
+				if($total_occurrence > 0)
+				{
+					$event_date = $occurrences[0]->getStart()->format("Y-m-d");	
+					
+					if(strlen($start_time) > 3) {
+						$hour = substr($start_time, 0, 2);
+						$min = substr($start_time, 2, 2);
+					} else {
+						$hour = "0".substr($start_time, 0, 1);
+						$min = substr($start_time, 1, 2);
+					}
+					$sec = '00';
+					$event_date .= ' ' . $hour . ':' . $min . ':' . $sec;					
+				}
+			}
+		}
+
+		return $event_date;
+	}
+
+	public function getUpcomingEventNotificationDetails($today, $notification_type)
+	{
+		$event_details = array();
+		if($this->db_conn)
+		{
+			$query = 'select a.EVENT_ID, a.TITLE, a.DESCRIPTION, a.EVENT_LOCATION, a.START_DATE, a.END_DATE, a.START_TIME, a.END_TIME, a.RRULE, a.PRIORITY, a.ORGANISER, a.ACCESS_LEVEL, b.NOTIFICATION_ID, b.NOTIFICATION_TYPE, b.NOTIFICATION_PERIOD from EVENT_DETAILS as a, EVENT_NOTIFICATIONS as b where ((a.END_DATE > ? and a.END_DATE != ?) || (a.START_DATE >= ? and a.END_DATE = ?) || (a.START_DATE <= ? and a.END_DATE = ?)) and a.EVENT_ID=b.EVENT_ID and b.NOTIFICATION_TYPE=?';
+			$result = $this->db_conn->Execute($query, array($today, '0000-00-00', $today, '0000-00-00', $today, '0000-00-00', $notification_type));
+
+			if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+                        $event_id = $result->fields[0];
+                        $title = $result->fields[1];
+						$description = $result->fields[2];
+						$location = $result->fields[3];
+                        $start_date = $result->fields[4];
+                        $end_date = $result->fields[5];
+						$start_time = $result->fields[6];
+						$end_time = $result->fields[7];
+						$rrule = $result->fields[8];
+						$priority = $result->fields[9];
+						$organiser = $result->fields[10];
+						$access_level = $result->fields[11];
+						$notification_id = $result->fields[12];
+						$notification_type = $result->fields[13];
+						$notification_period = $result->fields[14];						
+						$event_details[] = array($event_id, $title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $notification_id, $notification_type, $notification_period);
+                        
+						$result->MoveNext();
+                    }
+                }
+            }
+		}
+		return $event_details;
+	}
+
+	public function getEventsToNotifyNow()
+	{
+		include_once $this->APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
+		include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
+		
+		$time_zone = 'Asia/Calcutta';
+		$current_time = Carbon::now($time_zone);
+		$today = $current_time->year."-".$current_time->month."-".$current_time->day;	
+
+		$to_return = array();
+		$notification_type = 1; //EMAIL NOTIFICATIONS
+		$event_details = $this->getUpcomingEventNotificationDetails($today, $notification_type);
+		if(is_array($event_details))
+		{
+			$total_events = COUNT($event_details);
+			if($total_events > 0)
+			{
+				//Recurr Transformer Initialization
+				$type = 2;
+				$is_obj_initialized = true;
+				$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+				$recurr_obj->setUp($type);
+				$recurr_obj->setTimeZone($time_zone);
+				for($i=0; $i<$total_events; $i++)
+				{
+					//find the next immediate event occurrence
+					$next_event_date = '-';
+					$virtualLimit = 1;
+					$event_id = $event_details[$i][0];
+					$title = $event_details[$i][1];
+					$description = $event_details[$i][2];
+					$location = $event_details[$i][3];
+                    $start_date = $event_details[$i][4];
+					$end_date = $event_details[$i][5];
+					$start_time = $event_details[$i][6];
+					$end_time = $event_details[$i][7];
+					$rrule = $event_details[$i][8];
+					$priority = $event_details[$i][9];
+					$organiser = $event_details[$i][10];
+					$access_level = $event_details[$i][11];
+					$notification_id = $event_details[$i][12];
+					$notification_type = $event_details[$i][13];
+					$notification_period = $event_details[$i][14];
+					
+					if($rrule != '') {
+						$event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+					}
+
+					if($event_date != '-')
+					{
+						$event_time = Carbon::createFromFormat('Y-m-d H:i:s', $event_date, $time_zone);
+						$diff_in_seconds = $current_time->diffInSeconds($event_time);
+						//echo "Current Time::".$current_time."<BR>";
+						//echo "Next Event Time::".$event_time."<BR>";
+						//echo "Diff In Seconds::".$diff_in_seconds."<BR>";
+						//exit;
+
+						if($notification_period >= $diff_in_seconds)
+						{
+							$notification_details = array();
+							$notification_details["event_attendees"] = array();
+							$notification_details["event_email_recipients"] = array();
+							$recipient_details = $this->getEventRecipients($event_id);
+							for($j=0; $j<COUNT($recipient_details); $j++)
+							{
+								$notification_details["event_attendees"][] = $recipient_details[$j][0];
+								$notification_details["event_email_recipients"][] = $recipient_details[$j][1];
+							}
+							$notification_details["event_organizers"] = $organiser;
+							$notification_details["event_title"] = $title;
+							$notification_details["event_desc"] = $description;
+							$notification_details["event_date_time"] = $event_time;
+							$notification_details["event_place"] = $location;
+
+							$to_return[] = $notification_details;
+						}
+					}
+				}
+			}
+			
+		}
 		return $to_return;
+	}
+
+	public function getEventRecipients($event_id)
+	{
+		include_once $this->APPLICATION_PATH . '/classes/class.profiles.php';
+		include_once $this->APPLICATION_PATH . '/classes/class.groups.php';
+
+		$recipient_details = array();
+		if($this->db_conn)
+		{
+			$profiles_obj = new Profiles($this->APPLICATION_PATH);
+			$groups_obj = new Groups($this->APPLICATION_PATH);
+
+			$query = 'select PARTICIPANT_TYPE, PARTICIPANT_ID from EVENT_PARTICIPANTS where EVENT_ID=?';
+			$result = $this->db_conn->Execute($query, array($event_id));
+
+			if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+                        $participant_type = $result->fields[0];
+                        $participant_id = $result->fields[1];
+
+						if($participant_type == 1)
+						{
+							//individual profile
+							$profile_id = $participant_id;
+							$profile_details = $profiles_obj->getProfileNameAndEmailID($profile_id);
+							if(is_array($profile_details) && COUNT($profile_details) > 0)
+							{
+								$recipient_details[] = $profile_details;
+							}
+						}
+						else if($participant_type == 2)
+						{
+							//group profile
+							$group_id = $participant_id;
+							$group_member_details = $groups_obj->getGroupMembersNameAndEmailID($group_id);
+							if(is_array($group_member_details) && COUNT($group_member_details) > 0)
+							{
+								for($i=0; $i<COUNT($group_member_details); $i++)
+								{
+									$recipient_details[] = $group_member_details[$i];
+								}
+							}
+						}
+											
+						$result->MoveNext();
+                    }
+                }
+            }
+		}
+		return $recipient_details;
 	}
 }
 ?>

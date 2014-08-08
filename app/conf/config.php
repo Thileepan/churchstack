@@ -1,7 +1,7 @@
 <?php
 session_start();
-$APPLICATION_PATH = "../";
 if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] == "/conf/config.php") {
+	$APPLICATION_PATH = "../";
 	@require $APPLICATION_PATH.'error/404.php';
 	exit;
 }
@@ -26,6 +26,7 @@ define('EMAIL_FROM_SALES', 1);
 define('EMAIL_FROM_SUPPORT', 2);
 define('EMAIL_FROM_DONOTREPLY', 3);
 define('EMAIL_FROM_INFO', 4);
+define('EMAIL_FROM_NOTIFICATIONS', 5);
 
 define('SMTP_SERVER', 'smtp.gmail.com');
 define('SMTP_USERNAME', 'help@churchstack.com');
@@ -40,5 +41,7 @@ define('FROM_DONOTREPLY_ADDRESS', 'do-not-reply@churchstack.com');
 define('FROM_DONOTREPLY_NAME', 'ChurchStack.com');
 define('FROM_INFO_ADDRESS', 'info@churchstack.com');
 define('FROM_INFO_NAME', 'ChurchStack.com');
+define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
+define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
 ?>

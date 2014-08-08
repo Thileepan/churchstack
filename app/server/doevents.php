@@ -522,6 +522,7 @@ else if($req == 5)
 	$event_status = trim($_POST['eventStatus']);
 
 	include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
+	include_once $APPLICATION_PATH . '/classes/class.recurr.php';
 
 	$time_zone = 'Asia/Calcutta';
 	$dt = Carbon::now($time_zone);
@@ -538,7 +539,15 @@ else if($req == 5)
 		$total_events = COUNT($event_details);
 		if($total_events > 0)
 		{
-			$is_results_available = true;
+			$is_results_available = true;			
+
+			// Recurr Transformer Initialization
+			$type = 2;
+			$is_obj_initialized = true;
+			$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+			$recurr_obj->setUp($type);
+			$recurr_obj->setTimeZone($time_zone);
+
 			for($i=0; $i<$total_events; $i++) {
 				
 				$actions = '<div class="dropdown">';
@@ -546,7 +555,20 @@ else if($req == 5)
 					$actions .= '<i class="curHand icon-trash" onclick="deleteEventConfirmation('.$event_details[$i][0].', \''.$event_details[$i][1].'\')"></i>&nbsp;&nbsp;';
 				$actions .= '</div>';
 
-				$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $event_details[$i][4], $event_details[$i][5], $event_details[$i][3], $event_details[$i][10], $actions);
+				//find the next immediate event occurrence
+				$next_event_date = '-';
+				$virtualLimit = 1;
+				$start_date = $event_details[$i][4];
+				$end_date = $event_details[$i][5];
+				$start_time = $event_details[$i][6];
+				$end_time = $event_details[$i][7];
+				$rrule = $event_details[$i][8];				
+				if($rrule != '') {
+
+					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+				}
+
+				$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $next_event_date, $event_details[$i][3], $event_details[$i][10], $actions);
 			}
 		}
 	}
@@ -568,7 +590,8 @@ else if($req == 6)
 	$event_id = trim($_POST['eventID']);
 
 	$events_obj = new Events($APPLICATION_PATH);
-	$status = $events_obj->deleteEventDetails($event_id);
+	$events_obj->event_id = $event_id;
+	$status = $events_obj->deleteEvent();
 	echo $status;
 	exit;
 }

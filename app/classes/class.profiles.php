@@ -108,6 +108,26 @@ class Profiles
 		return $profile_details;
 	}
 
+	public function getProfileNameAndEmailID($profile_id)
+	{
+		$profile_details = array();
+		if($this->db_conn)
+		{
+		   $query = 'select NAME, EMAIL from PROFILE_DETAILS where PROFILE_ID=?';
+		   $result = $this->db_conn->Execute($query, array($profile_id));
+            
+           if($result) {
+                if(!$result->EOF) {
+					$name = $result->fields[0];
+					$email_id = $result->fields[1];
+
+					$profile_details = array($name, $email_id);
+				}
+            }
+        }
+		return $profile_details;
+	}
+
 	public function getProfileInformation($profile_id)
 	{
 		$profile_info = array();

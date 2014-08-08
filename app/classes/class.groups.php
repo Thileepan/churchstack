@@ -136,7 +136,7 @@ class Groups
 		$group_members = array();
 		if($this->db_conn)
 		{
-			$query = 'select a.PROFILE_ID, b.NAME from GROUP_MEMBERS as a, PROFILE_DETAILS as b where a.PROFILE_ID=b.PROFILE_ID and a.GROUP_ID=?';
+			$query = 'select a.PROFILE_ID, b.NAME, b.EMAIL from GROUP_MEMBERS as a, PROFILE_DETAILS as b where a.PROFILE_ID=b.PROFILE_ID and a.GROUP_ID=?';
 			$result = $this->db_conn->Execute($query, array($group_id));
 			
 			if($result) {
@@ -145,7 +145,32 @@ class Groups
                     {
                         $profile_id = $result->fields[0];
                         $profile_name = $result->fields[1];
-						$group_members[] = array($profile_id, $profile_name);
+						$profile_email = $result->fields[2];
+						$group_members[] = array($profile_id, $profile_name, $profile_email);
+                        
+						$result->MoveNext();
+                    }
+                }
+            }
+		}
+		return $group_members;
+	}
+
+	public function getGroupMembersNameAndEmailID($group_id)
+	{
+		$group_members = array();
+		if($this->db_conn)
+		{
+			$query = 'select b.NAME, b.EMAIL from GROUP_MEMBERS as a, PROFILE_DETAILS as b where a.PROFILE_ID=b.PROFILE_ID and a.GROUP_ID=?';
+			$result = $this->db_conn->Execute($query, array($group_id));
+			
+			if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+                        $profile_name = $result->fields[0];
+						$profile_email = $result->fields[1];
+						$group_members[] = array($profile_name, $profile_email);
                         
 						$result->MoveNext();
                     }
