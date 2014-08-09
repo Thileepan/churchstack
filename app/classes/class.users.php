@@ -231,6 +231,7 @@ class Users
 //Following were added by Nesan
 	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email_id, $password)
 	{
+		@include_once($this->APPLICATION_PATH . 'conf/config.php');
         @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
         @include_once($this->APPLICATION_PATH . 'classes/class.license.php');
@@ -314,11 +315,11 @@ class Users
 
 						$welcome_email_content = $this->sendSignupWelcomeEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType;
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType;
 						
 						$referral_prog_email_content = $this->sendReferralProgramEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType;
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType;
 
 						$threads = new Multithread( $commands );
 						$threads->run();

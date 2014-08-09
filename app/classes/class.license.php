@@ -451,6 +451,8 @@ class License
 
 	public function updatePurchaseReport($unique_hash, $transaction_id, $payment_mode, $purchase_status, $purchase_remarks, $pg_status_code, $pg_status_remarks)
 	{
+		@include_once($this->APPLICATION_PATH . 'conf/config.php');
+
 		$last_update_date = time();
 		$toReturn = array();
 		$toReturn[0] = 0;
@@ -555,7 +557,7 @@ class License
 
 							$invoice_rep_email_content =  $this->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
 							$fromAddressType = "sales";
-							$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType;
+							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType;
 
 							if(COUNT($referral_stuff) > 0)
 							{
@@ -566,7 +568,7 @@ class License
 								$referral_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[2]);
 								$referral_rew_email_content = $this->sendReferralRewardedSuccessEmail($referral_rewards_mail_details, 1);
 								$fromAddressType = "info";
-								$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referral_rew_email_content[1][0]).' subject='.urlencode($referral_rew_email_content[1][1]).' emailBody='.urlencode($referral_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_rew_email_content[1][0]).' subject='.urlencode($referral_rew_email_content[1][1]).' emailBody='.urlencode($referral_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
 								
 								$referrer_church_id = $referral_stuff[3];
 								$users_obj = new Users($this->APPLICATION_PATH);
@@ -581,7 +583,7 @@ class License
 									$referrer_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[5]);
 									$referrer_rew_email_content = $this->sendReferrerRewardedSuccessEmail($referrer_rewards_mail_details, 1);
 									$fromAddressType = "info";
-									$commands[] = '"C:/Program Files (x86)/php/php.exe" '.$email_sending_file.' csvToEmails='.urlencode($referrer_rew_email_content[1][0]).' subject='.urlencode($referrer_rew_email_content[1][1]).' emailBody='.urlencode($referrer_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+									$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referrer_rew_email_content[1][0]).' subject='.urlencode($referrer_rew_email_content[1][1]).' emailBody='.urlencode($referrer_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
 								}
 							}
 

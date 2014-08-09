@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include_once $APPLICATION_PATH .'classes/class.system.php';
 if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] == "/conf/config.php") {
 	$APPLICATION_PATH = "../";
 	@require $APPLICATION_PATH.'error/404.php';
@@ -44,4 +45,10 @@ define('FROM_INFO_NAME', 'ChurchStack.com');
 define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
 define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
+
+if (System::getOS() == 2) {
+    define('PHP_EXE_PATH', 'C:/Program Files (x86)/php/php.exe');
+} else {
+   define('PHP_EXE_PATH', 'php');
+}
 ?>
