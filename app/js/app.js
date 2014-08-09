@@ -308,6 +308,7 @@ function onSelectingParentID(item, val, text) {
 	document.getElementById('inputAddress3').value = document.getElementById('hidParentAddr3-' + val).value;
 	document.getElementById('inputArea').value = document.getElementById('hidParentArea-' + val).value;
 	document.getElementById('inputPincode').value = document.getElementById('hidParentPincode-' + val).value;
+	document.getElementById('inputLandline').value = document.getElementById('hidParentHomePhone-' + val).value;
 
 	var relationshipIndex = document.getElementById('inputRelationship').selectedIndex;
 	if(relationshipIndex == 2)
