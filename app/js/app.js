@@ -941,17 +941,25 @@ function signUpNewAccount()
 	if(churchName == '') {
 		errorMessage = 'Church Name cannot be empty.';
 	} else if(email == '') {
-		errorMessage = 'Email cannot be empty.';
+		errorMessage = 'Email field cannot be empty.';
 	} else if(document.getElementById('password').value == "") {
-		errorMessage = 'Password cannot be empty';
+		errorMessage = 'Password field cannot be empty';
 	} else if(document.getElementById('password').value != document.getElementById('confirmPassword').value) {
 		errorMessage = 'Passwords do not match.';
+	} else if(name == '') {
+		errorMessage = 'Name field cannot be empty.';
+	} else if(securityText == '') {
+		errorMessage = 'Security check field cannot be empty. Type the characters shown in the security image.';
 	}
 
 	if(errorMessage != '') {
 		var resultToUI = getAlertDiv(2, errorMessage);
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
+		//$(window).scrollTop();
+		$("html, body").animate({ scrollTop: 0 }, 1500);
+		//$(document).scrollTop();
+		//$('html,body').scrollTop(0);
 		return false;
 	}
 
@@ -988,6 +996,7 @@ function signUpNewAccountResponse(response)
 
 function reloadSignupCaptcha()
 {
-	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image.php" alt="security image" />';
+	var randomNum = Math.random();//used to fix cache issues in firefox and IE
+	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image.php?'+randomNum+'" alt="security image" />';
 	return false;
 }

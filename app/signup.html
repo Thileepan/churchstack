@@ -116,7 +116,7 @@
 		    				<br />
 		    				
 						  <div class="control-group">
-						    <label class="control-label" for="church">Church Name</label>
+						    <label class="control-label" for="church">Church Name <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
 						      <input type="text" name="church" id="church" class="input-xlarge" placeholder="Church Name">
 						    </div>
@@ -140,7 +140,7 @@
 						  <br />
 
 						  <div class="control-group">
-						    <label class="control-label" for="name">Your Name</label>
+						    <label class="control-label" for="name">Your Name <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
 						      <input type="text" name="name" id="name" class="input-xlarge" placeholder="Your Full Name">
 						    </div>
@@ -152,19 +152,19 @@
 						    </div>
 						  </div>
 						  <div class="control-group">
-						    <label class="control-label" for="email">Email</label>
+						    <label class="control-label" for="email">Email <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
 						      <input type="text" name="email" id="email" class="input-xlarge" placeholder="Email">
 						    </div>
 						  </div>
 						  <div class="control-group">
-						    <label class="control-label" for="password">Password</label>
+						    <label class="control-label" for="password">Password <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
 						      <input type="password" id="password" class="input-xlarge" placeholder="Password">
 						    </div>
 						  </div>
 						  <div class="control-group">
-						    <label class="control-label" for="confirmPassword">Repeat Password</label>
+						    <label class="control-label" for="confirmPassword">Repeat Password <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
 						      <input type="password" id="confirmPassword" class="input-xlarge" placeholder="Same Password Again">
 						    </div>
@@ -172,11 +172,15 @@
 						  <div class="control-group">
 						    <label class="control-label" for="securityText">Type the characters you see below</label>
 						    <div class="controls">
-								<span id="captchaSpan"><img src="plugins/simplecaptcha/image.php" alt="security image" /></span>&nbsp;&nbsp;
-								<button class="btn btn-medium" onclick="Javascript: return reloadSignupCaptcha();"><span><img src="images/captcha_reload.png" alt="Reload Security Image" /> Get Another Image</span></button>
+								<table border="0" cellpadding="1" cellspacing="0" height="52">
+									<tr>
+										<td width="50%"><span id="captchaSpan"><img src="plugins/simplecaptcha/image.php" alt="security image" /></span>&nbsp;</td>
+										<td width="50%"><button class="btn btn-small" onclick="Javascript: return reloadSignupCaptcha();"><span nowrap><img src="images/blue-refresh.png" alt="Reload Security Image" /> Get Another Image</span></button></td>
+									</tr>
+								</table>
 							</div>
 						    <div class="controls" style="padding-top:5px;">
-						      <input type="text" name="securityText" id="securityText" class="input-xlarge" placeholder="Type the characters shown in picture">
+						      <span style="color:#E43054;">*</span><input type="text" name="securityText" id="securityText" class="input-xlarge" placeholder="Type the characters shown in picture">
 						    </div>
 						  </div>
 						  <!--
