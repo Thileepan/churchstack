@@ -35,6 +35,8 @@
 		$from_address = EMAIL_FROM_INFO;
 	} else if($from_addr_type=="sales") {
 		$from_address = EMAIL_FROM_SALES;
+	} else if($from_addr_type=="account") {
+		$from_address = EMAIL_FROM_SALES;
 	}
 
 	//Set and Send Email		

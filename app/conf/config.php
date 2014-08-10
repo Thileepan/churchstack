@@ -14,6 +14,7 @@ define('PRODUCT_WEBSITE', 'http://www.ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
 define('REFERRAL_PROGRAM_URL', 'http://www.churchstack.com/ref/referralpg.html');
 define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd.php');
+define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
@@ -45,6 +46,7 @@ define('FROM_INFO_NAME', 'ChurchStack.com');
 define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
 define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
+define('SALES_EMAIL', 'sales@churchstack.com');
 
 if (System::getOS() == 2) {
     define('PHP_EXE_PATH', 'C:/Program Files (x86)/php/php.exe');

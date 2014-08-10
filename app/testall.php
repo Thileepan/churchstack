@@ -9,6 +9,14 @@ include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
 include_once($PATH."classes/class.sharded.php");
 include_once($PATH . 'plugins/thread/class.thread.php');
+include_once($PATH."classes/class.church.php");
+
+/** /
+$church_obj  = new Church($PATH);
+$result = $church_obj->getAllChurchesList(7, 6, 8640000);
+
+print_r($result);
+/**/
 
 /************************************************************************************** /
 Sending email asynchronously
