@@ -165,12 +165,14 @@ else if($req == 5)
 	session_start();
 	//List User
 	$users_obj = new Users($APPLICATION_PATH);
-	$users = $users_obj->getAllUsers();
+	$church_id = ((isset($_SESSION['churchID']) && $_SESSION['churchID'] > 0)?$_SESSION['churchID']:0);
+	$users = $users_obj->getAllUsers($church_id);
 
 	$to_return .= '<table class="table table-striped">';
 		$to_return .= '<thead>';
 			$to_return .= '<tr>';
 				$to_return .= '<th>UserName</th>';
+				$to_return .= '<th>Assigned To</th>';
 				$to_return .= '<th>Role</th>';
 				$to_return .= '<th>Status</th>';
 				$to_return .= '<th>Actions</th>';
@@ -188,8 +190,9 @@ else if($req == 5)
 			for($i=0; $i<$user_count; $i++) {
 				$to_return .= '<tr>';
 					$to_return .= '<td>'.$users[$i][2].'</td>';
-					$to_return .= '<td>'.(($users[$i][3] == 1)?'Administrator':'-').'</td>';
-					if($users[$i][5] == 1) {
+					$to_return .= '<td>'.(($users[$i][4] == 1)?$users[$i][11]:$users[$i][12]).'</td>';
+					$to_return .= '<td>'.(($users[$i][4] == 1)?'Administrator':'-').'</td>';
+					if($users[$i][9] == 1) {
 						$spn_class = 'label label-success';
 						$spn_text = 'Active';
 						if($_SESSION['userID'] == $users[$i][0]) {
@@ -234,7 +237,7 @@ else if($req == 6)
 	$prev_user = trim($_POST['prevUser']);
 	$user_status = trim($_POST['userStatus']);
 	$church_id = $_SESSION['churchID'];
-	$role_id = 1;
+	$role_id = 2; //Administrator Login
 	
 	$users_obj = new Users($APPLICATION_PATH);
 
@@ -252,15 +255,16 @@ else if($req == 6)
 
 	if($is_update) {
 		$user_id = trim($_POST['userID']);
-		$is_updated = $users_obj->updateUser($user_id, $user_name, $password, $role_id, $user_status);
+		$to_return = $users_obj->updateUser($user_id, $user_name, $password, $role_id, $user_status);
 	} else {
-		$is_updated = $users_obj->addNewUser($church_id, $user_name, $user_name, $password, $role_id, $user_status);
+		$to_return = $users_obj->addNewUser($church_id, $user_name, $user_name, $password, $role_id, $user_status);
 	}
-	if($is_updated)
-		echo 2;
-	else
-		echo 3;
 
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
 	exit;
 }
 else if($req == 7)

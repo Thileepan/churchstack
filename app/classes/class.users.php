@@ -18,12 +18,20 @@ class Users
         }
 	}
 
-	public function getAllUsers()
+	public function getAllUsers($church_id=-1)
 	{
+		include_once($this->APPLICATION_PATH . 'conf/config.php');
 		$user_details = array();
 		if($this->db_conn)
 		{
-		   $result = $this->db_conn->Execute('select * from USER_DETAILS');
+			if($church_id != -1) {
+				$main_database_table = DB_NAME.'.USER_DETAILS';
+				$shared_database_table = $_SESSION['shardedDB'].'.PROFILE_DETAILS';
+				$query = 'select a.USER_ID, a.CHURCH_ID, a.USER_NAME, a.EMAIL, a.ROLE_ID, a.PASSWORD, a.UNIQUE_HASH, a.PASSWORD_RESET_HASH, a.PASSWORD_RESET_EXPIRY, a.STATUS, a.PROFILE_ID, a.PROFILE_FULL_NAME, b.NAME from '.$main_database_table.' as a LEFT JOIN '.$shared_database_table.' as b ON a.PROFILE_ID=b.PROFILE_ID where a.CHURCH_ID=?';
+				$result = $this->db_conn->Execute($query, array($church_id));
+			} else {
+				$result = $this->db_conn->Execute('select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS');
+			}		   
 		   
 		   if($result) {
                 if(!$result->EOF) {
@@ -39,7 +47,10 @@ class Users
                         $password_reset_hash = $result->fields[7];
                         $password_reset_expiry = $result->fields[8];
 						$user_status = $result->fields[9];
-						$user_details[] = array($user_id, $church_id, $user_name, $email, $role_id, $password, $unique_hash, $password_reset_hash, $password_reset_expiry, $user_status);
+						$profile_id = $result->fields[10];
+						$profile_full_name = $result->fields[11];
+						$profile_name = $result->fields[12];
+						$user_details[] = array($user_id, $church_id, $user_name, $email, $role_id, $password, $unique_hash, $password_reset_hash, $password_reset_expiry, $user_status, $profile_id, $profile_full_name, $profile_name);
                         
 						$result->MoveNext();                        
                     }
@@ -114,7 +125,7 @@ class Users
 				$password = $random_password;
 			}
 			$query = 'insert into USER_DETAILS (USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?)';
-			$result = $this->db_conn->Execute($query, array(0,$church_id,$user_name,$email,1,$password,$user_unique_hash,$user_status));
+			$result = $this->db_conn->Execute($query, array(0,$church_id,$user_name,$email,$role_id,$password,$user_unique_hash,$user_status));
 			if($result) {
 				$query_1 = 'select USER_ID from USER_DETAILS where UNIQUE_HASH=? limit 1';
 				$result_1 = $this->db_conn->Execute($query_1, array($user_unique_hash));
@@ -122,28 +133,32 @@ class Users
 					if(!$result_1->EOF) {
 						$user_id = $result_1->fields[0];
 						if($user_id > 0) {
-							$toReturn[0] = 1;
-							$toReturn[1] = "User added successfully";
-							$toReturn[2] = array("user_id"=>$user_id);
+							$to_return[0] = 1;
+							$to_return[1] = "User added successfully";
+							$to_return[2] = array("user_id"=>$user_id);
 						}
 					}
 				}
 			}
 		}
-		return $toReturn;
+		return $to_return;
 	}
 
 	public function updateUser($user_id, $user_name, $password, $role_id=1, $user_status=1)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to update the user.";
 		if($this->db_conn)
 		{
 			$query = 'update USER_DETAILS set USER_NAME=?, ROLE_ID=?, PASSWORD=?, STATUS=? where USER_ID=?';
 			$result = $this->db_conn->Execute($query, array($user_name, $role_id, $password, $user_status, $user_id));
 			if($result) {
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "User has been updated successfully!";
 			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function deleteUser($user_id)
@@ -284,7 +299,8 @@ class Users
 			if($sharded_result[0]==1)
 			{
 				//Create a new user now
-				$user_result = $this->addNewUser($church_id, $email, $email, $password, 1, 1);//Adding a church Admin
+				$name = $first_name.$middle_name.$last_name;
+				$user_result = $this->addNewUser($church_id, $name, $email, $password, 1, 1);//Adding a church Admin
 				if($user_result[0]==1) {
 					$user_id = $user_result[2]["user_id"];
 

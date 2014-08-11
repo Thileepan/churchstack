@@ -202,6 +202,7 @@ function listAllUsers()
 	document.getElementById('listRelationshipOptions').className = '';
 	document.getElementById('listMaritalOptions').className = '';
 	document.getElementById('listProfileStatusOptions').className = '';
+	document.getElementById('listProfileCustomFields').className = '';
 	document.getElementById('listUsers').className = 'active';
 	document.getElementById('addNewUser').className = '';
 	document.getElementById('alertRow').style.display = 'none';
@@ -269,18 +270,16 @@ function addOrUpdateUser(val)
 
 function addOrUpdateUserResponse(response)
 {
-	if(response == 1) {
-		var alertType = 2;
-		var msgToDisplay = 'User already exists.';
+	var dataObj = eval("(" + response + ")" );
+	var alertType = ((dataObj[0] == 0)?2:1);
+	var resultMsg = dataObj[1];
+
+	if(dataObj[0] == 1) {
+		if(!isUpdate) {
+			listAllUsers();
+		}		
 	}
-	else if(response == 2) {
-		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'User has been updated successfully!':'User has been created successfully';
-		listAllUsers();
-	} else {
-		var alertType = 2;
-		var msgToDisplay = (isUpdate)?'User failed to update.':'User failed to create.';		
-	}
+
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
@@ -296,6 +295,7 @@ function GetAddOrEditUserForm(val, userID)
 	document.getElementById('listRelationshipOptions').className = '';
 	document.getElementById('listMaritalOptions').className = '';
 	document.getElementById('listProfileStatusOptions').className = '';
+	document.getElementById('listProfileCustomFields').className = '';
 	document.getElementById('listUsers').className = '';
 	document.getElementById('addNewUser').className = ((isEdit)?'':'active');
 	document.getElementById('alertRow').style.display = 'none';
