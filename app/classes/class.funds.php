@@ -273,12 +273,12 @@ class Funds
 		return false;
 	}
 
-	public function addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name)
+	public function addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name)
 	{
 		if($this->db_conn)
 		{
-			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name));
+			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT=?, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name));
 			if($result) {
 				return true;
 			}
@@ -286,12 +286,12 @@ class Funds
 		return false;
 	}
 
-	public function updateContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id)
+	public function updateContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id)
 	{
 		if($this->db_conn)
 		{
-			$query = 'update CONTRIBUTION_DETAILS set CONTRIBUTION_DATE=?, BATCH_ID=?, PROFILE_ID=?, TRANSACTION_TYPE=?, PAYMENT_MODE=?, REFERENCE_NUMBER=?, LAST_UPDATE_TIME=?, LAST_UPDATE_USER_ID=?, LAST_UPDATE_USER_NAME=? where CONTRIBUTION_ID=?';
-			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id));
+			$query = 'update CONTRIBUTION_DETAILS set CONTRIBUTION_DATE=?, BATCH_ID=?, PROFILE_ID=?, TRANSACTION_TYPE=?, PAYMENT_MODE=?, REFERENCE_NUMBER=?, TOTAL_AMOUNT=?, LAST_UPDATE_TIME=?, LAST_UPDATE_USER_ID=?, LAST_UPDATE_USER_NAME=? where CONTRIBUTION_ID=?';
+			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id));
 			if($result) {
 				return true;
 			}
@@ -334,7 +334,7 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS';
+			$query = 'select a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.PROFILE_NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID and c.BATCH_ID';
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
@@ -343,14 +343,17 @@ class Funds
 					{
 						$contribution_date = $result->fields[0];
 						$batch_id = $result->fields[1];
-						$profile_id = $result->fields[2];
-						$transaction_type = $result->fields[3];
-						$payment_mode = $result->fields[4];
-						$reference_number = $result->fields[5];
-						$last_update_time = $result->fields[6];
-						$last_update_user_id = $result->fields[7];
-						$last_update_user_name = $result->fields[8];
-						$contribution_details[] = array($contribution_id, $contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name);
+						$batch_name = $result->fields[2];
+						$profile_id = $result->fields[3];
+						$profile_name = $result->fields[4];
+						$transaction_type = $result->fields[5];
+						$payment_mode = $result->fields[6];
+						$reference_number = $result->fields[7];
+						$total_amount = $result->fields[8];
+						$last_update_time = $result->fields[9];
+						$last_update_user_id = $result->fields[10];
+						$last_update_user_name = $result->fields[11];
+						$contribution_details[] = array($contribution_id, $contribution_date, $batch_id, $batch_name, $profile_id, $profile_name, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name);
 
 						$result->MoveNext();
 					}
@@ -374,7 +377,7 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME from BATCH_DESCRIPTION where CONTRIBUTION_ID=?';
+			$query = 'select CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME from BATCH_DESCRIPTION where CONTRIBUTION_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_id));
 			
 			if($result) {
@@ -385,10 +388,11 @@ class Funds
 					$transaction_type = $result->fields[3];
 					$payment_mode = $result->fields[4];
 					$reference_number = $result->fields[5];
-					$last_update_time = $result->fields[6];
-					$last_update_user_id = $result->fields[7];
-					$last_update_user_name = $result->fields[8];
-					$contribution_details = array($contribution_id, $contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $last_update_time, $last_update_user_id, $last_update_user_name);
+					$total_amount = $result->fields[6];
+					$last_update_time = $result->fields[7];
+					$last_update_user_id = $result->fields[8];
+					$last_update_user_name = $result->fields[9];
+					$contribution_details = array($contribution_id, $contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name);
 
 					$return_data[0] = 1;
 					$return_data[1] = $contribution_split_details;
@@ -398,7 +402,7 @@ class Funds
 		return $return_data;
 	}
 
-	public function getAllContributionSplits()
+	public function getContributionSplitDetails($contribution_id)
 	{
 		$return_data = array();
 		$return_data[0] = 0;
@@ -407,8 +411,8 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_split_details = array();
-			$query = 'select CONTRIBUTION_SPLIT_ID, CONTRIBUTION_ID, FUND_ID, AMOUNT, NOTES from CONTRIBUTION_SPLIT_DETAILS';
-			$result = $this->db_conn->Execute($query);
+			$query = 'select a.CONTRIBUTION_SPLIT_ID, a.CONTRIBUTION_ID, a.FUND_ID, b.FUND_NAME, a.AMOUNT, a.NOTES from CONTRIBUTION_SPLIT_DETAILS as a, FUND_DETAILS as b where a.CONTRIBUTION_ID=? and a.FUND_ID=b.FUND_ID';
+			$result = $this->db_conn->Execute($query, array($contribution_id));
 			
 			if($result) {
                 if(!$result->EOF) {
@@ -417,9 +421,10 @@ class Funds
 						$contribution_split_id = $result->fields[0];
 						$contribution_id = $result->fields[1];
 						$fund_id = $result->fields[2];
-						$amount = $result->fields[3];
-						$notes = $result->fields[4];
-						$contribution_split_details[] = array($contribution_split_id, $contribution_id, $fund_id, $amount, $notes);
+						$fund_name = $result->fields[3];
+						$amount = $result->fields[4];
+						$notes = $result->fields[5];
+						$contribution_split_details[] = array($contribution_split_id, $contribution_id, $fund_id, $fund_name, $amount, $notes);
 
 						$result->MoveNext();
 					}

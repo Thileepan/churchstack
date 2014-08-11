@@ -371,87 +371,77 @@ function showBatchDetailsResponse(response)
 	document.getElementById('pageHeader').innerHTML = 'Batch Summary';
 	document.getElementById('pageContent').style.display = '';
 	document.getElementById('pageContent').innerHTML = response;
-	getBatchSummary(_batchID);
+	getBatchSummary(_batchID);	
 }
 
 function getBatchSummary(batchID)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	document.getElementById('summaryDiv').className = 'tab-pane active';
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
+
+	var formPostData = 'req=11';
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:getBatchSummaryResponse,
+		error:HandleAjaxError
+	});
 }
 
 function getBatchSummaryResponse(response)
 {
-
+	document.getElementById('summaryDiv').innerHTML = response;
 }
 
-function addOrUpdateBatchDetails(isUpdate, batchID, contributionID)
+function getAddOrEditContributionForm(isUpdate)
 {
-	document.getElementById('summaryDiv').className = 'tab-pane active';
-	document.getElementById('addContributionDiv').className = 'tab-pane';
-	document.getElementById('listContributionDiv').className = 'tab-pane';
-}
-
-function addOrUpdateBatchDetailsResponse(response)
-{
-	if(response)
-	{
-	}
-}
-
-function listAllContributions()
-{
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function listAllSubscriptions(profileID)
-{
-	//console.log(profileID);
 	document.getElementById('alertRow').style.display = 'none';
-	
-	var table = '<table id="subscriptionList" class="table table-condensed"><thead><tr><th></th><th>Subscription ID</th><th>Member ID</th><th>Name</th><th>Date</th><th>Total Amount</th><th>Actions</th></tr></thead></table>';
-	
-	if(profileID > 0)	{
-		document.getElementById('pageHeader').innerHTML = "List Subscriptions";
-		document.getElementById('profileDiv').className = 'tab-pane';
-		document.getElementById('subscriptionDiv').className = 'tab-pane active';
-		document.getElementById('harvestDiv').className = 'tab-pane';
-		document.getElementById('subscriptionDiv').innerHTML = table;		
-	} else {
-		document.getElementById('listSubscriptionFields').className = '';
-		document.getElementById('addSubscription').className = '';
-		document.getElementById('listSubscriptions').className = 'active';
-		document.getElementById('pageHeader').innerHTML = "List Subscriptions";
-		document.getElementById('pageContent').innerHTML = table;
-	}
+	document.getElementById('summaryDiv').className = 'tab-pane';
+	document.getElementById('addContributionDiv').className = 'tab-pane active';
+	document.getElementById('listContributionDiv').className = 'tab-pane';
 
-	oTable = $('#subscriptionList').dataTable( {
+	var formPostData = 'req=12';
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:showBatchDetailsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getAddOrEditContributionFormResponse(response)
+{
+	document.getElementById('summaryDiv').innerHTML = response;
+}
+
+function listAllContributions(batchID)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	document.getElementById('summaryDiv').className = 'tab-pane';
+	document.getElementById('addContributionDiv').className = 'tab-pane';
+	document.getElementById('listContributionDiv').className = 'tab-pane active';
+
+	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Date</th><th>Batch</th><th>Name</th><th>Transaction Type</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	document.getElementById('listContributionDiv').innerHTML = table;
+	
+	oTable = $('#listContributionTable').dataTable( {
 		"aoColumns": [
-			{ "sWidth": "10%" },
-			{ "sWidth": "3%", "bVisible":false  },
+			{ "sWidth": "5%" },
 			{ "sWidth": "15%"  },
-			{ "sWidth": "25%" },
-			{ "sWidth": "20%"  },
-			{ "sWidth": "22%"  },
-			{ "sWidth": "5%"  }
+			{ "sWidth": "15%" },
+			{ "sWidth": "15%"  },
+			{ "sWidth": "15%"  },
+			{ "sWidth": "15%"  },
+			{ "sWidth": "15%"  },
 		],
 		"bFilter":false,
         "bProcessing": true,
 		"bDestroy": true,
-        "sAjaxSource": doSubscribeFile,
+        "sAjaxSource": doFundsFile,
 		"fnDrawCallback": function () {
 			$('body table tbody td').on( 'click', 'img', function (e) {
 
@@ -469,7 +459,7 @@ function listAllSubscriptions(profileID)
 					/* Open this row */
 					this.src = "plugins/datatables/examples/examples_support/details_close.png";
 					var aData = oTable.fnGetData( nTr );
-					oTable.fnOpen( nTr, showSubscriptionDetails(aData[1]), 'details' );
+					oTable.fnOpen( nTr, showContributionSplitDetails(aData[1]), 'details' );
 				}
 			});
 		},
@@ -478,175 +468,28 @@ function listAllSubscriptions(profileID)
                 "dataType": 'json',
                 "type": "POST",
                 "url": sSource,
-                "data": "req=6&profileID="+profileID,
+                "data": "req=13",
                 "success": fnCallback
-            } );
-		
+            } );		
         }
 	});
 }
 
-function addOrUpdateNewSubscription(val)
+function showContributionSplitDetails()
 {
-	isUpdate = val;
-	profileID = document.getElementById('selectedProfileID').value;
-	screenID = document.getElementById('screenID').value;
-	if(profileID == 0)
-	{
-		var resultToUI = getAlertDiv(2, 'Please choose a valid family head');
-		document.getElementById('alertRow').style.display = '';
-		document.getElementById('alertDiv').innerHTML = resultToUI;
-		return false;
-	}
-	var subscriptionDate = document.getElementById('inputSubcriptionMonth').value;
-	if(validateDateFormat(subscriptionDate)) {
-		subscriptionDate = convertDateToDBFormat(subscriptionDate);
-	} else {
-		var resultToUI = getAlertDiv(2, 'Please choose valid subscription date');
-		document.getElementById('alertRow').style.display = '';
-		document.getElementById('alertDiv').innerHTML = resultToUI;
-		return false;
-	}
-
-	var hiddenFieldIDs = document.getElementById('hiddenFieldIDs').value;
-	var fieldIDArr = hiddenFieldIDs.split(",");
-	var totalFields = fieldIDArr.length;
-	var fieldVal = '';
-
-	if(totalFields > 0) {
-		for(i=0; i<totalFields; i++)
-		{
-			if(fieldVal != '')
-			{
-				fieldVal += ",";
-			}
-			var val = parseInt(document.getElementById('inputFieldID-' + fieldIDArr[i]).value);
-			if(isNaN(val)) {
-				val = 0;
-			}
-			fieldVal += val;
-		}
-	}
-	
-	var formPostData = "req=5";
-	formPostData += "&isUpdate=" + isUpdate;
-	formPostData += "&profileID=" + profileID;
-	formPostData += "&subscriptionDate=" + subscriptionDate;
-	formPostData += "&fieldIDStr=" + hiddenFieldIDs;
-	formPostData += "&fieldValStr=" + fieldVal;
-	if(isUpdate) {
-		formPostData += "&subscriptionID=" + document.getElementById('hiddenSubscriptionID').value;
-	}
-
-	$.ajax({
-		type:'POST',
-		url:doSubscribeFile,
-		data:formPostData,
-		success:addOrUpdateNewSubscriptionResponse,
-		error:HandleAjaxError
+	$.when(getContributionSplitDetails(contributionID)).done(function(response){
+		sOut = response;
 	});
+	return sOut;
 }
 
-function addOrUpdateNewSubscriptionResponse(response)
+function getContributionSplitDetails(contributionID)
 {
-	if(response == 1) {
-		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'Subscription has been updated successfully!':'Subscription has been created successfully';
-		//reload the entire subscription list after updating the subscription details
-		if(isUpdate) {
-			document.getElementById('subModalCloseBtn').click();
-			if(screenID == 2) {				
-				listAllSubscriptions(0);
-			} else {
-				listAllSubscriptions(profileID);
-			}
-		}
-		else
-		{
-			getSubscriptionForm(0);
-		}
-	} else {
-		var alertType = 2;
-		var msgToDisplay = (isUpdate)?'Subscription failed to update.':'Subscription failed to create.';		
-	}
-	var resultToUI = getAlertDiv(alertType, msgToDisplay);
-	document.getElementById('alertRow').style.display = '';
-	document.getElementById('alertDiv').innerHTML = resultToUI;
-}
-
-function calSubscriptionTotal(obj)
-{
-	var total = 0;
-	var fieldIDs = document.getElementById('hiddenFieldIDs').value;
-	var fieldIDArr = fieldIDs.split(",");
-	var totalFields = fieldIDArr.length;
-
-	if(totalFields > 0)
-	{
-		for(i=0; i<totalFields; i++)
-		{
-			var amount = parseInt(document.getElementById('inputFieldID-' + fieldIDArr[i]).value);
-			if(!isNaN(amount))
-			{
-				total += amount;
-				//console.log(total);
-			}
-		}
-	}
-	document.getElementById('spanSubscriptionTotal').innerHTML = total;
-}
-
-function deleteSubscriptionConfirmation(subscriptionID)
-{
-	var msgToDisplay = 'Please confirm your delete request?';
-	var actionTakenCallBack = "deleteSubscriptionRequest(" + subscriptionID + ")";
-	var actionCanelCallBack = "cancelSubscriptionDelteRequest()";
-	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCanelCallBack);
-	document.getElementById('alertRow').style.display = '';
-	document.getElementById('alertDiv').innerHTML = resultToUI;
-	$('html,body').scrollTop(0);
-}
-
-function cancelSubscriptionDelteRequest()
-{
-	document.getElementById('alertDiv').innerHTML = '';
-	document.getElementById('alertRow').style.display = 'none';
-}
-
-function deleteSubscriptionRequest(subscriptionID, profileID)
-{
-	profileID = profileID
-	var formPostData = "req=8";
-	formPostData += "&subscriptionID=" + subscriptionID;
-	
-	$.ajax({
+	var formPostData = 'req=14&contributionID=' + contributionID;
+	return $.ajax({
+		async: false,
 		type:'POST',
-		url:doSubscribeFile,
+		url:doFunds,
 		data:formPostData,
-		success:deleteSubscriptionResponse,
-		error:HandleAjaxError
 	});
-}
-
-function deleteSubscriptionResponse(response)
-{
-	if(response == 1)
-	{
-		var alertType = 1;
-		var msgToDisplay = 'Subscription has been deleted successfully';
-		var screenID = document.getElementById('screenID').value;
-		if(screenID == 2) {				
-			listAllSubscriptions(0);
-		} else {
-			listAllSubscriptions(profileID);
-		}
-	}
-	else
-	{
-		var alertType = 2;
-		var msgToDisplay = 'Subscription has been failed to delete.';		
-	}
-	var resultToUI = getAlertDiv(alertType, msgToDisplay);
-	document.getElementById('alertRow').style.display = '';
-	document.getElementById('alertDiv').innerHTML = resultToUI;
 }

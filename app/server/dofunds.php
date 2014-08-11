@@ -185,7 +185,7 @@ else if($req == 6)
 			{
 				$batch_id = $batches[$i][0];
 				$batch_name = $batches[$i][1];
-				$batch_info = $batch_name . '(<a href="#">#'.$batch_id.'</a>)';
+				$batch_info = '<a href="#" onclick="showBatchDetails('.$batch_id.')">'.$batch_name . '</a>';//(<a href="#">#'.$batch_id.'</a>)';
 				$batch_desc = $batches[$i][2];
 				$batch_created_time = $batches[$i][3];
 				//$last_updated_time = $batches[$i][4];
@@ -316,8 +316,9 @@ else if($req == 9)
 	echo $status;
 	exit;
 }
-
-$to_return = '';
+else if($req == 10)
+{
+	$to_return = '';
 	$to_return .= '<div class="tabbable">';
 		$to_return .= '<ul class="nav nav-tabs">';
 			$to_return .= '<li id="summaryTab" class="active" onclick="getBatchSummary('.$batch_id.')"><a href="#summaryTab" data-toggle="tab">Summary</a></li>';
@@ -336,5 +337,83 @@ $to_return = '';
 
 	echo $to_return;
 	exit;
+}
+else if($req == 11)
+{
+	//get batch summary details
+}
+else if($req == 12)
+{
+	//get add/update contribution form
+}
+else if($req == 13)
+{
+	//list contribution details
 
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$contribution_result = $fund_obj->getAllContributions();
+	
+	$is_results_available = false;
+	if(is_array($contribution_result) && $contribution_result[0] == 1)
+	{
+		$contributions = $contribution_result[1];
+		$total_contributions = COUNT($contributions[1]);
+		if($total_contributions > 0)
+		{
+			$is_results_available = true;
+			for($i=0; $i<$total_contributions; $i++) {
+				
+				$actions = '<i class="curHand icon-trash" onclick="deleteSubscriptionConfirmation('.$subscriptions[$i][0].','.$subscriptions[$i][1].')"></i>&nbsp;&nbsp;';			
+				
+				$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][1], $contributions[$i][3], $contributions[$i][5], $contributions[$i][6], $contributions[$i][9], $actions);
+			}
+		}
+	}
+	
+	if( !$is_results_available )
+	{
+		$to_return['aaData'] = array();
+	}
+
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 14)
+{
+	//list contribution split details
+
+	$contribution_id = trim($_POST['contributionID']);
+
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$split_details = $fund_obj->getContributionSplitDetails($contribution_id);
+
+	if(is_array($split_details))
+	{
+		$total_splits = COUNT($split_details);		
+		if($total_splits > 0)
+		{
+			for($i=0; $i<$total_splits; $i++)
+			{
+				$to_return .= '<div class="row-fluid"><div class="span12">';
+					$to_return .= '<table class="table table-condensed">';
+						$to_return .= '<tbody>';
+							$to_return .= '<tr>';
+								$to_return .= '<td>'.$split_details[$i][3].'</td>';
+								$to_return .= '<td>'.$split_details[$i][4].'</td>';
+								$to_return .= '<td>'.$split_details[$i][5].'</td>';
+							$to_return .= '</tr>';
+						$to_return .= '</tbody>';
+					$to_return .= '</table>';
+				$to_return .= '</div>';
+			}
+		}
+	}
+
+	echo $to_return;
+	exit;
+}
 ?>
