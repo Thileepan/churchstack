@@ -8,6 +8,7 @@
 		exit;
 	}
 
+	include_once($APPLICATION_PATH."conf/config.php");
 	include_once($APPLICATION_PATH."plugins/thread/class.thread.php");
 	include_once($APPLICATION_PATH."classes/class.church.php");
 
@@ -28,7 +29,7 @@
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
 			$shardedDB = $churches_result[1][$i][10];
-			$commands[] = 'php "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB);
+			$commands[] = PHP_EXE_PATH.' "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB);
 		}
 		$threads = new Multithread( $commands );
 		$threads->run();
