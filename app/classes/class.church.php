@@ -142,29 +142,6 @@ class Church
 		return $toReturn;
 	}
 
-	public function getCurrencyNames($currency_id)
-	{
-		$toReturn = array();
-		if($this->db_conn)
-		{
-		   $query = 'select * from CURRENCY_LIST where CURRENCY_ID=? limit 1';
-		   $result = $this->db_conn->Execute($query, array($currency_id));
-            
-           if($result) {
-                if(!$result->EOF) {
-					$currency_details = array();
-					$currency_id = $result->fields[0];
-					$currency_short_name = $result->fields[1];
-					$currency_long_name = $result->fields[2];
-					$currency_details = array($currency_id, $currency_short_name, $currency_long_name);
-					$toReturn[0] = 1;
-					$toReturn[1] = $currency_details;
-				}
-            }
-        }
-		return $toReturn;
-	}
-	
 	public function getAllChurchesList($filterType=0, $expiring_in_days=6, $expiry_finding_range_seconds=86400)
 	{
 		/** /
@@ -435,6 +412,138 @@ class Church
 			$to_return[1] = "Unable to send trial report to the specified email address. ".$email_result[1];
 		}
 		return $to_return;
+	}
+
+	public function getCurrencyDetails($currency_id="")
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the currency details";
+		if($this->db_conn)
+		{
+			if(trim($currency_id) != "")
+			{
+				$query = 'select CURRENCY_ID, CURRENCY_CODE, CURRENCY_NUMBER, CURRENCY_DESCRIPTION, COUNTRY from CURRENCY_LIST where CURRENCY_ID=? limit 1';
+				$result = $this->db_conn->Execute($query, array($currency_id));
+			}
+			else
+			{
+				$query = 'select CURRENCY_ID, CURRENCY_CODE, CURRENCY_NUMBER, CURRENCY_DESCRIPTION, COUNTRY from CURRENCY_LIST';
+				$result = $this->db_conn->Execute($query);
+			}
+
+			if($result) {
+				$currency_details = array();
+				while(!$result->EOF) {
+					$currency_id = $result->fields[0];
+					$currency_code = $result->fields[1];
+					$currency_number = $result->fields[2];
+					$currency_description = $result->fields[3];
+					$currency_country = $result->fields[4];
+					$currency_details[] = array($currency_id, $currency_code, $currency_number, $currency_description, $currency_country);
+					$result->MoveNext();
+				}
+				$toReturn[0] = 1;
+				$toReturn[1] = $currency_details;
+			}
+		}
+		return $toReturn;
+	}
+
+	public function getCountryDetails($country_id="")
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the country details";
+		if($this->db_conn)
+		{
+			if(trim($currency_id) != "")
+			{
+				$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST where COUNTRY_ID=? limit 1';
+				$result = $this->db_conn->Execute($query, array($country_id));
+			}
+			else
+			{
+				$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST';
+				$result = $this->db_conn->Execute($query);
+			}
+
+			if($result) {
+				$country_details = array();
+				while(!$result->EOF) {
+					$country_id = $result->fields[0];
+					$country_iso_code = $result->fields[1];
+					$country_name_caps = $result->fields[2];
+					$country_name = $result->fields[3];
+					$country_iso3_code = $result->fields[4];
+					$country_numeric_code = $result->fields[5];
+					$country_calling_code = $result->fields[6];
+					$country_details[] = array($country_id, $country_iso_code, $country_name_caps, $country_name, $country_iso3_code, $country_numeric_code, $country_calling_code);
+					$result->MoveNext();
+				}
+				$toReturn[0] = 1;
+				$toReturn[1] = $country_details;
+			}
+		}
+		return $toReturn;
+	}
+
+	public function getCountryInfoFromISOCode($country_iso_code)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the country details";
+		if($this->db_conn)
+		{
+			$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST  where COUNTRY_ISO_CODE=? limit 1';
+			$result = $this->db_conn->Execute($query, array($country_iso_code));
+
+			if($result) {
+				if(!$result->EOF) {
+					$currency_details = array();
+					$country_id = $result->fields[0];
+					$country_iso_code = $result->fields[1];
+					$country_name_caps = $result->fields[2];
+					$country_name = $result->fields[3];
+					$country_iso3_code = $result->fields[4];
+					$country_numeric_code = $result->fields[5];
+					$country_calling_code = $result->fields[6];
+					$currency_details = array($country_id, $country_iso_code, $country_name_caps, $country_name, $country_iso3_code, $country_numeric_code, $country_calling_code);
+					$toReturn[0] = 1;
+					$toReturn[1] = $currency_details;
+				}
+			}
+		}
+		return $toReturn;
+	}
+
+	public function getCountryInfoFromISO3Code($country_iso3_code)
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the country details";
+		if($this->db_conn)
+		{
+			$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST  where COUNTRY_ISO3_CODE=? limit 1';
+			$result = $this->db_conn->Execute($query, array($country_iso3_code));
+
+			if($result) {
+				if(!$result->EOF) {
+					$currency_details = array();
+					$country_id = $result->fields[0];
+					$country_iso_code = $result->fields[1];
+					$country_name_caps = $result->fields[2];
+					$country_name = $result->fields[3];
+					$country_iso3_code = $result->fields[4];
+					$country_numeric_code = $result->fields[5];
+					$country_calling_code = $result->fields[6];
+					$currency_details = array($country_id, $country_iso_code, $country_name_caps, $country_name, $country_iso3_code, $country_numeric_code, $country_calling_code);
+					$toReturn[0] = 1;
+					$toReturn[1] = $currency_details;
+				}
+			}
+		}
+		return $toReturn;
 	}
 }
 

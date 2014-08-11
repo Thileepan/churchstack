@@ -615,6 +615,11 @@ function deleteProfileResponse(response)
 
 function authenticateUser()
 {
+	/* Example to get timezone : can be removed later* /
+	var tz = jstz.determine();
+	alert(tz.name());
+	return false;
+	/**/
 	var user = document.getElementById('inputUser').value;
 	var pass = document.getElementById('inputPwd').value;
 	var formPostData = 'req=authenticate&username=' + user + '&password=' + pass;
