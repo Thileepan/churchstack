@@ -71,7 +71,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 							<ul class="nav pull-left">
 								<li class="" id="mdashboard" onclick="menulinkClicked(6)"><a href="dashboard.php" id="dashboardLink"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
 								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="index.php" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
-								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:nones"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>
+								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:<?php echo ((SHOW_SUBSCRIPTION_MENU)?'':'none'); ?>"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>			
 								<li class="" id="mfunds" onclick="menulinkClicked(9)"><a href="funds.php" id="fundsLink"><span id="mfundsText" style="color:white">Funds</span></a></li>
 <!--								<li class="" id="mharvest" onclick="menulinkClicked(7)"><a href="harvest.php"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
 								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events.php" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>

@@ -53,4 +53,14 @@ if (System::getOS() == 2) {
 } else {
    define('PHP_EXE_PATH', 'php');
 }
+
+//MENU SETTINGS
+define('SHOW_DASHBOARD_MENU', 1);
+define('SHOW_PROFILE_MENU', 1);
+define('SHOW_SUBSCRIPTION_MENU', 0);
+define('SHOW_FUNDS_MENU', 1);
+define('SHOW_EVENTS_MENU', 1);
+define('SHOW_GROUPS_MENU', 1);
+define('SHOW_SETTINGS_MENU', 1);
+define('SHOW_REPORTS_MENU', 1);
 ?>

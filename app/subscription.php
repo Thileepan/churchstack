@@ -10,6 +10,10 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 /**/
 $APPLICATION_PATH = "./";
 include $APPLICATION_PATH."header.php";
+if(!SHOW_SUBSCRIPTION_MENU) {
+	@require $APPLICATION_PATH.'error/404.php';
+	exit;
+}
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/subscriptions.js"></script>
 
