@@ -922,13 +922,19 @@ function previewProfileImage(input, previewImgID) {
 function signUpNewAccount()
 {
 	document.getElementById('alertRow').style.display = 'none';
+	document.getElementById('church').value = trim(document.getElementById('church').value);
+	document.getElementById('location').value = trim(document.getElementById('location').value);
+	document.getElementById('name').value = trim(document.getElementById('name').value);
+	document.getElementById('email').value = trim(document.getElementById('email').value);
+	document.getElementById('phone').value = trim(document.getElementById('phone').value);
+	document.getElementById('referrerEmail').value = trim(document.getElementById('referrerEmail').value);
+	document.getElementById('password').value = trim(document.getElementById('password').value);
 	var churchName = document.getElementById('church').value;
 	var churchLocation = document.getElementById('location').value;
 	var name = document.getElementById('name').value;
 	var email = document.getElementById('email').value;
 	var phone = document.getElementById('phone').value;
 	var referrerEmail = trim(document.getElementById('referrerEmail').value);
-	document.getElementById('password').value = trim(document.getElementById('password').value);
 	var password = document.getElementById('password').value;
 	var securityText = trim(document.getElementById('securityText').value);
 
@@ -947,6 +953,8 @@ function signUpNewAccount()
 		errorMessage = 'Church Name cannot be empty.';
 	} else if(email == '') {
 		errorMessage = 'Email field cannot be empty.';
+	} else if(!isValidEmail(email)) {
+		errorMessage = 'Enter a valid email address in the Email field';
 	} else if(document.getElementById('password').value == "") {
 		errorMessage = 'Password field cannot be empty';
 	} else if(document.getElementById('password').value != document.getElementById('confirmPassword').value) {
@@ -997,6 +1005,7 @@ function signUpNewAccountResponse(response)
 		var resultToUI = getAlertDiv(2, resultMessage);
 	}
 	document.getElementById('alertDiv').innerHTML = resultToUI;	
+	$("html, body").animate({ scrollTop: 0 }, 1000);
 }
 
 function reloadSignupCaptcha()
