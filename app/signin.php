@@ -125,7 +125,7 @@
 						<div class="control-group">
 							<label class="control-label" for="inputUser">Username</label>
 							<div class="controls">
-								<input type="text" id="inputUser" class="span4" name="inputUser" placeholder="Username" value="">
+								<input type="text" id="inputUser" class="span4" name="inputUser" placeholder="Username" value="" onblur="javascript: this.value = trim(this.value.toLowerCase());">
 							</div>
 						</div> <!-- /.control-group -->
 						
