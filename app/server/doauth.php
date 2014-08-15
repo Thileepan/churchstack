@@ -65,6 +65,13 @@ if($req == 'authenticate')
 			$license_result = $lic_obj->getLicenseDetails(1);//plan type=1 indicates subscription/validity 
 			if($license_result[0]==1)
 			{
+				$curr_plan_id = $license_result[1][0]["plan_id"];
+				$plan_details = $lic_obj->getLicensePlanDetails($curr_plan_id);
+				$_SESSION["maxProfileCount"] = -1;
+				if($plan_details[0]==1) {
+					$_SESSION["maxProfileCount"] = $plan_details[1]["max_count"];
+				}
+				$_SESSION["currentPlanID"] = $curr_plan_id;
 				$_SESSION['licenseExpiryDate'] = $license_result[1][0]["lic_expiry_date"];
 				$_SESSION['licenseExpiryTimestamp'] = $license_result[1][0]["lic_expiry_timestamp"];
 				$_SESSION['isOnTrial'] = $license_result[1][0]["is_on_trial"];
