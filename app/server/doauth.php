@@ -4,6 +4,7 @@ include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.users.php';
 include_once $APPLICATION_PATH . '/classes/class.church.php';
 include_once $APPLICATION_PATH . '/classes/class.license.php';
+include_once($APPLICATION_PATH . 'classes/class.profiles.php');
 //include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
@@ -65,6 +66,13 @@ if($req == 'authenticate')
 			$license_result = $lic_obj->getLicenseDetails(1);//plan type=1 indicates subscription/validity 
 			if($license_result[0]==1)
 			{
+				$curr_plan_id = $license_result[1][0]["plan_id"];
+				$plan_details = $lic_obj->getLicensePlanDetails($curr_plan_id);
+				$_SESSION["maxProfileCount"] = -1;
+				if($plan_details[0]==1) {
+					$_SESSION["maxProfileCount"] = $plan_details[1]["max_count"];
+				}
+				$_SESSION["currentPlanID"] = $curr_plan_id;
 				$_SESSION['licenseExpiryDate'] = $license_result[1][0]["lic_expiry_date"];
 				$_SESSION['licenseExpiryTimestamp'] = $license_result[1][0]["lic_expiry_timestamp"];
 				$_SESSION['isOnTrial'] = $license_result[1][0]["is_on_trial"];
@@ -87,6 +95,10 @@ if($req == 'authenticate')
 				$_SESSION['countryISO3Code'] = $misc_details[1][5];
 				$_SESSION['countryCallingCode'] = $misc_details[1][6];
 			}
+
+			//Get active profiles count
+			$profiles_obj = new Profiles($APPLICATION_PATH);
+			$_SESSION["churchCurrentActiveProfilesCount"] = $profiles_obj->getProfilesCount(1, 0);//List All Active Profiles
 		}
 	} else {
 		$is_auth_valid = 0;

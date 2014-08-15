@@ -109,7 +109,17 @@ class Events
 						$return_data[1] = 'Event participants added successfully';
 					}
 				}
+				else
+				{
+					$return_data[0] = 1;
+					$return_data[1] = 'Safely ignoring the participants list as it is empty';
+				}
 			}			
+			else
+			{
+				$return_data[0] = 1;
+				$return_data[1] = 'Safely ignoring the participants list as it is empty';
+			}
 		}
 		return $return_data;
 	}

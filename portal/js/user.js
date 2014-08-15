@@ -15,7 +15,7 @@ function listAllUsers()
         "bProcessing": true,
 		"bDestroy": true,
         "sAjaxSource": doUser,
-		"iDisplayLength":2,
+		"iDisplayLength":25,
 //		"aaSorting": 2,
         "fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {

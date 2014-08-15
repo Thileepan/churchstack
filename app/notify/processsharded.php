@@ -7,6 +7,7 @@
 		exit;
 	}
 
+	include_once($APPLICATION_PATH."conf/config.php");
 	include_once($APPLICATION_PATH."plugins/thread/class.thread.php");
 	include_once($APPLICATION_PATH."classes/class.events.php");
 
@@ -56,7 +57,7 @@
 				}
 				$k--;//To adjust the above extra increment...
 
-				$commands[] = 'php "'.$email_sending_file.'" csvToEmails='.urlencode($comma_separated_email_list).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType;
+				$commands[] = PHP_EXE_PATH.' "'.$email_sending_file.'" csvToEmails='.urlencode($comma_separated_email_list).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType;
 			}
 
 		}

@@ -746,6 +746,7 @@ class Users
 		$referral_prog_letter = str_replace("{{LAST_NAME}}", $user_details["last_name"], $referral_prog_letter);
 		$referral_prog_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $referral_prog_letter);
 		$referral_prog_letter = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $referral_prog_letter);
+		$referral_prog_letter = str_replace("{{REFERRAL_PROGRAM_URL}}", REFERRAL_PROGRAM_URL, $referral_prog_letter);
 
 		$subject = PRODUCT_NAME."'s Referral Program";
 		if($just_return_contents==1)

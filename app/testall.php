@@ -10,7 +10,33 @@ include_once($PATH."plugins/twilio/Services/Twilio.php");
 include_once($PATH."classes/class.sharded.php");
 include_once($PATH . 'plugins/thread/class.thread.php');
 include_once($PATH."classes/class.church.php");
+include_once($PATH."classes/class.utility.php");
 
+
+/* * /
+$util_obj  = new Utility($PATH);
+$ip_to_pass = $_SERVER["REMOTE_ADDR"];
+$ip_to_pass = "37.10.29.31";
+$country_code = $util_obj->getCountryCodeFromIP($ip_to_pass);
+echo "--".$country_code;
+$records = $util_obj->getRecordsFromIP($ip_to_pass);
+echo $records->country_code;echo "<BR/>";
+echo $records->country_code3;echo "<BR/>";
+echo $records->country_name;echo "<BR/>";
+echo $records->region;echo "<BR/>";
+echo $records->city;echo "<BR/>";
+echo $records->postal_code;echo "<BR/>";
+echo $records->latitude;echo "<BR/>";
+echo $records->longitude;echo "<BR/>";
+echo $records->area_code;echo "<BR/>";
+echo $records->dma_code;echo "<BR/>";
+echo $records->metro_code;echo "<BR/>";
+echo $records->continent_code;echo "<BR/>";
+
+
+$church_obj  = new Church($PATH);
+$result = $church_obj->getCountryInfoFromISO3Code($records->country_code3);
+print_r($result);
 /** /
 $church_obj  = new Church($PATH);
 $result = $church_obj->getAllChurchesList(7, 6, 8640000);

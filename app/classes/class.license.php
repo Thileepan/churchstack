@@ -1518,7 +1518,7 @@ class License
 		$referral_prog_letter = str_replace("{{NEW_VALIDITY}}", $user_details["new_validity"], $referral_prog_letter);
 		$referral_prog_letter = str_replace("{{REFERRER_CHURCH_NAME}}", $user_details["referrer_church_name"], $referral_prog_letter);
 		$referral_prog_letter = str_replace("{{REFERRAL_CHURCH_NAME}}", $user_details["referral_church_name"], $referral_prog_letter);
-
+		$referral_prog_letter = str_replace("{{REFERRAL_PROGRAM_URL}}", REFERRAL_PROGRAM_URL, $referral_prog_letter);
 
 		$subject = "You have been rewarded - ".PRODUCT_NAME."'s Referral Program";
 		if($just_return_contents==1)

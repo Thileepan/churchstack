@@ -21,6 +21,7 @@
 	<![endif]-->
 
 	<!-- JavaScript -->
+	<script src="js/utils.js"></script>
 	<script src="js/app.js"></script>
 
 	<script>
@@ -130,7 +131,7 @@
 						  <div class="control-group">
 						    <label class="control-label" for="location">Referrer's Email</label>
 						    <div class="controls">
-						      <input type="text" name="referrerEmail" id="referrerEmail" class="input-xlarge"  placeholder="Referrer's Email Address (if any)">
+						      <input type="text" name="referrerEmail" id="referrerEmail" class="input-xlarge"  placeholder="Referrer's Email Address (if any)" onblur="javascript: this.value = trim(this.value.toLowerCase());">
 						    </div>
 						  </div>
 						  <hr />
@@ -154,7 +155,7 @@
 						  <div class="control-group">
 						    <label class="control-label" for="email">Email <span style="color:#E43054;">*</span></label>
 						    <div class="controls">
-						      <input type="text" name="email" id="email" class="input-xlarge" placeholder="Email">
+						      <input type="text" name="email" id="email" class="input-xlarge" placeholder="Email" onblur="javascript: this.value = trim(this.value.toLowerCase());">
 						    </div>
 						  </div>
 						  <div class="control-group">

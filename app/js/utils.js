@@ -172,3 +172,22 @@ function inArray(needle, haystack) {
     }
     return false;
 }
+
+function isValidEmail(emailStr) 
+{
+	var permittedEmailChars = /^([a-zA-Z0-9_@\~\-\=\+\.\?\*])*$/;
+	emailPattern = /^([a-zA-Z0-9_])+([\._\-\~\=\+\?\*][a-zA-Z0-9]+)*@([a-zA-Z0-9])+([\._\-][a-zA-Z0-9]+)*(\.[a-zA-Z]+)+$/;
+	/**/
+	if(!(permittedEmailChars).test(emailStr))
+	{
+		//alert(lang_ary['The email address you have entered has invalid characters. An email address can contain only [A-Z][a-z][0-9][-@_.\+\*\?\~\=] characters.']);
+		return false;
+	}
+	/**/
+	if(!emailPattern.test(emailStr))
+	{
+		//alert("Email address entered does not seem to be valid");
+		return false;
+	}
+	return true;
+}
