@@ -4,6 +4,7 @@ include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.users.php';
 include_once $APPLICATION_PATH . '/classes/class.church.php';
 include_once $APPLICATION_PATH . '/classes/class.license.php';
+include_once($APPLICATION_PATH . 'classes/class.profiles.php');
 //include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
@@ -94,6 +95,10 @@ if($req == 'authenticate')
 				$_SESSION['countryISO3Code'] = $misc_details[1][5];
 				$_SESSION['countryCallingCode'] = $misc_details[1][6];
 			}
+
+			//Get active profiles count
+			$profiles_obj = new Profiles($APPLICATION_PATH);
+			$_SESSION["churchCurrentActiveProfilesCount"] = $profiles_obj->getProfilesCount(1, 0);//List All Active Profiles
 		}
 	} else {
 		$is_auth_valid = 0;
