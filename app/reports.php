@@ -16,14 +16,14 @@ include $APPLICATION_PATH."header.php";
 <script type="text/javascript" charset="utf-8" src="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/js/TableTools.js"></script>
 <link href="<?php echo $APPLICATION_PATH; ?>plugins/datatables/extras/TableTools/media/css/TableTools.css" rel="stylesheet" media="screen">
 
-<div class="btn-group pull-right" id="divReportsBy">
+<div class="btn-group pull-right" id="divReportsBy" style="display:none">
 	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 	Reports By
 	<span class="caret"></span>
 	</a>
 	<ul class="dropdown-menu">
 		<li><a href="#" onclick="showProfileReportsScreen(1);">Profile Reports</a></li>
-		<li><a href="#" onclick="showSubscriptionReportsScreen();">Subscription Reports</a></li>
+		<li><a href="#" onclick="showSubscriptionReportsScreen();">Subscription Reports</a></li>		
 	</ul>
 </div>
 
