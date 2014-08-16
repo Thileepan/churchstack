@@ -1,5 +1,4 @@
 <?php
-
 $PATH = __DIR__."/";
 //$PATH = "./";
 @include_once($PATH."classes/class.users.php");
@@ -11,8 +10,15 @@ include_once($PATH."classes/class.sharded.php");
 include_once($PATH . 'plugins/thread/class.thread.php');
 include_once($PATH."classes/class.church.php");
 include_once($PATH."classes/class.utility.php");
+include_once($PATH."classes/class.events.php");
 
-
+/** /
+$events_obj = new Events($PATH);
+$res = $events_obj->getEventsToNotifyNow();
+echo "<pre>";
+print_r($res);
+echo "</pre>";
+/**/
 /* * /
 $util_obj  = new Utility($PATH);
 $ip_to_pass = $_SERVER["REMOTE_ADDR"];

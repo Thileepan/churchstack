@@ -343,7 +343,7 @@ class Events
 
 	public function getEventOccurrences($start_date, $end_date, $time_zone, $virtualLimit=50)
 	{
-		include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
+		include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
 
 		$event_info = array();
 		$list_all_events = false;
@@ -423,7 +423,7 @@ class Events
 		$event_date = '';
 		if(!$is_obj_initialized)
 		{
-			include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
+			include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
 
 			// Recurr Transformer Initialization
 			$type = 2;
@@ -507,8 +507,8 @@ class Events
 
 	public function getEventsToNotifyNow()
 	{
-		include_once $this->APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
-		include_once $this->APPLICATION_PATH . '/classes/class.recurr.php';
+		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
+		include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
 		
 		$time_zone = 'Asia/Calcutta';
 		$current_time = Carbon::now($time_zone);
@@ -525,7 +525,7 @@ class Events
 				//Recurr Transformer Initialization
 				$type = 2;
 				$is_obj_initialized = true;
-				$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+				$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
 				$recurr_obj->setUp($type);
 				$recurr_obj->setTimeZone($time_zone);
 				for($i=0; $i<$total_events; $i++)
@@ -591,8 +591,8 @@ class Events
 
 	public function getEventRecipients($event_id)
 	{
-		include_once $this->APPLICATION_PATH . '/classes/class.profiles.php';
-		include_once $this->APPLICATION_PATH . '/classes/class.groups.php';
+		include_once $this->APPLICATION_PATH . 'classes/class.profiles.php';
+		include_once $this->APPLICATION_PATH . 'classes/class.groups.php';
 
 		$recipient_details = array();
 		if($this->db_conn)
@@ -640,6 +640,58 @@ class Events
             }
 		}
 		return $recipient_details;
+	}
+
+	public function constructEventReminderEmailBody($event_details_arr)
+	{
+		$event_remainder = "";
+		$event_rem_template_file = $this->APPLICATION_PATH."templates/email/eventreminder.html";		
+		if(file_exists($event_rem_template_file))
+		{
+			$event_remainder = trim(file_get_contents($event_rem_template_file));
+			//Prepare the html string for event organizers
+			$organizers_row = "";
+			$single_organizer_row = "";
+			$single_organizer_comm_start = "<!--ORGANIZER_ROW_START";
+			$single_organizer_comm_end = "ORGANIZER_ROW_END-->";
+			$single_organizer_html_start_pos = strpos($event_remainder, $single_organizer_comm_start);
+			$single_organizer_html = substr($event_remainder, $single_organizer_html_start_pos+strlen($single_organizer_comm_start));
+			$single_organizer_html_end_pos = strpos($single_organizer_html, $single_organizer_comm_end);
+			$single_organizer_html = substr($single_organizer_html, 0, strlen($single_organizer_html)-(strlen($single_organizer_html) - $single_organizer_html_end_pos));
+			$single_organizer_row = $single_organizer_html;
+			for($k=0; $k < COUNT($event_details_arr["event_organizers_array"]); $k++)
+			{
+				$single_organizer_row = $single_organizer_html;
+				$single_organizer_row = str_replace("{{EVENT_ORGANIZER}}", $event_details_arr["event_organizers_array"][$k], $single_organizer_row);
+				$organizers_row .= $single_organizer_row;
+			}
+
+			//Prepare the html string for event attendees
+			$attendees_row = "";
+			$single_attendee_row = "";
+			$single_attendee_comm_start = "<!--ATTENDEE_ROW_START";
+			$single_attendee_comm_end = "ATTENDEE_ROW_END-->";
+			$single_attendee_html_start_pos = strpos($event_remainder, $single_attendee_comm_start);
+			$single_attendee_html = substr($event_remainder, $single_attendee_html_start_pos+strlen($single_attendee_comm_start));
+			$single_attendee_html_end_pos = strpos($single_attendee_html, $single_attendee_comm_end);
+			$single_attendee_html = substr($single_attendee_html, 0, strlen($single_attendee_html)-(strlen($single_attendee_html) - $single_attendee_html_end_pos));
+			$single_attendee_row = $single_attendee_html;
+			for($k=0; $k < COUNT($event_details_arr["event_attendees_array"]); $k++)
+			{
+				$single_attendee_row = $single_attendee_html;
+				$single_attendee_row = str_replace("{{EVENT_ATTENDEE}}", $event_details_arr["event_attendees_array"][$k], $single_attendee_row);
+				$attendees_row .= $single_attendee_row;
+			}
+
+			//Replacing place holder with values
+			$event_remainder = str_replace("<!--ALL_ORGANIZERS_ROWS-->", $organizers_row, $event_remainder);
+			$event_remainder = str_replace("<!--ALL_ATTENDEES_ROWS-->", $attendees_row, $event_remainder);
+			$event_remainder = str_replace("{{EVENT_TITLE}}", $event_details_arr["event_title"], $event_remainder);
+			$event_remainder = str_replace("{{EVENT_DESC}}", $event_details_arr["event_desc"], $event_remainder);
+			$event_remainder = str_replace("{{EVENT_DATE_AND_TIME}}", $event_details_arr["event_date_time"], $event_remainder);
+			$event_remainder = str_replace("{{EVENT_PLACE}}", $event_details_arr["event_place"], $event_remainder);
+		}
+		return $event_remainder;		
 	}
 }
 ?>

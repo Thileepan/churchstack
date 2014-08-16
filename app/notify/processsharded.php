@@ -20,28 +20,37 @@
 	$shardedDB = urldecode($_GET["shardedDB"]);//Exclusively for running from command line 
 	$events_obj = new Events($APPLICATION_PATH, $shardedDB);
 	$events_list = array();
-	//$events_list = $events_obj->listEventDetailsToNotifyNow();
+	$events_list = $events_obj->getEventsToNotifyNow();
 
 	/** /
 	$events_list[0] = 1;
 	$events_list[1] = array(0=>array(0=>array("1@jujukin.com","2@jujukin.com","3@jujukin.com","4@jujukin.com","5@jujukin.com","6@jujukin.com","7@jujukin.com","8@jujukin.com","9@jujukin.com","10@jujukin.com","11@jujukin.com","12@jujukin.com","13@jujukin.com","14@jujukin.com","15@jujukin.com","16@jujukin.com"), 1=>"this is the subject", 2=>"this is th ebody"), 1=>array(0=>array("nesanjoseph@gmail.com"),  1=>"this is oho subject", 2=>"this is oho ebody"));
 	/**/
 
-	if(!is_array($events_list) || (is_array($events_list) && COUNT($events_list) < 2) || $events_list[0]==0 || COUNT($events_list[1]) <= 0) {
+	if(!is_array($events_list) || (is_array($events_list) && COUNT($events_list) <= 0)) {
 		exit;
 	}
 
 	$email_sending_file = $APPLICATION_PATH."notify/sendemail.php";
 
 
-	if($events_list[0]==1)
+	if(COUNT($events_list))
 	{
 		$commands = array();
-		for($e=0; $e < COUNT($events_list[1]); $e++)
+		for($e=0; $e < COUNT($events_list); $e++)
 		{
-			$emails_count = COUNT($events_list[1][$e][0]);
-			$subject = $events_list[1][$e][1];
-			$body = $events_list[1][$e][2];
+			$emails_count = COUNT($events_list[$e]["event_email_recipients"]);
+			$carbon_obj = $events_list[$e]["event_date_time"];
+			$event_body_input_array = array();
+			$event_body_input_array["event_organizers_array"] = array($events_list[$e]["event_organizers"]);
+			$event_body_input_array["event_attendees_array"] = $events_list[$e]["event_attendees"];
+			$event_body_input_array["event_title"] = $events_list[$e]["event_title"];
+			$event_body_input_array["event_desc"] = $events_list[$e]["event_desc"];
+			$event_body_input_array["event_date_time"] = $carbon_obj->date;
+			$event_body_input_array["event_place"] = $events_list[$e]["event_place"];
+			$body = $events_obj->constructEventReminderEmailBody($event_body_input_array);
+
+			$subject = "Reminder: ".$events_list[$e]["event_title"]." @ ".$carbon_obj->date;
 			$fromAddressType = "eventreminder";
 			$comma_separated_email_list = "";
 			for($k=0; $k < $emails_count; $k++)
@@ -50,7 +59,7 @@
 				$comma_separated_email_list = "";
 				while($tmp < 150 && $k < $emails_count)
 				{
-					$curr_email = $events_list[1][$e][0][$k];
+					$curr_email = $events_list[$e]["event_email_recipients"][$k];
 					$comma_separated_email_list .= ((trim($comma_separated_email_list)=="")? $curr_email : ",".$curr_email); 
 					$tmp++;
 					$k++;
