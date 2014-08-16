@@ -4,6 +4,7 @@ if(!function_exists('validateSession'))
 {
 	function validateSession($APPLICATION_PATH)
 	{
+		include_once($APPLICATION_PATH."conf/config.php");
 		session_start();
 		//Invalid session redirector
 		if(!isset($_SESSION['session_token_1']) || $_SESSION['session_token_1'] != md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']) || !isset($_SESSION['session_token_2']) || $_SESSION['session_token_2'] != md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']))
@@ -11,7 +12,18 @@ if(!function_exists('validateSession'))
 			header('Location:'.$APPLICATION_PATH."signin.php");
 			exit;
 		}
-
+		else
+		{
+			if(isset($_SESSION['lastActivity']) && (time()-$_SESSION['lastActivity']) > IDLE_SECONDS_LOGOUT)//Checking the idle seconds
+			{
+				header('Location:'.$APPLICATION_PATH."signin.php");
+				exit;
+			}
+		}
+		
+		//Very important to reject access after a long idle hours
+		$_SESSION['lastActivity'] = time();
+		
 		if(isset($_SESSION['allowChurchUsage']) && $_SESSION['allowChurchUsage'] != 1)
 		{
 			if(isset($_SESSION['isOnTrial']))

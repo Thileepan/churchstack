@@ -63,4 +63,7 @@ define('SHOW_EVENTS_MENU', 1);
 define('SHOW_GROUPS_MENU', 1);
 define('SHOW_SETTINGS_MENU', 1);
 define('SHOW_REPORTS_MENU', 1);
+
+define('IDLE_SECONDS_LOGOUT', 3600);
+
 ?>
