@@ -37,9 +37,9 @@
 		we define 3 random numbers that will
 		eventually create our text color code (RGB)
 	*/
-	$red=rand(100,255); 
-	$green=rand(100,255);
-	$blue=rand(100,255);
+	$red=rand(125,255); 
+	$green=rand(125,255);
+	$blue=rand(125,255);
 	/*
 		in order to have different color for our text, 
 		we substract from the maximum 255 the random
@@ -50,7 +50,8 @@
 		this adds the text stored in $image_text to our 
 		capcha image
 	*/
-	$text=imagettftext($img,16,rand(-10,10),rand(10,30),rand(25,35),$text_color,"fonts/courbd.ttf",$image_text);
+	//$text=imagettftext($img,16,rand(-10,10),rand(10,30),rand(25,35),$text_color,"fonts/courbd.ttf",$image_text);
+	$text=imagettftext($img,16,rand(-7,7),rand(2,10),rand(25,30),$text_color,"fonts/courbd.ttf",$image_text);
 //	echo $img;exit;
 //	print_r($text);exit;
 	/*
