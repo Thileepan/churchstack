@@ -11,7 +11,7 @@
 	/**/
 	$message = $res[1];
 	if($res[0]==0) {
-		echo "<h2 style='font-size:17px;font-weight:bold;font-family:Arial,sans-serif;line-height:23px;margin:0 0 10px 0;color:#DF013A;'>".$message."</h2>";
+		echo "<h2 style='font-size:17px;font-weight:bold;font-family:Arial,sans-serif;line-height:23px;margin:0 0 10px 0;color:#FF0000;'>".$message."</h2>";
 	} else {
 		echo "<h2 style='font-size:17px;font-weight:bold;font-family:Arial,sans-serif;line-height:23px;margin:0 0 10px 0;color:#088A29'>".$message."</h2>";
 	}
