@@ -37,9 +37,9 @@
 		we define 3 random numbers that will
 		eventually create our text color code (RGB)
 	*/
-	$red=rand(125,255); 
-	$green=rand(125,255);
-	$blue=rand(125,255);
+	$red=rand(150,255); 
+	$green=rand(150,255);
+	$blue=rand(150,255);
 	/*
 		in order to have different color for our text, 
 		we substract from the maximum 255 the random
