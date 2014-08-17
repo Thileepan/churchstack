@@ -1,7 +1,7 @@
 <?php
 $PATH = __DIR__."/";
 //$PATH = "./";
-@include_once($PATH."classes/class.users.php");
+include_once($PATH."classes/class.users.php");
 include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
@@ -11,6 +11,17 @@ include_once($PATH . 'plugins/thread/class.thread.php');
 include_once($PATH."classes/class.church.php");
 include_once($PATH."classes/class.utility.php");
 include_once($PATH."classes/class.events.php");
+
+/** /
+error_reporting(-1);
+ini_set("display_errors", "1");
+$util = new Utility($PATH);
+$input_html = "Hellos.....";
+$target_file = "testpdf.pdf";
+$force_download = 1;
+$res = $util->downloadHTMLAsPDF($input_html, $target_file, $force_download);
+print_r($res);
+/**/
 
 /** /
 $events_obj = new Events($PATH);
