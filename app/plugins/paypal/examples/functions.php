@@ -19,9 +19,9 @@ function set_credentials() {
 	PayPal_Digital_Goods_Configuration::signature( 'your_api_signature' );
 	*/
 
-	PayPal_Digital_Goods_Configuration::username( 'digita_1308916325_biz_api1.gmail.com' );
-	PayPal_Digital_Goods_Configuration::password( '1308916362' );
-	PayPal_Digital_Goods_Configuration::signature( 'AFnwAcqRkyW0yPYgkjqTkIGqPbSfAyVFbnFAjXCRltVZFzlJyi2.HbxW' );
+	PayPal_Digital_Goods_Configuration::username( 'sktgthill-facilitator_api1.gmail.com' );
+	PayPal_Digital_Goods_Configuration::password( '1408191544' );
+	PayPal_Digital_Goods_Configuration::signature( 'AFcWxV21C7fd0v3bYYYRCpSSRl31AyiS2qsbPAQ2oNIRwagSiYeILWk2' );
 
 	PayPal_Digital_Goods_Configuration::return_url( get_script_uri( 'return.php?paypal=paid' ) );
 	PayPal_Digital_Goods_Configuration::cancel_url( get_script_uri( 'return.php?paypal=cancel' ) );
