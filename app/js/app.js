@@ -430,7 +430,12 @@ function addOrUpdateProfile(val)
 					var fieldType = fieldArr[1];
 					var fieldName = fieldArr[2];
 					var isRequired = parseInt(fieldArr[3]);
-					var fieldValue = document.getElementById(fieldID).value;
+					var fieldValue;
+					if(fieldType == 7) {
+						fieldValue = ((document.getElementById(fieldID).checked)?1:0);
+					} else {
+						fieldValue = document.getElementById(fieldID).value;
+					}					
 					
 					if(isRequired) {
 						if(fieldValue == '') {
@@ -453,13 +458,13 @@ function addOrUpdateProfile(val)
 					if(fieldType == 4) {
 						fieldValue = convertDateToDBFormat(fieldValue);
 					}
-					if(fieldValue != '') {
+					if(fieldValue != '' || fieldValue == 0) {
 						if(customFields != '') {
 							customFields += '<:|:>';
 						}
 						customFields += fieldID.split('-')[1] + "::" + fieldValue;					
-					}				
-				}			
+					}
+				}
 			}
 		}
 	}
@@ -467,6 +472,7 @@ function addOrUpdateProfile(val)
 	if(alertMsg.length > 0) {
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+		$('html,body').scrollTop(0);
 		return false;
 	}
 	
@@ -520,11 +526,9 @@ function addOrUpdateProfileResponse(response)
 		var profileID = response;
 		var alertType = 1;
 		var msgToDisplay = (isUpdate)?'Profile has been updated successfully! ':'Profile has been created successfully ';
-		msgToDisplay += '<a href="#" onclick="showProfileDetails(' + profileID +');">View Profile</a>';
+		//msgToDisplay += '<a href="#" onclick="showProfileDetails(' + profileID +');">View Profile</a>';
 		//listAllProfiles(1);
-		if(!isUpdate) {
-			getAddOrEditProfileForm(1, profileID);
-		}
+		showProfileDetails(profileID);
 	} else {
 		var alertType = 2;
 		var msgToDisplay = (isUpdate)?'Profile failed to update.':'Profile failed to create.';		

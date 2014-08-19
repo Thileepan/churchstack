@@ -154,7 +154,7 @@ class ProfileSettings
 		return $options;
 	}
 
-	public function getProfileCustomFieldDetails($profile_id)
+	public function getProfilesCustomFieldDetails($profile_id)
 	{
 		$field_details = array();
 		if($this->db_conn)
@@ -171,6 +171,30 @@ class ProfileSettings
 						$result->MoveNext();
 					}
                 }
+				$result->Close();
+            }
+		}
+		return $field_details;
+	}
+
+	public function getCustomProfileFieldDetails($field_id)
+	{
+		$field_details = array();
+		if($this->db_conn)
+		{
+			$result = $this->db_conn->Execute('select FIELD_ID, FIELD_NAME, FIELD_TYPE, FIELD_OPTIONS, FIELD_HELP_MESSAGE, IS_REQUIRED, VALIDATION, DISPLAY_ORDER from PROFILE_CUSTOM_FIELDS where FIELD_ID=?', array($field_id));
+			if($result) {
+                if(!$result->EOF) {
+					$field_id = $result->fields[0];
+					$field_value = $result->fields[1];
+					$field_type = $result->fields[2];
+					$field_options = $result->fields[3];
+					$field_help_message = $result->fields[4];
+					$is_required = $result->fields[5];
+					$validation_string = $result->fields[6];
+					$display_order = $result->fields[7];
+					$field_details = array($field_id, $field_value, $field_type, $field_options, $field_help_message, $is_required, $validation, $display_order);
+				}
 				$result->Close();
             }
 		}

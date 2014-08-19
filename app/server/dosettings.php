@@ -3,6 +3,7 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.settings.php';
 include_once $APPLICATION_PATH . '/classes/class.users.php';
+include_once $APPLICATION_PATH . '/classes/class.profiles.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -315,7 +316,7 @@ else if($req == 8)
 				$to_return .= '<tr>';
 					$to_return .= '<td>'.$field_details[$i][1].'</td>';
 					$to_return .= '<td>'.$field_type[$field_details[$i][2]].'</td>';
-					$to_return .= '<td>'.(($field_details[$i][5] == 1)?"Yes":"No").'</td>';
+					$to_return .= '<td>'.(($field_details[$i][2] == 7)?'NA':(($field_details[$i][5] == 1)?"Yes":"No")).'</td>';
 //					$to_return .= '<td>'.$field_details[$i][6].'</td>';
 					$to_return .= '<td>';
 						$to_return .= '<div class="dropdown">';
@@ -349,7 +350,7 @@ else if($req == 9)
 
 	if($is_update) {
 		$settings_obj = new ProfileSettings($APPLICATION_PATH);
-		$field_details = $settings_obj->getProfileCustomFieldDetails($field_id);
+		$field_details = $settings_obj->getCustomProfileFieldDetails($field_id);
 		$field_id = $field_details[0];
 		$field_name = $field_details[1];
 		$field_type_value = $field_details[2];
@@ -387,7 +388,7 @@ else if($req == 9)
 					}
 				$toReturn .= '</div>';
 		  $toReturn .= '</div>';
-		  $toReturn .= '<div id="divFieldOptions" class="control-group" style="display:none">';
+		  $toReturn .= '<div id="divFieldOptions" class="control-group" style="display:'.(($field_type_value == 6)?"":"none").'">';
 				$toReturn .= '<label class="control-label" for="inputFieldOptions">Field Options</label>';
 				$toReturn .= '<div class="controls">';
 					$toReturn .= '<input type="text" id="inputFieldOptions" placeholder="Field Options" value="'.$field_options.'"><BR>';
@@ -400,7 +401,7 @@ else if($req == 9)
 					$toReturn .= '<input type="text" id="inputValidationString" placeholder="Regular Expression" value="'.$validation_string.'">';
 				$toReturn .= '</div>';
 		  $toReturn .= '</div>';
-		  $toReturn .= '<div class="control-group">';
+		  $toReturn .= '<div id="divIsFieldRequired" class="control-group" style="display:'.(($field_type_value == 7)?"none":"").'">';
 				$toReturn .= '<label class="control-label" for="inputIsRequired">Is Required</label>';
 				$toReturn .= '<div class="controls">';
 					$toReturn .= '<input type="checkbox" id="inputIsRequired" '.(($is_required)?"checked":"").'>';
@@ -445,9 +446,29 @@ else if($req == 11)
 {
 	//Delete Custom Field
 	
+	$to_return = array();
 	$field_id = trim($_POST['fieldID']);
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
-	echo $settings_obj->deleteCustomField($field_id);
+
+	$profiles_obj = new Profiles($APPLICATION_PATH);
+	if(!$profiles_obj->isCustomProfileFieldUsed($field_id)) {
+		if($settings_obj->deleteCustomField($field_id)) {
+			$to_return[0] = 1;
+			$to_return[1] = 'Custom field has been deleted successfully!';
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = 'Unable to delete the custom field';
+		}
+	} else {
+		$to_return[0] = 0;
+		$to_return[1] = 'Custom field is being used in profiles. It can\'t be deleted.';
+	}
+	
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;	
 	exit;
 }
 ?>

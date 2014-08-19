@@ -485,6 +485,36 @@ class Profiles
 		return false;
 	}
 
+	public function isCustomProfileFieldsAvailable($profile_id, $field_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'select FIELD_ID from PROFILE_CUSTOM_FIELD_VALUES where PROFILE_ID=? and FIELD_ID=? limit 1';
+			$result = $this->db_conn->Execute($query, array($profile_id, $field_id));
+			if($result) {
+				if(!$result->EOF){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public function isCustomProfileFieldUsed($field_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'select FIELD_ID from PROFILE_CUSTOM_FIELD_VALUES where FIELD_ID=? limit 1';
+			$result = $this->db_conn->Execute($query, array($field_id));
+			if($result) {
+				if(!$result->EOF){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public function updateProfilePhotoLocation($profile_id, $is_family_photo, $photo_location)
 	{
 		if($this->db_conn)

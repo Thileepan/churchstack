@@ -428,6 +428,11 @@ function showOrHideFieldOptions(obj)
 	} else {
 		document.getElementById('divFieldOptions').style.display = 'none';
 	}
+	if(selectedFieldID  == 7) {
+		document.getElementById('divIsFieldRequired').style.display = 'none';
+	} else {
+		document.getElementById('divIsFieldRequired').style.display = '';
+	}
 }
 
 function addOrUpdateCustomFields(isEdit)
@@ -536,13 +541,14 @@ function deleteCustomField(fieldID)
 
 function deleteCustomFieldResponse(response)
 {
-	var resultToUI;
-	if(response == 1) {
-		resultToUI = getAlertDiv(1, 'Custom field has been deleted successfully!');
+	var dataObj = eval("(" + response + ")" );
+	var alertType = ((dataObj[0] == 0)?2:1);
+	var resultMsg = dataObj[1];
+
+	if(dataObj[0] == 1) {
 		listProfileAllCustomFields();
-	} else {
-		resultToUI = getAlertDiv(2, 'Custom field failed to delete.');
 	}
+	var resultToUI = getAlertDiv(alertType, resultMsg);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
