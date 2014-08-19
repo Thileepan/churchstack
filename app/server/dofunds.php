@@ -185,7 +185,7 @@ else if($req == 6)
 			{
 				$batch_id = $batches[$i][0];
 				$batch_name = $batches[$i][1];
-				$batch_info = '<a href="#" onclick="showBatchDetails('.$batch_id.')">'.$batch_name . '</a>';//(<a href="#">#'.$batch_id.'</a>)';
+				$batch_info = '<a href="#" onclick="showBatchDetails('.$batch_id.', \''.$batch_name.'\')">'.$batch_name . '</a>';//(<a href="#">#'.$batch_id.'</a>)';
 				$batch_desc = $batches[$i][2];
 				$batch_created_time = $batches[$i][3];
 				//$last_updated_time = $batches[$i][4];
@@ -239,8 +239,7 @@ else if($req == 7)
 			$to_return = '<span class="text-error">'.$batch_details[1].'</span>';
 			echo $to_return;
 			exit;
-		}
-		
+		}		
 	}
 
 	$to_return = '';
@@ -312,17 +311,22 @@ else if($req == 9)
 
 	$funds_obj = new Funds($APPLICATION_PATH);
 	$status = $funds_obj->deleteBatch($batch_id);
-
+	
 	echo $status;
 	exit;
 }
 else if($req == 10)
 {
+	$is_update = 0;
+	$contribution_id = 0;
+	$batch_id = trim($_POST['batchID']);
+	$batch_name = trim($_POST['batchName']);
+
 	$to_return = '';
 	$to_return .= '<div class="tabbable">';
 		$to_return .= '<ul class="nav nav-tabs">';
 			$to_return .= '<li id="summaryTab" class="active" onclick="getBatchSummary('.$batch_id.')"><a href="#summaryTab" data-toggle="tab">Summary</a></li>';
-			$to_return .= '<li id="addContributionTab" onclick="getAddOrUpdateContributionForm('.$is_update.', '.$batch_id.', '.$contribution_id.');"><a href="#addContributionTab" data-toggle="tab">Add Contribution</a></li>';
+			$to_return .= '<li id="addContributionTab" onclick="getAddOrEditContributionForm('.$is_update.', '.$batch_id.', \''.$batch_name.'\', '.$contribution_id.');"><a href="#addContributionTab" data-toggle="tab">Add Contribution</a></li>';
 			$to_return .= '<li id="listContributionTab" onclick="listAllContributions('.$batch_id.');"><a href="#listContributionTab" data-toggle="tab">List Contributions</a></li>';
 		$to_return .= '</ul>';
 		$to_return .= '<div class="tab-content">';
@@ -341,10 +345,100 @@ else if($req == 10)
 else if($req == 11)
 {
 	//get batch summary details
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span12">';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
+	exit;
 }
 else if($req == 12)
 {
 	//get add/update contribution form
+	$is_update = trim($_POST['isEdit']);
+	$batch_id = trim($_POST['batchID']);
+	$batch_name = trim($_POST['batchName']);
+	$contribution_id = trim($_POST['contributionID']);
+
+	$fund_obj = new Funds($APPLICATION_PATH);
+	
+	if($is_update) {
+		$contribution_result = $fund_obj->getContributionInformation($contribution_id);
+		if(is_array($contribution_result) && $contribution_result[0] == 1)
+		{
+			$contribution_details = $contribution_result[1];
+			$contribution_date = $contribution_details[1];
+			$batch_id = $contribution_details[2];
+			$batch_desc = $contribution_details[3];
+			$expected_amount = $contribution_details[4];
+		} else {
+			$error = true;			
+		}
+
+		if($error) {
+			$to_return = '<span class="text-error">'.$batch_details[1].'</span>';
+			echo $to_return;
+			exit;
+		}		
+	}
+
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';		
+		$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
+			$to_return .= '<div class="span6">';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label">Batch</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<span class="muted">'.$batch_name.'</span>';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputContributionDate">Date</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<input type="text" class="span10" id="inputContributionDate" placeholder="Contribution Date" value="'.$contribution_date.'">';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputTransactionType">Transaction Type</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<select class="span10" id="inputTransactionType">';
+								$to_return .= '<option value="1">Cash Gift</option>';
+								$to_return .= '<option value="2">Non-Cash Gift</option>';
+							$to_return .= '</select>';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputPaymentMode">Payment Mode</label>';
+						$to_return .= '<div class="controls">';
+							$to_return .= '<select class="span10" id="inputPaymentMode">';
+								$to_return .= '<option value="1">Cash</option>';
+								$to_return .= '<option value="2">Credit/Debit Card</option>';
+								$to_return .= '<option value="3">Check</option>';
+								$to_return .= '<option value="4">Online Payment</option>';
+							$to_return .= '</select>';
+						$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="form-actions" align="center">';
+					$to_return .= '<button class="btn btn-primary" type="submit" onclick="addOrUpdateBatch('.$is_update.');">'.(($is_update)?'Update Batch':'Add Batch').'</button>&nbsp;';
+					if(!$is_update) {
+						$to_return .= '<button class="btn" type="reset">Reset</button>';
+					}
+					$to_return .= '<input type="hidden" id="inputHiddenBatchID" value="'.$batch_id.'" />';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+			$to_return .= '<div class="span6">';
+				$to_return .= '<div class="hero-unit" style="font-size:14px;padding:40px;">';
+					$to_return .= 'Expected Amount: <span class="text-success">$10,000</span><BR>';
+					$to_return .= 'Received Amount: <span class="text-error">$10,000</span>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+		$to_return .= '</form>';		
+	$to_return .= '</div>';	
+
+	echo $to_return;
+	exit;
 }
 else if($req == 13)
 {

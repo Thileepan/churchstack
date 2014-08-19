@@ -306,7 +306,7 @@ function addOrUpdateBatchResponse(response)
 
 function deleteBatchConfirmation(batchID, batchName)
 {
-	var msgToDisplay = 'Please confirm to delete the batch \'' + batchName + '\'';
+	var msgToDisplay = 'This will delete the batch including all the contributions added to them. Please confirm to delete the batch \'' + batchName + '\'';
 	var actionTakenCallBack = "deleteBatchRequest(" + batchID + ")";
 	var actionCancelCallBack = "cancelBatchDeleteRequest()";
 	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCancelCallBack);
@@ -351,10 +351,10 @@ function deleteBatchResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function showBatchDetails(batchID)
+function showBatchDetails(batchID, batchName)
 {
 	_batchID = batchID;
-	var formPostData = 'req=10';
+	var formPostData = 'req=10&batchID=' + batchID + '&batchName=' + batchName;
 	document.getElementById('alertRow').style.display = 'none';
 
 	$.ajax({
@@ -396,26 +396,27 @@ function getBatchSummaryResponse(response)
 	document.getElementById('summaryDiv').innerHTML = response;
 }
 
-function getAddOrEditContributionForm(isUpdate)
+function getAddOrEditContributionForm(isUpdate, batchID, batchName, contributionID)
 {
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('summaryDiv').className = 'tab-pane';
 	document.getElementById('addContributionDiv').className = 'tab-pane active';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
 
-	var formPostData = 'req=12';
+	var formPostData = 'req=12&isEdit=' + isUpdate + '&batchID=' + batchID + '&batchName=' + batchName + '&contributionID=' + contributionID;
+
 	$.ajax({
 		type:'POST',
 		url:doFundsFile,
 		data:formPostData,
-		success:showBatchDetailsResponse,
+		success:getAddOrEditContributionFormResponse,
 		error:HandleAjaxError
 	});
 }
 
 function getAddOrEditContributionFormResponse(response)
 {
-	document.getElementById('summaryDiv').innerHTML = response;
+	document.getElementById('addContributionDiv').innerHTML = response;
 }
 
 function listAllContributions(batchID)

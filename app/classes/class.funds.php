@@ -178,9 +178,24 @@ class Funds
 
 	public function deleteBatch($batch_id)
 	{
+		//delete batch releated table entries first before deleting the main table.
+		if($this->deleteContributionSplitsUsingBatchID($batch_id))
+		{
+			if($this->deleteContributionUsingBatchID($batch_id))
+			{
+				if($this->deleteBatchDetails($batch_id)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private function deleteBatchDetails($batch_id)
+	{
 		if($this->db_conn)
 		{
-			$query = 'delete from BATCH_DETAILS where BATCH_ID=?';
+			$query = 'delete * from BATCH_DETAILS where BATCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($batch_id));
 			if($result) {
 				return true;
@@ -258,7 +273,7 @@ class Funds
 		return $return_data;
 	}
 
-	public function isBatchUsedInContribution($fund_id)
+	public function isBatchUsedInContribution($batch_id)
 	{
 		if($this->db_conn)
 		{
@@ -277,7 +292,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT=?, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name));
 			if($result) {
 				return true;
@@ -452,6 +467,19 @@ class Funds
 		return false;
 	}
 
+	private function deleteContributionUsingBatchID($batch_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'delete * from CONTRIBUTION_DETAILS where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function deleteContributionSplits($contribution_split_id)
 	{
 		if($this->db_conn)
@@ -463,6 +491,19 @@ class Funds
 			}
 		}
 		return false;
-	}	
+	}
+
+	private function deleteContributionSplitsUsingBatchID($batch_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'delete * from CONTRIBUTION_SPLIT_DETAILS where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 ?>
