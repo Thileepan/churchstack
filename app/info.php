@@ -14,15 +14,15 @@ include $APPLICATION_PATH."header.php";
 <script src="<?php echo $APPLICATION_PATH; ?>js/info.js"></script>
 
 <div class="page-header">
-    <h4 id="pageHeader">About Church</h4>
+    <h4 id="pageHeader">My Church</h4>
 </div>
 <div class="row-fluid">
 	<div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Church Settings</li>
-          <li id="listSalutationOptions" onclick="getChurchInformation();" class="active"><a href="#">About Church</a></li>
-		  <li><a href="#">Add Member</a></li>
-		  <li><a href="#">List Members</a></li>
+          <li id="myChurch" onclick="getChurchInformation();" class="active"><a href="#">My Church</a></li>
+		  <li id="notifications" style="display:none;"><a href="#">Notifications</a></li>
+		  <li id="billing" onclick="getBillingDetails();"><a href="#">Billing</a></li>		  
 		</ul>
     </div>
     <div class="span10">

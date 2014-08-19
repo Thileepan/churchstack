@@ -16,7 +16,7 @@ function getChurchInformationForm(isUpdate)
 
 function getChurchInformationFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "About Church";
+	document.getElementById('pageHeader').innerHTML = "My Church";
 	document.getElementById('pageContent').innerHTML = response;
 	document.getElementById('inputChurchName').focus();
 }
@@ -87,6 +87,26 @@ function getChurchInformation()
 
 function getChurchInformationResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "About Church";
+	document.getElementById('pageHeader').innerHTML = "My Church";
 	document.getElementById('pageContent').innerHTML = response;
 }
+
+function getBillingDetails()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=4';
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:getBillingDetailsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getBillingDetailsResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "Billing";
+	document.getElementById('pageContent').innerHTML = response;
+}
+

@@ -87,7 +87,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 										<li><a href="#"><i class="icon-fire"></i>&nbsp;Version</a></li>
 										<li><a href="#"><i class="icon-wrench"></i>&nbsp;Settings</a></li>
 										-->
-										<li><a href="info.php"><i class="icon-info-sign"></i>&nbsp;About Church</a></li>
+										<li><a href="info.php"><i class="icon-info-sign"></i>&nbsp;My Church</a></li>
 										<li><a href="signin.php"><i class="icon-off"></i>&nbsp;Logout</a></li>
 										<li class="divider"></li>
 										<li><a href="#">Email: help@churchstack.com</a></li>

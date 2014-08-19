@@ -162,5 +162,41 @@ else if($req == 3)
 	echo $to_return;
 	exit;
 }
+else if($req == 4)
+{
+	//get billing details
+
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span10">';
+			$to_return .= '<div class="widget">';
+				$to_return .= '<div class="widget-header" style="background-color: lightgrey;color:black;">';
+					$to_return .= '<i class="icon-asterisk icon-white"></i>';
+		//			$to_return .= '<h3>Subscriptions ['.$dt->year.'] - In Indian Rupees</h3>';
+					$to_return .= '<h3>Contributions</h3>';
+					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="widget-content">';
+					$to_return .= '<div class="stats">';
+						$to_return .= '<div class="stat">';
+							$to_return .= '<span class="stat-value">'.$current_month_amount.'</span>';
+							$to_return .= '<span class="muted">'.$current_month_in_string .','.$current_year_in_string.'</span>';
+						$to_return .= '</div>';
+						$to_return .= '<div class="stat">';
+							$to_return .= '<span class="stat-value">'.$last_month_amount.'</span>';
+							$to_return .= '<span class="muted">'.$last_month_in_string . ','.$last_year_in_string.'</span>';
+						$to_return .= '</div>';
+						$to_return .= '<div class="stat">';
+							$to_return .= '<span class="stat-value">'.$prev_month_amount.'</span>';
+							$to_return .= '<span class="muted">'.$prev_month_in_string . ','.$prev_year_in_string.'</span>';
+						$to_return .= '</div>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
+	exit;
+}
 
 ?>
