@@ -19,28 +19,38 @@ class Groups
 
 	public function addGroup($group_name, $desc)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to add the group';
+
 		if($this->db_conn)
 		{
 			$query = 'insert into GROUP_DETAILS (GROUP_NAME, DESCRIPTION) values (?, ?)';
 			$result = $this->db_conn->Execute($query, array($group_name, $desc));
 			if($result) {
-				return true;
+				$return_data[0] = 1;
+				$return_data[1] = 'Group has been added successfully';
 			}
 		}
-		return false;
+		return $return_data;
 	}
 
 	public function updateGroup($group_id, $group_name, $desc)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to update the group';
+
 		if($this->db_conn)
 		{
 			$query = 'update GROUP_DETAILS set GROUP_NAME=?, DESCRIPTION=? where GROUP_ID=?';
 			$result = $this->db_conn->Execute($query, array($group_name, $desc, $group_id));
 			if($result) {
-				return true;
+				$return_data[0] = 1;
+				$return_data[1] = 'Group has been updated successfully';
 			}
 		}
-		return false;
+		$return_data;
 	}
 
 	public function deleteGroup($group_id)
@@ -88,7 +98,10 @@ class Groups
 	
 	public function getGroupInformation($group_id)
 	{
-		$group_details = array();
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to get the group information';
+
 		if($this->db_conn)
 		{
 			$query = 'select * from GROUP_DETAILS where GROUP_ID = ?';
@@ -99,11 +112,12 @@ class Groups
 					$group_id = $result->fields[0];
 					$group_name = $result->fields[1];
 					$description = $result->fields[2];
-					$group_details = array($group_id, $group_name, $description);
+					$return_data[0] = 1;
+					$return_data[1] = array($group_id, $group_name, $description);
 				}
             }
 		}
-		return $group_details;
+		return $return_data;
 	}
 
 	public function getAllGroups()
@@ -178,6 +192,21 @@ class Groups
             }
 		}
 		return $group_members;
+	}
+
+	public function isGroupNameExists($group_name)
+	{
+		if($this->db_conn)
+		{
+			$query = 'select GROUP_NAME GROUP_DETAILS where GROUP_NAME=?';
+			$result = $this->db_conn->Execute($query, array($group_name));
+			if($result) {
+				if(!$result->EOF){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
 

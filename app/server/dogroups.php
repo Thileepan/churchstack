@@ -16,13 +16,14 @@ if($req == 1)
 	if($is_update) {
 		$group_id = trim($_POST['groupID']);
 		$groups_obj = new Groups($APPLICATION_PATH);
-		$group_details = $groups_obj->getGroupInformation($group_id);
-		if(is_array($group_details) && COUNT($group_details) > 0)
+		$group_result = $groups_obj->getGroupInformation($group_id);
+		if(is_array($group_result) && $group_result[0] == 1)
 		{
+			$group_details = $group_result[1];
 			$group_id = $group_details[0];
 			$group_name = $group_details[1];
 			$group_desc = $group_details[2];
-		}
+		}		
 	}
 
 	$to_return = '';
@@ -60,14 +61,45 @@ else if($req == 2)
 	$desc = trim($_POST['desc']);
 	$group_id = trim($_POST['groupID']);
 
+	$to_return = array();
+	$to_return[0] = 0;
+	$to_return[1] = (($is_update)?'Unable to edit the group'.$group_name:'Unable to add group'.$group_name);
+
 	$group_obj = new Groups($APPLICATION_PATH);
+	
 	if(!$is_update) {
-		$status = $group_obj->addGroup($group_name, $desc);
+		if(!$group_obj->isGroupNameExists($group_name)) {
+			$to_return = $group_obj->addGroup($group_name, $desc);
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = $group_name.' is already exists';
+		}
 	} else {
-		$status = $group_obj->updateGroup($group_id, $group_name, $desc);
+		$group_details = $group_obj->getGroupInformation($group_id);
+		if(is_array($group_details) && $group_details[0] == 1)
+		{
+			$prev_group_name = $group_details[1][1];
+			if($group_name != $prev_group_name)
+			{
+				if(!$group_obj->isGroupNameExists($group_name)) {
+					$to_return = $group_obj->updateGroup($group_id, $group_name, $desc);
+				} else {
+					$to_return[0] = 0;
+					$to_return[1] = $group_name.' is already exists';
+				}
+			}
+			else
+			{
+				$to_return = $group_obj->updateGroup($group_id, $group_name, $desc);
+			}
+		}		
 	}
 
-	echo $status;
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
 	exit;
 }
 else if($req == 3)
