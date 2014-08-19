@@ -1,5 +1,5 @@
 //global variables
-doInfoFile = 'server/doinfo.php';
+doInfoFile = 'server/doinfo';
 
 function getChurchInformationForm(isUpdate)
 {

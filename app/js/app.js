@@ -1,5 +1,5 @@
 //global variables
-serverFile = 'server/doserver.php';
+serverFile = 'server/doserver';
 
 function onChangeMaritalStatus(obj)
 {
@@ -159,7 +159,7 @@ function listAllProfiles(opt)
 		],
         "bProcessing": true,
 		"bDestroy": true,
-        "sAjaxSource": "server/doserver.php",
+        "sAjaxSource": "server/doserver",
 		"iDisplayLength":100,
         "fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {
@@ -640,7 +640,7 @@ function authenticateUser()
 
 	$.ajax({
 		type:'POST',
-		url:'server/doauth.php',
+		url:'server/doauth',
 		data:formPostData,
 		success:authenticateUserResponse,
 		error:HandleAjaxError
@@ -659,7 +659,7 @@ function authenticateUserResponse(response)
 	if(isAuthValid == 1 && allowLogin == 1) {
 		//resultToUI = getAlertDiv(1, 'Profile has been deleted successfully!');
 		//window.location.href = 'http://localhost/Profilestack';//../index.php';
-		window.location.href = 'dashboard.php';
+		window.location.href = 'dashboard';
 	} else {
 		//resultToUI = getAlertDiv(2, 'Invalid Username or Password.');
 		resultToUI = getAlertDiv(2, loginMessage);
@@ -985,7 +985,7 @@ function signUpNewAccount()
 
 	$.ajax({
 		type:'POST',
-		url:'server/doauth.php',
+		url:'server/doauth',
 		data:formPostData,
 		success:signUpNewAccountResponse,
 		error:HandleAjaxError

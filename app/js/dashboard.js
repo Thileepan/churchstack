@@ -1,5 +1,5 @@
 //global variables
-doDashboardFile = 'server/dodashboard.php';
+doDashboardFile = 'server/dodashboard';
 
 function getDashboardData(option)
 {

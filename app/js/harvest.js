@@ -1,5 +1,5 @@
 //global variables
-doHarvestFile = 'server/doharvest.php';
+doHarvestFile = 'server/doharvest';
 
 function getHarvestForm(val, harID, profileID)
 {

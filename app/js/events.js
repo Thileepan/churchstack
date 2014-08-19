@@ -1,5 +1,5 @@
 //global variables
-doEventFile = 'server/doevents.php';
+doEventFile = 'server/doevents';
 
 function showMonthlyCalendar(reqFrom)
 {
@@ -17,10 +17,10 @@ function showMonthlyCalendar(reqFrom)
 	$('#calendarView').fullCalendar({
 		// put your options and callbacks here
 		//events: eval("(" + response + ")" )
-		//events: 'server/doevents.php?req=1'
+		//events: 'server/doevents?req=1'
 
 		events: {
-			url: 'server/doevents.php',
+			url: 'server/doevents',
 			type: 'POST',
 			data: {
 				req: 1,

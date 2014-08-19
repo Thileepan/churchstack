@@ -13,7 +13,7 @@
 	$pwd_reset_key = @base64_decode($key2);
 	$valididy_result = $users_obj->verifyPasswordResetURLValidity($email, $pwd_reset_key);
 	if($valididy_result[0] != 1) {
-		@require $APPLICATION_PATH.'error/404.php';
+		@require $APPLICATION_PATH.'error/404';
 		exit;
 	}
 ?>

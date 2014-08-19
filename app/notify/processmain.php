@@ -4,7 +4,7 @@
 	
 	//print_r( $_SERVER)."--";exit;
 	if(trim($_SERVER['DOCUMENT_ROOT']) != "") {
-		@require $APPLICATION_PATH.'error/404.php';
+		@require $APPLICATION_PATH.'error/404';
 		exit;
 	}
 

@@ -140,7 +140,7 @@ else if($req == 2)
 	$total_custom_fields = COUNT($field_details);
 
 	$toReturn = '';
-	$toReturn .= '<form id="profileForm" class="form-horizontal" action="server/doserver.php" method="post" enctype="multipart/form-data" onsubmit="return false;">'; 
+	$toReturn .= '<form id="profileForm" class="form-horizontal" action="server/doserver" method="post" enctype="multipart/form-data" onsubmit="return false;">'; 
 				$toReturn .= '<div class="row-fluid">';
 					$toReturn .= '<div class="span6">';
 					  $toReturn .= '<p class="text-left text-info"><b>Personal Information</b></p>';
@@ -613,7 +613,7 @@ else if($req == 2)
 	echo $toReturn;
 	exit;
 }
-//Request 3 to 5 are moved to dosettings.php
+//Request 3 to 5 are moved to dosettings
 else if($req == 6)
 {
 	//Add or Update Profile
@@ -706,7 +706,7 @@ else if($req == 7)
 }
 else if($req == 8)
 {
-	//Delete User - Moved to dosettings.php file
+	//Delete User - Moved to dosettings file
 /*	
 	$user_id = trim($_POST['user']);
 	$users_obj = new Users($APPLICATION_PATH);
@@ -826,7 +826,7 @@ else if($req == 11)
 				$to_return .= '<div class="span4">';
 					$to_return .= '<img id="imgPreviewFamilyPhoto" src="'.(($profile_photo_path != '')?substr($profile_photo_path, 3):'images/photo_rounded.png').'" class="img-rounded" width="140" height="140">';
 					$to_return .= '<BR>';
-					$to_return .= '<form id="profilePhotoForm" action="server/doserver.php?req=15" method="post" enctype="multipart/form-data">';
+					$to_return .= '<form id="profilePhotoForm" action="server/doserver?req=15" method="post" enctype="multipart/form-data">';
 					$to_return .= '<input type="file" id="profilePhotoPath" name="profilePhotoPath" style="visibility: hidden; width: 1px; height: 1px" multiple /><a href="" onclick="document.getElementById(\'profilePhotoPath\').click(); return false">'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</a>';
 					$to_return .= '<input type="hidden" name="profileID" id="profileID" value="'.$profile_id.'" /><BR>';
 					$to_return .= '<span id="spanImportBtn"><button class="btn btn-success btn-small" type="submit">Upload</button></span>';
@@ -1029,10 +1029,10 @@ else if($req == 12)
 
 	$to_return .= '<div class="row-fluid" style="height:100px;">';
 		$to_return .= '<div class="span12">';
-			$to_return .= '<form id="myForm" action="import.php" method="post" enctype="multipart/form-data">';
+			$to_return .= '<form id="myForm" action="import" method="post" enctype="multipart/form-data">';
 //				$to_return .= '<fieldset>';
 //					$to_return .= '<legend>Import Your Profiles</legend>';
-					$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Please make sure you have added the profiles related <a href="settings.php"><u>settings</u></a> before you import the profiles from here. Also, please note that Profilestack currently supports only *.xlxs format and more formats will be supported in future releases.</div>';
+					$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Please make sure you have added the profiles related <a href="settings"><u>settings</u></a> before you import the profiles from here. Also, please note that Profilestack currently supports only *.xlxs format and more formats will be supported in future releases.</div>';
 					$to_return .= '<div>';						
 						$to_return .= '<div class="input-append span12">';
 							$to_return .= '<input type="text" id="inputImportFilePath" placeholder="Browse your *.xlsx file" class="span4"/>';

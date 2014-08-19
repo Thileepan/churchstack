@@ -3,7 +3,7 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.events.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';
-include_once $APPLICATION_PATH . '/classes/class.groups.php';
+include_once $APPLICATION_PATH . '/classes/class.groups';
 include_once $APPLICATION_PATH . '/classes/class.recurr.php';
 
 //process request

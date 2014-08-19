@@ -1,5 +1,5 @@
 //global variables
-doSettingsFile = 'server/dosettings.php';
+doSettingsFile = 'server/dosettings';
 
 function listProfileOptions(opt)
 {

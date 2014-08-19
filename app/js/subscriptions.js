@@ -1,5 +1,5 @@
 //global variables
-doSubscribeFile = 'server/dosubscribe.php';
+doSubscribeFile = 'server/dosubscribe';
 
 /* Formating function for row details */
 function showSubscriptionDetails ( subscriptionID )

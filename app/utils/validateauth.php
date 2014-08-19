@@ -9,14 +9,14 @@ if(!function_exists('validateSession'))
 		//Invalid session redirector
 		if(!isset($_SESSION['session_token_1']) || $_SESSION['session_token_1'] != md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']) || !isset($_SESSION['session_token_2']) || $_SESSION['session_token_2'] != md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']))
 		{
-			header('Location:'.$APPLICATION_PATH."signin.php");
+			header('Location:'.$APPLICATION_PATH."signin");
 			exit;
 		}
 		else
 		{
 			if(isset($_SESSION['lastActivity']) && (time()-$_SESSION['lastActivity']) > IDLE_SECONDS_LOGOUT)//Checking the idle seconds
 			{
-				header('Location:'.$APPLICATION_PATH."signin.php");
+				header('Location:'.$APPLICATION_PATH."signin");
 				exit;
 			}
 		}
@@ -34,12 +34,12 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['trialExpiryTimestamp'] < time())
 						{
-							header('Location:'.$APPLICATION_PATH."purchase/subscribe.php");
+							header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 						}
 					}
 					else
 					{
-						header('Location:'.$APPLICATION_PATH."purchase/subscribe.php");
+						header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 						//payment page
 					}
 				}
@@ -49,18 +49,18 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['licenseExpiryTimestamp'] < time())
 						{
-							header('Location:'.$APPLICATION_PATH."purchase/subscribe.php");
+							header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 						}
 					}
 					else
 					{
-						header('Location:'.$APPLICATION_PATH."purchase/subscribe.php");
+						header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 					}
 				}
 			}
 			else
 			{
-				header('Location:'.$APPLICATION_PATH."purchase/subscribe.php");
+				header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 			}
 		}
 	}
@@ -72,7 +72,7 @@ if(!function_exists('logOut'))
 	{
 		@include_once($APPLICATION_PATH."utils/utilfunctions.php");
 		clearSession($APPLICATION_PATH);
-		header('Location:'.$APPLICATION_PATH."signin.php");
+		header('Location:'.$APPLICATION_PATH."signin");
 		exit;
 	}
 }

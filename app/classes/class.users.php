@@ -409,7 +409,7 @@ class Users
 						if($last_character != "/") {
 							$pwd_reset_url .= "/";
 						}
-						$pwd_reset_url .= "user/resetpwd.php?key1=".$key_1."&key2=".$key_2;
+						$pwd_reset_url .= "user/resetpwd?key1=".$key_1."&key2=".$key_2;
 
 						$query_2 = 'update USER_DETAILS set PASSWORD_RESET_HASH=?, PASSWORD_RESET_EXPIRY=? where EMAIL=?';
 						$result_2 = $this->db_conn->Execute($query_2, array($hash_to_store, $pwd_rst_expiry_time, $email));

@@ -5,12 +5,12 @@
 session_start();
 if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESSION['password']) || $_SESSION['password'] == '')
 {
-	header('Location: signin.php');
+	header('Location: signin');
 	exit;
 }
 /**/
 $APPLICATION_PATH = "./";
-include $APPLICATION_PATH."header.php";
+include $APPLICATION_PATH."header";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/dashboard.js"></script>
 <script src="<?php echo $APPLICATION_PATH; ?>js/events.js"></script>
@@ -33,7 +33,7 @@ include $APPLICATION_PATH."header.php";
     </div>
 </div>
 <?php
-include "footer.php";
+include "footer";
 ?>
 <script type='text/javascript'>
 	menuLinkClicked(6);

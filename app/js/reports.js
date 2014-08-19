@@ -1,5 +1,5 @@
 //global variables
-doReportsFile = 'server/doreports.php';
+doReportsFile = 'server/doreports';
 
 function showProfileReportsScreen(reqFrom)
 {
@@ -548,13 +548,13 @@ function performSubscriptionSearch()
 
 function resetSubscriptionSearchForm()
 {
-	//window.location.href = "reports.php";
+	//window.location.href = "reports";
 	showSubscriptionReportsScreen();
 }
 
 function resetSearchForm()
 {
-	//window.location.href = "reports.php";
+	//window.location.href = "reports";
 	var reqFrom = 1;
 	showProfileReportsScreen();
 }

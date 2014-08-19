@@ -1,5 +1,5 @@
 //global variables
-doUsers = '../server/dousers.php';
+doUsers = '../server/dousers';
 
 function forgotPassword(type)
 {

@@ -1,5 +1,5 @@
 //global variables
-doFundsFile = 'server/dofunds.php';
+doFundsFile = 'server/dofunds';
 
 function listAllFunds()
 {
@@ -21,7 +21,7 @@ function listAllFunds()
 		],*/
         "bProcessing": true,
 		"bDestroy": true,
-        "sAjaxSource": "server/dofunds.php",
+        "sAjaxSource": "server/dofunds",
 		"iDisplayLength":100,
         "fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {
@@ -211,7 +211,7 @@ function listAllBatches()
 		],*/
         "bProcessing": true,
 		"bDestroy": true,
-        "sAjaxSource": "server/dofunds.php",
+        "sAjaxSource": "server/dofunds",
 		"iDisplayLength":100,
         "fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {

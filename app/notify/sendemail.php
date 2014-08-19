@@ -3,7 +3,7 @@
 	$APPLICATION_PATH = str_replace("\\", "/", $APPLICATION_PATH);
 	
 	if(trim($_SERVER['DOCUMENT_ROOT']) != "") {
-		@require $APPLICATION_PATH.'error/404.php';
+		@require $APPLICATION_PATH.'error/404';
 		exit;
 	}
 

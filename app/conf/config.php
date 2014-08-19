@@ -3,7 +3,7 @@ session_start();
 @include_once $APPLICATION_PATH .'classes/class.system.php';
 if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] == "/conf/config.php") {
 	$APPLICATION_PATH = "../";
-	@require $APPLICATION_PATH.'error/404.php';
+	@require $APPLICATION_PATH.'error/404';
 	exit;
 }
 //app configurations
@@ -13,7 +13,7 @@ define('PRODUCT_NAME', 'ChurchStack');
 define('PRODUCT_WEBSITE', 'http://www.ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
 define('REFERRAL_PROGRAM_URL', 'http://www.churchstack.com/ref/referralpg.html');
-define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd.php');
+define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd');
 define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 
 //mysql database information

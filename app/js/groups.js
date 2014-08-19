@@ -1,5 +1,5 @@
 //global variables
-doGroupFile = 'server/dogroups.php';
+doGroupFile = 'server/dogroups';
 
 function getAddOrEditGroupForm(isEdit, groupID)
 {
