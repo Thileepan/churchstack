@@ -1,4 +1,6 @@
 <?php
+	$APPLICATION_PATH = "../";
+	include_once($APPLICATION_PATH."conf/config.php");
 	function getHTTPResponseCode($code = NULL)
 	{
 		$toReturn = "";
@@ -67,7 +69,7 @@
 			}
 
 			$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
-			$toReturn = $protocol . ' ' . $code . ' ' . $text;
+			$toReturn = $code . ' ' . $text;
 			header($protocol . ' ' . $code . ' ' . $text);
 		}
 		return $toReturn;
@@ -79,5 +81,88 @@
 	}
 
 	$mesgToShow = getHTTPResponseCode($errorCode);
-	echo "<h2>".$mesgToShow."</h2>";
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <title>Error Page</title>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+	<!-- Javascript -->
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+</head>
+<body>
+<!-- Header -->
+<div class="error" style="border-bottom: 17px solid #f0261d;">
+	<div class="container">
+		<div class="header row">
+			<div class="logo">
+				<div class="tilt pic">
+					<h1 style='color: #FFFFFF; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 500; line-height: 1.1;font-size: 70px;padding-bottom: 40px;'>Error : <?php echo $mesgToShow; ?></h1>
+					<!-- img src="img/logo.png"  alt=""/ -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Coming Soon -->
+	<div class="banner">
+		<div class="inner-bg">
+			<div class="container">
+				<div class="row">
+					<div class="span12">
+						<h2>Oops! We've got a problem!!</h2>
+						<p>Go back, or <a href="<?php echo CS_LOGIN_WEBSITE; ?>" target="_parent"> click here</a> to start again and choose a new page.</p>
+						<div>And we will be more than happy if you report any broken links to our support team!</div>
+					</div>
+				</div>
+			</div>
+			<!-- Additional search options -- >
+			<div class="container">
+				<div class="row">
+					<div class="span12 subscribe">
+						<h3>As always we are offering you solutions</h3>
+						<p><span class="line3"></span></p>
+						<form class="form-inline" method="post">
+							<input type="text" name="email" placeholder="search on site">
+							<button type="submit" class="btn">Search</button>
+						</form>
+						<div class="success-message"></div>
+						<div class="error-message"></div>
+					</div>
+				</div>
+			</div>
+			<!-- Additional search options -->
+		</div>
+	</div>
+	<!-- Content -- >
+	<div class="banner1">
+		<div class="container">
+			<div class="row">
+				<div class="span6 footer_menu">
+					<ul class="footer_menu">
+						<li><a href="#">Home</a></li>
+						<li><a href="#">About</a></li>
+						<li><a href="#">Portfolio</a></li>
+						<li><a href="#">News</a></li>
+						<li><a href="#">Contact us</a></li>
+					</ul>
+				</div>
+				<div class="span6 social">
+					<a href="#" class="facebook" data-placement="top" data-original-title="Facebook"></a>
+					<a href="#" class="twitter" data-placement="top" data-original-title="Twitter"></a>           						<a href="#" class="googleplus" data-placement="top" data-original-title="Google Plus"></a>
+					<a href="#" class="rss" data-placement="top" data-original-title="Rss"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Content Above -->
+</div>
+</body>
+</html>
