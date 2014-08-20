@@ -62,25 +62,33 @@ class Users
 
 	public function getUserInformation($user_id)
 	{
-		$user_info = array();
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "The user ID specified is not found in the system";
 		if($this->db_conn)
 		{
-		   $query = 'select * from USER_DETAILS where USER_ID=?';
+		   $query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where USER_ID=? limit 1';
 		   $result = $this->db_conn->Execute($query, array($user_id));
             
            if($result) {
                 if(!$result->EOF) {
+					$user_info = array();
 					$user_id = $result->fields[0];
 					$church_id = $result->fields[1];
 					$user_name = $result->fields[2];
-					$role_id = $result->fields[3];
-					$password = $result->fields[4];
-					$user_status = $result->fields[5];
-					$user_info = array($user_id, $church_id, $user_name, $role_id, $password, $user_status);
+					$email = $result->fields[3];
+					$role_id = $result->fields[4];
+					$unique_hash = $result->fields[5];
+					$pwd_reset_hash = $result->fields[6];
+					$pwd_reset_expiry = $result->fields[7];
+					$status = $result->fields[8];
+					$user_info = array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $pwd_reset_hash, $pwd_reset_expiry, $status);
+					$to_return[0] = 1;
+					$to_return[1] = $user_info;
 				}
             }
         }
-		return $user_info;
+		return $to_return;
 	}
 
 	public function getUserInformationUsingName($user_name)

@@ -23,6 +23,14 @@ if(!function_exists('validateSession'))
 		
 		//Very important to reject access after a long idle hours
 		$_SESSION['lastActivity'] = time();
+
+		//Very Important to refresh the session data after some specified time period
+		if(isset($_SESSION['lastFreshSessionUpdatedTime']) && (time()-$_SESSION['lastFreshSessionUpdatedTime']) > SESSION_DATA_REFRESH_SECONDS)
+		{
+			include_once($APPLICATION_PATH."classes/class.utility.php");
+			$util_obj = new Utility($APPLICATION_PATH);
+			$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
+		}
 		
 		if(isset($_SESSION['allowChurchUsage']) && $_SESSION['allowChurchUsage'] != 1)
 		{

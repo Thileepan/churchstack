@@ -1,10 +1,11 @@
 <?php
 $APPLICATION_PATH = "../";
 include $APPLICATION_PATH.'utils/JSON.php';
-include_once $APPLICATION_PATH . '/classes/class.users.php';
-include_once $APPLICATION_PATH . '/classes/class.church.php';
-include_once $APPLICATION_PATH . '/classes/class.license.php';
+include_once $APPLICATION_PATH . 'classes/class.users.php';
+include_once $APPLICATION_PATH . 'classes/class.church.php';
+include_once $APPLICATION_PATH . 'classes/class.license.php';
 include_once($APPLICATION_PATH . 'classes/class.profiles.php');
+include_once($APPLICATION_PATH . 'classes/class.utility.php');
 //include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
@@ -28,8 +29,19 @@ if($req == 'authenticate')
 		//$user_details = $users_obj->getUserInformationUsingName($user_name);
 
 		session_start();
-		$_SESSION['userID'] = $login_result[2][0];
+		$user_id = $login_result[2][0];
 		$church_id = $login_result[2][1];
+		$is_auth_valid = 1;
+		$login_message = $login_result[1];
+		$status_num = $login_result[2][6];
+		$allow_login = (($status_num==1)? 1 : 0);//NOTE: We may have to work on this part to show various messages and permissions.
+
+		//Session ALL session variables using a single function. USE ONLY THIS FUNCTION TO SET FRESH SESSION VALUES
+		$util_obj = new Utility($APPLICATION_PATH);
+		$util_obj->setFreshSessionData($user_id, $church_id);
+
+		/* All of the stuff below are done by setFreshSessionData()  itself* /
+
 		$_SESSION['churchID'] = $church_id;
 		$_SESSION['username'] = $login_result[2][2];
 		$_SESSION['email'] = $login_result[2][3];
@@ -100,6 +112,7 @@ if($req == 'authenticate')
 			$profiles_obj = new Profiles($APPLICATION_PATH);
 			$_SESSION["churchCurrentActiveProfilesCount"] = $profiles_obj->getProfilesCount(1, 0);//List All Active Profiles
 		}
+		/* All of the stuff below are done by setFreshSessionData()  itself*/
 	} else {
 		$is_auth_valid = 0;
 		$login_message = $login_result[1];
