@@ -41,7 +41,7 @@ class License
 	{
 		$this->church_id = $church_id;
 		if($this->email_id == "" || $this->user_id <= 0) {
-			$query = 'select USER_ID, EMAIL from USER_DETAILS where CHURCH_ID=? limit 1';
+			$query = 'select USER_ID, EMAIL from USER_DETAILS where CHURCH_ID=? and ROLE_ID=1 limit 1';
 			$result = $this->db_conn->Execute($query, array($church_id));
 			if($result) {
 				if(!$result->EOF) {
@@ -200,6 +200,8 @@ class License
 
 			$lic_expiry_date_to_set = $previous_expiry_date+$validity_in_seconds;
 
+			$to_return[3] = array($lic_expiry_date_to_set);
+
 			//Recalculating the license expiry date for referral cases
 			$referral_bonus_seconds = 30*24*60*60;//30 days
 			$is_referral_valid = 0;
@@ -244,6 +246,14 @@ class License
 					$referrer_church_name = $subs_extension_result[3];
 					$to_return[2] = array($this->church_id, $referral_church_name, $referral_new_validity, $referrer_church_id, $referrer_church_name, $referrer_new_validity);
 				}
+				else
+				{
+					$to_return[2] = array();
+				}
+			}
+			else
+			{
+				$to_return[2] = array();
 			}
 		}
 		return $to_return;
@@ -501,6 +511,8 @@ class License
 					$inv_rep_result = $this->getInvoiceReportFromUniqueHash($unique_hash);
 					if($inv_rep_result[0]==1)
 					{
+						$is_subscription_purchase_done = 0;
+						$new_license_extra_details = array();
 						$invoice_id = $inv_rep_result[1][0];
 						$invoiced_items = $this->getInvoicedItemsList($invoice_id);
 						if($invoiced_items[0]==1) {//Success case
@@ -540,6 +552,12 @@ class License
 									if(COUNT($apply_lic_result) > 2) {
 										$referral_stuff = $apply_lic_result[2];
 									}
+
+									if($plan_type==1 && COUNT($apply_lic_result) > 3) {
+										$is_subscription_purchase_done = 1;
+										$new_license_extra_details["new_validity_timestamp"] = $apply_lic_result[3][0];
+										$new_license_extra_details["auto_renewal_status"] = $invoiced_items[1][$p][11];
+									}
 								}
 							}
 
@@ -558,6 +576,21 @@ class License
 							$invoice_rep_email_content =  $this->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
 							$fromAddressType = "sales";
 							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType;
+
+							if($is_subscription_purchase_done==1) {
+								$thankyou_church_id = $inv_rep_result[1][5];
+								$thankyou_church_name = $inv_rep_result[1][6];
+								$thankyou_recipient_email = $inv_rep_result[1][8];
+								$thankyou_details = array();
+								$thankyou_details["new_validity"] = date("d M Y", $new_license_extra_details["new_validity_timestamp"]);
+								$thankyou_details["church_name"] = $thankyou_church_name;
+								$thankyou_details["auto_debit_status"] = (($new_license_extra_details["auto_renewal_status"]==1)?"Yes":"No");
+								$thankyou_details["customer_email"] = $thankyou_recipient_email;
+								$thankyou_details["amount_paid"] = $inv_rep_result[1][13]." ".$inv_rep_result[1][24];
+								$thankyou_mail_content = $this->sendSubscriptionThankYouEmail($thankyou_details, 1);
+								$fromAddressType = "sales";
+								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($thankyou_mail_content[1][0]).' subject='.urlencode($thankyou_mail_content[1][1]).' emailBody='.urlencode($thankyou_mail_content[1][2]).' fromAddressType='.$fromAddressType;
+							}
 
 							if(COUNT($referral_stuff) > 0)
 							{
@@ -1546,6 +1579,63 @@ class License
 		} else {
 			$to_return[0] = 0;
 			$to_return[1] = "Unable to send referrer rewards email to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
+	}
+
+	public function sendSubscriptionThankYouEmail($user_details, $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$thankyou_template_file = $this->APPLICATION_PATH."templates/email/paidthankyou.html";
+		$thankyou_letter = "";
+		if(file_exists($thankyou_template_file))
+		{
+			$thankyou_letter = trim(file_get_contents($thankyou_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the referral program email";
+		}
+
+		//Replacing place holder with values
+		$thankyou_letter = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $thankyou_letter);
+		$thankyou_letter = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $thankyou_letter);
+		$thankyou_letter = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $thankyou_letter);
+		$thankyou_letter = str_replace("{{NEW_VALIDITY}}", $user_details["new_validity"], $thankyou_letter);
+		$thankyou_letter = str_replace("{{CHURCH_NAME}}", $user_details["church_name"], $thankyou_letter);
+		$thankyou_letter = str_replace("{{AUTO_DEBIT_STATUS}}", $user_details["auto_debit_status"], $thankyou_letter);
+		$thankyou_letter = str_replace("{{AMOUNT_PAID}}", $user_details["amount_paid"], $thankyou_letter);
+
+		$subject = "Thank You for upgrading/renewing your ".PRODUCT_NAME."'s account";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = $user_details["customer_email"];
+			$contents_array[1] = $subject;
+			$contents_array[2] = $thankyou_letter;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
+		$recipients = array();
+		$recipients['to_address'] = $user_details["customer_email"];
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($thankyou_letter);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Thank you email sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send thank you email to the specified email address. ".$email_result[1];
 		}
 		return $to_return;
 	}
