@@ -4,15 +4,19 @@ jQuery(document).ready(function() {
     /*
         Background slideshow
     */
+	/* NESAN COMMENTED THIS; USE THIS IF NEEDED* /
     $('.coming-soon').backstretch([
       "img/backgrounds/1.jpg"
     , "img/backgrounds/2.jpg"
     , "img/backgrounds/3.jpg"
     ], {duration: 3000, fade: 750});
+	/**/
 
     /*
         Countdown initializer
     */
+
+	/* NESAN COMMENTED THIS; USE THIS IF NEEDED* /
     var now = new Date();
     var countTo = 25 * 24 * 60 * 60 * 1000 + now.valueOf();
     $('.timer').countdown(countTo, function(event) {
@@ -31,6 +35,7 @@ jQuery(document).ready(function() {
                 break;
         }
     });
+	/**/
 
     /*
         Tooltips

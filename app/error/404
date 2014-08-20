@@ -1,6 +1,8 @@
 <?php
-	$APPLICATION_PATH = "../";
+	$CURRENT_DIR = __DIR__;
+	$APPLICATION_PATH = __DIR__."/../";
 	include_once($APPLICATION_PATH."conf/config.php");
+	//include_once("../conf/config.php");
 	function getHTTPResponseCode($code = NULL)
 	{
 		$toReturn = "";
@@ -91,12 +93,12 @@
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/error/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/error/css/style.css">
 	<!-- Javascript -->
-    <script src="js/jquery-1.8.2.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/scripts.js"></script>
+    <script src="/error/js/jquery-1.8.2.min.js"></script>
+    <script src="/error/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/error/js/scripts.js"></script>
 </head>
 <body>
 <!-- Header -->
