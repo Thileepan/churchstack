@@ -16,6 +16,9 @@
 		@require $APPLICATION_PATH.'error/404';
 		exit;
 	}
+
+	//Very Important to avoid cross-domain attacks
+	regenerateGlobalSessionSecurityTokens();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,6 +63,7 @@
 								</div>
 								<div class="controls" id="newPwdText" style="display:;">
 									<input type="password" id="txtPassword" class="span12" name="txtPassword" placeholder="New Password" value="" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(2)}">
+									<input type="hidden" id="globalSessionSecToken" name="globalSessionSecToken" value="<?php echo $_SESSION["globalSessionSecurityToken"]; ?>">
 								</div>
 								<div class="controls" id="reenterPwdText" style="display:;">
 									<input type="password" id="txtConfirmPassword" class="span12" name="txtConfirmPassword" placeholder="Repeat New Password" value="" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return changePassword(2)}">

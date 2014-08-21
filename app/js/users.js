@@ -44,6 +44,7 @@ function forgotPassword(type)
 		formPostData += "&type="+type;
 		formPostData += "&email="+document.getElementById("txtEmail").value;
 		formPostData += "&pwd="+document.getElementById("txtPassword").value;
+		formPostData += "&globalSSToken="+document.getElementById("globalSessionSecToken").value;
 	}
 	$.ajax({
 		type:'POST',

@@ -1,6 +1,10 @@
 <?php
 
 $APPLICATION_PATH = "../";
+
+//This files secures the action being triggered by cross-domain attacks
+include $APPLICATION_PATH."utils/validateauth.php";
+
 include $APPLICATION_PATH.'utils/JSON.php';
 include $APPLICATION_PATH.'utils/utilfunctions.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';

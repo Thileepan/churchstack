@@ -42,4 +42,10 @@ function clearSession($APPLICATION_PATH)
 	session_destroy();
 }
 
+function regenerateGlobalSessionSecurityTokens()
+{
+	$_SESSION["globalSessionSecuritySalt-1"] = md5(time().(time()+(rand(1, 1000))).rand(1,100000));
+	$_SESSION["globalSessionSecuritySalt-2"] = md5(time()/(time()-(rand(1, 1000))).rand(1,100000));
+	$_SESSION["globalSessionSecurityToken"] = strtoupper(md5(md5($_SESSION["globalSessionSecuritySalt-1"]).md5($_SESSION["globalSessionSecuritySalt-1"])));
+}
 ?>

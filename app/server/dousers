@@ -3,10 +3,11 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH.'utils/JSON.php';
 include $APPLICATION_PATH.'utils/utilfunctions.php';
 include_once $APPLICATION_PATH . 'classes/class.users.php';
+session_start();
 
 //process request
 $req = $_REQUEST['req'];
-if($req == 1)
+if($req == 1)//Forgot Password feature : Send mail
 {
 	$email = trim($_REQUEST['email']);
 	$type = trim($_REQUEST['type']);
@@ -22,16 +23,26 @@ if($req == 1)
 	echo $encode_obj;
 	exit;
 }
-else if($req == 2)
+else if($req == 2)//Forgot Password feature : Change Password through one-time use page
 {
-	$email = trim($_REQUEST['email']);
-	$type = trim($_REQUEST['type']);
-	$password = md5(trim($_REQUEST['pwd']));
-	$users_obj = new Users($APPLICATION_PATH);
-	$result_data = $users_obj->changeUserPassword($email, $password, 1);
-	$rsno = $result_data[0];
-	$msg = $result_data[1];
-	$to_return = array("type"=>$type, "rsno"=>$rsno, "msg"=>$msg);
+	if(isset($_SESSION["globalSessionSecurityToken"]) && trim($_SESSION["globalSessionSecurityToken"]) == trim($_POST["globalSSToken"]))
+	{
+		$email = trim($_REQUEST['email']);
+		$type = trim($_REQUEST['type']);
+		$password = md5(trim($_REQUEST['pwd']));
+		$users_obj = new Users($APPLICATION_PATH);
+		$result_data = $users_obj->changeUserPassword($email, $password, 1);
+		$rsno = $result_data[0];
+		$msg = $result_data[1];
+		$to_return = array("type"=>$type, "rsno"=>$rsno, "msg"=>$msg);
+	}
+	else
+	{
+		$type = trim($_REQUEST['type']);
+		$rsno = 0;//Failure
+		$msg = "Unauthorized entry detected";
+		$to_return = array("type"=>$type, "rsno"=>$rsno, "msg"=>$msg);
+	}
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);
