@@ -47,6 +47,8 @@ define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
 define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
 define('SALES_EMAIL', 'sales@churchstack.com');
+define('INVOICE_COPY_TO_ADDRESS', 'help@churchstack.com');
+define('NEW_SIGNUP_COPY_TO_ADDRESS', 'help@churchstack.com');
 
 if (System::getOS() == 2) {
     define('PHP_EXE_PATH', 'C:/Program Files (x86)/php/php.exe');

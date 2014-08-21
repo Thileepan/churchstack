@@ -25,6 +25,8 @@
 	{
 		$emails_list_array = explode(",", $emails_list_csv);
 	}
+	$cc_email_list_csv = urldecode($_GET["csvCCEmails"]);
+	$bcc_email_list_csv = urldecode($_GET["csvBCCEmails"]);
 	$subject = urldecode($_GET["subject"]);
 	$body = urldecode($_GET["emailBody"]);
 	$from_addr_type = $_GET["fromAddressType"];
@@ -47,6 +49,8 @@
 	{
 		$recipients = array();
 		$recipients['to_address'] = $emails_list_array[$e];
+		$recipients['cc_address'] = $cc_email_list_csv;
+		$recipients['bcc_address'] = $bcc_email_list_csv;
 		$email_obj->setRecipients($recipients);
 		$email_result = $email_obj->sendEmail();
 		//echo $email_result[1];

@@ -575,7 +575,7 @@ class License
 
 							$invoice_rep_email_content =  $this->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
 							$fromAddressType = "sales";
-							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType;
+							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(INVOICE_COPY_TO_ADDRESS);
 
 							if($is_subscription_purchase_done==1) {
 								$thankyou_church_id = $inv_rep_result[1][5];

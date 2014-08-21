@@ -100,10 +100,39 @@ class Email
 
 		$mail->From = $this->from_address;
 		$mail->FromName = $this->from_name;
-		$mail->addAddress($this->to_address);	// Add a recipient; Name is optional
+
+		//Adding To Addresses
+		$to_addr_array = array();
+		if(trim($this->to_address) != "") {
+			$to_addr_array = explode(",", trim($this->to_address));
+			for($t=0; $t < COUNT($to_addr_array); $t++)
+			{
+				$mail->addAddress($to_addr_array[$t]);	// Add a recipient; Name is optional
+			}
+		}
+
+		//Adding Reply-To Address
 		$mail->addReplyTo($this->reply_to_address, $this->reply_to_name);
-		$mail->addCC($this->cc_address);
-		$mail->addBCC($this->bcc_address);
+
+		//Adding CC Addresses
+		$cc_addr_array = array();
+		if(trim($this->cc_address) != "") {
+			$cc_addr_array = explode(",", trim($this->cc_address));
+			for($c=0; $c < COUNT($cc_addr_array); $c++)
+			{
+				$mail->addCC($cc_addr_array[$c]);	// Add a recipient; Name is optional
+			}
+		}
+
+		//Adding BCC Addresses
+		$bcc_addr_array = array();
+		if(trim($this->bcc_address) != "") {
+			$bcc_addr_array = explode(",", trim($this->bcc_address));
+			for($b=0; $b < COUNT($bcc_addr_array); $b++)
+			{
+				$mail->addBCC($bcc_addr_array[$b]);
+			}
+		}
 
 		$mail->WordWrap = 50;	// Set word wrap to 50 characters
 
