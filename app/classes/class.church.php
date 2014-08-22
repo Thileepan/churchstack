@@ -153,8 +153,10 @@ class Church
 				4 => list paid and active churches alone
 				5 => list On-Trial or (Paid & Active) churches
 				6 => list deactivated churches
-				7 => list trial expiring in XX days churches alone
-				8 => list license expiring in XX days churches alone
+				7 => list trial expiring in XX days churches alone (Active Chuches only)
+				8 => list license expiring in XX days churches alone (Active Chuches only)
+				9 => list "XX days since trial expired" churches alone (Active Chuches only)
+				10 => list "XX days since license expired" churches alone (Active Chuches only)
 		/**/
 		$toReturn = array();
 		$toReturn[0] = 0;
@@ -165,11 +167,27 @@ class Church
 			$toReturn[1] = "Invalid input given";
 			return $toReturnl;
 		}
+		if(($filterType==9 || $filterType==10) && ($expiring_in_days <= 0))
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Invalid input given";
+			return $toReturnl;
+		}
 		$all_churches = array();
-		$expiring_in_seconds = $expiring_in_days*24*60*60;//Ignored for irrelevant filters
-		$start_time_stamp = time()+$expiring_in_seconds;
-		$expiry_finding_range_seconds = (($expiry_finding_range_seconds > 0)? $expiry_finding_range_seconds : 86400);//One day default
-		$end_time_stamp = $start_time_stamp+$expiry_finding_range_seconds;
+		if($filterType==7 || $filterType==8)
+		{
+			$expiring_in_seconds = $expiring_in_days*24*60*60;//Ignored for irrelevant filters
+			$start_time_stamp = time()+$expiring_in_seconds;
+			$expiry_finding_range_seconds = (($expiry_finding_range_seconds > 0)? $expiry_finding_range_seconds : 86400);//One day default
+			$end_time_stamp = $start_time_stamp+$expiry_finding_range_seconds;
+		}
+		else if($filterType==9 || $filterType==10)
+		{
+			$seconds_since_expiry = $expiring_in_days*24*60*60;//Ignored for irrelevant filters
+			$start_time_stamp = time()-$seconds_since_expiry;
+			$expiry_finding_range_seconds = (($expiry_finding_range_seconds > 0)? $expiry_finding_range_seconds : 86400);//One day default
+			$end_time_stamp = $start_time_stamp-$expiry_finding_range_seconds;
+		}
 		if($this->db_conn)
 		{
 		   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
@@ -191,6 +209,10 @@ class Church
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==8) {
 			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+		   } else if($filterType==9) {
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+		   } else if($filterType==10) {
+			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   }
 		   $result = $this->db_conn->Execute($query);
             
@@ -544,6 +566,118 @@ class Church
 			}
 		}
 		return $toReturn;
+	}
+
+	public function sendTrialExpiredEmail($trial_details, $target_email="", $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$trial_template_file = $this->APPLICATION_PATH."templates/email/trialexpired.html";
+		$trial_report = "";
+		if(file_exists($trial_template_file))
+		{
+			$trial_report = trim(file_get_contents($trial_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the trial report";
+		}
+
+		//Replacing place holder with values
+		$trial_report = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $trial_report);
+		$trial_report = str_replace("{{TRIAL_REM_DAYS}}", $trial_details["days_since_expiry"], $trial_report);
+		$trial_report = str_replace("{{PRICING_URL}}", PRICING_URL, $trial_report);
+		$trial_report = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $trial_report);
+		$trial_report = str_replace("{{SALES_EMAIL}}", SALES_EMAIL, $trial_report);
+		$trial_report = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $trial_report);
+		$trial_report = str_replace("{{CHURCH_NAME}}", $trial_details["church_name"], $trial_report);
+
+		$subject = PRODUCT_NAME." - How did your trial go?";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = ((trim($target_email) != "")? trim($target_email) : $trial_details["email"]);
+			$contents_array[1] = $subject;
+			$contents_array[2] = $trial_report;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
+		$recipients = array();
+		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $trial_details["email"]);
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($trial_report);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "Trial report sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send trial report to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
+	}
+
+	public function sendLicenseExpiredEmail($lic_details, $target_email="", $just_return_contents=0)
+	{
+		@include_once($this->APPLICATION_PATH."classes/class.email.php");
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Message sending failed.";
+		$lic_template_file = $this->APPLICATION_PATH."templates/email/licenseexpired.html";
+		$lic_report = "";
+		if(file_exists($lic_template_file))
+		{
+			$lic_report = trim(file_get_contents($lic_template_file));
+		}
+		else
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to prepare the trial report";
+		}
+
+		//Replacing place holder with values
+		$lic_report = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $lic_report);
+		$lic_report = str_replace("{{LIC_REM_DAYS}}", $lic_details["days_since_expiry"], $lic_report);
+		$lic_report = str_replace("{{PRICING_URL}}", PRICING_URL, $lic_report);
+		$lic_report = str_replace("{{CS_LOGIN_WEBSITE}}", CS_LOGIN_WEBSITE, $lic_report);
+		$lic_report = str_replace("{{SALES_EMAIL}}", SALES_EMAIL, $lic_report);
+		$lic_report = str_replace("{{SUPPORT_EMAIL}}", SUPPORT_EMAIL, $lic_report);
+		$lic_report = str_replace("{{CHURCH_NAME}}", $lic_details["church_name"], $lic_report);
+
+		$subject = PRODUCT_NAME." - Your license has expired";
+		if($just_return_contents==1)
+		{
+			$contents_array = array();
+			$contents_array[0] = ((trim($target_email) != "")? trim($target_email) : $lic_details["email"]);
+			$contents_array[1] = $subject;
+			$contents_array[2] = $lic_report;
+			$to_return[0] = 1;
+			$to_return[1] = $contents_array;
+			return $to_return;
+		}
+		//Set and Send Email		
+		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
+		$recipients = array();
+		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $lic_details["email"]);
+		$email_obj->setRecipients($recipients);
+		$email_obj->setSubject($subject);
+		$email_obj->setBody($lic_report);
+		$email_result = $email_obj->sendEmail();
+		if($email_result[0]==1) {
+			$to_return[0] = 1;
+			$to_return[1] = "license reminder report sent.";
+		} else {
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to send license reminder report to the specified email address. ".$email_result[1];
+		}
+		return $to_return;
 	}
 }
 

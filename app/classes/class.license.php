@@ -171,6 +171,7 @@ class License
 	public function applyLicense($plan_id, $plan_type, $invoice_id, $purchase_timestamp)
 	{
 		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
+		include_once($this->APPLICATION_PATH . 'classes/class.church.php');
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "There was some error while applying the license";
@@ -237,6 +238,12 @@ class License
 					$to_return[1] = "License applied successfully";
 				}			
 			}
+
+			//Activate Church whatever be the current status of the church
+			$church_obj = new Church($this->APPLICATION_PATH);
+			$church_obj->activateChurch($this->church_id);
+
+			//Handle referral program stuff
 			if($is_referral_valid==1 && $referrer_church_id > 0)
 			{
 				$subs_extension_result = $this->extendChurchSubscriptionValidity($referrer_church_id, $referral_bonus_seconds);
