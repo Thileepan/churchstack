@@ -160,6 +160,21 @@ class Utility
 			$_SESSION["churchCurrentActiveProfilesCount"] = $profiles_obj->getProfilesCount(1, 0);//List All Active Profiles
 		}
 	}
+
+	public function generateRandomCode($length=32)
+	{
+		if($length <= 0) {
+			$length = 32;
+		}
+		$chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		$chars_length = strlen($chars);
+		$res = "";
+		for ($i = 0; $i < $length; $i++) {
+			$res .= $chars[mt_rand(0, $chars_length-1)];
+		}
+
+		return $res;
+	}
 }
 
 ?>
