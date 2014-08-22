@@ -131,6 +131,10 @@ class Users
 			if(trim($password) == "") {
 				$random_password = md5($curr_time.rand(1, 10000).rand(1, 10000).$email.$user_name);
 				$password = $random_password;
+			} else {
+				//Very Important, salting the password before storing it
+				//Equivalent to MD5(CONCAT(UNIQUE_HASH, "MyPasswordPassedAsArgument"))
+				$password = md5($user_unique_hash.$password);
 			}
 			$query = 'insert into USER_DETAILS (USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?)';
 			$result = $this->db_conn->Execute($query, array(0,$church_id,$user_name,$email,$role_id,$password,$user_unique_hash,$user_status));
@@ -159,7 +163,7 @@ class Users
 		$to_return[1] = "There was some error while trying to update the user.";
 		if($this->db_conn)
 		{
-			$query = 'update USER_DETAILS set USER_NAME=?, ROLE_ID=?, PASSWORD=?, STATUS=? where USER_ID=?';
+			$query = 'update USER_DETAILS set USER_NAME=?, ROLE_ID=?, PASSWORD=MD5(CONCAT(UNIQUE_HASH, ?)), STATUS=? where USER_ID=?';
 			$result = $this->db_conn->Execute($query, array($user_name, $role_id, $password, $user_status, $user_id));
 			if($result) {
 				$to_return[0] = 1;
@@ -218,7 +222,7 @@ class Users
 		$to_return[1] = "Unable to validate the account credentials, please contact support to resolve this issue.";
 		if($this->db_conn)
 		{
-			$query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where EMAIL=? and PASSWORD=? limit 1';
+			$query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where EMAIL=? and PASSWORD=MD5(CONCAT(UNIQUE_HASH,?)) limit 1';
 			$result = $this->db_conn->Execute($query, array($email, $password));
 			if($result) {
 				if(!$result->EOF) {
@@ -708,8 +712,12 @@ class Users
 		$to_return[1] = "Unable to set the password";
 		if($this->db_conn)
 		{
-			$query = 'update USER_DETAILS set PASSWORD=? where EMAIL=?';
-			$result = $this->db_conn->Execute($query, array($new_password, $email));
+			//Unique hash also should be changed for security reasons
+			$new_user_unique_hash = strtoupper(md5(time().$email.md5($new_password).rand(1, 10000).rand(1, 10000)));
+			//Very Important, password salting is being done here.
+			$new_password_to_set = md5($new_user_unique_hash.$new_password);
+			$query = 'update USER_DETAILS set UNIQUE_HASH=?, PASSWORD=? where EMAIL=?';
+			$result = $this->db_conn->Execute($query, array($new_user_unique_hash, $new_password_to_set, $email));
 			if($result) {
 				$to_return[0] = 1;
 				$to_return[1] = "Password has been set successfully";
