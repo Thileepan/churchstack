@@ -175,7 +175,7 @@
 						    <div class="controls">
 								<table border="0" cellpadding="1" cellspacing="0" height="52">
 									<tr>
-										<td width="50%"><span id="captchaSpan"><img src="plugins/simplecaptcha/image.php" alt="security image" /></span>&nbsp;</td>
+										<td width="50%"><span id="captchaSpan"><img src="plugins/simplecaptcha/image" alt="security image" /></span>&nbsp;</td>
 										<td width="50%"><button class="btn btn-small" onclick="Javascript: return reloadSignupCaptcha();"><span nowrap><img src="images/blue-refresh.png" alt="Reload Security Image" /> Get Another Image</span></button></td>
 									</tr>
 								</table>

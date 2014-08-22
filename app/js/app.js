@@ -1015,6 +1015,6 @@ function signUpNewAccountResponse(response)
 function reloadSignupCaptcha()
 {
 	var randomNum = Math.random();//used to fix cache issues in firefox and IE
-	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image.php?'+randomNum+'" alt="security image" />';
+	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image?'+randomNum+'" alt="security image" />';
 	return false;
 }
