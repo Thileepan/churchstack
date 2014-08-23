@@ -175,6 +175,69 @@ class Utility
 
 		return $res;
 	}
+
+	protected function hex2bin($hexdata)
+    {
+        $bindata = '';
+
+        for ($i = 0; $i < strlen($hexdata); $i += 2) {
+            $bindata .= chr(hexdec(substr($hexdata, $i, 2)));
+        }
+
+        return $bindata;
+    }
+
+	function encrypt($str, $isBinary = false, $key='')
+    {
+		if(trim($key) != "")
+		{
+			$key = md5($key);//default : second half (last 16 chars) of md5 of our product name completely in small case 
+			$key = substr($key, 16, 16);
+	        $iv = strrev($key);
+		}
+		else
+		{
+			$key = 'fbd983e24917d98f';//default : second half (last 16 chars) of md5 of our product name completely in small case 
+	        $iv = strrev($key);
+		}
+        $str = $isBinary ? $str : utf8_decode($str);
+
+        $td = mcrypt_module_open('rijndael-128', ' ', 'cbc', $iv);
+
+        mcrypt_generic_init($td, $key, $iv);
+        $encrypted = mcrypt_generic($td, $str);
+
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+
+        return $isBinary ? $encrypted : bin2hex($encrypted);
+    }
+
+	function decrypt($code, $isBinary = false, $key='')
+    {
+		if(trim($key) != "")
+		{
+			$key = md5($key);//default : second half (last 16 chars) of md5 of our product name completely in small case 
+			$key = substr($key, 16, 16);
+	        $iv = strrev($key);
+		}
+		else
+		{
+			$key = 'fbd983e24917d98f';//default : second half (last 16 chars) of md5 of our product name completely in small case 
+	        $iv = strrev($key);
+		}
+        $code = $isBinary ? $code : $this->hex2bin($code);
+
+        $td = mcrypt_module_open('rijndael-128', ' ', 'cbc', $iv);
+
+        mcrypt_generic_init($td, $key, $iv);
+        $decrypted = mdecrypt_generic($td, $code);
+
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+
+        return $isBinary ? trim($decrypted) : utf8_encode(trim($decrypted));
+    }
 }
 
 ?>
