@@ -191,6 +191,15 @@ create table LICENSE_DETAILS (
 	constraint LICENSE_DETAILS_FK_2 FOREIGN KEY (PLAN_ID) REFERENCES LICENSE_PLANS (PLAN_ID)
 	);
 
+create table AUTO_NOTIFICATIONS_REPORT (
+	NOTIFICATION_TYPE VARCHAR(64),
+	SUBJECT_INTERNAL_ID BIGINT,
+	FOR_OCCURRENCE VARCHAR(128),
+	UPDATED_ON DATETIME,
+
+	constraint AUTO_NOTIFICATIONS_REPORT_PK PRIMARY KEY (NOTIFICATION_TYPE, SUBJECT_INTERNAL_ID, FOR_OCCURRENCE)
+);
+
 insert into CURRENCY_LIST values(0, 'AED', '784', 'United Arab Emirates Dirham', 'United Arab Emirates');
 insert into CURRENCY_LIST values(0, 'AFN', '971', 'Afghan Afghani', 'Afghanistan');
 insert into CURRENCY_LIST values(0, 'ALL', '008', 'Albanian Lek', 'Albania');

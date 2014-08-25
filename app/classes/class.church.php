@@ -190,29 +190,29 @@ class Church
 		}
 		if($this->db_conn)
 		{
-		   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
+		   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where cd.CHURCH_ID=ld.CHURCH_ID and ld.PLAN_TYPE=1 order by cd.CHURCH_ID DESC';
 		   if($filterType==0 or trim($filterType) == "") {
-			   $query = 'select * from CHURCH_DETAILS order by CHURCH_ID DESC';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where cd.CHURCH_ID=ld.CHURCH_ID and ld.PLAN_TYPE=1 order by cd.CHURCH_ID DESC';
 		   } else if($filterType==1) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==2) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==3) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==4) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1';
 		   } else if($filterType==5) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ((ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1)) GROUP BY cd.CHURCH_ID';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ((ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1) or (ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE >= NOW() and ld.PLAN_TYPE=1 and cd.STATUS=1)) GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==6) {
-			   $query = 'select * from CHURCH_DETAILS where STATUS!=1';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS where STATUS!=1';
 		   } else if($filterType==7) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==8) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==9) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL=1 and ld.TRIAL_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.TRIAL_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.') and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   } else if($filterType==10) {
-			   $query = 'select cd.* from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
+			   $query = 'select cd.CHURCH_ID, cd.CHURCH_NAME, cd.DESCRIPTION, cd.ADDRESS, cd.LANDLINE, cd.MOBILE, cd.EMAIL, cd.WEBSITE, cd.SIGNUP_TIME, cd.LAST_UPDATE_TIME, cd.SHARDED_DATABASE, cd.CURRENCY_ID, cd.UNIQUE_HASH, cd.STATUS, cd.COUNTRY_ID, cd.REFERRER_CHURCH_ID, ld.CHURCH_ID, ld.PLAN_ID, ld.PLAN_TYPE, ld.LICENSE_EXPIRY_DATE, ld.LAST_INVOICE_ID, ld.LAST_PURCHASE_DATE, ld.IS_ON_TRIAL, ld.TRIAL_EXPIRY_DATE from CHURCH_DETAILS as cd, LICENSE_DETAILS as ld where ld.CHURCH_ID=cd.CHURCH_ID and ld.IS_ON_TRIAL!=1 and ld.LICENSE_EXPIRY_DATE < FROM_UNIXTIME('.$start_time_stamp.') and ld.LICENSE_EXPIRY_DATE > FROM_UNIXTIME('.$end_time_stamp.')  and ld.PLAN_TYPE=1 and cd.STATUS=1 GROUP BY cd.CHURCH_ID';
 		   }
 		   $result = $this->db_conn->Execute($query);
             
@@ -236,7 +236,16 @@ class Church
 						$unique_hash = $result->fields[12];
 						$status = $result->fields[13];
 						$country_id = $result->fields[14];
-						$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id);
+						$referrer_church_id = $result->fields[15];
+						$church_id = $result->fields[16];
+						$plan_id = $result->fields[17];
+						$plan_type = $result->fields[18];
+						$license_expiry_date = $result->fields[19];
+						$last_invoice_id = $result->fields[20];
+						$last_purchase_date = $result->fields[21];
+						$is_on_trial = $result->fields[22];
+						$trial_expiry_date = $result->fields[23];
+						$church_details = array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id, $referrer_church_id, $church_id, $plan_id, $plan_type, $license_expiry_date, $last_invoice_id, $last_purchase_date, $is_on_trial, $trial_expiry_date);
 						$all_churches[] = $church_details;
 
 						$result->MoveNext();

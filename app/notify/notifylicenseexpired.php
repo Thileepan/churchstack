@@ -1,10 +1,8 @@
 <?php
-error_reporting(-1);
-ini_set("display_errors", "1");
 	$APPLICATION_PATH = __DIR__."/../";//Exclusively for running from command line 
 	$APPLICATION_PATH = str_replace("\\", "/", $APPLICATION_PATH);
 
-	/** /
+	/**/
 	if(trim($_SERVER['DOCUMENT_ROOT']) != "") {
 		@require $APPLICATION_PATH.'error/404';
 		exit;
@@ -16,6 +14,7 @@ ini_set("display_errors", "1");
 	include_once($APPLICATION_PATH."classes/class.church.php");
 	include_once($APPLICATION_PATH."classes/class.license.php");
 	include_once($APPLICATION_PATH."classes/class.users.php");
+	include_once($APPLICATION_PATH."classes/class.autonotifyreports.php");
 
 	//DO NOT REMOVE THIS LINE WITHOUT UNDERSTANDING
 	//parse_str(implode('&', array_slice($argv, 1)), $_GET);
@@ -37,6 +36,18 @@ ini_set("display_errors", "1");
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
 			$church_id = $churches_result[1][$i][0];
+			$trial_expiry_date = $churches_result[1][$i][23];
+
+			//Check if email has already been sent or not
+			$autoNotifyRep_obj = new AutoNotifyReports($APPLICATION_PATH);
+			$is_notification_sent = $autoNotifyRep_obj->isTrialExpiredNotificationSent($church_id, $trial_expiry_date);
+			if($is_notification_sent) {
+				//Avoid sending another email...
+				continue;
+			} else {
+				$is_notification_sent = $autoNotifyRep_obj->insertTrialExpiredNotifyReport($church_id, $trial_expiry_date);
+			}
+
 			$church_admin_result = array();
 			$church_admin_result = $users_obj->getChurchAdminDetails($church_id);
 			if($church_admin_result[0]==1)
@@ -65,6 +76,18 @@ ini_set("display_errors", "1");
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
 			$church_id = $churches_result[1][$i][0];
+			$license_expiry_date = $churches_result[1][$i][19];
+
+			//Check if email has already been sent or not
+			$autoNotifyRep_obj = new AutoNotifyReports($APPLICATION_PATH);
+			$is_notification_sent = $autoNotifyRep_obj->isLicenseExpiredNotificationSent($church_id, $license_expiry_date);//8=>list license expiring in XX days churches alone (Active Chuches only)
+			if($is_notification_sent) {
+				//Avoid sending another email...
+				continue;
+			} else {
+				$is_notification_sent = $autoNotifyRep_obj->insertLicenseExpiredNotifyReport($church_id, $license_expiry_date);
+			}
+
 			$church_admin_result = array();
 			$church_admin_result = $users_obj->getChurchAdminDetails($church_id);
 			if($church_admin_result[0]==1)
