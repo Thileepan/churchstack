@@ -118,6 +118,7 @@ class Utility
 			$church_status_num = $church_result[1][13];
 			$_SESSION['churchStatus'] = $church_status_num;
 			$_SESSION['churchCountryID'] = $church_result[1][14];
+			$_SESSION['churchTimeZone'] = $church_result[1][16];
 
 			//Get license details
 			$lic_obj = new License($APPLICATION_PATH);
