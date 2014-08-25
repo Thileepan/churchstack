@@ -579,6 +579,10 @@ class Events
 							$notification_details["event_date_time"] = $event_time;
 							$notification_details["event_place"] = $location;
 
+							//Following details are very important and should be unique for an event through out the events life time.
+							$notification_details["event_id"] = $event_id;
+							$notification_details["exact_occurrence_time"] = $event_date;//This will be used to avoid sending duplicate emails for the same event.
+
 							$to_return[] = $notification_details;
 						}
 					}
@@ -692,6 +696,42 @@ class Events
 			$event_remainder = str_replace("{{EVENT_PLACE}}", $event_details_arr["event_place"], $event_remainder);
 		}
 		return $event_remainder;		
+	}
+
+	public function insertEmailNotificationReport($event_id, $for_occurrence)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to insert the report";
+		$notification_type = "#EMAIL_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'insert into EVENT_AUTO_NOTIFY_REPORTS (NOTIFICATION_TYPE, EVENT_ID, FOR_OCCURRENCE, UPDATED_ON) values(?,?,?, NOW())';
+			$result = $this->db_conn->Execute($query, array($notification_type, $event_id, $for_occurrence));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Report inserted successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function isEmailNotificationSent($event_id, $for_occurrence)
+	{
+		$toReturn = true;//keep this as default
+		$notification_type = "#EMAIL_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'select FOR_OCCURRENCE from EVENT_AUTO_NOTIFY_REPORTS where NOTIFICATION_TYPE=? and EVENT_ID=? and FOR_OCCURRENCE=? limit 1';
+			$result = $this->db_conn->Execute($query, array($notification_type, $event_id, $for_occurrence));
+
+			if($result) {
+				if($result->EOF) {
+					$toReturn = false;
+				}
+			}
+		}
+		return $toReturn;
 	}
 }
 ?>

@@ -39,6 +39,15 @@
 		$commands = array();
 		for($e=0; $e < COUNT($events_list); $e++)
 		{
+			$event_id = $events_list[$e]["event_id"];
+			$event_exact_occur_time = $events_list[$e]["exact_occurrence_time"];
+			$is_email_sent = $events_obj->isEmailNotificationSent($event_id, $event_exact_occur_time);
+			if($is_email_sent) {
+				//Avoid sending duplicate reminder
+				continue;
+			} else {
+				$events_obj->insertEmailNotificationReport($event_id, $event_exact_occur_time);
+			}
 			$emails_count = COUNT($events_list[$e]["event_email_recipients"]);
 			$carbon_obj = $events_list[$e]["event_date_time"];
 			$event_body_input_array = array();
