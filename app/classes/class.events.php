@@ -733,5 +733,25 @@ class Events
 		}
 		return $toReturn;
 	}
+
+	public function cleanupOldEmailNotificationReports($older_than_days=60)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to delete the reports";
+		$older_than_days = ((trim($older_than_days) != "" && trim($older_than_days) > 0)? trim($older_than_days) : 60);
+		$updated_on_date_threshold = time()-($older_than_days*24*60*60);
+		$notification_type = "#EMAIL_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'delete from EVENT_AUTO_NOTIFY_REPORTS where UPDATED_ON < FROM_UNIXTIME(?)';
+			$result = $this->db_conn->Execute($query, array($updated_on_date_threshold));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Reports deleted successfully";
+			}			
+		}
+		return $to_return;
+	}
 }
 ?>

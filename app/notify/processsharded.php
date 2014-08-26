@@ -19,6 +19,10 @@
 
 	$shardedDB = urldecode($_GET["shardedDB"]);//Exclusively for running from command line 
 	$events_obj = new Events($APPLICATION_PATH, $shardedDB);
+	
+	//Cleanup the notification reports older than 60 days.
+	$cleanup_result = $events_obj->cleanupOldEmailNotificationReports(60);
+
 	$events_list = array();
 	$events_list = $events_obj->getEventsToNotifyNow();
 
