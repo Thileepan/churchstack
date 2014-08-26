@@ -14,11 +14,22 @@ include_once($PATH."classes/class.church.php");
 include_once($PATH."classes/class.utility.php");
 include_once($PATH."classes/class.events.php");
 include_once($PATH."classes/class.autonotifyreports.php");
+//include_once($PATH."plugins/apache-log4php/src/main/php/Logger.php");
+include_once($PATH."classes/class.filelogger.php");
+
+/** /
+$logger = new FileLogger($PATH);
+$logger->info("hbbhbhbh ");
+$logger->warn("have to be taken seriously....");
+$logger->error("Should be an error....");
+$logger->debug("Just a debug...");
+$logger->trace("Need to be traced...");
+$logger->fatal("Avoid this....");
+/**/
 
 /** /
 $rrr = new Events($PATH, 'cs_c8c0bff6275685eab6b55b327ab2df52');
-echo "-->".$rrr->isEmailNotificationSent(1, '2012-12-12 13:12:12')."<---";
-print_r($rrr->insertEmailNotificationReport(1, '2012-12-12 13:12:12'));
+echo $rrr->cleanupOldEmailNotificationReports(62)."<---";
 /**/
 /** /
 $rrr = new AutoNotifyReports($PATH);
