@@ -1687,6 +1687,52 @@ class License
 		}
 		return $to_return;
 	}
+
+	public function getCurrentSubscriptionPlanDetails()
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "No details could be fetched";
+		if($this->church_id <= 0) {
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to identify the target account";
+			return $toReturn;
+		}
+		if($this->db_conn)
+		{
+			$query = 'select ii.INVOICE_ID, ii.SUBORDER_ID, ii.PLAN_ID, ii.PLAN_NAME, ii.PLAN_DESCRIPTION, ii.PLAN_TYPE, ii.VALIDITY_PERIOD_TEXT, ii.VALIDITY_IN_SECONDS, ii.PLAN_COST, ii.QUANTITY, ii.TOTAL_COST, ii.IS_AUTORENEWAL_ENABLED from INVOICED_ITEMS as ii, LICENSE_DETAILS as ld, INVOICE_REPORT as ir where ld.CHURCH_ID=? and ld.CHURCH_ID=ir.CHURCH_ID and ld.PLAN_TYPE=1 and ld.LAST_INVOICE_ID=ir.INVOICE_ID and ii.INVOICE_ID=ir.INVOICE_ID and ii.PLAN_TYPE=1 limit 1';
+			$result = $this->db_conn->Execute($query, array($this->church_id));
+			if($result) {
+                if(!$result->EOF) {
+					$inv_items_array = array();
+                    if(!$result->EOF)
+                    {
+                        $tmp_invoice_id = $result->fields[0];
+                        $suborder_id = $result->fields[1];
+						$plan_id = $result->fields[2];
+						$plan_name = $result->fields[3];
+                        $plan_desc = $result->fields[4];
+                        $plan_type = $result->fields[5];
+                        $validity_text = $result->fields[6];
+						$validity_seconds = $result->fields[7];
+						$plan_cost = $result->fields[8];
+						$quantity = $result->fields[9];
+						$total_cost = $result->fields[10];
+						$is_auto_renewal = $result->fields[11];
+						$inv_items_array = array($tmp_invoice_id, $suborder_id, $plan_id, $plan_name, $plan_desc, $plan_type, $validity_text, $validity_seconds, $plan_cost, $quantity, $total_cost, $is_auto_renewal);
+                    }
+					$toReturn[0] = 1;
+					$toReturn[1] = $inv_items_array;
+                }
+            }
+		}
+		else
+		{
+			$toReturn[0] = 1;
+			$toReturn[1] = "No DB Connection Available";
+		}
+		return $toReturn;
+	}
 }
 
 ?>

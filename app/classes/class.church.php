@@ -167,13 +167,13 @@ class Church
 		{
 			$toReturn[0] = 0;
 			$toReturn[1] = "Invalid input given";
-			return $toReturnl;
+			return $toReturn;
 		}
 		if(($filterType==9 || $filterType==10) && ($expiring_in_days <= 0))
 		{
 			$toReturn[0] = 0;
 			$toReturn[1] = "Invalid input given";
-			return $toReturnl;
+			return $toReturn;
 		}
 		$all_churches = array();
 		if($filterType==7 || $filterType==8)
