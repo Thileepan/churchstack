@@ -17,6 +17,12 @@ include_once($PATH."classes/class.autonotifyreports.php");
 //include_once($PATH."plugins/apache-log4php/src/main/php/Logger.php");
 include_once($PATH."classes/class.filelogger.php");
 
+//echo strtotime("+1 month", 1391126400);
+
+/** /
+$utils = new Utility($PATH);
+$tttt =  $utils->addMonthsToTimestamp(1694284800, 1);
+echo date("d", $tttt);
 /** /
 $logger = new FileLogger($PATH);
 $logger->info("hbbhbhbh ");
@@ -217,13 +223,13 @@ $coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discount
 print_r($coupon_result);
 /**/
 
-/** /
+/**/
 $lic_obj = new License($PATH);
-$lic_obj->setChurchID(16);
+$lic_obj->setChurchID(8);
 $invoice_details_array = array("Nesan R", "16 C, Thisaikaval St., Arumuganeri, Thootrhukudi Dist, Tamil Nadu, India, Chennai - 600 002", "Other", "0991901", "USD", 199, 1, 3, 6, 2, 4, 0, 0, 0, 0, 234, "S73MN4L57W", "Some notes", "PayPal", "Credit Card", "10.0.0.114", "nesanjoseph@gmail.com");
 $invoiced_items_array = array();
-$invoiced_items_array[0] = array(1, "Standard", "ST DES", 1, "1 year", 600, 30, 2, 60, 0);
-$invoiced_items_array[1] = array(2, "Gold SMS", "GD DES", 2, "1 year", 600, 10, 2, 20, 0);
+$invoiced_items_array[0] = array(1, "Standard", "ST DES", 1, "1 Month", 2592000, 30, 2, 60, 1);
+$invoiced_items_array[1] = array(2, "Gold SMS", "GD DES", 2, "1 Month", 2592000, 10, 2, 20, 0);
 $res = $lic_obj->writeInitialPurchaseReport($invoice_details_array, $invoiced_items_array, $is_refund);
 print_r($res)."<BR><BR>";
 $unique_hash =  $res[1][1];

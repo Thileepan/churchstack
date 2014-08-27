@@ -172,6 +172,7 @@ class License
 	{
 		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
 		include_once($this->APPLICATION_PATH . 'classes/class.church.php');
+		include_once($this->APPLICATION_PATH . 'classes/class.utility.php');
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "There was some error while applying the license";
@@ -188,6 +189,7 @@ class License
 
 			$plan_type_exists = 0;
 			$previous_expiry_date = $purchase_timestamp;//Just to have an initial value
+			$just_date_of_prev_exp_date = date("d", $previous_expiry_date);//To charge automatically on a fixed date.
 			$query_2 = 'select PLAN_ID, LICENSE_EXPIRY_DATE from LICENSE_DETAILS where CHURCH_ID=? and PLAN_TYPE=? limit 1';
 			$result_2 = $this->db_conn->Execute($query_2, array($this->church_id, $plan_type));
 			if($result_2) {
@@ -196,10 +198,21 @@ class License
 					$prev_exp_date = $result_2->fields[1];//returns datetime format
 
 					$previous_expiry_date = strtotime($prev_exp_date);//converting to timestamp
+					$just_date_of_prev_exp_date = date("d", $previous_expiry_date);//To charge automatically on a fixed date.
 				}
 			}
 
-			$lic_expiry_date_to_set = $previous_expiry_date+$validity_in_seconds;
+			//$lic_expiry_date_to_set = $previous_expiry_date+$validity_in_seconds;
+			if($validity_in_seconds == 2592000)//Monthly Plan
+			{
+				$util_obj =  new Utility($this->APPLICATION_PATH);
+				$months_to_add = 1;
+				$lic_expiry_date_to_set = $util_obj->addMonthsToTimestamp($previous_expiry_date, $months_to_add);//Add one month with same date or the last day of the next month (if date overflows to the 3rd month)
+			}
+			else
+			{
+				$lic_expiry_date_to_set = $previous_expiry_date+$validity_in_seconds;
+			}
 
 			$to_return[3] = array($lic_expiry_date_to_set);
 
@@ -217,7 +230,11 @@ class License
 					$is_referral_valid = 1;
 					$referrer_church_id = $referrer_result[1][0];
 					$referral_church_name = $referrer_result[1][1];
-					$lic_expiry_date_to_set = $lic_expiry_date_to_set+$referral_bonus_seconds;
+					//$lic_expiry_date_to_set = $lic_expiry_date_to_set+$referral_bonus_seconds;
+					$util_obj =  new Utility($this->APPLICATION_PATH);
+					$months_to_add = 1;
+					$lic_expiry_date_to_set = $util_obj->addMonthsToTimestamp($lic_expiry_date_to_set, $months_to_add);//Add one month with same date or the last day of the next month (if date overflows to the 3rd month)
+					
 					$referral_new_validity = $lic_expiry_date_to_set;
 				}
 			}
@@ -1417,6 +1434,7 @@ class License
 
 	public function extendChurchSubscriptionValidity($church_id, $seconds_to_extend)
 	{
+		include_once($this->APPLICATION_PATH."classes/class.utility.php");
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "There was an error while trying extend the subscription.";
@@ -1435,7 +1453,19 @@ class License
 					$expiry_date_to_set = time();
 					if($is_on_trial==1)
 					{
-						$expiry_date_to_set = strtotime($trial_expiry_date)+$seconds_to_extend;
+						//$expiry_date_to_set = strtotime($trial_expiry_date)+$seconds_to_extend;
+						$expiry_date_to_set = strtotime($trial_expiry_date);
+						if($seconds_to_extend == 2592000)//One Month
+						{
+							$util_obj =  new Utility($this->APPLICATION_PATH);
+							$months_to_add = 1;
+							$expiry_date_to_set = $util_obj->addMonthsToTimestamp($expiry_date_to_set, $months_to_add);//Add one month with same date or the last day of the next month (if date overflows to the 3rd month)
+						}
+						else
+						{
+							$expiry_date_to_set = strtotime($trial_expiry_date)+$seconds_to_extend;
+						}
+
 						$query_2 = 'update LICENSE_DETAILS set TRIAL_EXPIRY_DATE=FROM_UNIXTIME(?), LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?) where CHURCH_ID=? and PLAN_TYPE=1';
 						$result_2 = $this->db_conn->Execute($query_2, array($expiry_date_to_set, $expiry_date_to_set, $church_id));
 						if($result_2) {
@@ -1448,7 +1478,18 @@ class License
 					}
 					else
 					{
-						$expiry_date_to_set = strtotime($lic_expiry_date)+$seconds_to_extend;
+						//$expiry_date_to_set = strtotime($lic_expiry_date)+$seconds_to_extend;
+						$expiry_date_to_set = strtotime($lic_expiry_date);
+						if($seconds_to_extend == 2592000)//One Month
+						{
+							$util_obj =  new Utility($this->APPLICATION_PATH);
+							$months_to_add = 1;
+							$expiry_date_to_set = $util_obj->addMonthsToTimestamp($expiry_date_to_set, $months_to_add);//Add one month with same date or the last day of the next month (if date overflows to the 3rd month)
+						}
+						else
+						{
+							$expiry_date_to_set = strtotime($lic_expiry_date)+$seconds_to_extend;
+						}
 						$query_2 = 'update LICENSE_DETAILS set LICENSE_EXPIRY_DATE=FROM_UNIXTIME(?) where CHURCH_ID=? and PLAN_TYPE=1';
 						$result_2 = $this->db_conn->Execute($query_2, array($expiry_date_to_set, $church_id));
 						if($result_2) {

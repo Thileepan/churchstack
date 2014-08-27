@@ -239,6 +239,36 @@ class Utility
 
         return $isBinary ? trim($decrypted) : utf8_encode(trim($decrypted));
     }
+
+	public function addMonthsToTimestamp($time_stamp, $months_to_add=1)
+	{
+		$datetime_obj = new DateTime();
+		$datetime_obj->setTimestamp($time_stamp);
+
+		$year = $datetime_obj->format('Y');
+		$month = $datetime_obj->format('n');
+		$day = $datetime_obj->format('d');
+
+		$year += floor($months_to_add/12);
+		$months_to_add = $months_to_add%12;
+		$month += $months_to_add;
+		if($month > 12) {
+			$year ++;
+			$month = $month % 12;
+			if($month === 0)
+			$month = 12;
+		}
+
+		if(!checkdate($month, $day, $year)) {
+			$datetime_obj_to_return = DateTime::createFromFormat('Y-n-j', $year.'-'.$month.'-1');
+			$datetime_obj_to_return->modify('last day of');
+		}else {
+			$datetime_obj_to_return = DateTime::createFromFormat('Y-n-d', $year.'-'.$month.'-'.$day);
+		}
+		$datetime_obj_to_return->setTime($datetime_obj->format('H'), $datetime_obj->format('i'), $datetime_obj->format('s'));
+		//echo $datetime_obj_to_return->format('Y-m-d H:i:s');
+		return $datetime_obj_to_return->getTimestamp();
+	}
 }
 
 ?>
