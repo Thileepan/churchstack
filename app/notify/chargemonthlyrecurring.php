@@ -1,15 +1,11 @@
 <?php
-error_reporting(-1);
-ini_set("display_errors", "1");
 	$APPLICATION_PATH = __DIR__."/../";//Exclusively for running from command line 
 	$APPLICATION_PATH = str_replace("\\", "/", $APPLICATION_PATH);
 
-	/** /
 	if(trim($_SERVER['DOCUMENT_ROOT']) != "") {
 		@require $APPLICATION_PATH.'error/404';
 		exit;
 	}
-	/**/
 
 	include_once($APPLICATION_PATH."conf/config.php");
 	include_once($APPLICATION_PATH."plugins/thread/class.thread.php");
@@ -29,10 +25,7 @@ ini_set("display_errors", "1");
 
 	//$sharded_db_processing_file = $APPLICATION_PATH."notify/processsharded.php";
 	$church_obj = new Church($APPLICATION_PATH);
-	echo "asasas";
 	$churches_result = $church_obj->getAllChurchesList(8, $expiring_in_days, $expiry_finding_range);//7=>list license expiring in XX days churches alone (Active Chuches only)
-
-	print_r($churches_result);
 
 	$log_obj = new FileLogger($APPLICATION_PATH);
 	if($churches_result[0]==1)
@@ -45,7 +38,6 @@ ini_set("display_errors", "1");
 			//Check if payment has been recieved or not
 			$autoNotifyRep_obj = new AutoNotifyReports($APPLICATION_PATH);
 			$is_charged = $autoNotifyRep_obj->isMonthlyRecurringPaymentReceived($church_id, $lic_expiry_date);
-			echo $is_charged."<--";
 			if($is_charged) {
 				//Avoid charging again
 				continue;
@@ -56,12 +48,14 @@ ini_set("display_errors", "1");
 				$subscription_details = $lic_obj->getCurrentSubscriptionPlanDetails();
 				if($subscription_details[0] == 1)
 				{
-					//Write payment gateway interface codes to charge the monthly bill as per the plan.
+					if($subscription_details[1][11] == 1) {//Auto Renewal Enabled
 
-					echo "Charging...";
+						//Write payment gateway interface codes to charge the monthly bill as per the plan.
+						//$subscription_details will have all the necessary details about the payment gateway and amount to be charged this time.
 
-					//Following has to be called finally...
-					$autoNotifyRep_obj->insertMonthlyRecurringPaymentReceivedReport($church_id, $lic_expiry_date);
+						//Following has to be called finally...
+						$autoNotifyRep_obj->insertMonthlyRecurringPaymentReceivedReport($church_id, $lic_expiry_date);
+					}
 				}
 				else
 				{

@@ -1700,7 +1700,7 @@ class License
 		}
 		if($this->db_conn)
 		{
-			$query = 'select ii.INVOICE_ID, ii.SUBORDER_ID, ii.PLAN_ID, ii.PLAN_NAME, ii.PLAN_DESCRIPTION, ii.PLAN_TYPE, ii.VALIDITY_PERIOD_TEXT, ii.VALIDITY_IN_SECONDS, ii.PLAN_COST, ii.QUANTITY, ii.TOTAL_COST, ii.IS_AUTORENEWAL_ENABLED from INVOICED_ITEMS as ii, LICENSE_DETAILS as ld, INVOICE_REPORT as ir where ld.CHURCH_ID=? and ld.CHURCH_ID=ir.CHURCH_ID and ld.PLAN_TYPE=1 and ld.LAST_INVOICE_ID=ir.INVOICE_ID and ii.INVOICE_ID=ir.INVOICE_ID and ii.PLAN_TYPE=1 limit 1';
+			$query = 'select ii.INVOICE_ID, ii.SUBORDER_ID, ii.PLAN_ID, ii.PLAN_NAME, ii.PLAN_DESCRIPTION, ii.PLAN_TYPE, ii.VALIDITY_PERIOD_TEXT, ii.VALIDITY_IN_SECONDS, ii.PLAN_COST, ii.QUANTITY, ii.TOTAL_COST, ii.IS_AUTORENEWAL_ENABLED, ir.CHURCH_NAME, ir.USER_ID, ir.EMAIL, ir.BILLING_NAME, ir.BILLING_ADDRESS, ir.OTHER_ADDRESS, ir.PHONE, ir.CURRENCY_CODE, ir.SUBTOTAL, ir.ADDITIONAL_CHARGE, ir.DISCOUNT_PERCENTAGE, ir.DISCOUNT_AMOUNT, ir.TAX_PERCENTAGE,	ir.TAX_AMOUNT, ir.TAX_2_PERCENTAGE, ir.TAX_2_AMOUNT, ir.VAT_PERCENTAGE,	ir.VAT_AMOUNT, ir.NET_TOTAL, ir.INVOICE_NOTES, ir.PAYMENT_GATEWAY, ir.PAYMENT_MODE, ir.IP_ADDRESS, ir.PURCHASE_STATUS_CODE, ir.PURCHASE_STATUS_REMARKS, ir.PG_STATUS_CODE, ir.PG_STATUS_REMARKS, ir.LAST_UPDATE_DATE, ir.IS_REFUND from INVOICED_ITEMS as ii, LICENSE_DETAILS as ld, INVOICE_REPORT as ir where ld.CHURCH_ID=? and ld.CHURCH_ID=ir.CHURCH_ID and ld.PLAN_TYPE=1 and ld.LAST_INVOICE_ID=ir.INVOICE_ID and ii.INVOICE_ID=ir.INVOICE_ID and ii.PLAN_TYPE=1 limit 1';
 			$result = $this->db_conn->Execute($query, array($this->church_id));
 			if($result) {
                 if(!$result->EOF) {
@@ -1719,7 +1719,36 @@ class License
 						$quantity = $result->fields[9];
 						$total_cost = $result->fields[10];
 						$is_auto_renewal = $result->fields[11];
-						$inv_items_array = array($tmp_invoice_id, $suborder_id, $plan_id, $plan_name, $plan_desc, $plan_type, $validity_text, $validity_seconds, $plan_cost, $quantity, $total_cost, $is_auto_renewal);
+						$church_name = $result->fields[12];
+						$user_id = $result->fields[13];
+						$email = $result->fields[14];
+						$billing_name = $result->fields[15];
+						$billing_address = $result->fields[16];
+						$other_address = $result->fields[17];
+						$phone = $result->fields[18];
+						$currency_code = $result->fields[19];
+						$subtotal = $result->fields[20];
+						$additional_charge = $result->fields[21];
+						$discount_percentage = $result->fields[22];
+						$discount_amount = $result->fields[23];
+						$tax_percentage = $result->fields[24];
+						$tax_amount = $result->fields[25];
+						$tax2_percentage = $result->fields[26];
+						$tax2_amount = $result->fields[27];
+						$vat_percentage = $result->fields[28];
+						$vat_amount = $result->fields[29];
+						$net_total = $result->fields[30];
+						$invoice_notes = $result->fields[31];
+						$payment_gateway = $result->fields[32];
+						$payment_mode = $result->fields[33];
+						$ip_address = $result->fields[34];
+						$purchase_status_code = $result->fields[35];
+						$purchase_status_remarks = $result->fields[36];
+						$pg_status_code = $result->fields[37];
+						$pg_status_remarks = $result->fields[38];
+						$last_update_time = $result->fields[39];
+						$is_refund = $result->fields[40];
+						$inv_items_array = array($tmp_invoice_id, $suborder_id, $plan_id, $plan_name, $plan_desc, $plan_type, $validity_text, $validity_seconds, $plan_cost, $quantity, $total_cost, $is_auto_renewal, $church_name, $user_id, $email, $billing_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax2_percentage, $tax2_amount, $vat_percentage, $vat_amount, $net_total, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, $purchase_status_code, $purchase_status_remarks, $pg_status_code, $pg_status_remarks, $last_update_time, $is_refund);
                     }
 					$toReturn[0] = 1;
 					$toReturn[1] = $inv_items_array;
