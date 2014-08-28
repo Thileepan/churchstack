@@ -45,3 +45,26 @@ IF NOT "%EXCLUSION_LIST_FILE%"=="" (
 )
 
 %COMMAND_TO_RUN%
+
+echo.
+SET /P ANSWER=Do you want to zip the target folder (Y/N)? 
+IF /i {%ANSWER%}=={y} (goto :ZIP_IT
+) ELSE IF /i {%ANSWER%}=={yes} (goto :ZIP_IT
+) ELSE GOTO EOF
+
+:ZIP_IT
+	ECHO Set objArgs = WScript.Arguments > _zipIt.vbs
+	ECHO InputFolder = objArgs(0) >> _zipIt.vbs
+	ECHO ZipFile = objArgs(1) >> _zipIt.vbs
+	ECHO CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" ^& Chr(5) ^& Chr(6) ^& String(18, vbNullChar) >> _zipIt.vbs
+	ECHO Set objShell = CreateObject("Shell.Application") >> _zipIt.vbs
+	ECHO Set source = objShell.NameSpace(InputFolder).Items >> _zipIt.vbs
+	ECHO objShell.NameSpace(ZipFile).CopyHere(source) >> _zipIt.vbs
+	ECHO wScript.Sleep 2000 >> _zipIt.vbs
+
+	CScript  _zipIt.vbs  %~f2  %~f2.zip
+	DEL _zipIt.vbs
+::
+
+:EOF
+	EXIT /B
