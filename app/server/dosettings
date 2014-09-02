@@ -241,6 +241,7 @@ else if($req == 6)
 	$is_update = trim($_POST['isUpdate']);
 	$prev_user = trim($_POST['prevUser']);
 	$user_status = trim($_POST['userStatus']);
+	$user_full_name = trim($_POST['userFullName']);
 	$church_id = $_SESSION['churchID'];
 	$role_id = 2; //Administrator Login
 	
@@ -262,7 +263,7 @@ else if($req == 6)
 		$user_id = trim($_POST['userID']);
 		$to_return = $users_obj->updateUser($user_id, $user_name, $password, $role_id, $user_status);
 	} else {
-		$to_return = $users_obj->addNewUser($church_id, $user_name, $user_name, $password, $role_id, $user_status);
+		$to_return = $users_obj->addNewUser($church_id, $user_full_name, $user_name, $password, $role_id, $user_status);
 	}
 
 	$json = new Services_JSON();

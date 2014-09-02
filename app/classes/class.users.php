@@ -114,12 +114,12 @@ class Users
 		return $user_info;
 	}
 
-	public function addNewUser($church_id, $user_name, $email, $password, $role_id=1, $user_status=1)
+	public function addNewUser($church_id, $full_name, $email, $password, $role_id=1, $user_status=1)
 	{
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "There was some error while trying to add a new user.";
-		if($this->isUserAlreadyExists($user_name, $email)) {
+		if($this->isUserAlreadyExists($email, $email)) {
 			$to_return[0] = 0;
 			$to_return[1] = "The specified username/email already exists in the system.";
 			return $to_return;
@@ -127,17 +127,17 @@ class Users
 		$curr_time = time();
 		if($this->db_conn)
 		{
-			$user_unique_hash = strtoupper(md5($curr_time.$church_id.rand(1, 10000).rand(1, 10000).$church_id.$email.$user_name));
+			$user_unique_hash = strtoupper(md5($curr_time.$church_id.rand(1, 10000).rand(1, 10000).$church_id.$email.$full_name));
 			if(trim($password) == "") {
-				$random_password = md5($curr_time.rand(1, 10000).rand(1, 10000).$email.$user_name);
+				$random_password = md5($curr_time.rand(1, 10000).rand(1, 10000).$email.$full_name);
 				$password = $random_password;
 			} else {
 				//Very Important, salting the password before storing it
 				//Equivalent to MD5(CONCAT(UNIQUE_HASH, "MyPasswordPassedAsArgument"))
 				$password = md5($user_unique_hash.$password);
 			}
-			$query = 'insert into USER_DETAILS (USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, STATUS) values(?,?,?,?,?,?,?,?)';
-			$result = $this->db_conn->Execute($query, array(0,$church_id,$user_name,$email,$role_id,$password,$user_unique_hash,$user_status));
+			$query = 'insert into USER_DETAILS (USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, PASSWORD, UNIQUE_HASH, STATUS, PROFILE_FULL_NAME) values(?,?,?,?,?,?,?,?,?)';
+			$result = $this->db_conn->Execute($query, array(0,$church_id,$email,$email,$role_id,$password,$user_unique_hash,$user_status, $full_name));
 			if($result) {
 				$query_1 = 'select USER_ID from USER_DETAILS where UNIQUE_HASH=? limit 1';
 				$result_1 = $this->db_conn->Execute($query_1, array($user_unique_hash));
@@ -256,7 +256,7 @@ class Users
 	}
 
 //Following were added by Nesan
-	public function signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email_id, $password)
+	public function signUpWithChurchDetails($church_name, $church_location, $user_full_name, $email, $mobile, $referrer_email_id, $password)
 	{
 		@include_once($this->APPLICATION_PATH . 'conf/config.php');
         @include_once($this->APPLICATION_PATH . 'db/dbutil.php');
@@ -312,8 +312,7 @@ class Users
 			if($sharded_result[0]==1)
 			{
 				//Create a new user now
-				$name = $first_name.$middle_name.$last_name;
-				$user_result = $this->addNewUser($church_id, $name, $email, $password, 1, 1);//Adding a church Admin
+				$user_result = $this->addNewUser($church_id, $user_full_name, $email, $password, 1, 1);//Adding a church Admin
 				if($user_result[0]==1) {
 					$user_id = $user_result[2]["user_id"];
 
@@ -328,8 +327,8 @@ class Users
 						$toReturn[2] = array("user_id"=>$user_id, "church_id"=>$church_id, "sharded_database"=>$sharded_db_name);
 						$signup_details = array();
 						$signup_details["customer_email"] = $email;
-						$signup_details["first_name"] = $first_name;
-						$signup_details["last_name"] = $last_name;
+						$signup_details["first_name"] = $user_full_name;
+						$signup_details["last_name"] = "";
 						$signup_details["church_name"] = $church_name;
 						$signup_details["church_addr"] = $church_location;
 

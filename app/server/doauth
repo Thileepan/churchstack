@@ -132,9 +132,7 @@ else if($req == 'signup')
 	session_start();
 	$church_name = trim($_POST['churchName']);
 	$church_location = trim($_POST['churchLocation']);
-	$first_name = trim($_POST['name']);
-	$middle_name = trim($_POST['']);
-	$last_name = trim($_POST['']);
+	$user_full_name = trim($_POST['name']);
 	$email = trim($_POST['email']);
 	$mobile = trim($_POST['phone']);
 	$referrer_email = trim($_POST['referrerEmail']);
@@ -148,7 +146,7 @@ else if($req == 'signup')
 	if($security_text == trim($_SESSION['cap_sec_text']))
 	{
 		$users_obj = new Users($APPLICATION_PATH);
-		$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $first_name, $middle_name, $last_name, $email, $mobile, $referrer_email, $password);
+		$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $user_full_name, $email, $mobile, $referrer_email, $password);
 	}
 	else
 	{

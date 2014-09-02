@@ -629,14 +629,20 @@ function authenticateUser()
 	var formPostData = 'req=authenticate&username=' + user + '&password=' + pass;
 	if(user == "" || pass == "")
 	{
+		/** /
 		var resultToUI = getAlertDiv(2, 'Username and Password cannot be empty.');
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
+		/**/
+		alert("Username and Password cannot be empty");
 		return false;
 	}
 
-	document.getElementById('divSignInBtn').style.display = 'none';
-	document.getElementById('divLoadingSearchImg').style.display = '';
+
+	var loginBtn = $('#btnSignIn');
+	loginBtn.button('loading');
+//	document.getElementById('divSignInBtn').style.display = 'none';
+//	document.getElementById('divLoadingSearchImg').style.display = '';
 
 	$.ajax({
 		type:'POST',
@@ -661,13 +667,17 @@ function authenticateUserResponse(response)
 		//window.location.href = 'http://localhost/Profilestack';//../index.php';
 		window.location.href = 'dashboard';
 	} else {
-		//resultToUI = getAlertDiv(2, 'Invalid Username or Password.');
+		alert(loginMessage);
+		var loginBtn = $('#btnSignIn');
+		loginBtn.button('reset');
+		/** /
 		resultToUI = getAlertDiv(2, loginMessage);
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
 
 		document.getElementById('divSignInBtn').style.display = '';
 		document.getElementById('divLoadingSearchImg').style.display = 'none';
+		/**/
 	}
 	return false;
 }
@@ -925,19 +935,21 @@ function previewProfileImage(input, previewImgID) {
 
 function signUpNewAccount()
 {
-	document.getElementById('alertRow').style.display = 'none';
+	//document.getElementById('alertRow').style.display = 'none';
+
+
 	document.getElementById('church').value = trim(document.getElementById('church').value);
-	document.getElementById('location').value = trim(document.getElementById('location').value);
+//	document.getElementById('location').value = trim(document.getElementById('location').value);
 	document.getElementById('name').value = trim(document.getElementById('name').value);
 	document.getElementById('email').value = trim(document.getElementById('email').value);
-	document.getElementById('phone').value = trim(document.getElementById('phone').value);
+//	document.getElementById('phone').value = trim(document.getElementById('phone').value);
 	document.getElementById('referrerEmail').value = trim(document.getElementById('referrerEmail').value);
 	document.getElementById('password').value = trim(document.getElementById('password').value);
 	var churchName = document.getElementById('church').value;
-	var churchLocation = document.getElementById('location').value;
+	var churchLocation = "";//document.getElementById('location').value;
 	var name = document.getElementById('name').value;
 	var email = document.getElementById('email').value;
-	var phone = document.getElementById('phone').value;
+	var phone = "";//document.getElementById('phone').value;
 	var referrerEmail = trim(document.getElementById('referrerEmail').value);
 	var password = document.getElementById('password').value;
 	var securityText = trim(document.getElementById('securityText').value);
@@ -967,21 +979,28 @@ function signUpNewAccount()
 		errorMessage = 'Name field cannot be empty.';
 	} else if(securityText == '') {
 		errorMessage = 'Security check field cannot be empty. Type the characters shown in the security image.';
+	} else if(!document.getElementById("chkTOS").checked) {
+		errorMessage = 'Please read the terms of service and select the check box to confirm us that you agree to the TOS and our Privacy Policy';
 	}
 
 	if(errorMessage != '') {
+		/* * /
 		var resultToUI = getAlertDiv(2, errorMessage);
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
-		//$(window).scrollTop();
 		$("html, body").animate({ scrollTop: 0 }, 1500);
-		//$(document).scrollTop();
-		//$('html,body').scrollTop(0);
+		/**/
+		alert(errorMessage);
 		return false;
 	}
 
+	/** /
 	document.getElementById('spanSignUpBtn').style.display = 'none';
 	document.getElementById('spanLoadingImg').style.display = '';
+	/**/
+
+	var signUpBtn = $('#btnSignUp');
+	signUpBtn.button('loading');
 
 	$.ajax({
 		type:'POST',
@@ -998,6 +1017,10 @@ function signUpNewAccountResponse(response)
 	var resultCode = dataObj[0];
 	var resultMessage = dataObj[1];
 
+	var signUpBtn = $('#btnSignUp');
+	signUpBtn.button('reset');
+	alert(resultMessage);
+	/** /
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('spanSignUpBtn').style.display = '';
 	document.getElementById('spanLoadingImg').style.display = 'none';
@@ -1010,6 +1033,7 @@ function signUpNewAccountResponse(response)
 	}
 	document.getElementById('alertDiv').innerHTML = resultToUI;	
 	$("html, body").animate({ scrollTop: 0 }, 1000);
+	/**/
 }
 
 function reloadSignupCaptcha()
