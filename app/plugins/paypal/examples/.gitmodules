@@ -1,3 +1,0 @@
-[submodule "lib/paypal-digital-goods"]
-	path = lib/paypal-digital-goods
-	url = git@github.com:thenbrent/paypal-digital-goods.git

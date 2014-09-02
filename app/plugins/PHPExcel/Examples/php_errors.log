@@ -1,1 +1,0 @@
-[31-Aug-2013 12:28:21 Europe/London] PHP Fatal error:  Call to undefined function imagepng() in D:\Projects\Profilestack\plugins\PHPExcel\Classes\PHPExcel\Writer\Excel5.php on line 484
