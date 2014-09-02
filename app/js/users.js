@@ -3,8 +3,11 @@ doUsers = '../server/dousers';
 
 function forgotPassword(type)
 {
-	document.getElementById("errorDiv").innerHTML = "";
-	document.getElementById("successDiv").innerHTML = "";
+	if(type != 3)
+	{
+		document.getElementById("errorDiv").innerHTML = "";
+		document.getElementById("successDiv").innerHTML = "";
+	}
 
 	if(type==1)
 	{
@@ -34,6 +37,16 @@ function forgotPassword(type)
 		document.getElementById("continueBtnDiv").style.display = "none";
 		document.getElementById("continueProgDiv").style.display = "";
 	}
+	else if(type==3)
+	{
+		document.getElementById("emailLost").value = trim(document.getElementById("emailLost").value);
+		if(document.getElementById("emailLost").value == "") {
+			return false;
+		}
+		var forgotPwdBtn = $('#btnForgotPwd');
+		forgotPwdBtn.button('loading');
+		doUsers = document.getElementById("doUsersHttpdFile").value;
+	}
 	var formPostData = "";
 	if(type==1) {
 		formPostData += "req=1";
@@ -45,6 +58,10 @@ function forgotPassword(type)
 		formPostData += "&email="+document.getElementById("txtEmail").value;
 		formPostData += "&pwd="+document.getElementById("txtPassword").value;
 		formPostData += "&globalSSToken="+document.getElementById("globalSessionSecToken").value;
+	} else if(type==3) {
+		formPostData += "req=1";
+		formPostData += "&type="+type;
+		formPostData += "&email="+document.getElementById("emailLost").value;
 	}
 	$.ajax({
 		type:'POST',
@@ -90,6 +107,19 @@ function processForgotPwdResponse(response)
 			document.getElementById("emailDiv").style.display = "none";
 			document.getElementById("introHeaderDiv").style.display = "none";
 			document.getElementById("finalMsgDiv").style.display = "";
+			return false;
+		}
+	} else 	if(dataObj.type==3) {
+		if(dataObj.rsno==0) {
+			var forgotPwdBtn = $('#btnForgotPwd');
+			forgotPwdBtn.button('reset');
+			alert(dataObj.msg);
+			return false;
+		} else if(dataObj.rsno==1) {
+			var forgotPwdBtn = $('#btnForgotPwd');
+			forgotPwdBtn.button('reset');
+			alert(dataObj.msg);
+			document.getElementById("emailLost").value = "";
 			return false;
 		}
 	}
