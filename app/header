@@ -70,7 +70,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 						<div class="nav-collapse collapse">
 							<ul class="nav pull-left">
 								<li class="" id="mdashboard" onclick="menulinkClicked(6)"><a href="dashboard" id="dashboardLink"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
-								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="index" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
+								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="profiles" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
 								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:<?php echo ((SHOW_SUBSCRIPTION_MENU)?'':'none'); ?>"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>			
 								<li class="" id="mfunds" onclick="menulinkClicked(9)"><a href="funds" id="fundsLink"><span id="mfundsText" style="color:white">Funds</span></a></li>
 <!--								<li class="" id="mharvest" onclick="menulinkClicked(7)"><a href="harvest"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
@@ -88,7 +88,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 										<li><a href="#"><i class="icon-wrench"></i>&nbsp;Settings</a></li>
 										-->
 										<li><a href="info"><i class="icon-info-sign"></i>&nbsp;My Church</a></li>
-										<li><a href="signin"><i class="icon-off"></i>&nbsp;Logout</a></li>
+										<li><a href="index"><i class="icon-off"></i>&nbsp;Logout</a></li>
 										<li class="divider"></li>
 										<li><a href="#">Email: help@churchstack.com</a></li>
 										<li><a href="#">Version: <?php echo APP_VERSION; ?> (Beta)</a></li>
