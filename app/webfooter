@@ -1,0 +1,17 @@
+	<div class="footer-wrapper"> <!-- footer wrapper -->
+		<hr>
+		<div class="container">
+			<footer>
+				<ul class="list-inline pull-left">
+					<!-- li><a href="about-us.html">About Us</a></li>
+					<li><a href="http://www.churchstack.com/privacypolicy">Privacy Policy</a></li>
+					<li><a href="http://www.churchstack.com/termsofservice">Terms Of Service</a></li -->
+					<li><a href="http://www.churchstack.com/contactus">Contact Us</a></li>
+				</ul>
+				<span class="pull-right-xs text-muted">All Rights Reserved &copy; <a href="http://www.rcloudtechnologies.com" target="_blank">RCloud Technologies Pvt Ltd</a></span>
+				<div class="clearfix"></div>
+			</footer>
+		</div> <!-- /container -->
+	</div> <!-- / footer wrapper -->
+</body>
+</html>

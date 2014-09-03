@@ -15,6 +15,15 @@ define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
 define('REFERRAL_PROGRAM_URL', 'http://www.churchstack.com/ref/referralpg.html');
 define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd');
 define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
+define('PRODUCT_CONTACT_US', 'http://www.churchstack.com/contactus');
+define('PRODUCT_PRIV_POLICY_EMAIL', "support@churchstack.com");
+
+//Company Related stuff
+define('COMPANY_WEBSITE', 'http://www.rcloudtechnologies.com');
+define('COMPANY_FULL_NAME', 'RCloud Technologies Pvt Ltd.');
+define('COMPANY_SHORT_NAME', 'RCloud Technologies');
+define('COMPANY_FULL_ADDRESS', "RCloud Technologies Pvt Ltd., Pallavaram, Chennai-600 043, Tamil Nadu, India");
+define('COMPANY_CONTACT_US', 'http://www.rcloudtechnologies.com/contactus');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));

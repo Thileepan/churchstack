@@ -1,0 +1,43 @@
+<?php
+	$page_title_for_header = ((trim($page_title_for_header) != "")? trim($page_title_for_header) : PRODUCT_NAME);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="shortcut icon" href="<?php echo $APPLICATION_PATH; ?>css/mist/img/favicon.png">
+
+	<title><?php echo $page_title_for_header; ?></title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/color-styles.css" rel="stylesheet">
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/ui-elements.css" rel="stylesheet">
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/custom.css" rel="stylesheet">
+
+	<!-- Resources -->
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/animate.css" rel="stylesheet">
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/font-awesome/css/font-awesome.css" rel="stylesheet">
+	<!-- link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css' -->
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	<![endif]-->
+</head>
+
+<body class="body-green">
+
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div>
+			<a href="<?php echo PRODUCT_WEBSITE; ?>" target="_blank"><img src="<?php echo $APPLICATION_PATH; ?>images/cs-web-logo.png" align="middle"></a>
+		</div>
+	</div>
