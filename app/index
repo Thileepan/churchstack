@@ -138,7 +138,7 @@
 			  Login to your account.
 			</p -->
 			<div class="form-white">
-			  <form role="form">
+			  <form role="form" onsubmit="return false">
 			    <div class="form-group">
 				  <label for="email">Email address</label>
 				  <input type="email" class="form-control" id="inputUser" name="inputUser" placeholder="Enter email" onblur="javascript: this.value = trim(this.value.toLowerCase());" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){authenticateUser()}">
@@ -158,7 +158,7 @@
 			  <p><a href="#" id="lost-btn">Lost your password?</a></p>
 			  <div class="hidden" id="lost-form">
 			  <p>Enter your email address and we will send you the instructions to reset your password.</p>
-				<form role="form">
+				<form role="form" onsubmit="return false">
 					<div class="form-group">
 						<label for="emailLost">Email address</label>
 						<input type="email" class="form-control" name="emailLost" id="emailLost" placeholder="Enter email" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(3)}">
@@ -182,7 +182,7 @@
 			  Please fill out the form below to create a new account.
 			</p -->
 			<div class="form-white">
-				<form role="form">
+				<form role="form" onsubmit="return false">
 				  <div class="form-group">
 				    <label for="church">Church Name</label>
 					<input type="text" class="form-control" name="church" id="church" placeholder="Name of your church">

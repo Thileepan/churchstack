@@ -3,7 +3,7 @@ doUsers = '../server/dousers';
 
 function forgotPassword(type)
 {
-	if(type != 3)
+	if(type != 3 && type != 1)
 	{
 		document.getElementById("errorDiv").innerHTML = "";
 		document.getElementById("successDiv").innerHTML = "";
@@ -11,12 +11,21 @@ function forgotPassword(type)
 
 	if(type==1)
 	{
+		document.getElementById("errorResultDiv").style.display = "none";
+		document.getElementById("errorResultMsg").innerHTML = "";
+		document.getElementById("successResultDiv").style.display = "none";
+		document.getElementById("successResultMsg").innerHTML = "";
 		document.getElementById("txtEmail").value = trim(document.getElementById("txtEmail").value);
 		if(document.getElementById("txtEmail").value == "") {
 			return false;
 		}
+		var forgotPwdBtn = $('#btnForgotPwd');
+		forgotPwdBtn.button('loading');
+		doUsers = document.getElementById("doUsersHttpdFile").value;
+		/** /
 		document.getElementById("continueBtnDiv").style.display = "none";
 		document.getElementById("continueProgDiv").style.display = "";
+		/**/
 	}
 	else if(type==2)
 	{
@@ -78,18 +87,34 @@ function processForgotPwdResponse(response)
 	var dataObj = eval("(" + response + ")" );
 	if(dataObj.type==1) {
 		if(dataObj.rsno==0) {
+			/** /
 			document.getElementById("errorDiv").innerHTML = dataObj.msg;
 			document.getElementById("successDiv").innerHTML = "";
-			document.getElementById("continueBtnDiv").style.display = "";
-			document.getElementById("continueProgDiv").style.display = "none";
+			//document.getElementById("continueBtnDiv").style.display = "";
+			//document.getElementById("continueProgDiv").style.display = "none";
+			/**/
+			document.getElementById("errorResultMsg").innerHTML = dataObj.msg;
+			document.getElementById("errorResultDiv").style.display = "";
+			document.getElementById("successResultDiv").style.display = "none";
+			document.getElementById("successResultMsg").innerHTML = "";
 			document.getElementById("txtEmail").focus();
+			var forgotPwdBtn = $('#btnForgotPwd');
+			forgotPwdBtn.button('reset');
 			return false;
 		} else if(dataObj.rsno==1) {
+			/** /
 			document.getElementById("errorDiv").innerHTML = "";
 			document.getElementById("successDiv").innerHTML = dataObj.msg;
-			document.getElementById("continueBtnDiv").style.display = "none";
-			document.getElementById("continueProgDiv").style.display = "none";
+			//document.getElementById("continueBtnDiv").style.display = "none";
+			//document.getElementById("continueProgDiv").style.display = "none";
+			/**/
 			document.getElementById("emailDiv").style.display = "none";
+			document.getElementById("errorResultMsg").innerHTML = "";
+			document.getElementById("errorResultDiv").style.display = "none";
+			document.getElementById("successResultMsg").innerHTML = dataObj.msg;
+			document.getElementById("successResultDiv").style.display = "";
+			var forgotPwdBtn = $('#btnForgotPwd');
+			forgotPwdBtn.button('reset');
 			return false;
 		}
 	} else 	if(dataObj.type==2) {

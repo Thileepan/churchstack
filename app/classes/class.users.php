@@ -434,7 +434,7 @@ class Users
 						$email_result = $this->constructAndSendForgotPasswordEmail($email, $pwd_reset_url);
 						if($email_result[0]==1) {
 							$toReturn[0] = 1;
-							$toReturn[1] = "An email has been sent to <b>".$email."</b> which has the instructions to reset your password. Follow the instructions given in the mail to proceed further to reset the password";
+							$toReturn[1] = "An email has been sent to <b>".$email."</b> which has the instructions to reset your password. Follow the instructions given in the mail to proceed further to reset the password<BR/><BR/>If you don't see any email in your inbox, check your spam folder and mark as 'Not A Spam' if found there.";
 						} else {
 							$toReturn[0] = 0;
 							$toReturn[1] = "An error occurred while sending the password reset email. Error : ".$email_result[1];
