@@ -3,12 +3,10 @@ doUsers = '../server/dousers';
 
 function forgotPassword(type)
 {
-	if(type != 3 && type != 1)
-	{
-		document.getElementById("errorDiv").innerHTML = "";
-		document.getElementById("successDiv").innerHTML = "";
-	}
-
+	/** /
+	document.getElementById("errorDiv").innerHTML = "";
+	document.getElementById("successDiv").innerHTML = "";
+	/**/
 	if(type==1)
 	{
 		document.getElementById("errorResultDiv").style.display = "none";
@@ -29,9 +27,28 @@ function forgotPassword(type)
 	}
 	else if(type==2)
 	{
+		document.getElementById("errorResultDiv").style.display = "none";
+		document.getElementById("errorResultMsg").innerHTML = "";
+		document.getElementById("successResultDiv").style.display = "none";
+		//document.getElementById("successResultMsg").innerHTML = "";
+
 		document.getElementById("txtEmail").value = trim(document.getElementById("txtEmail").value);
 		document.getElementById("txtPassword").value = trim(document.getElementById("txtPassword").value);
 		document.getElementById("txtConfirmPassword").value = trim(document.getElementById("txtConfirmPassword").value);
+		if(document.getElementById("txtEmail").value=="" || document.getElementById("txtPassword").value == "" || document.getElementById("txtConfirmPassword").value=="") {
+			document.getElementById("errorResultMsg").innerHTML = "All of the above fields are mandatory, fill up all the fields to reset the password";
+			document.getElementById("errorResultDiv").style.display = "";
+			return false;
+		}
+		if(document.getElementById("txtPassword").value = trim(document.getElementById("txtPassword").value))
+		if(document.getElementById("txtPassword").value != document.getElementById("txtConfirmPassword").value) {
+			document.getElementById("errorResultMsg").innerHTML = "The passwords you have entered do not match. Make sure you enter the same password in both the password fields.";
+			document.getElementById("errorResultDiv").style.display = "";
+			document.getElementById("txtPassword").value = "";
+			document.getElementById("txtConfirmPassword").value = "";
+			return false;
+		}
+		/** /
 		if(document.getElementById("txtEmail").value=="" || document.getElementById("txtPassword").value == "" || document.getElementById("txtConfirmPassword").value=="") {
 			document.getElementById("errorDiv").innerHTML = "All of the above fields are mandatory, fill up all the fields to reset the password";
 			return false;
@@ -45,6 +62,10 @@ function forgotPassword(type)
 		}
 		document.getElementById("continueBtnDiv").style.display = "none";
 		document.getElementById("continueProgDiv").style.display = "";
+		/**/
+		var resetPwdBtn = $('#btnContinue');
+		resetPwdBtn.button('loading');
+		doUsers = document.getElementById("doUsersHttpdFile").value;
 	}
 	else if(type==3)
 	{
@@ -119,12 +140,28 @@ function processForgotPwdResponse(response)
 		}
 	} else 	if(dataObj.type==2) {
 		if(dataObj.rsno==0) {
+			var resetPwdBtn = $('#btnContinue');
+			resetPwdBtn.button('reset');
+			document.getElementById("errorResultMsg").innerHTML = dataObj.msg;
+			document.getElementById("errorResultDiv").style.display = "";
+			document.getElementById("successResultDiv").style.display = "none";
+			//document.getElementById("successResultMsg").innerHTML = "";
+			/** /
 			document.getElementById("errorDiv").innerHTML = dataObj.msg;
 			document.getElementById("successDiv").innerHTML = "";
 			document.getElementById("continueBtnDiv").style.display = "";
 			document.getElementById("continueProgDiv").style.display = "none";
+			/**/
 			return false;
 		} else if(dataObj.rsno==1) {
+			var resetPwdBtn = $('#btnContinue');
+			resetPwdBtn.button('reset');
+			document.getElementById("emailDiv").style.display = "none";
+			document.getElementById("errorResultDiv").style.display = "none";
+			document.getElementById("errorResultMsg").innerHTML = "";
+			//document.getElementById("successResultMsg").innerHTML = "";//Data is already there
+			document.getElementById("successResultDiv").style.display = "";
+			/** /
 			document.getElementById("errorDiv").innerHTML = "";
 			document.getElementById("successDiv").innerHTML = "";
 			document.getElementById("continueBtnDiv").style.display = "none";
@@ -132,6 +169,7 @@ function processForgotPwdResponse(response)
 			document.getElementById("emailDiv").style.display = "none";
 			document.getElementById("introHeaderDiv").style.display = "none";
 			document.getElementById("finalMsgDiv").style.display = "";
+			/**/
 			return false;
 		}
 	} else 	if(dataObj.type==3) {

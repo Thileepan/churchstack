@@ -185,29 +185,29 @@
 				<form role="form" onsubmit="return false">
 				  <div class="form-group">
 				    <label for="church">Church Name</label>
-					<input type="text" class="form-control" name="church" id="church" placeholder="Name of your church">
+					<input type="text" class="form-control" name="church" id="church" placeholder="Name of your church"  onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
 				    <label for="referrerEmail">Referrer's Email Address</label>
-					<input type="email" class="form-control" name="referrerEmail" id="referrerEmail" placeholder="Your Referrer's Email Address (if any)">
+					<input type="email" class="form-control" name="referrerEmail" id="referrerEmail" placeholder="Your Referrer's Email Address (if any)"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
 				    <label for="name">Your Name</label>
-					<input type="text" class="form-control" name="name" id="name" placeholder="Your Full Name">
+					<input type="text" class="form-control" name="name" id="name" placeholder="Your Full Name"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
 				    <label for="email">Your Email Address</label>
-					<input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address" onblur="javascript: this.value = trim(this.value.toLowerCase());">
+					<input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address" onblur="javascript: this.value = trim(this.value.toLowerCase());"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
 					<div class="row">
 					  <div class="col-sm-6">
 					  <label for="password">Password</label>
-					  <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+					  <input type="password" class="form-control" name="password" id="password" placeholder="Password"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 					  </div>
 					  <div class="col-sm-6">
 					  <label for="confirmPassword">Repeat password</label>
-					  <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Same Password Again">
+					  <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Same Password Again"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 					  </div>
 					</div>
 				  </div>
@@ -218,7 +218,7 @@
 							<tr>
 								<td width="25%"><span id="captchaSpan"><img src="plugins/simplecaptcha/image" alt="security image" /></span>&nbsp;</td>
 								<td width="30%"><button class="btn btn-small" onclick="Javascript: return reloadSignupCaptcha();"><span nowrap><img src="images/blue-refresh.png" alt="Reload Security Image" /> Refresh</span></button></td>
-								<td width="45%"><input type="text" name="securityText" id="securityText" class="form-control" placeholder="Type here"></td>
+								<td width="45%"><input type="text" name="securityText" id="securityText" class="form-control" placeholder="Type here" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}"></td>
 							</tr>
 						</table>
 					</div>
@@ -230,7 +230,7 @@
 					  <input type="checkbox" name="chkTOS" id="chkTOS"> I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
 					</label>
 				  </div>
-				  <button type="button" class="btn btn-block btn-color btn-xxl" id="btnSignUp" name="btnSignUp" data-loading-text="Creating your account..." onclick="signUpNewAccount();">Create an account</button>
+				  <button type="button" class="btn btn-block btn-color btn-xxl" id="btnSignUp" name="btnSignUp" data-loading-text="Creating your account..." onclick="return signUpNewAccount();">Create an account</button>
 				</form>
 			</div>
 		  </div>

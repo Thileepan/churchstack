@@ -21,71 +21,140 @@
 	regenerateGlobalSessionSecurityTokens();
 ?>
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<!-- Jquery -->
-		<script src="<?php echo $APPLICATION_PATH;?>plugins/jquery/jquery.js"></script>
-		<!-- Bootstrap -->
-		<link href="<?php echo $APPLICATION_PATH;?>plugins/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
-		<script src="<?php echo $APPLICATION_PATH;?>plugins/bootstrap/js/bootstrap.js"></script>
-		<!-- Custom CSS-->
-		<link href="<?php echo $APPLICATION_PATH;?>css/custom.css" rel="stylesheet">
-		<!-- JavaScript -->
-	    <script src="<?php echo $APPLICATION_PATH;?>js/app.js"></script>
-	    <script src="<?php echo $APPLICATION_PATH;?>js/users.js"></script>
-	</head>
-	<body data-offset="50" data-twttr-rendered="true" onload="document.getElementById('txtPassword').focus();">
-		<div class="container">
-			<div class="span12 text-center" id="introHeaderDiv">
-				<div style="color:brown;"><h4>Set a new password for your account to login to <?php echo PRODUCT_WEBSITE; ?></h4></div>
-			</div>
-			<div class="span12 text-center" id="finalMsgDiv" style="padding-top:75px; display:none;">
-				<div style="color:green;"><h4>You have now set a new password for your account successfully. You can now login to <a href="<?php echo CS_LOGIN_WEBSITE; ?>" target="_parent"><?php echo CS_LOGIN_WEBSITE; ?></a> with your new password to access your account.</h4></div>
-			</div>
-			<div class="span12 text-center" style="padding-top:20px; height:30px">
-				<span class="label label-danger" id="errorDiv"></span>
-				<span class="label label-success" id="successDiv"></span>
-			</div>
-			<div class="offset3 span4 text-center" style="padding-top:20px;" id="emailDiv">
-				<div class="row-fluid well text-center">
-					<form onsubmit="return false;">
-						<!-- div class="control-group">
-							<label class="control-label" for="txtEmail">Email</label>
-							<div class="controls">
-								<input type="text" id="txtEmail" class="span4" name="txtEmail" value="">
-							</div>
-						</div -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="img/favicon.png">
 
-						<div class="span12 text-center">
-							<div class="control-group">
-								<div class="controls">
-									<input type="text" id="txtEmail" class="span12" name="txtEmail" placeholder="Email Address" value="<?php echo trim($email); ?>" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(2)}" readonly>
-								</div>
-								<div class="controls" id="newPwdText" style="display:;">
-									<input type="password" id="txtPassword" class="span12" name="txtPassword" placeholder="New Password" value="" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(2)}">
+    <title>ChurchStack - Forgot Password</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/color-styles.css" rel="stylesheet">
+    <link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/ui-elements.css" rel="stylesheet">
+    <link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/custom.css" rel="stylesheet">
+	
+	<!-- Resources -->
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/animate.css" rel="stylesheet">
+	<link href="<?php echo $APPLICATION_PATH; ?>css/mist/css/font-awesome/css/font-awesome.css" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body class="body-green">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div>
+		  <a href="<?php echo PRODUCT_WEBSITE; ?>" target="_blank"><img src="<?php echo $APPLICATION_PATH; ?>images/cs-web-logo.png" align="middle"></a>
+	</div>
+    </div>
+
+    <!-- Body -->
+	<div class="wrapper body-inverse"  style="padding-top:60px !important;"> <!-- wrapper -->
+		<div class="container">
+			<div class="row">
+			<!-- Sign In form -->
+				<div class="col-sm-12" align="center">
+					<h2>Reset your password</h2>
+				</div>
+				<div id="successResultDiv" style="display:none;" class="col-sm-8 col-sm-offset-2" align="center">
+					<div class="form-white">
+						<h3 class="text-color" id="successResultMsg">You have now set a new password for your account successfully. You can now login to <a href="<?php echo CS_LOGIN_WEBSITE; ?>" target="_parent"><?php echo CS_LOGIN_WEBSITE; ?></a> with your new password to access your account.</h3>
+					</div>
+				</div>
+				<div id="emailDiv">
+					<!-- div class="col-sm-12" align="center">
+						<h4>Set a new password for your account</h4>
+					</div -->
+					<div class="col-sm-4 col-sm-offset-4">
+						<!-- p class="text-muted">
+						Login to your account.
+						</p -->
+						<div class="form-white">
+							<form role="form" onsubmit="return false">
+								<div class="form-group">
+									<!-- label for="txtEmail">Email address</label -->
+									<input type="email" class="form-control" id="txtEmail" name="txtEmail" placeholder="Email Address" value="<?php echo trim($email); ?>" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(2)}" readonly>
+									<input type="hidden" name="doUsersHttpdFile" id="doUsersHttpdFile" value="<?php echo $APPLICATION_PATH."server/dousers"; ?>">
 									<input type="hidden" id="globalSessionSecToken" name="globalSessionSecToken" value="<?php echo $_SESSION["globalSessionSecurityToken"]; ?>">
 								</div>
-								<div class="controls" id="reenterPwdText" style="display:;">
-									<input type="password" id="txtConfirmPassword" class="span12" name="txtConfirmPassword" placeholder="Repeat New Password" value="" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return changePassword(2)}">
+								<div class="form-group">
+									<!-- label for="txtPassword">New Password</label -->
+									<input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Enter a new password" onblur="javascript: this.value = trim(this.value.toLowerCase());" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){forgotPassword(2)}">
 								</div>
-							</div>
-							<div class="span12" id="continueBtnDiv">
-								<span>
-									<button id="btnContinue" class="span12 btn btn-primary btn-large btn-block" align="left" onclick="return forgotPassword(2);">Continue</button>
-								</span>
-							</div>
-							<!-- div class="span12" id="accessBtnDiv" style="display:none;">
-								<span>
-									<button id="btnAccess" class="span12 btn btn-primary btn-large btn-block" align="left" onclick="return validateLogin(2);">Get Access</button>
-								</span>
-							</div-->
-							<div id="continueProgDiv" style="display:none;">
-								<span><img src="<?php echo $APPLICATION_PATH;?>images/ajax-loader.gif">&nbsp;Please wait...</span>
-							</div>
-						<div>
-					</form>
+								<div class="form-group">
+									<!-- label for="txtConfirmPassword">Repeat New Password</label -->
+									<input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword" placeholder="Same password again" onblur="javascript: this.value = trim(this.value.toLowerCase());" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){forgotPassword(2)}">
+								</div>
+								<button type="button" class="btn btn-block btn-color btn-xxl" data-loading-text="Updating now..." onclick="return forgotPassword(2);" id="btnContinue" name="btnContinue">Update Password</button>
+							</form>
+						</div>
+						<!-- div class="form-avatar hidden-xs">
+						<span class="fa-stack fa-4x">
+						<i class="fa fa-circle fa-stack-2x"></i>
+						<i class="fa fa-user fa-stack-1x"></i>
+						</span>
+						</div -->
+					</div>
+				</div>
+				<div id="errorResultDiv" style="display:none;" class="col-sm-8 col-sm-offset-2" align="center">
+					<div class="form-white">
+						<h3 style="color:#e74c3c;" id="errorResultMsg"></h3>
+					</div>
 				</div>
 			</div>
 		</div>
-	</body>
-</html>
+	</div> <!-- / wrapper -->
+    
+	<div class="footer-wrapper"> <!-- footer wrapper -->
+      <hr>
+		<div class="container">
+		  <footer>
+			  <ul class="list-inline pull-left">
+				<li><a href="about-us.html">About Us</a></li>
+				<li><a href="#">Privacy Policy</a></li>
+				<li><a href="#">Terms and Conditions</a></li>
+				<li><a href="contact-us.html">Contact Us</a></li>
+			  </ul>
+			  <span class="pull-right-xs text-muted">&copy; The Mist Template</span>
+			<div class="clearfix"></div>
+		  </footer>
+		</div> <!-- /container -->
+	</div> <!-- / footer wrapper -->
+
+	<!-- Style Toggle -->
+	  <!-- i class="fa fa-gears fa-lg style-toggle-btn show hidden-xs"></i>
+	  <div class="style-toggle text-center hidden">
+	    <i class="fa fa-times-circle fa-2x style-toggle-close hidden-xs"></i>
+		<ul>
+		  <li class="green"></li>
+		  <li class="blue"></li>
+		  <li class="red"></li>
+		  <li class="amethyst"></li>
+		</ul>
+	  </div -->
+	
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/bootstrap.min.js"></script>
+    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/custom.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/scrolltopcontrol.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/app.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/users.js"></script>
+	<script type="text/javascript">
+		document.getElementById('txtEmail').focus();
+	</script>
+</body></html>

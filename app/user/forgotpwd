@@ -45,7 +45,7 @@
     </div>
 
     <!-- Body -->
-	<div class="wrapper body-inverse"> <!-- wrapper -->
+	<div class="wrapper body-inverse" style="padding-top:60px !important;"> <!-- wrapper -->
 		<div class="container">
 			<div class="row">
 			<!-- Sign In form -->
