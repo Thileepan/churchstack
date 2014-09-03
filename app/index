@@ -109,7 +109,7 @@
 				</div>
 				  <div class="checkbox">
 					<label>
-					  <input type="checkbox" name="chkTOS" id="chkTOS"> I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+					  <input type="checkbox" name="chkTOS" id="chkTOS"> I agree to the <a href="<?php echo PRODUCT_TERMS_OF_SERVICE_URL; ?>">Terms of Service</a> and <a href="<?php echo PRODUCT_PRIV_POLICY_URL; ?>">Privacy Policy</a>
 					</label>
 				  </div>
 				  <button type="button" class="btn btn-block btn-color btn-xxl" id="btnSignUp" name="btnSignUp" data-loading-text="Creating your account..." onclick="return signUpNewAccount();">Create an account</button>
