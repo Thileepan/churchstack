@@ -5,7 +5,7 @@ $APPLICATION_PATH = "../";
 //This files secures the action being triggered by cross-domain attacks
 include $APPLICATION_PATH."utils/validateauth.php";
 
-include_once $APPLICATION_PATH . '/classes/class.church.php';
+include_once $APPLICATION_PATH . 'classes/class.church.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -15,21 +15,33 @@ if($req == 1)
 	//church information add/edit form page
 
 	$is_update = $_REQUEST['isUpdate'];
+	$curr_church_id = $_SESSION["churchID"];
 	if($is_update)
 	{
 		$church_obj = new Church($APPLICATION_PATH);
-		$church_details = $church_obj->getChurchInformation();
-		$church_id = $church_details[0];
-		$church_name = $church_details[1];
-		$church_desc = $church_details[2];
-		$church_addr = $church_details[3];
-		$landline = $church_details[4];
-		$mobile = $church_details[5];
-		$email = $church_details[6];
-		$website = $church_details[7];
-		$signup_time = $church_details[8];
-		$last_modified_time = $church_details[9];
-		$sharded_db = $church_details[10];
+		//$church_details = $church_obj->getChurchInformation();
+		$church_details = $church_obj->getInformationOfAChurch($curr_church_id);
+		//array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id, $referrer_church_id, $time_zone);
+		if($church_details[0]==1)
+		{
+			$church_id = $church_details[1][0];
+			$church_name = $church_details[1][1];
+			$church_desc = $church_details[1][2];
+			$church_addr = $church_details[1][3];
+			$landline = $church_details[1][4];
+			$mobile = $church_details[1][5];
+			$email = $church_details[1][6];
+			$website = $church_details[1][7];
+			$signup_time = $church_details[1][8];
+			$last_modified_time = $church_details[1][9];
+			$sharded_db = $church_details[1][10];
+			$currency_id = $church_details[1][11];
+			$unique_hash = $church_details[1][12];
+			$status = $church_details[1][13];
+			$country_id = $church_details[1][14];
+			$referrer_church_id = $church_details[1][15];
+			$time_zone = $church_details[1][16];
+		}
 	}
 
 	$to_return = '';
@@ -126,32 +138,66 @@ else if($req == 2)
 }
 else if($req == 3)
 {
+	$curr_church_id = $_SESSION["churchID"];
 	//get church information
 	$church_obj = new Church($APPLICATION_PATH);
-	$church_details = $church_obj->getChurchInformation();
-	//print_r($church_details);
-
+	//$church_details = $church_obj->getChurchInformation();
+	$church_details = $church_obj->getInformationOfAChurch($curr_church_id);
+	//array($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $signup_time, $last_update_time, $sharded_database, $currency_id, $unique_hash, $status, $country_id, $referrer_church_id, $time_zone);
 	$to_return = '';
-	if(is_array($church_details) && COUNT($church_details) > 0)
+	if($church_details[0]==1)
 	{
+		$church_id = $church_details[1][0];
+		$church_name = $church_details[1][1];
+		$church_desc = $church_details[1][2];
+		$church_addr = $church_details[1][3];
+		$landline = $church_details[1][4];
+		$mobile = $church_details[1][5];
+		$email = $church_details[1][6];
+		$website = $church_details[1][7];
+		$signup_time = $church_details[1][8];
+		$last_modified_time = $church_details[1][9];
+		$sharded_db = $church_details[1][10];
+		$currency_id = $church_details[1][11];
+		$unique_hash = $church_details[1][12];
+		$status = $church_details[1][13];
+		$country_id = $church_details[1][14];
+		$referrer_church_id = $church_details[1][15];
+		$time_zone = $church_details[1][16];
+
 		$to_return .= '<div class="row-fluid">';
 			$to_return .= '<div class="span8">';
 				$to_return .= '<div>';
 					$to_return .= '<b>';
-						$to_return .= $church_details[0];
+						$to_return .= $church_name;
 					$to_return .= '</b>&nbsp;&nbsp;&nbsp;<a href="#" onclick="getChurchInformationForm(1)">(Edit)</a>';
-					$to_return .= '<BR><span class="muted">'.$church_details[1].'</span>';
+					$to_return .= '<BR><span class="muted">'.$church_desc.'</span>';
 				$to_return .= '</div><BR>';
 				$to_return .= '<div>';
-					$to_return .= '<pre>'.$church_details[2];
-					if($church_details[3] != "") {
-						$to_return .= '<BR><abbr title="Phone">PH:</abbr>&nbsp;'.$church_details[3];
+					$to_return .= '<pre>';
+					if(trim($church_desc) != "") {
+						$to_return .= $church_desc;
 					}
-					if($church_details[4] != "") {
-						$to_return .= '<BR><abbr title="Mobile">M:</abbr>&nbsp;'.$church_details[4];
+					if(trim($church_addr) != "") {
+						$to_return .= '<BR><abbr title="Address">Address :</abbr>&nbsp;'.$church_addr;
 					}
-					$to_return .= "<BR>".$church_details[5];
-					$to_return .= "<BR><a href='".$church_details[6]."' target='_blank'>".$church_details[6]."</a></pre>";
+					if(trim($landline) != "") {
+						$to_return .= '<BR><abbr title="Phone">Phone :</abbr>&nbsp;'.$landline;
+					}
+					if(trim($mobile) != "") {
+						$to_return .= '<BR><abbr title="Mobile">Mobile :</abbr>&nbsp;'.$mobile;
+					}
+					if(trim($email) != "") {
+						$to_return .= '<BR><abbr title="Mobile">Email :</abbr>&nbsp;'.$email;
+					}
+					if(trim($website) != "") {
+						$to_return .= "<BR><a href='".$website."' target='_blank'>".$website."</a>";
+					}
+					if(trim($time_zone) != "") {
+						$to_return .= "<BR>".$time_zone;
+					}
+					
+				$to_return .= '</pre>';
 				$to_return .= '</div><BR>';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
@@ -164,6 +210,7 @@ else if($req == 3)
 			$to_return .= '</div>';
 		$to_return .= '</div>';
 	}
+
 	echo $to_return;
 	exit;
 }

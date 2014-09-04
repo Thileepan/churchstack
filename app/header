@@ -81,7 +81,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span style="color:white;"><i class="icon-user icon-white"></i>&nbsp;<?php echo $_SESSION['username']; ?><b class="caret"></b></span></a>
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span style="color:white;"><i class="icon-user icon-white"></i>&nbsp;<?php echo $_SESSION['email']; ?><b class="caret"></b></span></a>
 									<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 										<!--
 										<li><a href="#"><i class="icon-fire"></i>&nbsp;Version</a></li>
