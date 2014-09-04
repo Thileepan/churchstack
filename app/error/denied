@@ -1,0 +1,35 @@
+<?php
+	$APPLICATION_PATH = "../";
+	@include_once($APPLICATION_PATH."utils/utilfunctions.php");
+	@include_once($APPLICATION_PATH."conf/config.php");
+	$page_title_for_header = PRODUCT_NAME." - Access Denied";
+	$errorToShow = $_SESSION["errorToShow"];
+?>
+<?php
+	include($APPLICATION_PATH."webheader");
+?>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div>
+		  <a href="<?php echo PRODUCT_WEBSITE; ?>" target="_blank"><img src="<?php echo $APPLICATION_PATH; ?>images/cs-web-logo.png" align="middle"></a>
+	</div>
+    </div>
+
+    <!-- Body -->
+	<div class="wrapper body-inverse"  style="padding-top:60px !important;"> <!-- wrapper -->
+		<div class="container">
+			<div class="row">
+				<div id="errorResultDiv" style="display:; padding-top:60px !important;" class="col-sm-8 col-sm-offset-2" align="center">
+					<div class="form-white">
+						<h3 style="color:#e74c3c;" id="errorResultMsg">
+							<?php echo $errorToShow; ?>
+							<br><br>Contact our support at <a href="mailto:<?php echo SUPPORT_EMAIL; ?>" target="_parent" style="color:#1b96d1;"><?php echo SUPPORT_EMAIL; ?></a> to resolve this problem.
+						</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- / wrapper -->
+<?php
+	include($APPLICATION_PATH."webfooter");
+?>

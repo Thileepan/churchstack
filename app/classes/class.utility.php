@@ -82,7 +82,6 @@ class Utility
 		include_once($APPLICATION_PATH."classes/class.users.php");
 		include_once($APPLICATION_PATH."classes/class.church.php");
 		include_once($APPLICATION_PATH."classes/class.license.php");
-		include_once($APPLICATION_PATH."classes/class.license.php");
 		include_once($APPLICATION_PATH."classes/class.profiles.php");
 		$users_obj = new Users($APPLICATION_PATH);
 		$users_details = $users_obj->getUserInformation($user_id, $church_id);
@@ -98,6 +97,7 @@ class Utility
 		$_SESSION['email'] = $users_details[1][3];
 		$_SESSION['roleID'] = $users_details[1][4];
 		//$_SESSION['password'] = $users_details[1][5];
+		$_SESSION['userStatus'] = $users_details[1][8];
 		$_SESSION['loginTime'] = time();
 		$_SESSION['session_token_1'] = md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']);
 		$_SESSION['session_token_2'] = md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']);

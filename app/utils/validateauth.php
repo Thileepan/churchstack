@@ -32,6 +32,7 @@ if(!function_exists('validateSession'))
 			$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
 		}
 		
+		//Licensing related stuff...
 		if(isset($_SESSION['allowChurchUsage']) && $_SESSION['allowChurchUsage'] != 1)
 		{
 			if(isset($_SESSION['isOnTrial']))
@@ -70,6 +71,19 @@ if(!function_exists('validateSession'))
 			{
 				header('Location:'.$APPLICATION_PATH."purchase/subscribe");
 			}
+		}
+
+		//Church Deactivated....
+		if(isset($_SESSION["churchStatus"]) && $_SESSION["churchStatus"] != 1)
+		{
+			$_SESSION["errorToShow"] = "Your church account has been deactivated.";
+			header('Location:'.$APPLICATION_PATH."error/denied");
+		}
+		//User is deactivated
+		else if(isset($_SESSION["userStatus"]) && $_SESSION["userStatus"] != 1)
+		{
+			$_SESSION["errorToShow"] = "Your account has been suspended.";
+			header('Location:'.$APPLICATION_PATH."error/denied");
 		}
 	}
 }
