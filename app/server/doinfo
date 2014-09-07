@@ -152,6 +152,13 @@ else if($req == 3)
 	if($church_details[0]==1)
 	{
 		$church_id = $church_details[1][0];
+		$church_misc_details = $church_obj->getChurchMiscDetails($church_id);
+		if($church_misc_details[0]==1)
+		{
+			//$church_misc_details = array($currency_code, $currency_number, $currency_desc, $country_iso_code, $country_name, $country_iso3_code, $country_calling_code, $time_zone);
+			$currency_desc = $church_misc_details[1][2];
+			$country_name = $church_misc_details[1][4];
+		}
 		$church_name = $church_details[1][1];
 		$church_desc = $church_details[1][2];
 		$church_addr = $church_details[1][3];
@@ -179,28 +186,14 @@ else if($req == 3)
 				$to_return .= '</div><BR>';
 				$to_return .= '<div>';
 					$to_return .= '<pre>';
-					if(trim($church_desc) != "") {
-						$to_return .= $church_desc;
-					}
-					if(trim($church_addr) != "") {
-						$to_return .= '<BR><abbr title="Address">Address :</abbr>&nbsp;'.$church_addr;
-					}
-					if(trim($landline) != "") {
-						$to_return .= '<BR><abbr title="Phone">Phone :</abbr>&nbsp;'.$landline;
-					}
-					if(trim($mobile) != "") {
-						$to_return .= '<BR><abbr title="Mobile">Mobile :</abbr>&nbsp;'.$mobile;
-					}
-					if(trim($email) != "") {
-						$to_return .= '<BR><abbr title="Mobile">Email :</abbr>&nbsp;'.$email;
-					}
-					if(trim($website) != "") {
-						$to_return .= "<BR><a href='".$website."' target='_blank'>".$website."</a>";
-					}
-					if(trim($time_zone) != "") {
-						$to_return .= "<BR>".$time_zone;
-					}
-					
+					$to_return .= '<abbr title="Address">Address :</abbr>&nbsp;'.$church_addr;
+					$to_return .= '<BR><abbr title="Phone">Phone :</abbr>&nbsp;'.$landline;
+					$to_return .= '<BR><abbr title="Mobile">Mobile :</abbr>&nbsp;'.$mobile;
+					$to_return .= '<BR><abbr title="Mobile">Email :</abbr>&nbsp;'.$email;
+					$to_return .= "<BR><a href='".$website."' target='_blank'>".$website."</a>";
+					$to_return .= '<BR><abbr title="Country">Country :</abbr>&nbsp;'.$country_name;
+					$to_return .= '<BR><abbr title="TimeZone">Local Time Zone :</abbr>&nbsp;'.$time_zone;
+					$to_return .= '<BR><abbr title="Currency">Local Currency :</abbr>&nbsp;'.$currency_desc;
 				$to_return .= '</pre>';
 				$to_return .= '</div><BR>';
 			$to_return .= '</div>';
