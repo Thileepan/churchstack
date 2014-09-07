@@ -1,0 +1,175 @@
+<?php
+	$APPLICATION_PATH = "../";
+
+	//IMPORTANT : The following line will log the user out if no valid session is present
+	include $APPLICATION_PATH."utils/validateauth.php";
+	//IMPORTANT : The above line will log the user out if no valid session is present
+
+	
+	include_once($APPLICATION_PATH."conf/config.php");
+	include_once($APPLICATION_PATH."classes/class.church.php");
+	include_once($APPLICATION_PATH."classes/class.utility.php");
+
+	$page_title_for_header = PRODUCT_NAME." - More Data Required";
+
+	$client_ip_address = "";
+	if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		$client_ip_address = $_SERVER['HTTP_CLIENT_IP'];
+	} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$client_ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	} else {
+		$client_ip_address = $_SERVER['REMOTE_ADDR'];
+	}
+	$church_obj = new Church($APPLICATION_PATH);
+	$country_list = array();
+	$country_result = $church_obj->getCountryDetails();//Lists all countries
+	if($country_result[0]==1)
+	{
+		$country_list = $country_result[1];
+	}
+	$currency_list = array();
+	$currency_result = $church_obj->getCurrencyDetails();//Lists all currencies
+	if($currency_result[0]==1)
+	{
+		$currency_list = $currency_result[1];
+	}
+
+	$util_obj = new Utility($APPLICATION_PATH);
+	$auto_detected_country_iso_code = $util_obj->getCountryCodeFromIP($client_ip_address);
+	$auto_detected_country_iso_code = ((trim($auto_detected_country_iso_code) != "")? trim($auto_detected_country_iso_code) : "US");
+	$timezone_list = $util_obj->getTimeZonesList();
+?>
+<?php
+	include($APPLICATION_PATH."webheader");
+?>
+    <!-- Body -->
+	<div class="wrapper body-inverse"  style="padding-top:60px !important;"> <!-- wrapper -->
+	  <div class="container">
+	    <div class="row">
+		  <div class="col-sm-8 col-sm-offset-2">
+		    <h2 class="text-center">One more step</h2>
+		  </div>
+		<div class="col-sm-6 col-sm-offset-3">
+		    <!-- h2 class="text-center">Contact Us</h2 -->
+			<p class="text-muted text-center">
+			  We need the following details as well to customize your account for you
+			</p>
+			<!-- p class="text-center text-muted" id="signed-in"><i class="fa fa-circle-o text-color"></i> Show as seen by signed in users.</p -->
+			<div class="form-white form-contact">
+			  <form role="form" onsubmit="return false">
+			    <!-- div class="form-group">
+				  <div class="row">
+				    <div class="col-sm-6">
+				    <label for="name-1">First name</label>
+				    <input type="text" class="form-control show" id="name-1" placeholder="Enter first name">
+				    <input type="text" class="form-control hidden" id="name-1-disabled" placeholder="Enter first name" value="Alex" disabled="">
+				    </div>
+				    <div class="col-sm-6">
+				    <label for="name-2" class="pull-right-xs">Last name</label>
+				    <input type="text" class="form-control show" id="name-2" placeholder="Enter last name">
+				    <input type="text" class="form-control hidden" id="name-2-disabled" placeholder="Enter last name" value="Smith" disabled="">
+				    </div>
+				  </div>
+			    </div -->
+         			<div class="form-group">
+					<label for="churchDesc">Describe your church</label>
+					<textarea class="form-control" name="churchDesc" id="churchDesc" placeholder="Tell us something about your church in a few words"></textarea>
+				</div>
+         			<div class="form-group">
+					<label for="churchAddr">Your church's full address</label>
+					<textarea class="form-control" rows="3" name="churchAddr" id="churchAddr" placeholder="Type in the full address of your church"></textarea>
+				</div>
+				  <div class="form-group">
+				    <label for="churchLandLine">Your church's fixed/land line phone number</label>
+					<input type="text" class="form-control" name="churchLandLine" id="churchLandLine" placeholder="Fixed/Land line number of your church">
+				  </div>
+				  <div class="form-group">
+				    <label for="churchMobile">Your church's mobile number</label>
+					<input type="text" class="form-control" name="churchMobile" id="churchMobile" placeholder="Primary Mobile number of your church">
+				  </div>
+			    <div class="form-group">
+				  <label for="churchEmail">Your church's email address</label>
+				  <input type="email" class="form-control" id="churchEmail" name="churchEmail" placeholder="Email to reach your church">
+				  <!-- input type="email" class="form-control hidden" id="email-contact-disabled" placeholder="Enter email" value="user@mysite.com" disabled="" -->
+			    </div>
+			    <div class="form-group">
+				  <label for="churchWebsite">Your church's website address</label>
+				  <input type="text" class="form-control" id="churchWebsite" name="churchWebsite" placeholder="Website address of your church">
+				  <!-- input type="email" class="form-control hidden" id="email-contact-disabled" placeholder="Enter email" value="user@mysite.com" disabled="" -->
+			    </div>
+			    <div class="form-group">
+				  <label for="churchCountryID">Choose your country <span class="text-danger">*</span></label>
+				  <select class="form-control" id="churchCountryID" name="churchCountryID" placeholder="your country">
+				<?php
+					for($c=0; $c < COUNT($country_list); $c++)
+					{
+						$selected_text = ((trim($auto_detected_country_iso_code) == trim($country_list[$c][1]))? " selected" : "");//Note the space
+						echo '<option value="'.$country_list[$c][0].'"'.$selected_text.'>'.$country_list[$c][3].'</option>';
+					}
+				?>
+				  </select>
+			    </div>
+			    <div class="form-group">
+				  <label for="churchTimeZone">Choose your local time zone <span class="text-danger">*</span></label>
+				  <select class="form-control" id="churchTimeZone" name="churchTimeZone">
+				<?php
+					for($t=0; $t < COUNT($timezone_list); $t++)
+					{
+						echo '<option value="'.$timezone_list[$t]["zone"].'">'.$timezone_list[$t]["zone"].' ('.$timezone_list[$t]["diff_from_GMT"].')</option>';
+					}
+				?>
+				  </select>
+				  
+			    </div>
+			    <div class="form-group">
+				  <label for="churchCurrencyID">Choose your local currency <span class="text-danger">*</span></label>
+				  <select class="form-control" id="churchCurrencyID" name="churchCurrencyID" placeholder="your local currency">
+				<?php
+					for($v=0; $v < COUNT($currency_list); $v++)
+					{
+						$selected_text = ((trim($currency_list[$v][1]) == "USD")? " selected" : "");//Note the space
+						echo '<option value="'.$currency_list[$v][0].'"'.$selected_text.'>'.$currency_list[$v][3].' ('.$currency_list[$v][1].')</option>';
+					}
+				?>
+				  </select>
+			    </div>
+                            <button type="button" class="btn btn-block btn-color btn-xxl" data-loading-text="One moment, please..." onclick="return saveChurchMiscDetails();" id="btnSaveDetails" name="btnSaveDetails">Continue</button>
+			  </form>
+			  <hr>
+			  <p class="text-muted">
+			    All fields marked with an asterisk (<span class="text-danger">*</span>) are required.
+			  </p>
+			  <div class="form-avatar contact-avatar">
+				<span class="fa-stack fa-3x show animated flipInX">
+				  <i class="fa fa-circle fa-stack-2x"></i>
+				  <i class="fa fa-user fa-stack-1x"></i>
+				</span>
+				<!-- img src="<?php echo $APPLICATION_PATH; ?>css/mist/img/client-1.jpg" alt="..." class="hidden" -->
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div> <!-- / wrapper -->
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script -->
+
+    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/jquery.min.js"></script>
+    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/bootstrap.min.js"></script>
+    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/custom.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/scrolltopcontrol.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/app.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>plugins/jstz/jstz-1.0.4.min.js"></script>
+	<script type="text/javascript">
+		var detected_time_zone = jstz.determine();
+		if(detected_time_zone.name() != "" && detected_time_zone.name() != "undefined")
+		{
+			document.getElementById("churchTimeZone").value = detected_time_zone.name();
+		}
+	</script>
+
+<?php
+	include($APPLICATION_PATH."webfooter");
+?>

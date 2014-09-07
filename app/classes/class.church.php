@@ -34,8 +34,13 @@ class Church
 			$sharded_database = 'cs_'.$sharded_db_unique_part;
 			
 			$church_id = -1;
-			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS, COUNTRY_ID, REFERRER_CHURCH_ID, TIME_ZONE) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,?,?,?,?,?,?)';
-			$result = $this->db_conn->Execute($query, array(0,$church_name,$church_desc,$church_addr,$landline,$mobile,$email,$website,$curr_time,$curr_time,$sharded_database,$currency_id,$church_unique_hash,1, $country_id, $referrer_church_id, $time_zone));
+			$query = 'insert into CHURCH_DETAILS (CHURCH_ID, CHURCH_NAME, DESCRIPTION, ADDRESS, LANDLINE, MOBILE, EMAIL, WEBSITE, SIGNUP_TIME, LAST_UPDATE_TIME, SHARDED_DATABASE, CURRENCY_ID, UNIQUE_HASH, STATUS, COUNTRY_ID, REFERRER_CHURCH_ID, TIME_ZONE) values(?,?,?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?,NULL,?,?,NULL,?,NULL)';
+
+			//READ THIS CAREFULLY: NESAN
+			//$time_zone will be null for initial insert. Required to get other details for the first login
+			//$country_id will also be null... ..... ....
+			//currency_id also... ..... ...
+			$result = $this->db_conn->Execute($query, array(0,$church_name,$church_desc,$church_addr,$landline,$mobile,$email,$website,$curr_time,$curr_time,$sharded_database,$church_unique_hash,1, $referrer_church_id));
 			if($result) {
 				$query_1 = 'select CHURCH_ID, SHARDED_DATABASE from CHURCH_DETAILS where UNIQUE_HASH=? limit 1';
 				$result_1 = $this->db_conn->Execute($query_1, array($church_unique_hash));
@@ -46,7 +51,7 @@ class Church
 						if($church_id > 0)
 						{
 							$to_return[0] = 1;
-							$to_return[1] = "The new church has been added successfully to the systemt";
+							$to_return[1] = "The new church has been added successfully to the system";
 							$to_return[2] = array("church_id"=>$church_id, "sharded_database"=>$sharded_database);
 						}
 					}
@@ -58,15 +63,19 @@ class Church
 
 	public function updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone) 
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "There was some error while trying to update church details";
 		if($this->db_conn)
 		{
-			$query = 'update CHURCH_DETAILS set CHURCH_NAME=?, DESCRIPTION=?, ADDRESS=?, LANDLINE=?, MOBILE=?, EMAIL=?, WEBSITE=?, LAST_UPDATE_TIME=?, CURRENCY_ID=?, COUNTRY_ID=?, TIME_ZONE=? where CHURCH_ID=?';
+			$query = 'update CHURCH_DETAILS set CHURCH_NAME=?, DESCRIPTION=?, ADDRESS=?, LANDLINE=?, MOBILE=?, EMAIL=?, WEBSITE=?, LAST_UPDATE_TIME=FROM_UNIXTIME(?), CURRENCY_ID=?, COUNTRY_ID=?, TIME_ZONE=? where CHURCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone, $church_id));
 			if($result) {
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "Church Details updated successfully";
 			}			
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function getChurchInformation()
@@ -463,7 +472,7 @@ class Church
 			}
 			else
 			{
-				$query = 'select CURRENCY_ID, CURRENCY_CODE, CURRENCY_NUMBER, CURRENCY_DESCRIPTION, COUNTRY from CURRENCY_LIST';
+				$query = 'select CURRENCY_ID, CURRENCY_CODE, CURRENCY_NUMBER, CURRENCY_DESCRIPTION, COUNTRY from CURRENCY_LIST ORDER BY CURRENCY_DESCRIPTION';
 				$result = $this->db_conn->Execute($query);
 			}
 
@@ -499,7 +508,7 @@ class Church
 			}
 			else
 			{
-				$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST';
+				$query = 'select COUNTRY_ID, COUNTRY_ISO_CODE, COUNTRY_NAME_CAPS, COUNTRY_NAME, COUNTRY_ISO3_CODE, COUNTRY_NUMERIC_CODE, COUNTRY_CALLING_CODE from COUNTRY_LIST ORDER BY COUNTRY_NAME_CAPS';
 				$result = $this->db_conn->Execute($query);
 			}
 

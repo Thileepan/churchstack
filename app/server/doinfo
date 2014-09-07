@@ -127,11 +127,15 @@ else if($req == 2)
 	$time_zone = trim($_POST['timeZone']);
 	
 	$church_obj = new Church($APPLICATION_PATH);
+
+	//Thileepan, Rewrite this part please, I am commenting it for now. NESAN
+	/** /
 	if(!$is_update) {
 		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id, 0, $time_zone);
 	} else {
 		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone);
 	}
+	/**/
 
 	echo $status;
 	exit;

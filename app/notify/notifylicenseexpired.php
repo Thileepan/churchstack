@@ -63,7 +63,7 @@
 					$body = $email_contents[1][2];
 					$fromAddressType = "account";
 					$subject = $email_contents[1][1];
-					$commands[] = PHP_EXE_PATH.' '.$email_sending_file.' csvToEmails='.urlencode($to_email).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType;
+					$commands[] = PHP_EXE_PATH.' '.$email_sending_file.' csvToEmails='.urlencode($to_email).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 				}
 			}
 		}
@@ -103,7 +103,7 @@
 					$body = $email_contents[1][2];
 					$fromAddressType = "account";
 					$subject = $email_contents[1][1];
-					$commands[] = PHP_EXE_PATH.' '.$email_sending_file.' csvToEmails='.urlencode($to_email).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType;
+					$commands[] = PHP_EXE_PATH.' '.$email_sending_file.' csvToEmails='.urlencode($to_email).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 				}
 			}
 		}

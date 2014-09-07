@@ -85,6 +85,15 @@ if(!function_exists('validateSession'))
 			$_SESSION["errorToShow"] = "Your account has been suspended.";
 			header('Location:'.$APPLICATION_PATH."error/denied");
 		}
+
+		//Some more details are required, usually happens for the first time login
+		if($_SESSION["churchTimeZone"] == "" || $_SESSION["churchCountryID"] == "" || $_SESSION["churchCurrencyID"] == "")
+		{
+			if($_SERVER['REQUEST_URI'] != "/user/moredata") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+				header('Location:'.$APPLICATION_PATH."user/moredata");
+				exit;
+			}
+		}
 	}
 }
 

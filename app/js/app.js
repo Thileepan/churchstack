@@ -1017,9 +1017,16 @@ function signUpNewAccountResponse(response)
 	var resultCode = dataObj[0];
 	var resultMessage = dataObj[1];
 
-	var signUpBtn = $('#btnSignUp');
-	signUpBtn.button('reset');
-	alert(resultMessage);
+	if(resultCode == 1)
+	{
+		window.location.href = 'user/moredata';
+	}
+	else
+	{
+		var signUpBtn = $('#btnSignUp');
+		signUpBtn.button('reset');
+		alert(resultMessage);
+	}
 	/** /
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('spanSignUpBtn').style.display = '';
@@ -1040,5 +1047,57 @@ function reloadSignupCaptcha()
 {
 	var randomNum = Math.random();//used to fix cache issues in firefox and IE
 	document.getElementById("captchaSpan").innerHTML = '<img src="plugins/simplecaptcha/image?'+randomNum+'" alt="security image" />';
+	return false;
+}
+
+function saveChurchMiscDetails()
+{
+	var churchDesc = trim(document.getElementById('churchDesc').value);
+	var churchAddr = trim(document.getElementById('churchAddr').value);
+	var churchEmail = trim(document.getElementById('churchEmail').value);
+	var churchLandLine = trim(document.getElementById('churchLandLine').value);
+	var churchMobile = trim(document.getElementById('churchMobile').value);
+	var churchWebsite = trim(document.getElementById('churchWebsite').value);
+	var churchCountryID = trim(document.getElementById('churchCountryID').value);
+	var churchTimeZone = trim(document.getElementById('churchTimeZone').value);
+	var churchCurrencyID = trim(document.getElementById('churchCurrencyID').value);
+
+	var formPostData = 'req=savechurchmiscdetails';
+	formPostData += '&churchDesc=' + churchDesc;
+	formPostData += '&churchAddr=' + churchAddr;
+	formPostData += '&churchEmail=' + churchEmail;
+	formPostData += '&churchLandLine=' + churchLandLine;
+	formPostData += '&churchMobile=' + churchMobile;
+	formPostData += '&churchWebsite=' + churchWebsite;
+	formPostData += '&churchCountryID=' + churchCountryID;
+	formPostData += '&churchTimeZone=' + churchTimeZone;
+	formPostData += '&churchCurrencyID=' + churchCurrencyID;
+
+	var saveBtn = $('#btnSaveDetails');
+	saveBtn.button('loading');
+
+	$.ajax({
+		type:'POST',
+		url:'../server/doauth',
+		data:formPostData,
+		success:saveChurchMiscDetailsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function saveChurchMiscDetailsResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.resno == 1)
+	{
+		window.location.href = '../dashboard';
+	}
+	else
+	{
+		var saveBtn = $('#btnSaveDetails');
+		saveBtn.button('reset');
+		alert(dataObj.msg);
+	}
+
 	return false;
 }

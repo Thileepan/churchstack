@@ -599,7 +599,7 @@ class License
 
 							$invoice_rep_email_content =  $this->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
 							$fromAddressType = "sales";
-							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(INVOICE_COPY_TO_ADDRESS);
+							$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($invoice_rep_email_content[1][0]).' subject='.urlencode($invoice_rep_email_content[1][1]).' emailBody='.urlencode($invoice_rep_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(INVOICE_COPY_TO_ADDRESS).' > /dev/null 2>/dev/null &';
 
 							if($is_subscription_purchase_done==1) {
 								$thankyou_church_id = $inv_rep_result[1][5];
@@ -613,7 +613,7 @@ class License
 								$thankyou_details["amount_paid"] = $inv_rep_result[1][13]." ".$inv_rep_result[1][24];
 								$thankyou_mail_content = $this->sendSubscriptionThankYouEmail($thankyou_details, 1);
 								$fromAddressType = "sales";
-								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($thankyou_mail_content[1][0]).' subject='.urlencode($thankyou_mail_content[1][1]).' emailBody='.urlencode($thankyou_mail_content[1][2]).' fromAddressType='.$fromAddressType;
+								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($thankyou_mail_content[1][0]).' subject='.urlencode($thankyou_mail_content[1][1]).' emailBody='.urlencode($thankyou_mail_content[1][2]).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 							}
 
 							if(COUNT($referral_stuff) > 0)
@@ -625,7 +625,7 @@ class License
 								$referral_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[2]);
 								$referral_rew_email_content = $this->sendReferralRewardedSuccessEmail($referral_rewards_mail_details, 1);
 								$fromAddressType = "info";
-								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_rew_email_content[1][0]).' subject='.urlencode($referral_rew_email_content[1][1]).' emailBody='.urlencode($referral_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+								$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_rew_email_content[1][0]).' subject='.urlencode($referral_rew_email_content[1][1]).' emailBody='.urlencode($referral_rew_email_content[1][2]).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 								
 								$referrer_church_id = $referral_stuff[3];
 								$users_obj = new Users($this->APPLICATION_PATH);
@@ -640,7 +640,7 @@ class License
 									$referrer_rewards_mail_details["new_validity"] = date("d M Y", $referral_stuff[5]);
 									$referrer_rew_email_content = $this->sendReferrerRewardedSuccessEmail($referrer_rewards_mail_details, 1);
 									$fromAddressType = "info";
-									$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referrer_rew_email_content[1][0]).' subject='.urlencode($referrer_rew_email_content[1][1]).' emailBody='.urlencode($referrer_rew_email_content[1][2]).' fromAddressType='.$fromAddressType;
+									$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referrer_rew_email_content[1][0]).' subject='.urlencode($referrer_rew_email_content[1][1]).' emailBody='.urlencode($referrer_rew_email_content[1][2]).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 								}
 							}
 

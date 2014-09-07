@@ -343,11 +343,11 @@ class Users
 
 						$welcome_email_content = $this->sendSignupWelcomeEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(NEW_SIGNUP_COPY_TO_ADDRESS);
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(NEW_SIGNUP_COPY_TO_ADDRESS).' > /dev/null 2>/dev/null &';
 						
 						$referral_prog_email_content = $this->sendReferralProgramEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType;
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
 
 						$threads = new Multithread( $commands );
 						$threads->run();

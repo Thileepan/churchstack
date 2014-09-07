@@ -147,6 +147,13 @@ else if($req == 'signup')
 	{
 		$users_obj = new Users($APPLICATION_PATH);
 		$signup_result = $users_obj->signUpWithChurchDetails($church_name, $church_location, $user_full_name, $email, $mobile, $referrer_email, $password);
+		if($signup_result[0]==1)
+		{
+			$user_id = $signup_result[2]["user_id"];
+			$church_id = $signup_result[2]["church_id"];
+			$util_obj = new Utility($APPLICATION_PATH);
+			$util_obj->setFreshSessionData($user_id, $church_id);
+		}
 	}
 	else
 	{
@@ -155,6 +162,43 @@ else if($req == 'signup')
 	}
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($signup_result);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 'savechurchmiscdetails')
+{
+	session_start();
+	$church_name = $_SESSION["churchName"];
+	$church_id = $_SESSION["churchID"];
+	$church_desc = trim($_POST['churchDesc']);
+	$church_addr = trim($_POST['churchAddr']);
+	$church_email = trim($_POST['churchEmail']);
+	$church_land_line = trim($_POST['churchLandLine']);
+	$church_mobile = trim($_POST['churchMobile']);
+	$church_website = trim($_POST['churchWebsite']);
+	$church_country_id = trim($_POST['churchCountryID']);
+	$church_time_zone = trim($_POST['churchTimeZone']);
+	$church_currency_id = trim($_POST['churchCurrencyID']);
+	$last_modified_time = time();
+
+	$save_result = array();
+	$save_result[0] = 0;
+	$save_result[1] = "Unable to save the details, please try again";
+	$church_obj = new Church($APPLICATION_PATH);
+	$save_result = $church_obj->updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $church_land_line, $church_mobile, $church_email, $church_website, $last_modified_time, $church_currency_id, $church_country_id, $church_time_zone);
+
+	if($save_result[0]==1)
+	{
+		$util_obj = new Utility($APPLICATION_PATH);
+		$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
+	}
+	$resno = $save_result[0];
+	$msg = $save_result[1];
+	$to_ret = array("resno"=>$resno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_ret);
 	unset($json);
 
 	echo $encode_obj;

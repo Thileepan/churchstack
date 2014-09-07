@@ -88,7 +88,6 @@ class Utility
 		session_start();
 		$_SESSION['lastFreshSessionUpdatedTime'] = time();
 
-		array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $pwd_reset_hash, $pwd_reset_expiry, $status);
 		//$_SESSION['userID'] = $users_details[1][0];
 		$_SESSION['userID'] = $user_id;
 		//$church_id = $users_details[1][1];
@@ -269,6 +268,18 @@ class Utility
 		//echo $datetime_obj_to_return->format('Y-m-d H:i:s');
 		return $datetime_obj_to_return->getTimestamp();
 	}
+
+	public function getTimeZonesList()
+	{
+		$zones_array = array();
+		$timestamp = time();
+		foreach(timezone_identifiers_list() as $key => $zone) {
+			date_default_timezone_set($zone);
+			$zones_array[$key]['zone'] = $zone;
+			$zones_array[$key]['diff_from_GMT'] = 'GMT ' . date('P', $timestamp);
+		}
+		return $zones_array;
+  }
 }
 
 ?>
