@@ -6,6 +6,7 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH."utils/validateauth.php";
 
 include_once $APPLICATION_PATH . 'classes/class.church.php';
+include_once $APPLICATION_PATH . 'classes/class.utility.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -16,6 +17,9 @@ if($req == 1)
 
 	$is_update = $_REQUEST['isUpdate'];
 	$curr_church_id = $_SESSION["churchID"];
+	$currency_list = array();
+	$country_list = array();
+	$timezone_list = array();
 	if($is_update)
 	{
 		$church_obj = new Church($APPLICATION_PATH);
@@ -41,6 +45,20 @@ if($req == 1)
 			$country_id = $church_details[1][14];
 			$referrer_church_id = $church_details[1][15];
 			$time_zone = $church_details[1][16];
+
+			$country_result = $church_obj->getCountryDetails();//Lists all countries
+			if($country_result[0]==1)
+			{
+				$country_list = $country_result[1];
+			}
+			$currency_result = $church_obj->getCurrencyDetails();//Lists all currencies
+			if($currency_result[0]==1)
+			{
+				$currency_list = $currency_result[1];
+			}
+
+			$util_obj = new Utility($APPLICATION_PATH);
+			$timezone_list = $util_obj->getTimeZonesList();
 		}
 	}
 
@@ -90,6 +108,42 @@ if($req == 1)
 							$to_return .= '<input type="text" class="span8" id="inputWebsite" placeholder="Website" value="'.$website.'">';
 						$to_return .= '</div>';
 				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputCountryID">Country</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<select class="form-control" id="inputCountryID" name="inputCountryID">';
+						for($c=0; $c < COUNT($country_list); $c++)
+						{
+							$selected_text = ((trim($country_id) == trim($country_list[$c][0]))? " selected" : "");//Note the space
+							$to_return .= '<option value="'.$country_list[$c][0].'"'.$selected_text.'>'.$country_list[$c][3].'</option>';
+						}
+						$to_return .= '</select>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputTimeZone">Local TimeZone</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<select class="form-control" id="inputTimeZone" name="inputTimeZone">';
+						for($t=0; $t < COUNT($timezone_list); $t++)
+						{
+							$selected_text = ((trim($time_zone) == $timezone_list[$t]["zone"])? " selected" : "");//Note the space
+							$to_return .= '<option value="'.$timezone_list[$t]["zone"].'"'.$selected_text.'>'.$timezone_list[$t]["zone"].' ('.$timezone_list[$t]["diff_from_GMT"].')</option>';
+						}
+						$to_return .= '</select>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputCurrencyID">Local Currency</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<select class="form-control" id="inputCurrencyID" name="inputCurrencyID">';
+						for($v=0; $v < COUNT($currency_list); $v++)
+						{
+							$selected_text = ((trim($currency_id) == $currency_list[$v][0])? " selected" : "");//Note the space
+							$to_return .= '<option value="'.$currency_list[$v][0].'"'.$selected_text.'>'.$currency_list[$v][3].' ('.$currency_list[$v][1].')</option>';
+						}
+						$to_return .= '</select>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
 				$to_return .= '<div class="row-fluid">';
 					$to_return .= '<div class="span12">';
 					  $to_return .= '<div class="form-actions">';
@@ -125,19 +179,20 @@ else if($req == 2)
 	$currency_id = trim($_POST['currencyID']);
 	$country_id = trim($_POST['countryID']);
 	$time_zone = trim($_POST['timeZone']);
+	$church_id = trim($_SESSION["churchID"]);
 	
 	$church_obj = new Church($APPLICATION_PATH);
 
-	//Thileepan, Rewrite this part please, I am commenting it for now. NESAN
-	/** /
+	/**/
 	if(!$is_update) {
-		$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id, 0, $time_zone);
+		//Thileepan, Rewrite this part please, I am commenting it for now. NESAN
+		//$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id, 0, $time_zone);
 	} else {
-		$status = $church_obj->updateChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone);
+		$status = $church_obj->updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone);
 	}
 	/**/
 
-	echo $status;
+	echo $status[0];//Send just the result code, no need to send message as of now
 	exit;
 }
 else if($req == 3)

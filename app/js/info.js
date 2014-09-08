@@ -31,6 +31,9 @@ function addOrUpdateChurchInfo(isUpdate)
 	var mobile = document.getElementById('inputMobile').value;
 	var email = document.getElementById('inputEmail').value;
 	var website = document.getElementById('inputWebsite').value;
+	var countryID = document.getElementById('inputCountryID').value;
+	var currencyID = document.getElementById('inputCurrencyID').value;
+	var timeZone = document.getElementById('inputTimeZone').value;
 
 	if(churchName == "")
 	{
@@ -49,6 +52,9 @@ function addOrUpdateChurchInfo(isUpdate)
 	formPostData += '&mobile='+mobile;
 	formPostData += '&email='+email;
 	formPostData += '&website='+website;
+	formPostData += '&countryID='+countryID;
+	formPostData += '&currencyID='+currencyID;
+	formPostData += '&timeZone='+timeZone;
 
 	$.ajax({
 		type:'POST',
@@ -61,7 +67,7 @@ function addOrUpdateChurchInfo(isUpdate)
 
 function addOrUpdateChurchInfoResponse(response)
 {
-	if(response) {
+	if(response[0]==1) {
 		getChurchInformation();
 	} else {
 		var msg = ((isEdit)?'Unable to update the church information':'Unable to add the church information');

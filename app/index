@@ -66,35 +66,35 @@
 			<div class="form-white">
 				<form role="form" onsubmit="return false">
 				  <div class="form-group">
-				    <label for="church">Church Name</label>
+				    <label for="church">Church Name <span class="text-danger">*</span></label>
 					<input type="text" class="form-control" name="church" id="church" placeholder="Name of your church"  onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
-				    <label for="referrerEmail">Referrer's Email Address</label>
+				    <label for="referrerEmail">Referrer's Email Address (Optional)</label>
 					<input type="email" class="form-control" name="referrerEmail" id="referrerEmail" placeholder="Your Referrer's Email Address (if any)"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
-				    <label for="name">Your Name</label>
+				    <label for="name">Your Name <span class="text-danger">*</span></label>
 					<input type="text" class="form-control" name="name" id="name" placeholder="Your Full Name"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
-				    <label for="email">Your Email Address</label>
+				    <label for="email">Your Email Address <span class="text-danger">*</span></label>
 					<input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address" onblur="javascript: this.value = trim(this.value.toLowerCase());"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 				  </div>
 				  <div class="form-group">
 					<div class="row">
 					  <div class="col-sm-6">
-					  <label for="password">Password</label>
+					  <label for="password">Password <span class="text-danger">*</span></label>
 					  <input type="password" class="form-control" name="password" id="password" placeholder="Password"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 					  </div>
 					  <div class="col-sm-6">
-					  <label for="confirmPassword">Repeat password</label>
+					  <label for="confirmPassword">Repeat password <span class="text-danger">*</span></label>
 					  <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Same Password Again"   onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return signUpNewAccount()}">
 					  </div>
 					</div>
 				  </div>
 				<div class="form-group">
-					<label class="control-label" for="securityText">Type the characters you see below</label>
+					<label class="control-label" for="securityText">Type the characters you see below <span class="text-danger">*</span></label>
 					<div class="controls">
 						<table border="0" cellpadding="1" cellspacing="0" height="42">
 							<tr>
