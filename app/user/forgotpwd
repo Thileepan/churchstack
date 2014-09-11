@@ -31,7 +31,7 @@
 				</div>
 				<div id="emailDiv">
 					<div class="col-sm-12" align="center">
-						<h4>Enter your email address and we will you send the instructions to reset the password</h4>
+						<h4>Enter your email address and we will send you the instructions to reset the password</h4>
 					</div>
 					<div class="col-sm-4 col-sm-offset-4">
 						<!-- p class="text-muted">
@@ -65,10 +65,6 @@
 	</div> <!-- / wrapper -->
     
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/bootstrap.min.js"></script>
-    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/custom.js"></script>
-	<script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/scrolltopcontrol.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>js/app.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>js/users.js"></script>

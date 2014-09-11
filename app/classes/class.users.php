@@ -822,5 +822,25 @@ class Users
 			}
 		}
 	}
+
+	public function changeUserEmailAddress($user_id, $new_email)
+	{
+		$to_return = array() ;
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to change the email address";
+		if(trim($new_email) == "") {
+			return $to_return;
+		}
+		if($this->db_conn)
+		{
+			$query = 'update USER_DETAILS set EMAIL=? where USER_ID=?';
+			$result = $this->db_conn->Execute($query, array($new_email, $user_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Account updated with new email address successfully";
+			}
+		}
+		return $to_return;
+	}
 }
 ?>

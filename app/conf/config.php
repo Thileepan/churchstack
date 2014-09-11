@@ -17,8 +17,6 @@ define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd');
 define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 define('PRODUCT_CONTACT_US', 'http://www.churchstack.com/contactus');
 define('PRODUCT_PRIV_POLICY_EMAIL', "support@churchstack.com");
-define('PRODUCT_PRIV_POLICY_URL', 'https://account.churchstack.com/privacypolicy');
-define('PRODUCT_TERMS_OF_SERVICE_URL', 'https://account.churchstack.com/termsofservice');
 
 //Company Related stuff
 define('COMPANY_WEBSITE', 'http://www.rcloudtechnologies.com');

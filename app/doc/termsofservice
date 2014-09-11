@@ -1,5 +1,5 @@
 <?php
-	$APPLICATION_PATH = "./";
+	$APPLICATION_PATH = "../";
 	include_once($APPLICATION_PATH."conf/config.php");
 	@include_once($APPLICATION_PATH."utils/utilfunctions.php");
 	$page_title_for_header = PRODUCT_NAME." - Terms Of Service";

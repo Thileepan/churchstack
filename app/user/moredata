@@ -153,12 +153,7 @@
 	</div> <!-- / wrapper -->
     
     <!-- Placed at the end of the document so the pages load faster -->
-    <!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script -->
 
-    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/jquery.min.js"></script>
-    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/bootstrap.min.js"></script>
-    <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/custom.js"></script>
-	<script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/scrolltopcontrol.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>js/app.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
 	<script src="<?php echo $APPLICATION_PATH; ?>plugins/jstz/jstz-1.0.4.min.js"></script>

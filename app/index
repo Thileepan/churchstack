@@ -109,7 +109,7 @@
 				</div>
 				  <div class="checkbox">
 					<label>
-					  <input type="checkbox" name="chkTOS" id="chkTOS"> I agree to the <a href="termsofservice" target="_blank">Terms of Service</a> and <a href="privacypolicy" target="_blank">Privacy Policy</a>
+					  <input type="checkbox" name="chkTOS" id="chkTOS"> I agree to the <a href="doc/termsofservice" target="_blank">Terms of Service</a> and <a href="doc/privacypolicy" target="_blank">Privacy Policy</a>
 					</label>
 				  </div>
 				  <button type="button" class="btn btn-block btn-color btn-xxl" id="btnSignUp" name="btnSignUp" data-loading-text="Creating your account..." onclick="return signUpNewAccount();">Create an account</button>
@@ -121,10 +121,6 @@
 	</div> <!-- / wrapper -->
     
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="css/mist/js/bootstrap.min.js"></script>
-    <script src="css/mist/js/custom.js"></script>
-	<script src="css/mist/js/scrolltopcontrol.js"></script>
 	<script src="js/app.js"></script>
 	<script src="js/utils.js"></script>
 	<script src="js/users.js"></script>
