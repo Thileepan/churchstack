@@ -2,7 +2,7 @@
 	$APPLICATION_PATH = "../";
 	include_once($APPLICATION_PATH."conf/config.php");
 	@include_once($APPLICATION_PATH."utils/utilfunctions.php");
-	$page_title_for_header = PRODUCT_NAME." - Terms Of Service";
+	$page_title_for_header = PRODUCT_NAME." - Terms Of Service & Conditions";
 ?>
 <?php
 	include($APPLICATION_PATH."webheader");
@@ -19,12 +19,176 @@
 		<div class="container">
 			<div class="row">
 			<!-- Sign In form -->
-				<div class="col-sm-4 col-sm-offset-4">
-					<h2>Terms Of Service</h2>
+				<div class="col-sm-6 col-sm-offset-3">
+					<h2>Terms Of Service and Conditions</h2>
 				</div>
 				<div id="successResultDiv" style="display:;" class="col-sm-12">
 					<div class="form-white">
-						<p>Yet to be written....! Please wait for a while...! ;-)</p>
+						<P>IMPORTANT-READ THIS CHURCHSTACK SOFTWARE AS A SERVICE AGREEMENT (THIS "AGREEMENT") CAREFULLY BEFORE CONTINUING REGISTRATION. BY CLICKING THE "I ACCEPT" BUTTON OR OTHERWISE ACCEPTING THIS AGREEMENT THROUGH AN ORDERING DOCUMENT THAT INCORPORATES THIS AGREEMENT (THE "ORDERING DOCUMENT"), YOU AGREE TO FOLLOW AND BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU ARE ENTERING INTO THIS AGREEMENT ON BEHALF OF A COMPANY OR OTHER LEGAL ENTITY, YOU REPRESENT THAT YOU HAVE THE AUTHORITY TO BIND SUCH ENTITY TO THE TERMS AND CONDITIONS OF THIS AGREEMENT AND, IN SUCH EVENT, "YOU" AND "YOUR" AS USED IN THIS AGREEMENT SHALL REFER TO SUCH ENTITY, IF YOU DO NOT HAVE SUCH AUTHORITY, OR IF YOU DO NOT AGREE TO ALL THE TERMS AND CONDITIONS IN THIS AGREEMENT, YOU MUST NOT SELECT THE "I AGREE TO THE <i>&lt;TERMS OF SERVICES AND PRIVACY POLICY HYPER LINKS&gt;"</i> CHECKBOX AND MAY NOT USE THE SERVICES.</P>
+						<ol type="1">
+							<li>
+								<p><b>Agreement Definitions</b></p>
+								<p>"You" and "your" refers to the individual or entity that has ordered ("ChurchStack") software as a service from RCloud Technologies Pvt Ltd., India or an authorized distributor by executing the ordering document that accompanies and incorporates this "ChurchStack" software as a service agreement (collectively, the "agreement"). Software as a service consists of system & data administration, system & data management, and system & data monitoring activities that ChurchStack performs for ChurchStack programs, and includes the right to use the ChurchStack programs, support services for such ChurchStack programs, as well as any other services provided by ChurchStack, as defined in the ordering document (collectively, the "services"). The term "product documentation" or simply "documentation" or "help documents" refers to the program user manual as well as any other materials provided by ChurchStack as part of the services. The term "ChurchStack programs" refers to the software products owned or distributed by ChurchStack to which ChurchStack grants you access as part of the services, including program documentation, and any program updates provided as part of the services. The term "users" shall mean those individuals authorized by you or on your behalf to use the services, as defined in the ordering document. The term "your data" refers to the data provided by you that resides in your services environment. The term "ordering document" refers to the ordering document signed by the parties that accompanies and incorporates this software as a service agreement, including the services policies and any other document referenced or incorporated into the ordering document.</p>
+							</li>
+							<li>
+								<p><b>Applicability Of Agreement</b></p>
+								<p>This software as a service agreement is valid for the ordering document which this agreement accompanies.</p>
+							</li>
+							<li>
+								<p><b>Terms</b></p>
+								<p>By accessing this web site, you are agreeing to be bound by these web site Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The materials contained in this web site are protected by applicable copyright and trade mark law.</p>
+							</li>
+							<li>
+								<p><b>Rights Granted</b></p>
+								<p>Upon ChurchStack's acceptance of your order and for the duration of the services term defined in the ordering document, you have the nonexclusive, non-assignable, royalty free, worldwide limited right to use the services solely for your internal business operations and subject to the terms of the agreement. You may allow your users to use the services for this purpose and you are responsible for your users' compliance with the agreement. The services are provided as described in, and subject to, the services policies referenced in the ordering document. You acknowledge that ChurchStack or RCloud Technologies Pvt Ltd. has no delivery obligation and will not ship copies of the ChurchStack programs to you as part of the services. You agree that you do not acquire under the agreement any license to use the ChurchStack programs specified in the ordering document in excess of the scope and/or duration of the services. Upon the end of the agreement or the services thereunder, your right to access or use the ChurchStack programs specified in the ordering document and the services shall terminate.</p>
+							</li>
+							<li>
+								<p><b>Use License, Ownership and Restrictions</b></p>
+								<p>You retain all ownership and intellectual property rights in and to your data. ChurchStack or its licensors retain all ownership and intellectual property rights to the services and ChurchStack programs. ChurchStack retains all ownership and intellectual property rights to anything developed and delivered under the agreement. Third party technology that may be appropriate or necessary for use with some ChurchStack programs is specified in the product documentation or ordering document as applicable. Your right to use such third party technology is governed by the terms of the third party technology license agreement specified by ChurchStack and not under the agreement.</p>
+								<p>
+									You may not:
+									<ol type="a">
+										<li>remove or modify any program markings or any notice of ChurchStack's or its licensors' proprietary rights;</li>
+										<li>make the programs or materials resulting from the services available in any manner to any third party for use in the third party's business operations (unless such access is expressly permitted for the specific program license or materials from the services you have acquired);</li>
+										<li>modify, make derivative works of, disassemble, reverse compile, or reverse engineer any part of the services (the foregoing prohibition includes but is not limited to review of data structures or similar materials produced by programs), or access or use the services in order to build or support, and/or assist a third party in building or supporting, products or services competitive to ChurchStack;</li>
+										<li>disclose results of any services or program benchmark tests without ChurchStack's prior written consent;</li>
+										<li>license, sell, rent, lease, transfer, assign, distribute, display, host, outsource, disclose, permit timesharing or service bureau use, or otherwise commercially exploit or make the services, ChurchStack programs or materials available, to any third party other than, as expressly permitted under the terms of the agreement.</li>
+									</ol>
+								</p>
+								<p>
+									The rights granted to you under the agreement are also conditioned on the following:
+									<ol type="a">
+										<li>the rights of any user licensed to use the services (e.g., on a "named user" basis) cannot be shared or used by more than one individual (unless such license is reassigned in its entirety to another authorized user, in which case the prior authorized user shall no longer have any right to access or use the license);</li>
+										<li>except as expressly provided herein, no part of the services may be copied, reproduced, distributed, republished, downloaded, displayed, posted or transmitted in any form or by any means, including but not limited to electronic, mechanical, photocopying, recording, or other means;</li>
+										<li>you agree to make every reasonable effort to prevent unauthorized third parties from accessing the services.</li>
+									</ol>
+								</p>
+								<p>This license shall automatically terminate if you violate any of these restrictions and may be terminated by RCloud Technologies Pvt Ltd., at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
+							</li>
+							<li>
+								<p><b>Warranties and Disclaimers</b></p>
+								<p>
+									<ol type="a">
+										<li>CHURCHSTACK DOES NOT GUARANTEE THAT THE SERVICES WILL BE PERFORMED ERROR-FREE OR UNINTERRUPTED, OR THAT CHURCHSTACK WILL CORRECT ALL SERVICES ERRORS. YOU ACKNOWLEDGE THAT CHURCHSTACK DOES NOT CONTROL THE TRANSFER OF DATA OVER COMMUNICATIONS FACILITIES, INCLUDING THE INTERNET, AND THAT THE SERVICE MAY BE SUBJECT TO LIMITATIONS, DELAYS, AND OTHER PROBLEMS INHERENT IN THE USE OF SUCH COMMUNICATIONS FACILITIES. CHURCHSTACK IS NOT RESPONSIBLE FOR ANY DELAYS, DELIVERY FAILURES, OR OTHER DAMAGE RESULTING FROM SUCH PROBLEMS. TO THE EXTENT NOT PROHIBITED BY LAW, THESE WARRANTIES ARE EXCLUSIVE AND THERE ARE NO OTHER EXPRESS OR IMPLIED WARRANTIES OR CONDITIONS INCLUDING FOR HARDWARE, SYSTEMS, NETWORKS OR ENVIRONMENTS OR FOR MERCHANTABILITY, SATISFACTORY QUALITY AND FITNESS FOR A PARTICULAR PURPOSE.</li>
+										<li>The materials on ChurchStack and RCloud Technologies Pvt Ltd's web site are provided "as is". RCloud Technologies makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, RCloud Technologies does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its Internet web site or otherwise relating to such materials or on any sites linked to this site.</li>
+									</ol>
+								</p>
+							</li>
+							<li>
+								<p><b>Trial Use of the Services</b></p>
+								<p>If specified in the ordering document, you may order certain services for trial, nonproduction purposes subject to the terms and conditions of the agreement. Services acquired for trial purposes are provided "as is" and ChurchStack does not offer any warranties for such services.</p>
+							</li>
+							<li>
+								<p><b>Support Services</b></p>
+								<p>Support services provided under the agreement are specified in the services policies referenced in the ordering document.</p>
+							</li>
+							<li>
+								<p><b>End of Agreement</b></p>
+								<p>Services provided under this software as a service agreement shall be provided for the period defined in the ordering document unless earlier terminated in accordance with the agreement. The term of the services and any renewal years are collectively defined as the "services term". At the end of the services term, all rights to access or use the services, including the ChurchStack programs listed in the ordering document, shall end.</p>
+								<p>ChurchStack may immediately suspend your password, account, and access to or use of the services if you violate any provision within sections "Rights Granted", "Use License, Ownership and Restrictions", "Restrictions on Use of the Services" of this software as a service agreement. ChurchStack may terminate the services hereunder if any of the foregoing is not cured within 30 days after ChurchStack's initial notice thereof. Any suspension by ChurchStack of the services under this paragraph shall not excuse you from your obligation to make payment(s) under the agreement.</p>
+								<p>Provisions that survive termination or expiration of the agreement are those relating to limitation of liability, infringement indemnity, payment, and others which by their nature are intended to survive.</p>
+							</li>
+							<li>
+								<p><b>Fees and Taxes</b></p>
+								<p>You agree to pay for all services ordered as set forth in the applicable ordering document. All fees due under the agreement are non-cancelable and the sums paid nonrefundable. You agree to pay any sales, service, value-added or other similar taxes imposed by applicable law that ChurchStack must pay based on the services you ordered, except for taxes based on ChurchStack's income. You will reimburse ChurchStack for reasonable expenses related to providing any on-site portion of the services. Fees for services listed in an ordering document are exclusive of taxes and expenses.</p>
+								<p>You agree that you have not relied on the future availability of any services, programs or updates in entering into the payment obligations in the ordering document; however, the preceding does not relieve ChurchStack of its obligation to deliver services that you have ordered per the terms of the agreement.</p>
+							</li>
+							<li>
+								<p><b>Prepaid Usage of Services</b></p>
+								<p>For the services that requires some specified amount to be paid in full before using them for the subsequent month or year, you agree to pay for those services in full without any due.</p>
+							</li>
+							<li>
+								<p><b>Nondisclosure</b></p>
+								<p>By virtue of the agreement, the parties may have access to information that is confidential to one another ("confidential information"). We each agree to disclose only information that is required for the performance of obligations under the agreement. Confidential information shall be limited to the terms and pricing under the agreement, your data residing in the services environment, and all information clearly identified as confidential at the time of disclosure. A party's confidential information shall not include information that:
+								<ol type="a">
+									<li>is or becomes a part of the public domain through no act or omission of the other party;</li>
+									<li>was in the other party's lawful possession prior to the disclosure and had not been obtained by the other party either directly or indirectly from the disclosing party;</li>
+									<li>is lawfully disclosed to the other party by a third party without restriction on the disclosure; or</li>
+									<li>is independently developed by the other party.</li>
+								</ol>
+								</p>
+								<p>We each agree to hold each other's confidential information in confidence for a period of three years from the date of disclosure. Also, we each agree to disclose confidential information only to those employees or agents who are required to protect it against unauthorized disclosure in a manner no less protective than under the agreement. ChurchStack will protect the confidentiality of your data residing in the services environment in accordance with the ChurchStack security practices specified in the services policies referenced in the ordering document. Nothing shall prevent either party from disclosing the terms or pricing under the agreement in any legal proceeding arising from or in connection with the agreement or from disclosing the confidential information to a governmental entity as required by law.</p>
+							</li>
+							<li>
+								<p><b>Limitations of Liability</b></p>
+								<p>NEITHER PARTY SHALL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR ANY LOSS OF REVENUE OR PROFITS (EXCLUDING FEES UNDER THE AGREEMENT), DATA, OR DATA USE. CHURCHSTACK'S MAXIMUM LIABILITY FOR ANY DAMAGES ARISING OUT OF OR RELATED TO THIS SOFTWARE AS A SERVICE AGREEMENT OR YOUR ORDER, WHETHER IN CONTRACT OR TORT, OR OTHERWISE, SHALL IN NO EVENT EXCEED, IN THE AGGREGATE, THE TOTAL AMOUNTS ACTUALLY PAID TO CHURCHSTACK (OR RCLOUD TECHNOLOGIES PVT LTD) FOR THE SERVICES UNDER THE ORDER THAT IS THE SUBJECT OF THE CLAIM IN THE TWO (2) MONTH PERIOD IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO SUCH CLAIM. ANY DAMAGE IN YOUR FAVOR AGAINST CHURCHSTACK SHALL BE REDUCED BY ANY REFUND OR CREDIT RECEIVED BY YOU UNDER THE AGREEMENT AND ANY SUCH REFUND AND CREDIT SHALL APPLY TOWARDS THE LIMITATION OF LIABILITY.</p>
+							</li>
+							<li>
+								<p><b>Revisions and Errata</b></p>
+								<p>The materials appearing on ChurchStack or RCloud Technologies Pvt Ltd's web site could include technical, typographical, or photographic errors. ChurchStack or RCloud Technologies Pvt Ltd does not warrant that any of the materials on its web site are accurate, complete, or current. ChurchStack or RCloud Technologies Pvt Ltd may make changes to the materials contained on its web site at any time without notice. RCloud Technologies Pvt Ltd does not, however, make any commitment to update the materials.</p>
+							</li>
+							<li>
+								<p><b>Force Majeure</b></p>
+								<p>Neither of us shall be responsible for failure or delay of performance if caused by: an act of war, hostility, or sabotage; act of God; electrical, internet, or telecommunication outage that is not caused by the obligated party; government restrictions (including the denial or cancellation of any export or other license); other event outside the reasonable control of the obligated party. We both will use reasonable efforts to mitigate the effect of a force majeure event. If such event continues for more than 30 days, either of us may cancel unperformed services upon written notice. This section does not excuse either party's obligation to take reasonable steps to follow its normal disaster recovery procedures or your obligation to pay for the services.</p>
+							</li>
+							<li>
+								<p><b>Your Data</b></p>
+								<p>In performing the services, ChurchStack will comply with the ChurchStack Services Privacy Policy, which is available at "https://account.churchstack.com/doc/privacypolicy" and incorporated herein by reference. TheChurchStack Services Privacy Policy is subject to change at ChurchStack's discretion; however, ChurchStack policy changes will not result in a material reduction in the level of protection provided for your data during the period for which fees for the services have been paid. The services policies referenced in your ordering document specifies our respective responsibilities for maintaining the security of your data in connection with the services.</p>
+								<p>ChurchStack reserves the right to provide the services from locations, and/or through use of subcontractors, worldwide.</p>
+								<p>You agree to provide any notices and obtain any consents related to your use of the services and ChurchStack's provision of the services, including those related to the collection, use, processing, transfer and disclosure of personal information. You shall have sole responsibility for the accuracy, quality, integrity, legality, reliability, appropriateness and ownership of all of your data.</p>
+							</li>
+							<li>
+								<p><b>Restrictions on Use of the Services</b></p>
+								<p>You agree not to use or permit use of the services, including by uploading, emailing, posting, publishing or otherwise transmitting any material, for any purpose that may:
+								<ol type="a">
+									<li>menace or harass any person or cause damage or injury to any person or property;</li>
+									<li>involve the publication of any material that is false, defamatory, harassing or obscene;</li>
+									<li>violate privacy rights or promote bigotry, racism, hatred or harm;</li>
+									<li>constitute unsolicited bulk e-mail, "junk mail", "spam" or chain letters;</li>
+									<li>constitute an infringement of intellectual property or other proprietary rights; or </li>
+									<li>otherwise violate applicable laws, ordinances or regulations.</li>
+								</ol>
+								</p>
+								<p>In addition to any other rights afforded to ChurchStack under the agreement, ChurchStack reserves the right to remove or disable access to any material that violates the foregoing restrictions. ChurchStack shall have no liability to you in the event that ChurchStack takes such action. You agree to defend and indemnify ChurchStack against any claim arising out of a violation of your obligations under this section.</p>
+							</li>
+							<li>
+								<p><b>Service Tools</b></p>
+								<p>ChurchStack may use tools, scripts, software, and utilities (collectively, the "tools") to monitor and administer the services and to help resolve your ChurchStack service requests. The tools will not collect, report or store any of your data residing in the service production environment, except as necessary to troubleshoot service requests or other problems in the service. Data collected by the tools (excluding production data) may also be used to assist in managing ChurchStack's product and service portfolio and for license management. You agree that (a) except as set forth in the following paragraph, you may not access or use the tools, and (b) you will not use or restore the tools from any tape backup at any time following termination of the agreement.</p>
+								<p>If ChurchStack provides you with access to or use of any tools in connection with the services, your right to use such tools is governed by the license terms that ChurchStack specifies for such tools; however, if ChurchStack does not specify license terms for such tools, you shall have a non-transferable, non-exclusive, limited right to use such tools solely to facilitate your administration and monitoring of your services environment, subject to the terms of the agreement. Any such tools are provided by ChurchStack on an "as is" basis and ChurchStack does not provide technical support or offer any warranties for such tools. Your right to use such tools will terminate upon the earlier of ChurchStack's notice, the end of the services term, or the date that the license to use such tools ends under the license terms specified for such tools.</p>
+							</li>
+							<li>
+								<p><b>Statistical Information</b></p>
+								<p>ChurchStack may compile statistical information related to the performance of the services, and may make such information publicly available, provided that such information does not incorporate your data and/or identify your confidential information or include your company's name. ChurchStack retains all intellectual property rights in such information.</p>
+							</li>
+							<li>
+								<p><b>Third Party Web Sites, Content, Products, Services</b></p>
+								<p>The services may enable you to add links to Web sites and access to content, products and services of third parties, including users, advertisers, affiliates and sponsors of such third parties. ChurchStack is not responsible for any third party Web sites or third party content provided on or through the services and you bear all risks associated with the access and use of such Web sites and third party content, products and services.</p>
+							</li>
+							<li>
+								<p><b>Customer Reference</b></p>
+								<p>You agree:
+									<ol type="a">
+										<li>that ChurchStack may identify you as a recipient of services and use your logo in sales presentations, marketing materials and press releases</li>
+										<li>to develop a brief customer profile for use by ChurchStack on ChurchStack.com for promotional purposes</li>
+									</ol>
+								</p>
+							</li>
+							<li>
+								<p><b>Other</b></p>
+								<p>
+									<ol type="a">
+										<li>"ChurchStack" is owned and maintained by us "RCloud Technologies Pvt Ltd." who is an independent contractor and we agree that no partnership, joint venture, or agency relationship exists between us. We each will be responsible for paying our own employees, including employment related taxes and insurance.</li>
+										<li>You shall obtain at your sole expense any rights and consents from third parties necessary for ChurchStack and its subcontractors to perform the services under the agreement.</li>
+										<li>The agreement is governed by the substantive and procedural laws of India and you and ChurchStack agree to submit to the exclusive jurisdiction of, and venue in, the courts in Chennai in Tamil Nadu (state) in any dispute arising out of or relating to the agreement.</li>
+										<li>If you have a dispute with ChurchStack or if you wish to provide a notice under the Indemnification section of this software as a service agreement, or if you become subject to insolvency or other similar legal proceedings, you will promptly send written notice to: RCloud Technologies Pvt Ltd., Pallavaram, Chennai - 600 043, Tamil Nadu, India. Attention: General Counsel, Legal Department. ChurchStack may give notice applicable to ChurchStack's software as a service customer base by means of a general notice on the ChurchStack portal for the services, and notices specific to you by electronic mail to your e-mail address on record in ChurchStack's account information or by written communication sent by first class mail or pre-paid post to your address on record in ChurchStack's account information.</li>
+										<li>You may not assign the agreement or give or transfer the services or an interest in them to another individual or entity. If you grant a security interest in any portion of the services, the secured party has no right to use or transfer the services or any deliverables.</li>
+										<li>Except for actions for nonpayment or breach of ChurchStack's proprietary rights, no action, regardless of form, arising out of or relating to the agreement may be brought by either party more than 3 months after the cause of action has accrued.</li>
+										<li>ChurchStack may audit your use of the services. You agree to cooperate with ChurchStack's audit and provide reasonable assistance and access to information. Any such audit shall not unreasonably interfere with your normal business operations. You agree to pay within 15 days of written notification any fees applicable to your use of the services in excess of your rights. If you do not pay, ChurchStack can end your services and/or the agreement. You agree that ChurchStack shall not be responsible for any of your costs incurred in cooperating with the audit.</li>
+										<li>The Uniform Computer Information Transactions Act does not apply to this software as a service agreement or orders placed under it. You understand that ChurchStack's business partners, including any third party firms retained by you to provide computer consulting services, are independent of ChurchStack and are not ChurchStack's agents. ChurchStack is not liable for nor bound by any acts of any such business partner, unless the business partner is providing services as an ChurchStack subcontractor on an engagement ordered under this software as a service agreement.</li>
+									</ol>
+								</p>
+							</li>
+							<li>
+								<p><b>Terms of Use/Service Modifications</b></p>
+								<p>ChurchStack or RCloud Technologies Pvt Ltd may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.</p>
+							</li>
+							<li>
+								<p><b>Governing Law</b></p>
+								<p>ChurchStack or RCloud Technologies Pvt Ltd may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.</p>
+								<p>Any claim relating to ChurchStack or RCloud Technologies Pvt Ltd's  web site shall be governed by the laws of India without regard to its conflict of law provisions.</p>
+								<p>General Terms and Conditions applicable to Use of a Web Site.</p>
+							</li>
+						<ol>
 					</div>
 				</div>
 			</div>
