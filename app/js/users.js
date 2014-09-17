@@ -70,7 +70,9 @@ function forgotPassword(type)
 	else if(type==3)
 	{
 		document.getElementById("emailLost").value = trim(document.getElementById("emailLost").value);
-		if(document.getElementById("emailLost").value == "") {
+		if(document.getElementById("emailLost").value == '') {
+			document.getElementById("emailLost").focus();
+			noty({type: 'error', text: 'Please enter a valid email address'});
 			return false;
 		}
 		var forgotPwdBtn = $('#btnForgotPwd');

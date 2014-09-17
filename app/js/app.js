@@ -627,18 +627,24 @@ function authenticateUser()
 	var user = document.getElementById('inputUser').value;
 	var pass = document.getElementById('inputPwd').value;
 	var formPostData = 'req=authenticate&username=' + user + '&password=' + pass;
-	if(user == "" || pass == "")
-	{
-		/** /
-		var resultToUI = getAlertDiv(2, 'Username and Password cannot be empty.');
-		document.getElementById('alertRow').style.display = '';
-		document.getElementById('alertDiv').innerHTML = resultToUI;
-		/**/
-		alert("Username and Password cannot be empty");
-		return false;
+	var errorMessage = '';
+
+	if(user == '') {
+		document.getElementById('inputUser').focus();
+		errorMessage = 'Please enter a valid email address';
+	} else if(!isValidEmail(user)) {
+		document.getElementById('inputUser').focus();
+		errorMessage = 'Please enter a valid email address';
+	} else if(pass == '') {
+		document.getElementById('inputPwd').focus();
+		errorMessage = 'Please enter a valid password';
 	}
 
-
+	if(errorMessage != '') {
+		noty({type: 'error', text: errorMessage});
+		return false;
+	}
+	
 	var loginBtn = $('#btnSignIn');
 	loginBtn.button('loading');
 //	document.getElementById('divSignInBtn').style.display = 'none';
@@ -663,21 +669,11 @@ function authenticateUserResponse(response)
 	var userStatusNumber = dataObj.userStatusNumber;//make use of this if needed
 	var churchStatusNumber = dataObj.churchStatusNumber;//make use of this if needed
 	if(isAuthValid == 1 && allowLogin == 1) {
-		//resultToUI = getAlertDiv(1, 'Profile has been deleted successfully!');
-		//window.location.href = 'http://localhost/Profilestack';//../index.php';
 		window.location.href = 'dashboard';
 	} else {
-		alert(loginMessage);
+		noty({type: 'error', text: loginMessage});
 		var loginBtn = $('#btnSignIn');
 		loginBtn.button('reset');
-		/** /
-		resultToUI = getAlertDiv(2, loginMessage);
-		document.getElementById('alertRow').style.display = '';
-		document.getElementById('alertDiv').innerHTML = resultToUI;
-
-		document.getElementById('divSignInBtn').style.display = '';
-		document.getElementById('divLoadingSearchImg').style.display = 'none';
-		/**/
 	}
 	return false;
 }
@@ -966,31 +962,30 @@ function signUpNewAccount()
 
 	var errorMessage = '';
 	if(churchName == '') {
+		document.getElementById('church').focus();
 		errorMessage = 'Church Name cannot be empty.';
 	} else if(email == '') {
+		document.getElementById('email').focus();
 		errorMessage = 'Email field cannot be empty.';
 	} else if(!isValidEmail(email)) {
+		document.getElementById('email').focus();
 		errorMessage = 'Enter a valid email address in the Email field';
 	} else if(document.getElementById('password').value == "") {
+		document.getElementById('password').focus();
 		errorMessage = 'Password field cannot be empty';
 	} else if(document.getElementById('password').value != document.getElementById('confirmPassword').value) {
+		document.getElementById('confirmPassword').focus();
 		errorMessage = 'Passwords do not match.';
 	} else if(name == '') {
+		document.getElementById('name').focus();
 		errorMessage = 'Name field cannot be empty.';
 	} else if(securityText == '') {
+		document.getElementById('securityText').focus();
 		errorMessage = 'Security check field cannot be empty. Type the characters shown in the security image.';
-	} else if(!document.getElementById("chkTOS").checked) {
-		errorMessage = 'Please read the terms of service and select the check box to confirm us that you agree to the TOS and our Privacy Policy';
 	}
 
 	if(errorMessage != '') {
-		/* * /
-		var resultToUI = getAlertDiv(2, errorMessage);
-		document.getElementById('alertRow').style.display = '';
-		document.getElementById('alertDiv').innerHTML = resultToUI;
-		$("html, body").animate({ scrollTop: 0 }, 1500);
-		/**/
-		alert(errorMessage);
+		noty({type: 'error', text: errorMessage});
 		return false;
 	}
 
@@ -1025,7 +1020,7 @@ function signUpNewAccountResponse(response)
 	{
 		var signUpBtn = $('#btnSignUp');
 		signUpBtn.button('reset');
-		alert(resultMessage);
+		noty({type: 'error', text: resultMessage});
 	}
 	/** /
 	document.getElementById('alertRow').style.display = '';
