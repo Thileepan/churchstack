@@ -30,13 +30,15 @@
 
 						<p>If for some reason, you ask for a refund, we'll give it to you. There are a couple of points you need to know in this context, though:</p>
 
-						<p><b>Monthly Subscription</b></p>
-						<p>If you are paying/charged monthly for using the product (<?php echo PRODUCT_NAME; ?>), you can request for a refund anytime. However, the refund amount you get will be prorated. i.e., if you have used the product for 15 days of the current billing cycle, the refund amount that you will get is almost half of what you been charged for the current month. Hope you get what we mean!</p>
-
 						<p><b>Yearly Subscription</b></p>
 						<p>For yearly subscriptions which gives you a huge discount when compared to monthly subscription, you need to ask for a refund within 60 days of buying the product. In other words, once you have become a paid customer who has been using the product by purchasing a plan, if your current subscription is "yearly", you need to ask for a refund within 60 days <u>from the date you became a paid customer</u>.</p>
 
-						<p>For valid refund requests, even for yearly subscription, the refund amount you get will be prorated. The subscription amount will be divided by 365 and the amount virtually charged for each days of usage will be deducted from the refund amount.</p>
+						<p>For valid refund requests, the refund amount you get will be prorated. The subscription amount will be divided by 365 and the amount logically charged for each days of usage will be deducted from the refund amount. Hope you get what we mean!</p>
+
+						<p><b>Monthly Subscription</b></p>
+						<p>If you are on monthly subscription, <u>NO refund</u> can be given and you can request to deactivate your account rightaway and stop paying for the next month. You are requested email us clearly that you want to deactivate your account so that we can make sure your credit card is not charged in future</p>
+						<!-- p>If you are paying/charged monthly for using the product (<?php echo PRODUCT_NAME; ?>), you can request for a refund anytime. However, the refund amount you get will be prorated. i.e., if you have used the product for 15 days of the current billing cycle, the refund amount that you will get is almost half of what you been charged for the current month. Hope you get what we mean!</p -->
+
 
 						<p><b>Additional deductions on the refund amount</b></p>
 						<p>Please note that our payment gateway may not refund us the transaction commissions and foreign currency markup fee on certain circumstances. When you make a payment online for buying a product/plan from us, they (separately) charge us a percentage of your transacted amount. Hence, any refunds you may receive will be 'net of transaction commissions' that may have been charged by our payment gateway - simply because those costs have already been (separately) charged to us.</p>

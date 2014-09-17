@@ -222,7 +222,7 @@ class License
 			$referrer_church_id = 0;
 			$referral_church_name = "";
 			$referrer_church_name = "";
-			if($plan_type==1)//Applicable only for subscription
+			if($plan_type==1 && $validity_in_seconds > 2592000)//Applicable only for subscription & yearly plan (greater than a month is assumed as yearly)
 			{
 				$referrer_result = $this->isValidForReferralBenefits($this->church_id);
 				if($referrer_result[0]==1)
@@ -1407,8 +1407,18 @@ class License
 					$curr_church_name = $result->fields[1];
 					if($referrer_church_id > 0)
 					{
-						$toReturn[0] = 1;
-						$toReturn[1] = array($referrer_church_id, $curr_church_name);
+						$toReturn[0] = 0;
+						$toReturn[1] = "The referrer is not qualified for the referral benefits. This might have impact on the referral's benefit.";
+						$referrer_subs_details = $this->getCurrentSubscriptionPlanDetails($referrer_church_id);
+						if($referrer_subs_details[0]==1)
+						{
+							$validity_in_seconds = $referrer_subs_details[1][7];
+							if($validity_in_seconds > 2592000)//which may mean yearly plan
+							{
+								$toReturn[0] = 1;
+								$toReturn[1] = array($referrer_church_id, $curr_church_name);
+							}
+						}
 					}
 					else
 					{
@@ -1688,12 +1698,16 @@ class License
 		return $to_return;
 	}
 
-	public function getCurrentSubscriptionPlanDetails()
+	public function getCurrentSubscriptionPlanDetails($church_id="")//Leave empty to get currently logged in church's details
 	{
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "No details could be fetched";
-		if($this->church_id <= 0) {
+
+		if(trim($church_id) == "") {
+			$church_id = $this->church_id;
+		}
+		if($church_id <= 0) {
 			$toReturn[0] = 0;
 			$toReturn[1] = "Unable to identify the target account";
 			return $toReturn;
@@ -1701,7 +1715,7 @@ class License
 		if($this->db_conn)
 		{
 			$query = 'select ii.INVOICE_ID, ii.SUBORDER_ID, ii.PLAN_ID, ii.PLAN_NAME, ii.PLAN_DESCRIPTION, ii.PLAN_TYPE, ii.VALIDITY_PERIOD_TEXT, ii.VALIDITY_IN_SECONDS, ii.PLAN_COST, ii.QUANTITY, ii.TOTAL_COST, ii.IS_AUTORENEWAL_ENABLED, ir.CHURCH_NAME, ir.USER_ID, ir.EMAIL, ir.BILLING_NAME, ir.BILLING_ADDRESS, ir.OTHER_ADDRESS, ir.PHONE, ir.CURRENCY_CODE, ir.SUBTOTAL, ir.ADDITIONAL_CHARGE, ir.DISCOUNT_PERCENTAGE, ir.DISCOUNT_AMOUNT, ir.TAX_PERCENTAGE,	ir.TAX_AMOUNT, ir.TAX_2_PERCENTAGE, ir.TAX_2_AMOUNT, ir.VAT_PERCENTAGE,	ir.VAT_AMOUNT, ir.NET_TOTAL, ir.INVOICE_NOTES, ir.PAYMENT_GATEWAY, ir.PAYMENT_MODE, ir.IP_ADDRESS, ir.PURCHASE_STATUS_CODE, ir.PURCHASE_STATUS_REMARKS, ir.PG_STATUS_CODE, ir.PG_STATUS_REMARKS, ir.LAST_UPDATE_DATE, ir.IS_REFUND from INVOICED_ITEMS as ii, LICENSE_DETAILS as ld, INVOICE_REPORT as ir where ld.CHURCH_ID=? and ld.CHURCH_ID=ir.CHURCH_ID and ld.PLAN_TYPE=1 and ld.LAST_INVOICE_ID=ir.INVOICE_ID and ii.INVOICE_ID=ir.INVOICE_ID and ii.PLAN_TYPE=1 limit 1';
-			$result = $this->db_conn->Execute($query, array($this->church_id));
+			$result = $this->db_conn->Execute($query, array($church_id));
 			if($result) {
                 if(!$result->EOF) {
 					$inv_items_array = array();
