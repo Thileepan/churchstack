@@ -17,7 +17,20 @@ include_once($PATH."classes/class.autonotifyreports.php");
 //include_once($PATH."plugins/apache-log4php/src/main/php/Logger.php");
 include_once($PATH."classes/class.filelogger.php");
 
+/** /
+
+$lic_obj = new License($PATH);
+$lic_obj->setChurchID(34);
+//$result = $lic_obj->validateLicensePlanChange(6);
+//print_r($result);
+$other = $lic_obj->justChangeTheLicensePlanAlone(2, 1);
+print_r($other);
+/**/
+/** /
+$lic_obj = new License($PATH);
+print_r($lic_obj->calculateServiceTaxSplitup(59.99));
 //echo strtotime("+1 month", 1391126400);
+/**/
 
 /** /
 $utils = new Utility($PATH);
@@ -223,13 +236,13 @@ $coupon_result = $lic_obj->createCoupon($church_id, $is_valid_for_all, $discount
 print_r($coupon_result);
 /**/
 
-/**/
+/** /
 $lic_obj = new License($PATH);
-$lic_obj->setChurchID(8);
+$lic_obj->setChurchID(34);
 $invoice_details_array = array("Nesan R", "16 C, Thisaikaval St., Arumuganeri, Thootrhukudi Dist, Tamil Nadu, India, Chennai - 600 002", "Other", "0991901", "USD", 199, 1, 3, 6, 2, 4, 0, 0, 0, 0, 234, "S73MN4L57W", "Some notes", "PayPal", "Credit Card", "10.0.0.114", "nesanjoseph@gmail.com");
 $invoiced_items_array = array();
-$invoiced_items_array[0] = array(1, "Standard", "ST DES", 1, "1 Month", 2592000, 30, 2, 60, 1);
-$invoiced_items_array[1] = array(2, "Gold SMS", "GD DES", 2, "1 Month", 2592000, 10, 2, 20, 0);
+$invoiced_items_array[0] = array(2, "Standard", "ST DES", 1, "1 Month", 2892000, 30, 2, 60, 1);
+$invoiced_items_array[1] = array(2, "Gold SMS", "GD DES", 2, "1 Month", 2892000, 10, 2, 20, 0);
 $res = $lic_obj->writeInitialPurchaseReport($invoice_details_array, $invoiced_items_array, $is_refund);
 print_r($res)."<BR><BR>";
 $unique_hash =  $res[1][1];

@@ -63,6 +63,7 @@ class Church
 
 	public function updateChurchInformation($church_id, $church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $last_modified_time, $currency_id, $country_id, $time_zone) 
 	{
+		include_once($this->APPLICATION_PATH . 'classes/class.utility.php');
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "There was some error while trying to update church details";
@@ -73,6 +74,10 @@ class Church
 			if($result) {
 				$to_return[0] = 1;
 				$to_return[1] = "Church Details updated successfully";
+
+				//Refresh Session Data
+				$util_obj = new Utility($this->APPLICATION_PATH);
+				$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
 			}			
 		}
 		return $to_return;

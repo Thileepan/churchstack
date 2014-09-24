@@ -111,6 +111,8 @@ class License
 					$query .= '  and LD.PLAN_TYPE=?  limit 1';
 					$arg_to_pass[1] = $plan_type;
 				}
+			} else {
+				return $to_return;
 			}
 
 			$result = $this->db_conn->Execute($query, $arg_to_pass);
@@ -1776,6 +1778,198 @@ class License
 		}
 		return $toReturn;
 	}
+
+	public function validateLicensePlanChange($new_plan_id)
+	{
+		include_once($this->APPLICATION_PATH . 'classes/class.profiles.php');
+
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to validate the license plan changes at the moment";
+
+		//THIS IS VERY VERY IMPORTANT
+		$church_id = $this->church_id;
+		//THIS IS VERY VERY IMPORTANT
+
+		$current_active_prof_count = -1;
+		$is_on_trial = 0;
+		$current_plan_id = -1;
+		$is_prorate_for_annual_billing = 0;
+		$license_expiry_timestamp = time();
+		
+		$current_license_details = $this->getLicenseDetails(1);//Fetch subscription alone...
+		if($current_license_details[0]==1) {
+			$is_on_trial = $current_license_details[1][0]["is_on_trial"];
+			$current_plan_id = $current_license_details[1][0]["plan_id"];
+			$license_expiry_timestamp = $current_license_details[1][0]["lic_expiry_timestamp"];
+		} else {
+			return $to_return;
+		}
+
+		$shardedDB = trim($_SESSION["shardedDB"]);
+
+		$profiles_obj = new Profiles($this->APPLICATION_PATH, $shardedDB);
+		$profile_counts_result = $profiles_obj->getProfCountGroupedByStatus();
+		if($profile_counts_result[0]==1)
+		{
+			$current_active_prof_count = 0;//success case...
+			for($c=0; $c < COUNT($profile_counts_result[1]); $c++)
+			{
+				if($profile_counts_result[1][$c][0] == 1)//Active Profiles
+				{
+					$current_active_prof_count = $profile_counts_result[1][$c][1];
+					break;
+				}
+			}
+		}
+		
+		if($current_active_prof_count == -1)
+		{
+			return $to_return;
+		}
+
+		//THIS IS VERY VERY IMPORTANT:ASK NESAN
+		self::__construct($this->APPLICATION_PATH);
+		$this->setChurchID($church_id);
+		//THIS IS VERY VERY IMPORTANT:ASK NESAN
+		
+		$current_plan_details = $this->getLicensePlanDetails($current_plan_id);
+		$new_plan_details = $this->getLicensePlanDetails($new_plan_id);
+
+		if($current_plan_details[0] == 0 || $new_plan_details[0] == 0)
+		{
+			return $to_return;
+		}
+
+		if($is_on_trial==1)
+		{
+			if($new_plan_details[1]["max_count"] <= $current_active_prof_count)
+			{
+				$to_return[0] = 0;
+				$to_return[1] = "The maximum permitted active profiles count for the plan you have selected is lesser than that present in your church account. Please choose a higher plan.";
+				return $to_return;
+			}
+			else
+			{
+				$to_return[0] = 1;
+				$to_return[1] = "Change/Selection of the new license plan approved";
+				//DO NOT RETURN HERE. some works to be done below...
+			}
+		}
+		else
+		{
+			if($new_plan_details[1]["max_count"] < $current_plan_details[1]["max_count"])
+			{
+				$to_return[0] = 0;
+				$to_return[1] = "Plan downgrade is not permitted. You can choose to stay on the same plan or go for a higher plan.";
+				return $to_return;
+			}
+			else
+			{
+				if($new_plan_details[1]["validity_in_seconds"] < $current_plan_details[1]["validity_in_seconds"])
+				{
+					$to_return[0] = 0;
+					$to_return[1] = "Changing the billing plan from annual to monthly is not permitted. Contact support for more information";
+					return $to_return;
+				}
+				else
+				{
+					$to_return[0] = 1;
+					$to_return[1] = "Change/Selection of the new license plan approved";
+
+					if($current_plan_id != $new_plan_id)
+					{
+						if($current_plan_details[1]["validity_in_seconds"] > 2592000 && $new_plan_details[1]["validity_in_seconds"] > 2592000)
+						{
+							//Which means old and new are annual billing only.
+							$is_prorate_for_annual_billing = 1;
+						}
+						//DO NOT RETURN HERE. some works to be done below...
+					}
+				}
+			}
+		}
+
+		if($to_return[0] == 1 && $is_prorate_for_annual_billing == 1)
+		{
+			$current_time_stamp = time();
+			if($license_expiry_timestamp - $current_time_stamp > 2592000)//More than one month remaining before the license expires
+			{
+				$days_remaining_for_lic_expiry = ceil(($license_expiry_timestamp - $current_time_stamp)/86400);
+				$current_plan_amount_per_day = $current_plan_details[1]["pricing"]/365;//Can be float
+				$new_plan_amount_per_day = $new_plan_details[1]["pricing"]/365;//Can be float
+
+				$balance_amount_remaining_on_current_plan = $current_plan_amount_per_day*$days_remaining_for_lic_expiry;
+				$estimate_amount_for_new_plan_for_rem_days = $new_plan_amount_per_day*$days_remaining_for_lic_expiry;
+
+				$net_amount_to_charge_now = $estimate_amount_for_new_plan_for_rem_days-$balance_amount_remaining_on_current_plan;
+				$net_amount_to_charge_now = floor($net_amount_to_charge_now);
+				$service_tax_split_up = $this->calculateServiceTaxSplitup($net_amount_to_charge_now);
+
+				$to_return[2] = array("is_prorate_needed"=>1, "amount_to_charge_in_total"=>$net_amount_to_charge_now, "service_tax_amount"=>$service_tax_split_up["service_tax_amount"], "plan_price_without_service_tax"=>$service_tax_split_up["amount_without_ST"]);
+			}
+			else
+			{
+				$to_return[2] = array("is_prorate_needed"=>0);//No need to prorate
+			}
+		}
+
+		return $to_return;
+	}
+
+	public function justChangeTheLicensePlanAlone($new_plan_id, $force_plan_change=0)
+	{
+		include_once($this->APPLICATION_PATH . 'classes/class.utility.php');
+		if($this->church_id <= 0)
+		{
+			$to_return = array();
+			$to_return[0] = 0;
+			$to_return[1] = "Unable to identify the church";
+			return $to_return;
+		}
+
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to change the license plan";
+
+		if($force_plan_change != 1)
+		{
+			$is_plan_change_permitted = $this->validateLicensePlanChange($new_plan_id);
+			if($is_plan_change_permitted[0]==0)
+			{
+				$to_return[0] = 0;
+				$to_return[1] = $is_plan_change_permitted[1];
+				return $to_return;
+			}
+			else
+			{
+				//Continue downwards and go ahead...
+			}
+		}
+
+		$query = 'update LICENSE_DETAILS set PLAN_ID=? where CHURCH_ID=? and PLAN_TYPE=?';
+		$result = $this->db_conn->Execute($query, array($new_plan_id, $this->church_id, 1));
+		if($result) {
+			$to_return[0] = 1;
+			$to_return[1] = "License plan updated successfully";
+
+			//Refresh Session Data
+			$util_obj = new Utility($this->APPLICATION_PATH);
+			$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
+		}
+		return $to_return;
+	}
+
+	public function calculateServiceTaxSplitup($amount_including_service_tax)
+	{
+		$service_tax_percentage = 12.36;
+		$product_price_without_ST = ($amount_including_service_tax*100)/(100 + $service_tax_percentage);
+		$service_tax_amount = $product_price_without_ST*($service_tax_percentage/100);
+
+		$to_return = array("input_amount_including_ST"=>$amount_including_service_tax, "amount_without_ST"=>round($product_price_without_ST, 2), "service_tax_amount"=>round($service_tax_amount, 2));
+		return $to_return;
+	}
+
 }
 
 ?>
