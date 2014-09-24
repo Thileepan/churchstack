@@ -178,12 +178,14 @@ function processForgotPwdResponse(response)
 		if(dataObj.rsno==0) {
 			var forgotPwdBtn = $('#btnForgotPwd');
 			forgotPwdBtn.button('reset');
-			alert(dataObj.msg);
+			noty({type: 'error', text: dataObj.msg});
+			//alert(dataObj.msg);
 			return false;
 		} else if(dataObj.rsno==1) {
 			var forgotPwdBtn = $('#btnForgotPwd');
 			forgotPwdBtn.button('reset');
-			alert(dataObj.msg);
+			noty({type: 'success', text: dataObj.msg});
+			//alert(dataObj.msg);
 			document.getElementById("emailLost").value = "";
 			return false;
 		}

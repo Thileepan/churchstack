@@ -17,13 +17,14 @@ define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd');
 define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 define('PRODUCT_CONTACT_US', 'http://www.churchstack.com/contactus');
 define('PRODUCT_PRIV_POLICY_EMAIL', "support@churchstack.com");
+define('PRODUCT_PRIV_POLICY_URL', "https://account.churchstack.com/doc/privacypolicy");
 
 //Company Related stuff
-define('COMPANY_WEBSITE', 'http://www.rcloudtechnologies.com');
-define('COMPANY_FULL_NAME', 'RCloud Technologies Pvt Ltd.');
-define('COMPANY_SHORT_NAME', 'RCloud Technologies');
-define('COMPANY_FULL_ADDRESS', "RCloud Technologies Pvt Ltd., Pallavaram, Chennai-600 043, Tamil Nadu, India");
-define('COMPANY_CONTACT_US', 'http://www.rcloudtechnologies.com/contactus');
+define('COMPANY_WEBSITE', 'http://www.rapydcloud.com');
+define('COMPANY_FULL_NAME', 'RapydCloud Technologies Pvt Ltd');
+define('COMPANY_SHORT_NAME', 'RapydCloud Technologies');
+define('COMPANY_FULL_ADDRESS', "RapydCloud Technologies Pvt Ltd., Pallavaram, Chennai-600 043, Tamil Nadu, India");
+define('COMPANY_CONTACT_US', 'http://www.rapydcloud.com/contact-us.html');
 
 //mysql database information
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
