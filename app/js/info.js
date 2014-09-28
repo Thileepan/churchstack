@@ -45,13 +45,13 @@ function addOrUpdateChurchInfo(isUpdate)
 
 	var formPostData = 'req=2';
 	formPostData += '&isUpdate='+isUpdate;
-	formPostData += '&churchName='+churchName;
-	formPostData += '&churchDesc='+churchDesc;
-	formPostData += '&churchAddr='+churchAddr;
-	formPostData += '&landline='+landline;
-	formPostData += '&mobile='+mobile;
-	formPostData += '&email='+email;
-	formPostData += '&website='+website;
+	formPostData += '&churchName='+escString(churchName);
+	formPostData += '&churchDesc='+escString(churchDesc);
+	formPostData += '&churchAddr='+escString(churchAddr);
+	formPostData += '&landline='+escString(landline);
+	formPostData += '&mobile='+escString(mobile);
+	formPostData += '&email='+escString(email);
+	formPostData += '&website='+escString(website);
 	formPostData += '&countryID='+countryID;
 	formPostData += '&currencyID='+currencyID;
 	formPostData += '&timeZone='+timeZone;

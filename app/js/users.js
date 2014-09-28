@@ -83,17 +83,17 @@ function forgotPassword(type)
 	if(type==1) {
 		formPostData += "req=1";
 		formPostData += "&type="+type;
-		formPostData += "&email="+document.getElementById("txtEmail").value;
+		formPostData += "&email="+escString(document.getElementById("txtEmail").value);
 	} else if(type==2) {
 		formPostData += "req=2";
 		formPostData += "&type="+type;
-		formPostData += "&email="+document.getElementById("txtEmail").value;
-		formPostData += "&pwd="+document.getElementById("txtPassword").value;
+		formPostData += "&email="+escString(document.getElementById("txtEmail").value);
+		formPostData += "&pwd="+escString(document.getElementById("txtPassword").value);
 		formPostData += "&globalSSToken="+document.getElementById("globalSessionSecToken").value;
 	} else if(type==3) {
 		formPostData += "req=1";
 		formPostData += "&type="+type;
-		formPostData += "&email="+document.getElementById("emailLost").value;
+		formPostData += "&email="+escString(document.getElementById("emailLost").value);
 	}
 	$.ajax({
 		type:'POST',

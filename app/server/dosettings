@@ -85,10 +85,10 @@ else if($req == 2)
 {
 	//add/update new option
 
-	$option_value = trim($_POST['optionValue']);
-	$option_id = trim($_POST['optionID']);
+	$option_value = trim(stripslashes(rawurldecode($_POST['optionValue'])));
+	$option_id = trim(stripslashes(rawurldecode($_POST['optionID'])));
 	$is_update = trim($_POST['isUpdate']);
-	$setting_id = trim($_POST['settingID']);
+	$setting_id = trim(stripslashes(rawurldecode($_POST['settingID'])));
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	
@@ -236,12 +236,12 @@ else if($req == 6)
 {
 	//Add/Edit User
 	session_start();
-	$user_name = trim($_POST['userName']);
-	$password = md5(trim($_POST['password']));
+	$user_name = trim(stripslashes(rawurldecode($_POST['userName'])));
+	$password = md5(trim(stripslashes(rawurldecode($_POST['password']))));
 	$is_update = trim($_POST['isUpdate']);
-	$prev_user = trim($_POST['prevUser']);
-	$user_status = trim($_POST['userStatus']);
-	$user_full_name = trim($_POST['userFullName']);
+	$prev_user = trim(stripslashes(rawurldecode($_POST['prevUser'])));
+	$user_status = trim(stripslashes(rawurldecode($_POST['userStatus'])));
+	$user_full_name = trim(stripslashes(rawurldecode($_POST['userFullName'])));
 	$church_id = $_SESSION['churchID'];
 	$role_id = 2; //Administrator Login
 	
@@ -278,7 +278,7 @@ else if($req == 7)
 	//Delete User
 	
 	session_start();
-	$user_id = trim($_POST['user']);
+	$user_id = trim(stripslashes(rawurldecode($_POST['user'])));
 	if($user_id == $_SESSION['userID']) {
 		echo 2; exit; //logged in user can't be delete.
 	}
@@ -428,14 +428,14 @@ else if($req == 10)
 	//add/edit profile custom field values
 
 	$is_update = trim($_POST['isUpdate']);
-	$field_id = trim($_POST['fieldID']);
-	$field_name = trim($_POST['fieldName']);
-	$field_type = trim($_POST['fieldType']);
-	$field_options = trim($_POST['fieldOptions']);
-	$field_help_message = trim($_POST['fieldHelpMsg']);
+	$field_id = trim(stripslashes(rawurldecode($_POST['fieldID'])));
+	$field_name = trim(stripslashes(rawurldecode($_POST['fieldName'])));
+	$field_type = trim(stripslashes(rawurldecode($_POST['fieldType'])));
+	$field_options = trim(stripslashes(rawurldecode($_POST['fieldOptions'])));
+	$field_help_message = trim(stripslashes(rawurldecode($_POST['fieldHelpMsg'])));
 	$is_required = trim($_POST['isRequired']);
-	$validation_string = trim($_POST['validationString']);
-	$display_order = trim($_POST['displayOrder']);	
+	$validation_string = trim(stripslashes(rawurldecode($_POST['validationString'])));
+	$display_order = trim(stripslashes(rawurldecode($_POST['displayOrder'])));	
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	if($is_update) {

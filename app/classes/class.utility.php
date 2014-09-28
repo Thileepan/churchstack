@@ -79,11 +79,11 @@ class Utility
 
 	public function setFreshSessionData($user_id, $church_id)
 	{
-		include_once($APPLICATION_PATH."classes/class.users.php");
-		include_once($APPLICATION_PATH."classes/class.church.php");
-		include_once($APPLICATION_PATH."classes/class.license.php");
-		include_once($APPLICATION_PATH."classes/class.profiles.php");
-		$users_obj = new Users($APPLICATION_PATH);
+		include_once($this->APPLICATION_PATH."classes/class.users.php");
+		include_once($this->APPLICATION_PATH."classes/class.church.php");
+		include_once($this->APPLICATION_PATH."classes/class.license.php");
+		include_once($this->APPLICATION_PATH."classes/class.profiles.php");
+		$users_obj = new Users($this->APPLICATION_PATH);
 		$users_details = $users_obj->getUserInformation($user_id, $church_id);
 		session_start();
 		$_SESSION['lastFreshSessionUpdatedTime'] = time();
@@ -103,7 +103,7 @@ class Utility
 		//$_SESSION['shardedDB'] = 'cs01_churchstack';
 
 		//Getting church details
-		$church_obj = new Church($APPLICATION_PATH);
+		$church_obj = new Church($this->APPLICATION_PATH);
 		$church_result = $church_obj->getInformationOfAChurch($church_id);
 		if($church_result[0]==1)
 		{
@@ -120,7 +120,7 @@ class Utility
 			$_SESSION['churchTimeZone'] = $church_result[1][16];
 
 			//Get license details
-			$lic_obj = new License($APPLICATION_PATH);
+			$lic_obj = new License($this->APPLICATION_PATH);
 			$lic_obj->setChurchID($church_id);
 			$license_result = $lic_obj->getLicenseDetails(1);//plan type=1 indicates subscription/validity 
 			if($license_result[0]==1)
@@ -156,7 +156,7 @@ class Utility
 			}
 
 			//Get active profiles count
-			$profiles_obj = new Profiles($APPLICATION_PATH);//It will work because shardeddb session will be set above
+			$profiles_obj = new Profiles($this->APPLICATION_PATH);//It will work because shardeddb session will be set above
 			$_SESSION["churchCurrentActiveProfilesCount"] = $profiles_obj->getProfilesCount(1, 0);//List All Active Profiles
 		}
 	}

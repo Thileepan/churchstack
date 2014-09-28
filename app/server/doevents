@@ -373,14 +373,14 @@ else if($req == 2)
 }
 else if($req == 3)
 {
-	$title		= trim($_POST['title']);
-	$description= trim($_POST['desc']);
-	$location	= trim($_POST['location']);
+	$title		= trim(stripslashes(rawurldecode($_POST['title'])));
+	$description= trim(stripslashes(rawurldecode($_POST['desc'])));
+	$location	= trim(stripslashes(rawurldecode($_POST['location'])));
 	$start_date	= trim($_POST['startDate']);
 	$end_date	= trim($_POST['endDate']);
 	$start_time	= trim($_POST['startTime']);
 	$end_time	= trim($_POST['endTime']);
-	$organiser	= trim($_POST['organiser']);
+	$organiser	= trim(stripslashes(rawurldecode($_POST['organiser'])));
 	$priority	= 0;
 	$access_level= 0;
 

@@ -134,8 +134,8 @@ else if($req == 3)
 	//add/update fund details
 	$is_update = trim($_POST['isUpdate']);
 	$fund_id = trim($_POST['fundID']);
-	$fund_name = trim($_POST['fundName']);
-	$fund_description = trim($_POST['fundDesc']);
+	$fund_name = trim(stripslashes(rawurldecode($_POST['fundName'])));
+	$fund_description = trim(stripslashes(rawurldecode($_POST['fundDesc'])));
 	$fund_visibility = trim($_POST['visibility']);
 
 	$funds_obj = new Funds($APPLICATION_PATH);
@@ -287,8 +287,8 @@ else if($req == 8)
 	//add/edit batch details
 	$is_update = trim($_POST['isUpdate']);
 	$batch_id = trim($_POST['batchID']);
-	$batch_name = trim($_POST['batchName']);
-	$batch_description = trim($_POST['batchDesc']);
+	$batch_name = trim(stripslashes(rawurldecode($_POST['batchName'])));
+	$batch_description = trim(stripslashes(rawurldecode($_POST['batchDesc'])));
 	$expected_amount = trim($_POST['expectedAmount']);
 	
 	$dt = Carbon::now('Asia/Calcutta');
@@ -363,7 +363,7 @@ else if($req == 12)
 	//get add/update contribution form
 	$is_update = trim($_POST['isEdit']);
 	$batch_id = trim($_POST['batchID']);
-	$batch_name = trim($_POST['batchName']);
+	$batch_name = trim(stripslashes(rawurldecode($_POST['batchName'])));
 	$contribution_id = trim($_POST['contributionID']);
 
 	$fund_obj = new Funds($APPLICATION_PATH);

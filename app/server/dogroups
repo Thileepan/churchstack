@@ -61,8 +61,8 @@ else if($req == 2)
 	//add or update group
 
 	$is_update = trim($_POST['isEdit']);
-	$group_name = trim($_POST['name']);
-	$desc = trim($_POST['desc']);
+	$group_name = trim(stripslashes(rawurldecode($_POST['name'])));
+	$desc = trim(stripslashes(rawurldecode($_POST['desc'])));
 	$group_id = trim($_POST['groupID']);
 
 	$to_return = array();

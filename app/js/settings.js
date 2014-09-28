@@ -75,9 +75,9 @@ function addOrUpdateOption(val)
 		return false;
 	}
 
-	var formPostData = 'req=2&isUpdate=' + isUpdate + '&optionValue=' + optionValue + '&settingID=' + settingID;
+	var formPostData = 'req=2&isUpdate=' + isUpdate + '&optionValue=' + escString(optionValue) + '&settingID=' + escString(settingID);
 	if(isUpdate) {
-		formPostData += '&optionID=' + optionID;
+		formPostData += '&optionID=' + escString(optionID);
 	}
 
 	$.ajax({
@@ -254,9 +254,9 @@ function addOrUpdateUser(val)
 		return false;
 	}
 
-	var formPostData = 'req=6&userName=' + user + '&password=' + pwd + '&isUpdate=' + isUpdate +'&userStatus=' + userStatus;
+	var formPostData = 'req=6&userName=' + escString(user) + '&password=' + escString(pwd) + '&isUpdate=' + isUpdate +'&userStatus=' + escString(userStatus);
 	if(isUpdate) {
-		formPostData += '&userID=' + userID + "&prevUser=" + prevUserName;
+		formPostData += '&userID=' + escString(userID) + "&prevUser=" + escString(prevUserName);
 	}
 
 	$.ajax({
@@ -474,15 +474,15 @@ function addOrUpdateCustomFields(isEdit)
 
 	var formPostData = 'req=10';
 	formPostData += '&isUpdate=' + isUpdate;
-	formPostData += '&fieldName=' + fieldName;
-	formPostData += '&fieldType=' + fieldType;
-	formPostData += '&fieldOptions=' + fieldOptions;
+	formPostData += '&fieldName=' + escString(fieldName);
+	formPostData += '&fieldType=' + escString(fieldType);
+	formPostData += '&fieldOptions=' + escString(fieldOptions);
 	formPostData += '&isRequired=' + isRequired;
-	formPostData += '&validationString=' + validationString;
-	formPostData += '&displayOrder=' + displayOrder;
-	formPostData += '&fieldHelpMsg=' + fieldHelpMsg;
+	formPostData += '&validationString=' + escString(validationString);
+	formPostData += '&displayOrder=' + escString(displayOrder);
+	formPostData += '&fieldHelpMsg=' + escString(fieldHelpMsg);
 	if(isUpdate) {
-		formPostData += '&fieldID=' + fieldID;
+		formPostData += '&fieldID=' + escString(fieldID);
 	}
 
 	$.ajax({

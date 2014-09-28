@@ -13,9 +13,9 @@ $req = trim($_POST['req']);
 
 if($req == 'authenticate')
 {
-	$user_name = trim($_POST['username']);
-	$email = ((trim($_POST['email'])!="")? trim($_POST['email']) : $user_name );
-	$password = md5(trim($_POST['password']));
+	$user_name = trim(stripslashes(rawurldecode($_POST['username'])));
+	$email = ((trim($_POST['email'])!="")? trim(stripslashes(rawurldecode($_POST['email']))) : $user_name );
+	$password = md5(trim(stripslashes(rawurldecode($_POST['password']))));
 	
 	$users_obj = new Users($APPLICATION_PATH);
 	$login_result = $users_obj->isAuthenticatedUser($email, $password);
@@ -130,15 +130,15 @@ if($req == 'authenticate')
 else if($req == 'signup')
 {
 	session_start();
-	$church_name = trim($_POST['churchName']);
-	$church_location = trim($_POST['churchLocation']);
-	$user_full_name = trim($_POST['name']);
-	$email = trim($_POST['email']);
-	$mobile = trim($_POST['phone']);
-	$referrer_email = trim($_POST['referrerEmail']);
-	$password = trim($_POST['password']);
+	$church_name = trim(stripslashes(rawurldecode($_POST['churchName'])));
+	$church_location = trim(stripslashes(rawurldecode($_POST['churchLocation'])));
+	$user_full_name = trim(stripslashes(rawurldecode($_POST['name'])));
+	$email = trim(stripslashes(rawurldecode($_POST['email'])));
+	$mobile = trim(stripslashes(rawurldecode($_POST['phone'])));
+	$referrer_email = trim(stripslashes(rawurldecode($_POST['referrerEmail'])));
+	$password = trim(stripslashes(rawurldecode($_POST['password'])));
 	$password = md5($password);
-	$security_text = trim($_POST['securityText']);
+	$security_text = trim(stripslashes(rawurldecode($_POST['securityText'])));
 
 	$signup_result = array();
 	$signup_result[0] = 0;
@@ -172,12 +172,12 @@ else if($req == 'savechurchmiscdetails')
 	session_start();
 	$church_name = $_SESSION["churchName"];
 	$church_id = $_SESSION["churchID"];
-	$church_desc = trim($_POST['churchDesc']);
-	$church_addr = trim($_POST['churchAddr']);
-	$church_email = trim($_POST['churchEmail']);
-	$church_land_line = trim($_POST['churchLandLine']);
-	$church_mobile = trim($_POST['churchMobile']);
-	$church_website = trim($_POST['churchWebsite']);
+	$church_desc = trim(stripslashes(rawurldecode($_POST['churchDesc'])));
+	$church_addr = trim(stripslashes(rawurldecode($_POST['churchAddr'])));
+	$church_email = trim(stripslashes(rawurldecode($_POST['churchEmail'])));
+	$church_land_line = trim(stripslashes(rawurldecode($_POST['churchLandLine'])));
+	$church_mobile = trim(stripslashes(rawurldecode($_POST['churchMobile'])));
+	$church_website = trim(stripslashes(rawurldecode($_POST['churchWebsite'])));
 	$church_country_id = trim($_POST['churchCountryID']);
 	$church_time_zone = trim($_POST['churchTimeZone']);
 	$church_currency_id = trim($_POST['churchCurrencyID']);

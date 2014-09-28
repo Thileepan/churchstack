@@ -43,7 +43,7 @@
 				<form id="forgotPwdForm" role="form" onsubmit="return false">
 					<div class="form-group">
 						<label for="emailLost">Email address</label>
-						<input type="email" class="form-control" name="emailLost" id="emailLost" placeholder="Enter email" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(3)}">
+						<input type="email" class="form-control" name="emailLost" id="emailLost" placeholder="Enter email" onkeypress="Javascript:if(typeof event != 'undefined' && event.keyCode === 13){return forgotPassword(3)}" onblur="javascript: this.value = trim(this.value.toLowerCase());">
 						<input type="hidden" name="doUsersHttpdFile" id="doUsersHttpdFile" value="<?php echo $APPLICATION_PATH."server/dousers"; ?>">
 					</div>
 				  <button type="button" class="btn btn-default" name="btnForgotPwd" id="btnForgotPwd" data-loading-text="Sending now..." onclick="return forgotPassword(3);">Send</button>
@@ -144,7 +144,7 @@
 		easing: 'swing',
 		speed: 500 // opening & closing animation speed
 	    },
-	    timeout: 4000, // delay for closing event. Set false for sticky notifications
+	    timeout: 7000, // delay for closing event. Set false for sticky notifications
 	    force: false, // adds notification to the beginning of queue when set to true
 	    modal: false,
 	    maxVisible: 5, // you can set max visible notification for dismissQueue true option,

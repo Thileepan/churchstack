@@ -19,4 +19,5 @@
 <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/custom.js"></script>
 <script src="<?php echo $APPLICATION_PATH; ?>css/mist/js/scrolltopcontrol.js"></script>
 <script src="<?php echo $APPLICATION_PATH; ?>plugins/noty/js/noty/packaged/jquery.noty.packaged.min.js" type="text/javascript"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
 </html>

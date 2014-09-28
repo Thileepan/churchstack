@@ -478,9 +478,9 @@ function addOrUpdateProfile(val)
 	
 	var formPostData = 'req=6';
 	formPostData += '&salutationID=' + salutationID;
-	formPostData += '&firstName=' + firstName;
-	formPostData += '&middleName=' + middleName;
-	formPostData += '&lastName=' + lastName;
+	formPostData += '&firstName=' + escString(firstName);
+	formPostData += '&middleName=' + escString(middleName);
+	formPostData += '&lastName=' + escString(lastName);
 	formPostData += '&parentID=' + parentProfileID;
 	formPostData += '&uniqueID=' + uniqueID;
 	formPostData += '&dob=' + dob;
@@ -488,22 +488,22 @@ function addOrUpdateProfile(val)
 	formPostData += '&relationshipID=' + relationshipID;
 	formPostData += '&maritalStatusID=' + maritalStatusID;
 	formPostData += '&marriageDate=' + marriageDate;
-	formPostData += '&marriagePlace=' + marriagePlace;
-	formPostData += '&address1=' + address1;
-	formPostData += '&address2=' + address2;
-	formPostData += '&address3=' + address3;
-	formPostData += '&area=' + area;
-	formPostData += '&pincode=' + pincode;
-	formPostData += '&landline=' + landline;
-	formPostData += '&workPhone=' + workPhone;
-	formPostData += '&mobile1=' + mobile1;
+	formPostData += '&marriagePlace=' + escString(marriagePlace);
+	formPostData += '&address1=' + escString(address1);
+	formPostData += '&address2=' + escString(address2);
+	formPostData += '&address3=' + escString(address3);
+	formPostData += '&area=' + escString(area);
+	formPostData += '&pincode=' + escString(pincode);
+	formPostData += '&landline=' + escString(landline);
+	formPostData += '&workPhone=' + escString(workPhone);
+	formPostData += '&mobile1=' + escString(mobile1);
 //	formPostData += '&mobile2=' + mobile2;
-	formPostData += '&email=' + email;
+	formPostData += '&email=' + escString(email);
 	formPostData += '&profileStatusID=' + profileStatusID;
-	formPostData += '&notes=' + notes;
+	formPostData += '&notes=' + escString(notes);
 	formPostData += '&isBabtised=' + isBabtised;
 	formPostData += '&isConfirmed=' + isConfirmed;
-	formPostData += '&occupation=' + occupation;
+	formPostData += '&occupation=' + escString(occupation);
 	formPostData += '&isAnotherChurchMember=' + isAnotherChurchMember;
 	formPostData += '&isUpdate=' + isUpdate;	
 	formPostData += '&profileID=' + profileID;
@@ -626,7 +626,7 @@ function authenticateUser()
 	/**/
 	var user = document.getElementById('inputUser').value;
 	var pass = document.getElementById('inputPwd').value;
-	var formPostData = 'req=authenticate&username=' + user + '&password=' + pass;
+	var formPostData = 'req=authenticate&username=' + escString(user) + '&password=' + escString(pass);
 	var errorMessage = '';
 
 	if(user == '') {
@@ -951,13 +951,13 @@ function signUpNewAccount()
 	var securityText = trim(document.getElementById('securityText').value);
 
 	var formPostData = 'req=signup';
-	formPostData += '&churchName=' + churchName;
-	formPostData += '&churchLocation=' + churchLocation;
-	formPostData += '&name=' + name;
-	formPostData += '&email=' + email;
-	formPostData += '&phone=' + phone;
-	formPostData += '&referrerEmail=' + referrerEmail;
-	formPostData += '&password=' + password;
+	formPostData += '&churchName=' + escString(churchName);
+	formPostData += '&churchLocation=' + escString(churchLocation);
+	formPostData += '&name=' + escString(name);
+	formPostData += '&email=' + escString(email);
+	formPostData += '&phone=' + escString(phone);
+	formPostData += '&referrerEmail=' + escString(referrerEmail);
+	formPostData += '&password=' + escString(password);
 	formPostData += '&securityText=' + securityText;
 
 	var errorMessage = '';
@@ -1058,12 +1058,12 @@ function saveChurchMiscDetails()
 	var churchCurrencyID = trim(document.getElementById('churchCurrencyID').value);
 
 	var formPostData = 'req=savechurchmiscdetails';
-	formPostData += '&churchDesc=' + churchDesc;
-	formPostData += '&churchAddr=' + churchAddr;
-	formPostData += '&churchEmail=' + churchEmail;
-	formPostData += '&churchLandLine=' + churchLandLine;
-	formPostData += '&churchMobile=' + churchMobile;
-	formPostData += '&churchWebsite=' + churchWebsite;
+	formPostData += '&churchDesc=' + escString(churchDesc);
+	formPostData += '&churchAddr=' + escString(churchAddr);
+	formPostData += '&churchEmail=' + escString(churchEmail);
+	formPostData += '&churchLandLine=' + escString(churchLandLine);
+	formPostData += '&churchMobile=' + escString(churchMobile);
+	formPostData += '&churchWebsite=' + escString(churchWebsite);
 	formPostData += '&churchCountryID=' + churchCountryID;
 	formPostData += '&churchTimeZone=' + churchTimeZone;
 	formPostData += '&churchCurrencyID=' + churchCurrencyID;

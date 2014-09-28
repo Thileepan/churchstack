@@ -623,9 +623,9 @@ else if($req == 6)
 	//Add or Update Profile
 
 	$salutation_id = trim($_POST['salutationID']);
-	$first_name = trim($_POST['firstName']);
-	$middle_name = trim($_POST['middleName']);
-	$last_name = trim($_POST['lastName']);
+	$first_name = trim(stripslashes(rawurldecode($_POST['firstName'])));
+	$middle_name = trim(stripslashes(rawurldecode($_POST['middleName'])));
+	$last_name = trim(stripslashes(rawurldecode($_POST['lastName'])));
 	$name = $first_name.' '.$middle_name.' '.$last_name;
 	$parent_profile_id = trim($_POST['parentID']);
 	//$unique_id = trim($_POST['uniqueID']);
@@ -634,22 +634,22 @@ else if($req == 6)
 	$relation_ship_id = trim($_POST['relationshipID']);
 	$marital_status_id = trim($_POST['maritalStatusID']);
 	$marriage_date = trim($_POST['marriageDate']);
-	$marriage_place = trim($_POST['marriagePlace']);	
-	$address1 = trim($_POST['address1']);
-	$address2 = trim($_POST['address2']);
-	$address3 = trim($_POST['address3']);
-	$area = trim($_POST['area']);
-	$pincode = trim($_POST['pincode']);
-	$landline = trim($_POST['landline']);
-	$work_phone = trim($_POST['workPhone']);
-	$mobile1 = trim($_POST['mobile1']);
+	$marriage_place = trim(stripslashes(rawurldecode($_POST['marriagePlace'])));	
+	$address1 = trim(stripslashes(rawurldecode($_POST['address1'])));
+	$address2 = trim(stripslashes(rawurldecode($_POST['address2'])));
+	$address3 = trim(stripslashes(rawurldecode($_POST['address3'])));
+	$area = trim(stripslashes(rawurldecode($_POST['area'])));
+	$pincode = trim(stripslashes(rawurldecode($_POST['pincode'])));
+	$landline = trim(stripslashes(rawurldecode($_POST['landline'])));
+	$work_phone = trim(stripslashes(rawurldecode($_POST['workPhone'])));
+	$mobile1 = trim(stripslashes(rawurldecode($_POST['mobile1'])));
 	//$mobile2 = trim($_POST['mobile2']);
-	$email = trim($_POST['email']);	
+	$email = trim(stripslashes(rawurldecode($_POST['email'])));	
 	$profile_status_id = trim($_POST['profileStatusID']);
-	$notes = trim($_POST['notes']);
+	$notes = trim(stripslashes(rawurldecode($_POST['notes'])));
 	$is_babtised = trim($_POST['isBabtised']);
 	$is_confirmed = trim($_POST['isConfirmed']);
-	$occupation = trim($_POST['occupation']);
+	$occupation = trim(stripslashes(rawurldecode($_POST['occupation'])));
 	$is_another_church_member = trim($_POST['isAnotherChurchMember']);
 	$is_update = trim($_POST['isUpdate']);
 	$sms_notification = trim($_POST['smsNotification']);

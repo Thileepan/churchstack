@@ -324,10 +324,10 @@ function addOrUpdateEvents(val, doValidation)
 	}
 
 	var formPostData = "req=3";
-	formPostData += "&title=" + title;
-	formPostData += "&desc=" + desc;
-	formPostData += "&location=" + loc;
-	formPostData += "&organiser=" + organiser;
+	formPostData += "&title=" + escString(title);
+	formPostData += "&desc=" + escString(desc);
+	formPostData += "&location=" + escString(loc);
+	formPostData += "&organiser=" + escString(organiser);
 	formPostData += "&startDate=" + startDate;
 	formPostData += "&endDate=" + endDate;
 	formPostData += "&startTime=" + startTime;

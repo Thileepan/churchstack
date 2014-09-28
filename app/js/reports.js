@@ -424,10 +424,10 @@ function performSearch()
 
 		var formPostData = 'req=3';
 		formPostData += '&reqFrom=' + reqFrom;
-		formPostData += '&ruleType=' + tempRuleType;
-		formPostData += '&ruleSubType=' + ruleSubType;
-		formPostData += '&ruleValue=' + ruleValue;
-		formPostData += '&columnData=' + columnData;
+		formPostData += '&ruleType=' + escString(tempRuleType);
+		formPostData += '&ruleSubType=' + escString(ruleSubType);
+		formPostData += '&ruleValue=' + escString(ruleValue);
+		formPostData += '&columnData=' + escString(columnData);
 		formPostData += '&includeInactiveProfile=' + includeInactiveProfile;
 
 		$.ajax({
@@ -535,7 +535,7 @@ function performSubscriptionSearch()
 	var formPostData = 'req=5';
 	formPostData += '&fromDate=' + convertDateToDBFormat(fromDate);
 	formPostData += '&toDate=' + convertDateToDBFormat(toDate);
-	formPostData += '&subFields=' + subFields;
+	formPostData += '&subFields=' + escString(subFields);
 
 	$.ajax({
 		type:'POST',

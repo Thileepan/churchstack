@@ -81,8 +81,8 @@ function addOrUpdateFund(val)
 
 	var formPostData = 'req=3';
 	formPostData += '&isUpdate=' + isUpdate;
-	formPostData += '&fundName=' + fundName;
-	formPostData += '&fundDesc=' + fundDesc;
+	formPostData += '&fundName=' + escString(fundName);
+	formPostData += '&fundDesc=' + escString(fundDesc);
 	formPostData += '&visibility=' + visibility;
 	if(isUpdate) {
 		formPostData += '&fundID=' + fundID;
@@ -271,8 +271,8 @@ function addOrUpdateBatch(val)
 
 	var formPostData = 'req=8';
 	formPostData += '&isUpdate=' + isUpdate;
-	formPostData += '&batchName=' + batchName;
-	formPostData += '&batchDesc=' + batchDesc;
+	formPostData += '&batchName=' + escString(batchName);
+	formPostData += '&batchDesc=' + escString(batchDesc);
 	formPostData += '&expectedAmount=' + expectedAmount;
 	if(isUpdate) {
 		formPostData += '&batchID=' + batchID;
@@ -354,7 +354,7 @@ function deleteBatchResponse(response)
 function showBatchDetails(batchID, batchName)
 {
 	_batchID = batchID;
-	var formPostData = 'req=10&batchID=' + batchID + '&batchName=' + batchName;
+	var formPostData = 'req=10&batchID=' + batchID + '&batchName=' + escString(batchName);
 	document.getElementById('alertRow').style.display = 'none';
 
 	$.ajax({
@@ -403,7 +403,7 @@ function getAddOrEditContributionForm(isUpdate, batchID, batchName, contribution
 	document.getElementById('addContributionDiv').className = 'tab-pane active';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
 
-	var formPostData = 'req=12&isEdit=' + isUpdate + '&batchID=' + batchID + '&batchName=' + batchName + '&contributionID=' + contributionID;
+	var formPostData = 'req=12&isEdit=' + isUpdate + '&batchID=' + batchID + '&batchName=' + escString(batchName) + '&contributionID=' + contributionID;
 
 	$.ajax({
 		type:'POST',

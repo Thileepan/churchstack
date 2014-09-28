@@ -51,8 +51,8 @@ function addOrUpdateGroup(val)
 	}
 
 	var formPostData = "req=2";
-	formPostData += "&name=" + groupName;
-	formPostData += "&desc=" + desc;
+	formPostData += "&name=" + escString(groupName);
+	formPostData += "&desc=" + escString(desc);
 	formPostData += "&isEdit=" + isUpdate;
 	if(isUpdate) {
 		formPostData += "&groupID=" + groupID;

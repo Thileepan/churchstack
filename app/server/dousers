@@ -9,7 +9,7 @@ session_start();
 $req = $_REQUEST['req'];
 if($req == 1)//Forgot Password feature : Send mail
 {
-	$email = trim($_REQUEST['email']);
+	$email = trim(stripslashes(rawurldecode($_REQUEST['email'])));
 	$type = trim($_REQUEST['type']);
 	$users_obj = new Users($APPLICATION_PATH);
 	$result_data = $users_obj->sendPasswordResetEmail($email);
@@ -27,9 +27,9 @@ else if($req == 2)//Forgot Password feature : Change Password through one-time u
 {
 	if(isset($_SESSION["globalSessionSecurityToken"]) && trim($_SESSION["globalSessionSecurityToken"]) == trim($_POST["globalSSToken"]))
 	{
-		$email = trim($_REQUEST['email']);
+		$email = trim(stripslashes(rawurldecode($_REQUEST['email'])));
 		$type = trim($_REQUEST['type']);
-		$password = md5(trim($_REQUEST['pwd']));
+		$password = md5(trim(stripslashes(rawurldecode($_REQUEST['pwd']))));
 		$users_obj = new Users($APPLICATION_PATH);
 		$result_data = $users_obj->changeUserPassword($email, $password, 1);
 		$rsno = $result_data[0];

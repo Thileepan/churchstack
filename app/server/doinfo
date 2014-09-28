@@ -166,13 +166,13 @@ if($req == 1)
 else if($req == 2)
 {
 	//add or update church information in database
-	$church_name = trim($_POST['churchName']);
-	$church_desc = trim($_POST['churchDesc']);
-	$church_addr = trim($_POST['churchAddr']);
-	$landline = trim($_POST['landline']);
-	$mobile = trim($_POST['mobile']);
-	$email = trim($_POST['email']);
-	$website = trim($_POST['website']);
+	$church_name = trim(stripslashes(rawurldecode($_POST['churchName'])));
+	$church_desc = trim(stripslashes(rawurldecode($_POST['churchDesc'])));
+	$church_addr = trim(stripslashes(rawurldecode($_POST['churchAddr'])));
+	$landline = trim(stripslashes(rawurldecode($_POST['landline'])));
+	$mobile = trim(stripslashes(rawurldecode($_POST['mobile'])));
+	$email = trim(stripslashes(rawurldecode($_POST['email'])));
+	$website = trim(stripslashes(rawurldecode($_POST['website'])));
 	$is_update = trim($_POST['isUpdate']);
 	$signup_time = time();
 	$last_modified_time = time();
@@ -183,8 +183,11 @@ else if($req == 2)
 	
 	$church_obj = new Church($APPLICATION_PATH);
 
+	$status = array();
+
 	/**/
-	if(!$is_update) {
+	if(!$is_update)
+	{
 		//Thileepan, Rewrite this part please, I am commenting it for now. NESAN
 		//$status = $church_obj->addChurchInformation($church_name, $church_desc, $church_addr, $landline, $mobile, $email, $website, $currency_id, $country_id, 0, $time_zone);
 	} else {

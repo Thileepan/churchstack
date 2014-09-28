@@ -168,10 +168,10 @@ else if($req == 2 || $req == 3)
 	if($req == 2) {
 		$report_id = trim($_POST['reportID']);
 	} else {
-		$rule_type = explode(',', trim($_POST['ruleType']));
-		$rule_sub_type = explode(',', trim($_POST['ruleSubType']));
-		$rule_value = explode(',', trim($_POST['ruleValue']));
-		$report_columns = explode(',', trim($_POST['columnData']));
+		$rule_type = explode(',', trim(stripslashes(rawurldecode($_POST['ruleType']))));
+		$rule_sub_type = explode(',', trim(stripslashes(rawurldecode($_POST['ruleSubType']))));
+		$rule_value = explode(',', trim(stripslashes(rawurldecode($_POST['ruleValue']))));
+		$report_columns = explode(',', trim(stripslashes(rawurldecode($_POST['columnData']))));
 		$include_inactive_profile = trim($_POST['includeInactiveProfile']);
 
 		if(COUNT($rule_type) > 0)
@@ -355,7 +355,7 @@ else if($req == 5)
 	//perform subscription reports
 	$from_date = trim($_POST['fromDate']);
 	$to_date = trim($_POST['toDate']);
-	$sub_fields = trim($_POST['subFields']);
+	$sub_fields = trim(stripslashes(rawurldecode($_POST['subFields'])));
 	$sub_fields_arr = explode(",", $sub_fields);
 
 	$reports_obj = new Reports($APPLICATION_PATH);
