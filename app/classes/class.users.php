@@ -343,11 +343,11 @@ class Users
 
 						$welcome_email_content = $this->sendSignupWelcomeEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(NEW_SIGNUP_COPY_TO_ADDRESS).' > /dev/null 2>/dev/null &';
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($welcome_email_content[1][0]).' subject='.urlencode($welcome_email_content[1][1]).' emailBody='.urlencode($welcome_email_content[1][2]).' fromAddressType='.$fromAddressType.' csvBCCEmails='.urlencode(NEW_SIGNUP_COPY_TO_ADDRESS).' replyToEmail='.urlencode(SUPPORT_EMAIL).' > /dev/null 2>/dev/null &';
 						
 						$referral_prog_email_content = $this->sendReferralProgramEmail($signup_details, 1);
 						$fromAddressType = "info";
-						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType.' > /dev/null 2>/dev/null &';
+						$commands[] = '"'.PHP_EXE_PATH.'" '.$email_sending_file.' csvToEmails='.urlencode($referral_prog_email_content[1][0]).' subject='.urlencode($referral_prog_email_content[1][1]).' emailBody='.urlencode($referral_prog_email_content[1][2]).' fromAddressType='.$fromAddressType.' replyToEmail='.urlencode(SUPPORT_EMAIL).' > /dev/null 2>/dev/null &';
 
 						$threads = new Multithread( $commands );
 						$threads->run();
@@ -539,6 +539,7 @@ class Users
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
 		$recipients = array();
 		$recipients['to_address'] = $signup_details["customer_email"];
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($welcome_letter);
@@ -690,6 +691,7 @@ class Users
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_DONOTREPLY);
 		$recipients = array();
 		$recipients['to_address'] = $email;
+		$recipients['reply_to_address'] = DONOTREPLY_EMAIL;
 		$subject = "Instructions : Resetting the password for your account in ".PRODUCT_NAME;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
@@ -780,6 +782,7 @@ class Users
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_INFO);
 		$recipients = array();
 		$recipients['to_address'] = $user_details["customer_email"];
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($referral_prog_letter);

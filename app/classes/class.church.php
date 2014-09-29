@@ -393,6 +393,7 @@ class Church
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
 		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $trial_details["email"]);
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($trial_report);
@@ -449,6 +450,7 @@ class Church
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
 		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $lic_details["email"]);
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($lic_report);
@@ -637,6 +639,7 @@ class Church
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
 		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $trial_details["email"]);
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($trial_report);
@@ -693,6 +696,7 @@ class Church
 		$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_SALES);
 		$recipients = array();
 		$recipients['to_address'] = ((trim($target_email) != "")? trim($target_email) : $lic_details["email"]);
+		$recipients['reply_to_address'] = SUPPORT_EMAIL;
 		$email_obj->setRecipients($recipients);
 		$email_obj->setSubject($subject);
 		$email_obj->setBody($lic_report);

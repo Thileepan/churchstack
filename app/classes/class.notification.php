@@ -44,6 +44,7 @@ class Notification
 						$email_obj = new Email($this->APPLICATION_PATH, EMAIL_FROM_NOTIFICATIONS);
 						$recipients = array();
 						$recipients['to_address'] = $event_notification_details[$i]["event_email_recipients"][$j];
+						$recipients['reply_to_address'] = DONOTREPLY_EMAIL;
 						$subject = "Reminder: ".$event_notification_details[$i]["event_title"]." @ ".$event_notification_details[$i]["event_date_time"];
 						$email_obj->setRecipients($recipients);
 						$email_obj->setSubject($subject);
