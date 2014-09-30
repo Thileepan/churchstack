@@ -341,5 +341,6 @@ insert into PROFILE_SETTINGS values (3, 4, 'Widower');
 
 insert into PROFILE_SETTINGS values (4, 1, 'Active');
 insert into PROFILE_SETTINGS values (4, 2, 'Inactive');
+insert into PROFILE_SETTINGS values (4, 3, 'Deleted');
 
 insert into SUBSCRIPTION_FIELDS (FIELD_NAME, HIDE) values ('General', 0);

@@ -164,9 +164,12 @@ class Reports
 		/***** CONSTRUCTING WHERE CONDITION *****/
 
 		$query_profile_cond = '';
-		if(!$include_inactive_profile) {
-			$query_profile_cond .= ' where PROFILE_STATUS=1';
+		$query_profile_cond .= ' where (PROFILE_STATUS=1';
+		if($include_inactive_profile)
+		{
+			$query_profile_cond .= ' or PROFILE_STATUS=2';
 		}
+		$query_profile_cond .= ') ';
 		
 		//print_r($report_rules);
 		$birth_date_query = "";

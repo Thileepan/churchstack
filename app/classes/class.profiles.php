@@ -229,12 +229,12 @@ class Profiles
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete from PROFILE_DETAILS where PROFILE_ID=?';
+			$query = 'update PROFILE_DETAILS set PROFILE_STATUS=3 where PROFILE_ID=?';
 			$result = $this->db_conn->Execute($query, array($profile_id));
 			if($result) {
 				if($is_profile_head)
 				{
-					$query = 'delete from PROFILE_DETAILS where PARENT_PROFILE_ID=?';
+					$query = 'update PROFILE_DETAILS set PROFILE_STATUS=3 where PARENT_PROFILE_ID=?';
 					$result = $this->db_conn->Execute($query, array($profile_id));
 					if($result) {
 						return true;
@@ -325,7 +325,7 @@ class Profiles
 		// profile_status = 0 (ALL)
 		// profile_status = 1 (ACTIVE)
 		// profile_status = 2 (INACTIVE)
-		// profile_status = 3 (EXPIRED)
+		// profile_status = 3 (DELETED)
 		
 		// profile_type = 0 (ALL)
 		// profile_type = 1 (FAMILYHEAD)

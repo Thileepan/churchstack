@@ -360,7 +360,7 @@ function addOrUpdateEventsResponse(response)
 		var alertType = 1;
 		if(!isUpdate) {
 			//getAddOrEditEventForm(0);
-			getAddOrEditEventParticipantForm();
+			//getAddOrEditEventParticipantForm();
 		}
 	} else {
 		var alertType = 2;

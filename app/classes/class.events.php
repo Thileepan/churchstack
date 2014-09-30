@@ -47,12 +47,13 @@ class Events
 				//no failed transactions detected
 				if(!$this->db_conn->HasFailedTrans())
 				{
-					$return_data[0] = 0;
+					$return_data[0] = 1;
 					$return_data[1] = 'Event has been added successfully';
 				}
 				
 				//transactions will complete here. Either commit/rollback.
-				echo $this->db_conn->CompleteTrans();
+				//echo $this->db_conn->CompleteTrans();
+				$this->db_conn->CompleteTrans();
 				return $return_data;
 			}
 		}
@@ -129,6 +130,12 @@ class Events
 		$return_data = array();
 		$return_data[0] = 0;
 		$return_data[1] = 'Failed to add the event notifications';
+		if(!is_array($notification_details) || COUNT($notification_details) <= 0)
+		{
+			$return_data[0] = 1;
+			$return_data[1] = 'Event has been added/updated successfully';
+			return $return_data;
+		}
 
 		if($this->db_conn)
 		{
