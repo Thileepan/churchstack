@@ -5,10 +5,10 @@ $APPLICATION_PATH = "../";
 //This files secures the action being triggered by cross-domain attacks
 include $APPLICATION_PATH."utils/validateauth.php";
 
-include $APPLICATION_PATH.'utils/JSON.php';
-include $APPLICATION_PATH.'utils/utilfunctions.php';
-include_once $APPLICATION_PATH . '/classes/class.profiles.php';
-include_once $APPLICATION_PATH . '/classes/class.settings.php';
+include_once $APPLICATION_PATH.'utils/JSON.php';
+include_once $APPLICATION_PATH.'utils/utilfunctions.php';
+include_once $APPLICATION_PATH . 'classes/class.profiles.php';
+include_once $APPLICATION_PATH . 'classes/class.settings.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -656,27 +656,44 @@ else if($req == 6)
 	$email_notification = trim($_POST['emailNotification']);
 	$family_photo_location = '';
 	$profile_photo_location = '';
+	$rsno = 1;//Success by default
+	$msg = "Profile has been added/updated successfully";
 		
 	$profile_id = -1;
 	$profiles_obj = new Profiles($APPLICATION_PATH);
 	if($is_update) {
+		$msg = "Profile has been updated successfully";
 		$profile_id = trim($_POST['profileID']);
-		$status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+		$update_status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+		$rsno = $update_status[0];
+		if($update_status[0] == 0) {
+			$msg = $update_status[1];
+		}
 	} else {
+		$msg = "New profile has been added successfully";
 		$unique_id = $profiles_obj->getMaxProfileUniqueID();
 		//echo "UniqueID".$unique_id;
 		if($unique_id != -1) {
 			$unique_id++;
 			//$unique_id = $name_append . appendZeroInUniqueID($unique_id);
-			$status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+			$add_status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+			$rsno = $add_status[0];
+			if($add_status[0] == 0) {
+				$msg = $add_status[1];
+			}
 			$profile_id = $profiles_obj->profile_id;
 		}
 	}
 
+
 	if($profile_id > 0) {
 		//custom profile fields
-		$custom_fields_list = explode('<:|:>', trim($_POST['customFields']));	
-		if(is_array($custom_fields_list))
+		$custom_fields_list = array();
+		if(trim($_POST['customFields']) != "")
+		{
+			$custom_fields_list = explode('<:|:>', trim($_POST['customFields']));	
+		}
+		if(is_array($custom_fields_list) && COUNT($custom_fields_list) > 0)
 		{
 			$fields_count = COUNT($custom_fields_list);
 			if($fields_count > 0)
@@ -688,12 +705,24 @@ else if($req == 6)
 					$field_value = $fields[1];
 					if($is_update) {
 						if($profiles_obj->isCustomProfileFieldsAvailable($profile_id, $field_id)) {
-							$status = $profiles_obj->updateCustomProfileFields($profile_id, $field_id, $field_value);
+							$cus_field_status = $profiles_obj->updateCustomProfileFields($profile_id, $field_id, $field_value);
+							$rsno = $cus_field_status[0];
+							if($cus_field_status[0] == 0) {
+								$msg = $cus_field_status[1];
+							}
 						} else {
-							$status = $profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+							$add_cus_field_status = $profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+							$rsno = $add_cus_field_status[0];
+							if($add_cus_field_status[0] == 0) {
+								$msg = $add_cus_field_status[1];
+							}
 						}												
 					} else {
-						$status = $profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+						$add_cus_field_status = $profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+						$rsno = $add_cus_field_status[0];
+						if($add_cus_field_status[0] == 0) {
+							$msg = $add_cus_field_status[1];
+						}
 					}
 				}
 			}
@@ -701,7 +730,17 @@ else if($req == 6)
 	}
 	
 	unset($profile_obj);
+	/** /
 	echo $profile_id;
+	exit;
+	/**/
+
+	$to_return = array("profile_id"=>$profile_id, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
 	exit;
 }
 else if($req == 7)

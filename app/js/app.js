@@ -522,16 +522,20 @@ function addOrUpdateProfile(val)
 
 function addOrUpdateProfileResponse(response)
 {
-	if(response) {
-		var profileID = response;
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.rsno == 1)
+	{
+		var profileID = dataObj.profile_id;
 		var alertType = 1;
-		var msgToDisplay = (isUpdate)?'Profile has been updated successfully! ':'Profile has been created successfully ';
+		//var msgToDisplay = (isUpdate)?'Profile has been updated successfully! ':'Profile has been created successfully ';
+		var msgToDisplay = dataObj.msg;
 		//msgToDisplay += '<a href="#" onclick="showProfileDetails(' + profileID +');">View Profile</a>';
 		//listAllProfiles(1);
 		showProfileDetails(profileID);
 	} else {
 		var alertType = 2;
-		var msgToDisplay = (isUpdate)?'Profile failed to update.':'Profile failed to create.';		
+		//var msgToDisplay = (isUpdate)?'Profile failed to update.':'Profile failed to create.';		
+		var msgToDisplay = dataObj.msg;
 	}
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';

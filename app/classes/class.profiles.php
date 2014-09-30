@@ -181,6 +181,17 @@ class Profiles
 
 	public function addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification)
 	{
+		$this->profile_id = -1;//To work with the existing code in doserver if add fails
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to add a new profile";
+		if(isset($_SESSION["maxProfileCount"]) && $_SESSION["maxProfileCount"] > 0 && isset($_SESSION["churchCurrentActiveProfilesCount"]) && $_SESSION["churchCurrentActiveProfilesCount"] >= $_SESSION["maxProfileCount"])
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "Your current plan does not allow you to add anymore new profiles to your church account. If you wish to add new profiles, please upgrade your subscription plan. You may also contact the support to get assistance on this.";
+
+			return $to_return;
+		}
 		if($this->db_conn)
 		{
 			//echo $salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member;
@@ -189,24 +200,29 @@ class Profiles
 			//echo $this->db_conn->ErrorMsg();
 			if($result) {
 				$this->profile_id = $this->db_conn->Insert_ID();
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "New profile has been added successfully";
 			}			
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to update the profile";
 		if($this->db_conn)
 		{
 			$query = 'update PROFILE_DETAILS set SALUTATION_ID=?, NAME=?, DOB=?, GENDER=?, RELATION_SHIP=?, MARITAL_STATUS=?, MARRIAGE_DATE=?, MARRIAGE_PLACE=?, ADDRESS1=?, ADDRESS2=?, ADDRESS3=?, AREA=?, PINCODE=?, LANDLINE=?, MOBILE1=?, MOBILE2=?, EMAIL=?, PROFILE_STATUS=?, NOTES=?, BABTISED=?, CONFIRMATION=?, OCCUPATION=?, IS_ANOTHER_CHURCH_MEMBER=?, PARENT_PROFILE_ID=?, MIDDLE_NAME=?, LAST_NAME=?, WORK_PHONE=?, FAMILY_PHOTO_LOCATION=?, PROFILE_PHOTO_LOCATION=?, SMS_NOTIFICATION=?, EMAIL_NOTIFICATION=? where PROFILE_ID=?';
 			$result = $this->db_conn->Execute($query, array($salutation_id, $name, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $parent_profile_id, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification, $profile_id));
 			//echo $this->db_conn->ErrorMsg();
 			if($result) {
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "Profile has been updated successfully";
 			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function deleteProfile($profile_id, $is_profile_head)
@@ -461,28 +477,36 @@ class Profiles
 
 	public function addCustomProfileFields($profile_id, $field_id, $field_value)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Problem while updating the custom fields";
 		if($this->db_conn)
 		{
 			$query = 'insert into PROFILE_CUSTOM_FIELD_VALUES (PROFILE_ID, FIELD_ID, FIELD_VALUE) values (?, ?, ?)';
 			$result = $this->db_conn->Execute($query, array($profile_id, $field_id, $field_value));
 			if($result) {
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "Custom fields updated successfully";
 			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function updateCustomProfileFields($profile_id, $field_id, $field_value)
 	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Problem while updating the custom fields";
 		if($this->db_conn)
 		{
 			$query = 'update PROFILE_CUSTOM_FIELD_VALUES set FIELD_VALUE=? where PROFILE_ID=? and FIELD_ID=?';
 			$result = $this->db_conn->Execute($query, array($field_value, $profile_id, $field_id));
 			if($result) {
-				return true;
+				$to_return[0] = 1;
+				$to_return[1] = "Custom fields updated successfully";
 			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function isCustomProfileFieldsAvailable($profile_id, $field_id)
