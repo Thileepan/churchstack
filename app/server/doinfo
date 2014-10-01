@@ -248,7 +248,7 @@ else if($req == 3)
 					$to_return .= '<BR><abbr title="Phone">Phone :</abbr>&nbsp;'.$landline;
 					$to_return .= '<BR><abbr title="Mobile">Mobile :</abbr>&nbsp;'.$mobile;
 					$to_return .= '<BR><abbr title="Mobile">Email :</abbr>&nbsp;'.$email;
-					$to_return .= "<BR><a href='".$website."' target='_blank'>".$website."</a>";
+					$to_return .= '<BR><abbr title="Website">Website :</abbr>&nbsp;'.$website;
 					$to_return .= '<BR><abbr title="Country">Country :</abbr>&nbsp;'.$country_name;
 					$to_return .= '<BR><abbr title="TimeZone">Local Time Zone :</abbr>&nbsp;'.$time_zone;
 					$to_return .= '<BR><abbr title="Currency">Local Currency :</abbr>&nbsp;'.$currency_desc;
