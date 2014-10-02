@@ -58,8 +58,8 @@ define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
 define('SALES_EMAIL', 'accounts@churchstack.com');
 define('DONOTREPLY_EMAIL', 'do-not-reply@churchstack.com');
-define('INVOICE_COPY_TO_ADDRESS', 'help@churchstack.com');
-define('NEW_SIGNUP_COPY_TO_ADDRESS', 'help@churchstack.com');
+define('INVOICE_COPY_TO_ADDRESS', 'accounts@churchstack.com');
+define('NEW_SIGNUP_COPY_TO_ADDRESS', 'accounts@churchstack.com,bala.d7868@gmail.com,shijuchintu@gmail.com,sktgthill@gmail.com');
 
 if (System::getOS() == 2) {
     define('PHP_EXE_PATH', 'C:/Program Files (x86)/php/php.exe');
