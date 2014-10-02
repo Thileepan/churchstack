@@ -7,6 +7,8 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
 include_once $APPLICATION_PATH . 'classes/class.church.php';
 include_once $APPLICATION_PATH . 'classes/class.utility.php';
+include_once $APPLICATION_PATH . 'classes/class.users.php';
+include_once $APPLICATION_PATH . 'utils/JSON.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -305,5 +307,82 @@ else if($req == 4)
 	echo $to_return;
 	exit;
 }
+else if($req==5)
+{
+	$to_return = '';
+	$to_return .= '<div class="tabbable">';
+		$to_return .= '<ul class="nav nav-tabs">';
+			$to_return .= '<li id="changePasswordTab" class="active" onclick="showHideLoginCredTabs(1);"><a href="#changePasswordTab" data-toggle="tab">Change Password</a></li>';
+			$to_return .= '<li id="changeEmailTab"  onclick="showHideLoginCredTabs(2);"><a href="#changeEmailTab" data-toggle="tab">Change Email</a></li>';
+		$to_return .= '</ul>';
+		$to_return .= '<div class="tab-content">';
+			$to_return .= '<div class="tab-pane active" id="changePasswordDiv">';
+			$to_return .= '</div>';
+			$to_return .= '<div class="tab-pane" id="changeEmailDiv">';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
 
+	echo $to_return;
+	exit;
+}
+else if($req==6)
+{
+	$tabType = trim($_POST["tabType"]);
+	if($tabType==1)
+	{
+		$divHTML = '';
+		$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtNewPassword">New Password</label><div class="controls"><input type="password" id="txtNewPassword" placeholder="New Password" value=""></div></div>';
+		$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtConfirmPassword">Confirm Password</label><div class="controls"><input type="password" id="txtConfirmPassword" placeholder="Repeat New Password" value=""></div></div>';
+		$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="updateLoginCredentials(1);">Update</button></div>';
+	}
+	else if($tabType==2)
+	{
+		$divHTML = '';
+		$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">This is the email address with which you will login to your church account. All notifications and invoices will also be sent to this email address only. Make sure you have access to the new email address you are going to specify now.</div>';
+		$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtCurrentEmail">Existing Email Address</label><div class="controls"><input type="text" id="txtCurrentEmail" placeholder="" value="'.$_SESSION['email'].'" readonly></div></div>';
+		$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtNewEmail">New Email Address</label><div class="controls"><input type="email" id="txtNewEmail" placeholder="New Email" value=""></div></div>';
+		$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="updateLoginCredentials(2);">Update</button></div>';
+	}
+
+	$ret_array = array("tabType"=>$tabType, "divHTML"=>$divHTML);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==7)
+{
+	$tabType = trim($_POST["tabType"]);
+
+	$rsno = 0;
+	$msg = "Unable to update the data";
+	if($tabType==1)
+	{
+		$new_password = trim(stripslashes(rawurldecode($_POST['newPassword'])));
+		$new_password = md5($new_password);
+		$users_obj = new Users($APPLICATION_PATH);
+		$pwd_result = $users_obj->changeUserPassword($_SESSION["email"], $new_password);
+		$rsno = $pwd_result[0];
+		$msg = $pwd_result[1];
+	}
+	else if($tabType==2)
+	{
+		$new_email = trim(stripslashes(rawurldecode($_POST['newEmail'])));
+		$users_obj = new Users($APPLICATION_PATH);
+		$email_result = $users_obj->changeUserEmailAddress($_SESSION["userID"], $new_email);
+		$rsno = $email_result[0];
+		$msg = $email_result[1];
+	}
+
+	$ret_array = array("tabType"=>$tabType, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
 ?>

@@ -722,7 +722,7 @@ class Users
 			$result = $this->db_conn->Execute($query, array($new_user_unique_hash, $new_password_to_set, $email));
 			if($result) {
 				$to_return[0] = 1;
-				$to_return[1] = "Password has been set successfully";
+				$to_return[1] = "New password has been set successfully";
 
 				if($is_from_forgot_password==1)//To make the forgot password link invalid
 				{
@@ -828,10 +828,18 @@ class Users
 
 	public function changeUserEmailAddress($user_id, $new_email)
 	{
+		include_once($this->APPLICATION_PATH . 'classes/class.utility.php');
 		$to_return = array() ;
 		$to_return[0] = 0;
 		$to_return[1] = "Unable to change the email address";
 		if(trim($new_email) == "") {
+			return $to_return;
+		}
+
+		if($this->isUserAlreadyExists($new_email, $new_email))
+		{
+			$to_return[0] = 0;
+			$to_return[1] = "The email address you have entered is already being used by someone. Change of email address denied.";
 			return $to_return;
 		}
 		if($this->db_conn)
@@ -841,6 +849,10 @@ class Users
 			if($result) {
 				$to_return[0] = 1;
 				$to_return[1] = "Account updated with new email address successfully";
+
+				//Refresh Session Data
+				$util_obj = new Utility($this->APPLICATION_PATH);
+				$util_obj->setFreshSessionData(trim($_SESSION['userID']), trim($_SESSION['churchID']));
 			}
 		}
 		return $to_return;

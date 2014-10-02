@@ -20,12 +20,11 @@ include $APPLICATION_PATH."header";
 	<div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Account Management</li>
-          <li id="myChurch" onclick="getChurchInformation();" class="active"><a href="#">My Church</a></li>
-		  <li id="notifications" style="display:none;"><a href="#">Notifications</a></li>
-		  <li id="billing" onclick="getBillingDetails();"><a href="#">My Billing & Plan</a></li>
-		  <li id="personalinfo"><a href="#">My Personal Details</a></li>
-		  <li id="logininfo"><a href="#">My Login Credentials</a></li>
-		</ul>
+          <li id="myChurch" onclick="infoTabsChangeClass('myChurch'); getChurchInformation();" class="active"><a href="#">My Church</a></li>
+	  <li id="notifications" style="display:none;" onclick="infoTabsChangeClass('notifications');"><a href="#">Notifications</a></li>
+	  <li id="billing" style="display:none;" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
+	  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#">My Login Credentials</a></li>
+	</ul>
     </div>
     <div class="span10">
 		<div class="row-fluid" id="alertRow" style="display:none">
