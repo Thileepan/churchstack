@@ -569,6 +569,7 @@ class Events
 						//echo "Diff In Seconds::".$diff_in_seconds."<BR>";
 						//exit;
 
+						$notification_period = $notification_period+2100;//Taking list 35 mins advance to avoid possible missing of notifications. Cron job runs every 30 mins when making this change.
 						if($notification_period >= $diff_in_seconds)
 						{
 							$notification_details = array();
