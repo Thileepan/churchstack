@@ -710,6 +710,24 @@ class Church
 		}
 		return $to_return;
 	}
+
+	public function updateLastUpdateTimeOfChurch($church_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to update the last accessed time of the church";
+		if($this->db_conn)
+		{
+			$current_time = time();
+			$query = 'update CHURCH_DETAILS set LAST_UPDATE_TIME=FROM_UNIXTIME(?) where CHURCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($current_time, $church_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Church last accessed time update";
+			}			
+		}
+		return $to_return;
+	}
 }
 
 ?>

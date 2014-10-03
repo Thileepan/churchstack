@@ -217,6 +217,7 @@ class Users
 
 	public function isAuthenticatedUser($email, $password)
 	{
+        @include_once($this->APPLICATION_PATH . 'classes/class.church.php');
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "Unable to validate the account credentials, please contact support to resolve this issue.";
@@ -238,6 +239,13 @@ class Users
 					$to_return[0] = 1;
 					$to_return[1] = "Login successful";
 					$to_return[2] = $user_details_array;
+
+					$church_obj = new Church($this->APPLICATION_PATH);
+					$update_result = $church_obj->updateLastUpdateTimeOfChurch($church_id);
+					if($update_result[0]==0) {
+						//Just leave it. Do nothing.
+					}
+
 				} else {
 					$to_return[0] = 0;
 					$to_return[1] = "Invalid login credentials, unable to log you in.";
