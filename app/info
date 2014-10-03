@@ -22,7 +22,7 @@ include $APPLICATION_PATH."header";
           <li class="nav-header">Account Management</li>
           <li id="myChurch" onclick="infoTabsChangeClass('myChurch'); getChurchInformation();" class="active"><a href="#">My Church</a></li>
 	  <li id="notifications" style="display:none;" onclick="infoTabsChangeClass('notifications');"><a href="#">Notifications</a></li>
-	  <li id="billing" style="display:none;" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
+	  <li id="billing" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
 	  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#">My Login Credentials</a></li>
 	</ul>
     </div>

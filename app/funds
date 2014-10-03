@@ -11,7 +11,10 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 $APPLICATION_PATH = "./";
 include $APPLICATION_PATH."header";
 ?>
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/circliful/css/jquery.circliful.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/circliful/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <script src="<?php echo $APPLICATION_PATH; ?>js/funds.js"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>plugins/circliful/js/jquery.circliful.min.js"></script>
 
 <div class="page-header">
     <h4 id="pageHeader">Manage Funds</h4>

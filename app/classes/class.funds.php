@@ -46,15 +46,30 @@ class Funds
 
 	public function deleteFund($fund_id)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to delete the fund.';
+
 		if($this->db_conn)
 		{
-			$query = 'delete from FUND_DETAILS where FUND_ID=?';
-			$result = $this->db_conn->Execute($query, array($fund_id));
-			if($result) {
-				return true;
+			$return_data = $this->isFundUsedInContribution($fund_id);
+			//print_r($result_data);
+			if($return_data[0] == 1)
+			{
+				if($return_data[2] == 0) {
+					$query = 'delete from FUND_DETAILS where FUND_ID=?';
+					$result = $this->db_conn->Execute($query, array($fund_id));
+					if($result) {
+						$return_data[0] = 1;
+						$return_data[1] = 'Fund has been deleted successfully.';
+					}
+				} else {
+					$return_data[0] = 0;
+					$return_data[1] = 'Fund can\'t be deleted as it is being used in contribution.';
+				}				
 			}
 		}
-		return false;
+		return $return_data;
 	}
 
 	public function getAllFunds()
@@ -137,17 +152,28 @@ class Funds
 
 	public function isFundUsedInContribution($fund_id)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to get the fund information.';
+
 		if($this->db_conn)
 		{
-			$query = 'select FUND_ID CONTRIBUTION_SPLIT_DETAILS where FUND_ID=? limit 1';
+			$query = 'select FUND_ID from CONTRIBUTION_SPLIT_DETAILS where FUND_ID=? limit 1';
 			$result = $this->db_conn->Execute($query, array($fund_id));
+			//echo $this->db_conn->ErrorMsg();
 			if($result) {
 				if(!$result->EOF) {
-					return true;
+					$return_data[0] = 1;
+					$return_data[1] = 'Fund is used in contribution.';
+					$return_data[2] = 1; //in use;
+				} else {
+					$return_data[0] = 1;
+					$return_data[1] = 'Fund is used in contribution.';
+					$return_data[2] = 0; //not in use;
 				}
 			}
 		}
-		return false;
+		return $return_data;
 	}
 
 	public function addBatch($batch_name, $batch_description, $expected_amount, $batch_created_time)
@@ -167,7 +193,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'update BATCH_DETAILS set BATCH_NAME=?, BATCH_DESCRIPTION=?, EXPECTED_AMOUNT=?, LAST_UPDATED_TIME=? where BATCH_ID=?';
+			$query = 'update BATCH_DETAILS set BATCH_NAME=?, BATCH_DESCRIPTION=?, EXPECTED_AMOUNT=?, LAST_UPDATE_TIME=? where BATCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($batch_name, $batch_description, $expected_amount, $last_updated_time, $batch_id));
 			if($result) {
 				return true;
@@ -195,7 +221,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from BATCH_DETAILS where BATCH_ID=?';
+			$query = 'delete from BATCH_DETAILS where BATCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($batch_id));
 			if($result) {
 				return true;
@@ -208,13 +234,13 @@ class Funds
 	{
 		$return_data = array();
 		$return_data[0] = 0;
-		$return_data[1] = 'Unable to list the contributions.';
+		$return_data[1] = 'Unable to list the batches.';
 		
 		if($this->db_conn)
 		{
 			$batch_details = array();
 			//$query = 'select a.BATCH_ID, a.BATCH_NAME, a.BATCH_DESCRIPTION, a.BATCH_CREATED_TIME, a.LAST_UPDATED_TIME, a.EXPECTED_AMOUNT, SUM(c.AMOUNT) from BATCH_DETAILS as a left outer join CONTRIBUTION_DETAILS as b on a.BATCH_ID = b.BATCH_ID, CONTRIBUTION_SPLIT_DETAILS as c where b.CONTRIBUTION_ID=c.CONTRIBUTION_ID';
-			$query = 'select BATCH_ID, BATCH_NAME, BATCH_DESCRIPTION, BATCH_CREATED_TIME, LAST_UPDATED_TIME, EXPECTED_AMOUNT from BATCH_DETAILS';
+			$query = 'select BATCH_ID, BATCH_NAME, BATCH_DESCRIPTION, BATCH_CREATED_TIME, LAST_UPDATE_TIME, EXPECTED_AMOUNT from BATCH_DETAILS';
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
@@ -288,43 +314,86 @@ class Funds
 		return false;
 	}
 
-	public function addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name)
+	public function addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name, $fund_id_list, $amount_list, $notes_list)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to add the contribution details.';
+
 		if($this->db_conn)
 		{
-			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			$query = 'insert into CONTRIBUTION_DETAILS (CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name));
-			if($result) {
-				return true;
+			if($result) {				
+				$contribution_id = $this->db_conn->Insert_ID();
+				$result = $this->addContributionSplit($contribution_id, $batch_id, $fund_id_list, $amount_list, $notes_list);
+				if($result[0] == 1) {
+					$return_data[0] = 1;
+					$return_data[1] = 'Contribution has been added successfully';
+				} else {
+					$return_data[0] = 0;
+					$return_data[1] = 'Contribution has been added successfully but the funds details are not updated.';
+				}
 			}
 		}
-		return false;
+		return $return_data;
 	}
 
 	public function updateContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to update the contribution details.';
+
 		if($this->db_conn)
 		{
 			$query = 'update CONTRIBUTION_DETAILS set CONTRIBUTION_DATE=?, BATCH_ID=?, PROFILE_ID=?, TRANSACTION_TYPE=?, PAYMENT_MODE=?, REFERENCE_NUMBER=?, TOTAL_AMOUNT=?, LAST_UPDATE_TIME=?, LAST_UPDATE_USER_ID=?, LAST_UPDATE_USER_NAME=? where CONTRIBUTION_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name, $contribution_id));
 			if($result) {
-				return true;
+				$return_data[0] = 1;
+				$return_data[1] = 'Contribution has been updated successfully';
 			}
 		}
 		return false;
 	}
 
-	public function addContributionSplit($contribution_id, $fund_id, $amount, $notes)
+	public function addContributionSplit($contribution_id, $batch_id, $fund_id_list, $amount_list, $notes_list)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to update the contribution funds.';
+
 		if($this->db_conn)
 		{
-			$query = 'insert into CONTRIBUTION_SPLIT_DETAILS (CONTRIBUTION_ID, FUND_ID, AMOUNT, NOTES) values (?, ?, ?, ?)';
-			$result = $this->db_conn->Execute($contribution_id, array($fund_id, $amount, $notes));
-			if($result) {
-				return true;
-			}
+			$fund_id_arr = explode('<:|:>', $fund_id_list);
+			$amount_arr = explode('<:|:>', $amount_list);
+			$notes_arr = explode('<:|:>', $notes_list);
+			if(COUNT($fund_id_arr) > 0)
+			{
+				$query = 'insert into CONTRIBUTION_SPLIT_DETAILS (CONTRIBUTION_ID, BATCH_ID, FUND_ID, AMOUNT, NOTES) values ';
+				$query_to_append = '';
+				$query_values = array();
+				for($i=0; $i<COUNT($fund_id_arr); $i++)
+				{
+					if($query_to_append != '') {
+						$query_to_append .= ',';
+					}
+					$query_to_append .= '(?, ?, ?, ?, ?)';
+					$query_values[] = $contribution_id;
+					$query_values[] = $batch_id;
+					$query_values[] = $fund_id_arr[$i];
+					$query_values[] = $amount_arr[$i];
+					$query_values[] = $notes_arr[$i];
+				}
+				$query .= $query_to_append;
+				$result = $this->db_conn->Execute($query, $query_values);
+				if($result) {
+					$return_data[0] = 1;
+					$return_data[1] = 'Successfully added contribution funds.';
+				}
+			}			
 		}
-		return false;
+		return $return_data;
 	}
 
 	public function updateContributionSplit($contribution_split_id, $contribution_id, $fund_id, $amount, $notes)
@@ -349,25 +418,26 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.PROFILE_NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID and c.BATCH_ID';
+			$query = 'select a.CONTRIBUTION_ID, a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID=c.BATCH_ID';
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
                 if(!$result->EOF) {
 					while(!$result->EOF)
 					{
-						$contribution_date = $result->fields[0];
-						$batch_id = $result->fields[1];
-						$batch_name = $result->fields[2];
-						$profile_id = $result->fields[3];
-						$profile_name = $result->fields[4];
-						$transaction_type = $result->fields[5];
-						$payment_mode = $result->fields[6];
-						$reference_number = $result->fields[7];
-						$total_amount = $result->fields[8];
-						$last_update_time = $result->fields[9];
-						$last_update_user_id = $result->fields[10];
-						$last_update_user_name = $result->fields[11];
+						$contribution_id = $result->fields[0];
+						$contribution_date = $result->fields[1];
+						$batch_id = $result->fields[2];
+						$batch_name = $result->fields[3];
+						$profile_id = $result->fields[4];
+						$profile_name = $result->fields[5];
+						$transaction_type = $result->fields[6];
+						$payment_mode = $result->fields[7];
+						$reference_number = $result->fields[8];
+						$total_amount = $result->fields[9];
+						$last_update_time = $result->fields[10];
+						$last_update_user_id = $result->fields[11];
+						$last_update_user_name = $result->fields[12];
 						$contribution_details[] = array($contribution_id, $contribution_date, $batch_id, $batch_name, $profile_id, $profile_name, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name);
 
 						$result->MoveNext();
@@ -392,7 +462,7 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME from BATCH_DESCRIPTION where CONTRIBUTION_ID=?';
+			$query = 'select CONTRIBUTION_DATE, BATCH_ID, PROFILE_ID, TRANSACTION_TYPE, PAYMENT_MODE, REFERENCE_NUMBER, TOTAL_AMOUNT, LAST_UPDATE_TIME, LAST_UPDATE_USER_ID, LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS where CONTRIBUTION_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_id));
 			
 			if($result) {
@@ -421,7 +491,7 @@ class Funds
 	{
 		$return_data = array();
 		$return_data[0] = 0;
-		$return_data[1] = 'Unable to list the contribution splits';
+		$return_data[1] = 'Unable to list the contribution funds';
 		
 		if($this->db_conn)
 		{
@@ -447,7 +517,7 @@ class Funds
 					$return_data[1] = $contribution_split_details;
 				} else {
 					$return_data[0] = 0;
-					$return_data[1] = 'No contribution split is available';
+					$return_data[1] = 'No contribution fund is available';
 				}
             }
 		}
@@ -458,11 +528,14 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from CONTRIBUTION_DETAILS where CONTRIBUTION_ID=?';
-			$result = $this->db_conn->Execute($query, array($contribution_id));
-			if($result) {
-				return true;
-			}
+			if($this->deleteContributionSplitsUsingContributionID($contribution_id))
+			{
+				$query = 'delete from CONTRIBUTION_DETAILS where CONTRIBUTION_ID=?';
+				$result = $this->db_conn->Execute($query, array($contribution_id));
+				if($result) {
+					return true;
+				}
+			}			
 		}
 		return false;
 	}
@@ -471,7 +544,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from CONTRIBUTION_DETAILS where BATCH_ID=?';
+			$query = 'delete from CONTRIBUTION_DETAILS where BATCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($batch_id));
 			if($result) {
 				return true;
@@ -484,7 +557,7 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from CONTRIBUTION_SPLIT_DETAILS where CONTRIBUTION_SPLIT_ID=?';
+			$query = 'delete from CONTRIBUTION_SPLIT_DETAILS where CONTRIBUTION_SPLIT_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_split_id));
 			if($result) {
 				return true;
@@ -497,13 +570,45 @@ class Funds
 	{
 		if($this->db_conn)
 		{
-			$query = 'delete * from CONTRIBUTION_SPLIT_DETAILS where BATCH_ID=?';
+			$query = 'delete from CONTRIBUTION_SPLIT_DETAILS where BATCH_ID=?';
 			$result = $this->db_conn->Execute($query, array($batch_id));
 			if($result) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private function deleteContributionSplitsUsingContributionID($contribution_id)
+	{
+		if($this->db_conn)
+		{
+			$query = 'delete from CONTRIBUTION_SPLIT_DETAILS where CONTRIBUTION_ID=?';
+			$result = $this->db_conn->Execute($query, array($contribution_id));
+			echo $this->db_conn->ErrorMsg();
+			if($result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function getBatchTotalReceivedAmount($batch_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = 'Unable to get the received amount';
+		if($this->db_conn)
+		{
+			$query = 'select SUM(TOTAL_AMOUNT) from CONTRIBUTION_DETAILS where BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = (($result->fields[0] != NULL)?$result->fields[0]:0);
+			}
+		}
+
+		return $to_return;
 	}
 }
 ?>

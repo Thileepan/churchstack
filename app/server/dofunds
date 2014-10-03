@@ -7,7 +7,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 include $APPLICATION_PATH.'utils/JSON.php';
 //include $APPLICATION_PATH.'utils/utilfunctions.php';
 include_once $APPLICATION_PATH . '/classes/class.funds.php';
-//include_once $APPLICATION_PATH . '/classes/class.profiles.php';
+include_once $APPLICATION_PATH . '/classes/class.profiles.php';
 include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
@@ -166,9 +166,13 @@ else if($req == 5)
 	$fund_id = trim($_POST['fundID']);
 
 	$funds_obj = new Funds($APPLICATION_PATH);
-	$status = $funds_obj->deleteFund($fund_id);
+	$to_return = $funds_obj->deleteFund($fund_id);
+	
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
 
-	echo $status;
+	echo $encode_obj;
 	exit;
 }
 else if($req == 6)
@@ -328,7 +332,7 @@ else if($req == 10)
 
 	$to_return = '';
 	$to_return .= '<div class="tabbable">';
-		$to_return .= '<ul class="nav nav-tabs">';
+		$to_return .= '<ul class="nav nav-tabs" id="batchTab">';
 			$to_return .= '<li id="summaryTab" class="active" onclick="getBatchSummary('.$batch_id.')"><a href="#summaryTab" data-toggle="tab">Summary</a></li>';
 			$to_return .= '<li id="addContributionTab" onclick="getAddOrEditContributionForm('.$is_update.', '.$batch_id.', \''.$batch_name.'\', '.$contribution_id.');"><a href="#addContributionTab" data-toggle="tab">Add Contribution</a></li>';
 			$to_return .= '<li id="listContributionTab" onclick="listAllContributions('.$batch_id.');"><a href="#listContributionTab" data-toggle="tab">List Contributions</a></li>';
@@ -349,9 +353,34 @@ else if($req == 10)
 else if($req == 11)
 {
 	//get batch summary details
+	$batch_id = trim($_POST['batchID']);
+
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$batch_details = $fund_obj->getBatchInformation($batch_id);
+	if($batch_details[0] = 1)
+	{
+		$batch_id = $batch_details[1][0];
+		$batch_name = $batch_details[1][1];
+		$batch_description = $batch_details[1][2];
+		$expected_amount = $batch_details[1][3];
+		$batch_created_time = $batch_details[1][4];
+		
+		$batch_amount_details = $fund_obj->getBatchTotalReceivedAmount($batch_id);
+		$received_amount = 0;
+		if($batch_amount_details[0] == 1) {
+			$received_amount = $batch_amount_details[1];
+		}
+
+		$total_percent = $received_amount / $expected_amount * 100;
+	}
+	
+
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
-		$to_return .= '<div class="span12">';
+		$to_return .= '<div class="span10">';
+			$to_return .= '<div id="myStat" data-text="'.$received_amount.'" data-info="Total Recevied Fund" data-fontsize="15" data-percent="'.$total_percent.'" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd"></div>';
+			$to_return .= '<p><b>Expected Fund:</b>'.$expected_amount.'</p>';
+//			$to_return .= '<p><b>Received Amount:</b>'.$received_amount.'</p>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
 
@@ -367,6 +396,20 @@ else if($req == 12)
 	$contribution_id = trim($_POST['contributionID']);
 
 	$fund_obj = new Funds($APPLICATION_PATH);
+	$batch_details = $fund_obj->getBatchInformation($batch_id);
+	if($batch_details[0] = 1)
+	{
+		$batch_id = $batch_details[1][0];
+		$batch_name = $batch_details[1][1];
+		$batch_description = $batch_details[1][2];
+		$expected_amount = $batch_details[1][3];
+		$batch_created_time = $batch_details[1][4];
+	}
+	$batch_amount_details = $fund_obj->getBatchTotalReceivedAmount($batch_id);
+	if($batch_amount_details[0] == 1) {
+		$received_amount = $batch_amount_details[1];
+	}
+	$current_amount = 0;
 	
 	if($is_update) {
 		$contribution_result = $fund_obj->getContributionInformation($contribution_id);
@@ -376,7 +419,6 @@ else if($req == 12)
 			$contribution_date = $contribution_details[1];
 			$batch_id = $contribution_details[2];
 			$batch_desc = $contribution_details[3];
-			$expected_amount = $contribution_details[4];
 		} else {
 			$error = true;			
 		}
@@ -390,57 +432,111 @@ else if($req == 12)
 
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';		
-		$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
-			$to_return .= '<div class="span6">';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label">Batch</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<span class="muted">'.$batch_name.'</span>';
-						$to_return .= '</div>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<span class="muted">'.$batch_name.'</span>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label" for="inputProfileName">Name</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" class="span10" id="inputProfileName" placeholder="Start Typing the Name" value="'.$profile_name.'">';
+					$to_return .= '</div>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label" for="inputContributionDate">Date</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<input type="text" class="span10" id="inputContributionDate" placeholder="Contribution Date" value="'.$contribution_date.'">';
-						$to_return .= '</div>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" class="span10" id="inputContributionDate" data-date-format="dd/mm/yyyy" placeholder="Contribution Date" value="'.$contribution_date.'">';
+					$to_return .= '</div>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label" for="inputTransactionType">Transaction Type</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<select class="span10" id="inputTransactionType">';
-								$to_return .= '<option value="1">Cash Gift</option>';
-								$to_return .= '<option value="2">Non-Cash Gift</option>';
-							$to_return .= '</select>';
-						$to_return .= '</div>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<select class="span10" id="inputTransactionType" onChange="onChangeTransactionType(this);">';
+							$to_return .= '<option value="1">Cash Gift</option>';
+							$to_return .= '<option value="2">Non-Cash Gift</option>';
+						$to_return .= '</select>';
+					$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group">';
+				$to_return .= '<div class="control-group" id="divPaymentMode">';
 					$to_return .= '<label class="control-label" for="inputPaymentMode">Payment Mode</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<select class="span10" id="inputPaymentMode">';
-								$to_return .= '<option value="1">Cash</option>';
-								$to_return .= '<option value="2">Credit/Debit Card</option>';
-								$to_return .= '<option value="3">Check</option>';
-								$to_return .= '<option value="4">Online Payment</option>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<select class="span10" id="inputPaymentMode">';
+							$to_return .= '<option value="1">Cash</option>';
+							$to_return .= '<option value="2">Credit/Debit Card</option>';
+							$to_return .= '<option value="3">Check</option>';
+							$to_return .= '<option value="4">Online Payment</option>';
+						$to_return .= '</select>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group" id="divReferenceNumber">';
+					$to_return .= '<label class="control-label" for="inputReferenceNumber">Ref#</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="text" class="span10" id="inputReferenceNumber" placeholder="Reference/Cheque Number" value="'.$contribution_date.'">';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</form>';
+		$to_return .= '</div>';
+		$to_return .= '<div class="span6">';
+			$to_return .= '<div class="hero-unit" style="font-size:14px;padding:40px;">';
+				$to_return .= 'Expected Amount: <span class="text-success" id="spanExpectedAmount">'.$expected_amount.'</span><BR>';
+				$to_return .= 'Received Amount: <span class="text-info" id="spanReceivedAmount">'.$received_amount.'</span><BR>';
+				$to_return .= 'You have entered: <span class="text-info" id="spanCurrentAmount">'.$current_amount.'</span>';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	$to_return .= '<div class="row-fluid>';
+		$to_return .= '<div class="span12">';
+			$to_return .= '<b>Funds</b>&nbsp;<span class="curHand pull-right" onclick="addTransactionRow()"><i class="icon-plus-sign"></i>Add New</span><HR>';
+			$to_return .= '<div class="row-fluid">';
+				$to_return .= '<div class="span4">';
+					$to_return .= 'Name';
+				$to_return .= '</div>';
+				$to_return .= '<div class="span4">';
+					$to_return .= 'Amount';
+				$to_return .= '</div>';
+				$to_return .= '<div class="span4">';
+					$to_return .= 'Notes';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+			$to_return .= '<div class="row-fluid">';
+				$to_return .= '<div class="span12" id="addTransactionRowOuterDiv">';
+					$to_return .= '<div class="row-fluid" id="divTransactionRow-1">';
+						$to_return .= '<div class="span4" id="divFundName-1">';
+							//$to_return .= '<input type="text" id="fundName-1" placeholder="Fund Name" value="" />';
+							$to_return .= '<select id="fundName-1">';
+								$to_return .= '<option>Select Fund</option>';
 							$to_return .= '</select>';
 						$to_return .= '</div>';
-				$to_return .= '</div>';
-				$to_return .= '<div class="form-actions" align="center">';
-					$to_return .= '<button class="btn btn-primary" type="submit" onclick="addOrUpdateBatch('.$is_update.');">'.(($is_update)?'Update Batch':'Add Batch').'</button>&nbsp;';
-					if(!$is_update) {
-						$to_return .= '<button class="btn" type="reset">Reset</button>';
-					}
-					$to_return .= '<input type="hidden" id="inputHiddenBatchID" value="'.$batch_id.'" />';
-				$to_return .= '</div>';
-			$to_return .= '</div>';
-			$to_return .= '<div class="span6">';
-				$to_return .= '<div class="hero-unit" style="font-size:14px;padding:40px;">';
-					$to_return .= 'Expected Amount: <span class="text-success">$10,000</span><BR>';
-					$to_return .= 'Received Amount: <span class="text-error">$10,000</span>';
+						$to_return .= '<div class="span4" id="divAmount-1">';
+							$to_return .= '<input type="text" id="amount-1" placeholder="Amount" value="" onblur="calReceivedAmount();" onchange="calReceivedAmount();" />';
+						$to_return .= '</div>';
+						$to_return .= '<div class="span4" id="divNotes-1">';
+							$to_return .= '<input type="text" id="notes-1" placeholder="Notes" value="" />';
+						$to_return .= '</div>';
+					$to_return .= '</div>';
 				$to_return .= '</div>';
 			$to_return .= '</div>';
-		$to_return .= '</form>';		
-	$to_return .= '</div>';	
+		$to_return .= '</div>';
+	$to_return .= '</div>';
 
+	$to_return .= '<div class="form-actions" align="center">';
+		$to_return .= '<button class="btn btn-primary" type="submit" onclick="addOrUpdateContribution('.$is_update.');">'.(($is_update)?'Update Contribution':'Add Contribution').'</button>&nbsp;';
+		if(!$is_update) {
+			$to_return .= '<button class="btn" type="reset">Reset</button>';
+		}
+		$to_return .= '<input type="hidden" id="inputHiddenBatchID" value="'.$batch_id.'" />';
+		$to_return .= '<input type="hidden" id="inputHiddenProfileID" value="'.$profile_id.'" />';
+		$to_return .= '<input type="hidden" id="maxTransactionRowID" value="1" />';
+		$to_return .= '<input type="hidden" id="transactionRowIDList" value="1" />';
+		$to_return .= '<input type="hidden" id="inputHiddenIsFundLoadedAlready" value="0" />';
+		$to_return .= '<input type="hidden" id="inputHiddenOptionList" value="" />';
+	$to_return .= '</div>';
+	
 	echo $to_return;
 	exit;
 }
@@ -450,20 +546,25 @@ else if($req == 13)
 
 	$fund_obj = new Funds($APPLICATION_PATH);
 	$contribution_result = $fund_obj->getAllContributions();
+	//print_r($contribution_result);
 	
 	$is_results_available = false;
 	if(is_array($contribution_result) && $contribution_result[0] == 1)
 	{
 		$contributions = $contribution_result[1];
-		$total_contributions = COUNT($contributions[1]);
+		//print_r($contributions);
+		$total_contributions = COUNT($contributions);
+		//echo $total_contributions;
 		if($total_contributions > 0)
 		{
 			$is_results_available = true;
 			for($i=0; $i<$total_contributions; $i++) {
 				
-				$actions = '<i class="curHand icon-trash" onclick="deleteSubscriptionConfirmation('.$subscriptions[$i][0].','.$subscriptions[$i][1].')"></i>&nbsp;&nbsp;';			
+				$actions = '<i class="curHand icon-trash" onclick="deleteContributionConfirmation('.$contributions[$i][0].')"></i>&nbsp;&nbsp;';
 				
-				$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][1], $contributions[$i][3], $contributions[$i][5], $contributions[$i][6], $contributions[$i][9], $actions);
+				$transaction_type = (($contributions[$i][6] == 1)?'Cash Gift':'Non-Cash Gift');
+				
+				$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][0], $contributions[$i][1], $contributions[$i][5], $transaction_type, $contributions[$i][9], $actions);
 			}
 		}
 	}
@@ -489,29 +590,126 @@ else if($req == 14)
 	$fund_obj = new Funds($APPLICATION_PATH);
 	$split_details = $fund_obj->getContributionSplitDetails($contribution_id);
 
-	if(is_array($split_details))
-	{
-		$total_splits = COUNT($split_details);		
-		if($total_splits > 0)
+	$is_error = false;
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span12">';
+		if(is_array($split_details) && $split_details[0] == 1)
 		{
-			for($i=0; $i<$total_splits; $i++)
+			$total_splits = COUNT($split_details[1]);
+			if($total_splits > 0)
 			{
-				$to_return .= '<div class="row-fluid"><div class="span12">';
-					$to_return .= '<table class="table table-condensed">';
-						$to_return .= '<tbody>';
-							$to_return .= '<tr>';
-								$to_return .= '<td>'.$split_details[$i][3].'</td>';
-								$to_return .= '<td>'.$split_details[$i][4].'</td>';
-								$to_return .= '<td>'.$split_details[$i][5].'</td>';
-							$to_return .= '</tr>';
-						$to_return .= '</tbody>';
-					$to_return .= '</table>';
-				$to_return .= '</div>';
+				$to_return .= '<table class="table table-condensed">';
+					$to_return .= '<tbody>';
+					$to_return .= '<tr>';
+						$to_return .= '<th>Fund</th>';
+						$to_return .= '<th>Amount</th>';
+						$to_return .= '<th>Notes</th>';
+					$to_return .= '</tr>';
+				for($i=0; $i<$total_splits; $i++)
+				{
+					$to_return .= '<tr>';
+						$to_return .= '<td>'.$split_details[1][$i][3].'</td>';
+						$to_return .= '<td>'.$split_details[1][$i][4].'</td>';
+						$to_return .= '<td>'.$split_details[1][$i][5].'</td>';
+					$to_return .= '</tr>';
+				}
+					$to_return .= '</tbody>';
+				$to_return .= '</table>';
 			}
+			else {
+				$is_error = true;
+			}
+		} else {
+			$is_error = true;			
 		}
-	}
+		if($is_error) {
+			$to_return .= $split_details[1];
+		}
+		$to_return .= '</div>';
+	$to_return .= '</div>';
 
 	echo $to_return;
+	exit;
+}
+else if($req == 15)
+{
+	$ignore_email_id = true;
+	$profile_list = array();
+	$profiles_obj = new Profiles($APPLICATION_PATH);
+	$profile_list = $profiles_obj->getAllProfileNameAndEmailIDs($ignore_email_id);
+	//print_r($profile_list);
+
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($profile_list);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 16)
+{
+	//add/update contribution
+	session_start();
+	$is_update = trim($_POST['isUpdate']);
+	$batch_id = trim($_POST['batchID']);
+	$contribution_id = trim($_POST['contributionID']);
+	$profile_id = trim($_POST['profileID']);
+	$contribution_date = trim($_POST['contributionDate']);
+	$batch_name = trim(stripslashes(rawurldecode($_POST['batchName'])));
+	$transaction_type = trim($_POST['transactionType']);
+	$payment_mode = trim($_POST['paymentMode']);
+	$reference_number = trim(stripslashes(rawurldecode($_POST['referenceNumber'])));
+	$total_amount = trim($_POST['totalAmount']);
+	$fund_id_list = trim(stripslashes(rawurldecode($_POST['fundIDList'])));
+	$amount_list = trim(stripslashes(rawurldecode($_POST['amountList'])));
+	$notes_list = trim(stripslashes(rawurldecode($_POST['notesList'])));
+	$user_id = $_SESSION['userID'];
+	$user_name = $_SESSION['username'];
+	
+	$dt = Carbon::now('Asia/Calcutta');
+	$last_updated_time = $dt->toDateTimeString();
+	
+	$funds_obj = new Funds($APPLICATION_PATH);
+	if($is_update) {
+		$status = $funds_obj->updateContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_updated_time, $user_id, $user_name, $contribution_id);
+	} else {
+		$status = $funds_obj->addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_updated_time, $user_id, $user_name, $fund_id_list, $amount_list, $notes_list);
+		//if($status[0] == 1) {
+		//}
+	}
+
+	$to_return = array("rsno"=>$status[0], "rslt"=>$status[1], "batchID"=>$batch_id);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+	echo $status;
+	exit;
+}
+else if($req == 17)
+{
+	//List Funds
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$funds = $fund_obj->getAllFunds();
+	
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($funds);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 18)
+{
+	//delete the contribution
+	$contribution_id = trim($_POST['contributionID']);
+
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$status = $funds_obj->deleteContribution($contribution_id);
+
+	echo $status;
 	exit;
 }
 ?>

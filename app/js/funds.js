@@ -175,16 +175,15 @@ function deleteFundRequest(fundID)
 
 function deleteFundResponse(response)
 {
-	if(response) {
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj[0] == 1) {
 		var alertType = 1;
-		var msgToDisplay = 'Fund has been deleted successfully.';
-
 		listAllFunds();
 	}
 	else {
-		var alertType = 2;
-		var msgToDisplay = 'Unable to delete the fund.';
+		var alertType = 2;		
 	}
+	var msgToDisplay = dataObj[1];
 
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
@@ -381,7 +380,7 @@ function getBatchSummary(batchID)
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
 
-	var formPostData = 'req=11';
+	var formPostData = 'req=11&batchID=' + batchID;
 	$.ajax({
 		type:'POST',
 		url:doFundsFile,
@@ -394,6 +393,7 @@ function getBatchSummary(batchID)
 function getBatchSummaryResponse(response)
 {
 	document.getElementById('summaryDiv').innerHTML = response;
+	$('#myStat').circliful();
 }
 
 function getAddOrEditContributionForm(isUpdate, batchID, batchName, contributionID)
@@ -417,6 +417,13 @@ function getAddOrEditContributionForm(isUpdate, batchID, batchName, contribution
 function getAddOrEditContributionFormResponse(response)
 {
 	document.getElementById('addContributionDiv').innerHTML = response;
+	$('#inputContributionDate').datepicker({
+		autoclose: true
+	});
+
+	var rowID = 1;
+	getProfileList();	
+	getFundList(rowID);
 }
 
 function listAllContributions(batchID)
@@ -426,17 +433,17 @@ function listAllContributions(batchID)
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane active';
 
-	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Date</th><th>Batch</th><th>Name</th><th>Transaction Type</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('listContributionDiv').innerHTML = table;
 	
 	oTable = $('#listContributionTable').dataTable( {
 		"aoColumns": [
 			{ "sWidth": "5%" },
-			{ "sWidth": "15%"  },
+			{ "sWidth": "2%", "bVisible":false},
 			{ "sWidth": "15%" },
 			{ "sWidth": "15%"  },
-			{ "sWidth": "15%"  },
-			{ "sWidth": "15%"  },
+			{ "sWidth": "10%"  },
+			{ "sWidth": "10%"  },
 			{ "sWidth": "15%"  },
 		],
 		"bFilter":false,
@@ -460,6 +467,7 @@ function listAllContributions(batchID)
 					/* Open this row */
 					this.src = "plugins/datatables/examples/examples_support/details_close.png";
 					var aData = oTable.fnGetData( nTr );
+					console.log(aData);
 					oTable.fnOpen( nTr, showContributionSplitDetails(aData[1]), 'details' );
 				}
 			});
@@ -476,7 +484,7 @@ function listAllContributions(batchID)
 	});
 }
 
-function showContributionSplitDetails()
+function showContributionSplitDetails(contributionID)
 {
 	$.when(getContributionSplitDetails(contributionID)).done(function(response){
 		sOut = response;
@@ -490,7 +498,331 @@ function getContributionSplitDetails(contributionID)
 	return $.ajax({
 		async: false,
 		type:'POST',
-		url:doFunds,
+		url:doFundsFile,
 		data:formPostData,
 	});
+}
+
+function onChangeTransactionType(obj)
+{
+	if(obj.selectedIndex == 0) {
+		document.getElementById('divPaymentMode').style.display = '';
+		document.getElementById('divReferenceNumber').style.display = '';
+	} else {
+		document.getElementById('divPaymentMode').style.display = 'none';
+		document.getElementById('divReferenceNumber').style.display = 'none';
+	}	
+}
+
+function getProfileList()
+{
+	var formPostData = "req=15";
+	formPostData += "&loadProfilesOnly=1";
+
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:getProfileListResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getProfileListResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	var profiles = dataObj;
+
+	var totalProfiles = profiles.length;
+	if(totalProfiles > 0)
+	{
+		var sourceList = new Array();
+		for(i=0; i<totalProfiles; i++)
+		{
+			var id = profiles[i][0];
+			var name = profiles[i][2];
+			sourceList.push({"id":id, "name":name});
+		}
+
+		$('#inputProfileName').typeahead({
+			source: sourceList,
+			display: 'name',
+			val: 'id',
+			itemSelected: onSelectProfileName
+		});
+	}
+}
+
+function onSelectProfileName(item, val, text)
+{
+	//console.log(item + "::" + val + "::" + text);
+	document.getElementById('inputHiddenProfileID').value = val;
+}
+
+function addOrUpdateContribution(val)
+{
+	isUpdate = val;
+	var batchID	= document.getElementById('inputHiddenBatchID').value; 
+	var profileID = document.getElementById('inputHiddenProfileID').value;
+	var contributionDate = document.getElementById('inputContributionDate').value;
+	contributionDate = convertDateToDBFormat(contributionDate);
+	var transactionTypeIndex = document.getElementById('inputTransactionType').selectedIndex;
+	var transactionType = document.getElementById('inputTransactionType').options[transactionTypeIndex].value;
+	var paymentMode = 0;
+	var referenceNumber = '';
+	var totalAmount = 0;
+	if(transactionType == 1) {
+		var paymentModeIndex = document.getElementById('inputPaymentMode').selectedIndex;
+		paymentMode = document.getElementById('inputPaymentMode').options[paymentModeIndex].value;
+		referenceNumber = document.getElementById('inputReferenceNumber').value;
+	}
+
+	var alertMsg = '';
+	if(profileID == '') {
+		alertMsg = 'Please enter a valid profile name';		
+	} else if(contributionDate == '') {
+		alertMsg = 'Please enter a valid contribution date';
+	}
+
+	if(alertMsg != '') {
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+		return false;
+	}
+
+	var fundIDList = '';
+	var amountList = '';
+	var notesList = '';
+	var transactionRowIDArr = document.getElementById('transactionRowIDList').value.split(',');
+	if(transactionRowIDArr.length > 0) {
+		for(var i=0; i<transactionRowIDArr.length; i++)
+		{
+			if(fundIDList != '') {
+				fundIDList += '<:|:>';
+			}
+			if(amountList != '') {
+				amountList += '<:|:>';
+			}
+			if(notesList != '') {
+				notesList += '<:|:>';
+			}
+			var index = document.getElementById('fundName-' + transactionRowIDArr[i]).selectedIndex;
+			fundIDList += document.getElementById('fundName-' + transactionRowIDArr[i]).options[index].value;
+			amountList += document.getElementById('amount-' + transactionRowIDArr[i]).value;
+			notesList += document.getElementById('notes-' + transactionRowIDArr[i]).value;
+		}
+	}
+
+	totalAmount = calReceivedAmount();
+
+	var formPostData = 'req=16';
+	formPostData += '&isUpdate=' + isUpdate;
+	formPostData += '&batchID=' + batchID;
+	formPostData += '&profileID=' + profileID;
+	formPostData += '&contributionDate=' + contributionDate;
+	formPostData += '&transactionType=' + transactionType;
+	formPostData += '&paymentMode=' + paymentMode;
+	formPostData += '&referenceNumber=' + referenceNumber;
+	formPostData += '&totalAmount=' + totalAmount;
+	formPostData += '&fundIDList=' + fundIDList;
+	formPostData += '&amountList=' + amountList;
+	formPostData += '&notesList=' + notesList;
+	if(isUpdate) {
+		formPostData += '&contributionID=' + contributionID;
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:addOrUpdateContributionResponse,
+		error:HandleAjaxError
+	});
+}
+
+function addOrUpdateContributionResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.rsno == 1) {
+		var alertType = 1;
+		$('#batchTab a[href="#listContributionTab"]').tab('show');
+		listAllContributions(dataObj.batchID);
+	}
+	else {
+		var alertType = 2;
+	}
+	var msgToDisplay = dataObj.rslt;
+
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+}
+
+function addTransactionRow()
+{
+	var maxRow = document.getElementById('maxTransactionRowID').value;
+    var newRowID = parseInt(maxRow) + 1;
+
+	var rowDiv = document.createElement('div');
+    var rowDivID = 'divTransactionRow-'+newRowID;
+    rowDiv.setAttribute('id', rowDivID);
+    rowDiv.setAttribute('class', 'row-fluid');
+	document.getElementById('addTransactionRowOuterDiv').appendChild(rowDiv);
+
+	var fundDivID = 'divFundName-'+newRowID;
+	var fundDiv = document.createElement('div');
+	fundDiv.setAttribute('id', fundDivID);
+	fundDiv.setAttribute('class', 'span4');
+	rowDiv.appendChild(fundDiv);
+
+	var amountDivID = 'divAmount-'+newRowID;
+	var amountDiv = document.createElement('div');
+	amountDiv.setAttribute('id', amountDivID);
+	amountDiv.setAttribute('class', 'span4');
+	rowDiv.appendChild(amountDiv);
+
+	var notesDivID = 'divNotes-'+newRowID;
+	var notesDiv = document.createElement('div');
+	notesDiv.setAttribute('id', notesDivID);
+	notesDiv.setAttribute('class', 'span4');
+	rowDiv.appendChild(notesDiv);	
+
+	//var fundDivContent = '<input type="text" id="fundName-'+newRowID+'" placeholder="Fund Name" value="" />';
+	var fundDivContent = '<select id="fundName-'+newRowID+'">';
+		fundDivContent += '<option>Select Fund</option>';
+	fundDivContent += '</select>';
+	var amountDivContent = '<input type="text" id="amount-'+newRowID+'" placeholder="Amount" value="" onblur="calReceivedAmount();" onchange="calReceivedAmount();" />';
+	var notesDivContent = '<input type="text" id="notes-'+newRowID+'" placeholder="Notes" value="" />&nbsp;<i class="icon-remove curHand" onclick="deleteTransactionRow('+ newRowID +')"></i>';
+
+	document.getElementById(fundDivID).innerHTML = fundDivContent;
+	document.getElementById(amountDivID).innerHTML = amountDivContent;
+	document.getElementById(notesDivID).innerHTML = notesDivContent;
+	document.getElementById('maxTransactionRowID').value = newRowID;
+	document.getElementById('transactionRowIDList').value += ","+newRowID;
+
+	getFundList(newRowID);
+}
+
+function deleteTransactionRow(rowID)
+{
+	var div = document.getElementById('divTransactionRow-'+rowID);
+    if (div) {
+        div.parentNode.removeChild(div);
+    }
+	var transactionRowIDArr = document.getElementById('transactionRowIDList').value.split(',');
+    transactionRowIDArr.splice(transactionRowIDArr.indexOf(rowID.toString()), 1);
+    document.getElementById('transactionRowIDList').value = transactionRowIDArr.join();    
+}
+
+function getFundList(rowID)
+{
+	var isFundLoadedAlready = document.getElementById('inputHiddenIsFundLoadedAlready').value;
+	if(isFundLoadedAlready)
+	{
+		var optionList = document.getElementById('inputHiddenOptionList').value;
+		if(optionList !== '') {
+			var id = '#fundName-' + rowID;
+			$(id).append(optionList);
+			return true;
+		}
+	}
+	
+	var formPostData = "req=17";
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:getFundListResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getFundListResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	var funds = dataObj;
+	
+	var optionList = '';
+	if(funds[0] == 1)
+	{
+		var totalFunds = funds[1].length;
+		for(var i=0; i<totalFunds; i++)
+		{
+			var fundID = funds[1][i][0];
+			var fundName = funds[1][i][1];
+			optionList += '<option value="'+ fundID +'">'+ fundName +'</option>';
+		}
+		document.getElementById('inputHiddenIsFundLoadedAlready').value = 1;
+		document.getElementById('inputHiddenOptionList').value = optionList;
+		$('#fundName-1').append(optionList);
+	}	
+}
+
+function calReceivedAmount()
+{
+	var amount = 0;
+	var transactionRowIDArr = document.getElementById('transactionRowIDList').value.split(',');
+	if(transactionRowIDArr.length > 0) {		
+		for(var i=0; i<transactionRowIDArr.length; i++)
+		{
+			var id = 'amount-' + transactionRowIDArr[i];
+			if(document.getElementById(id).value != '')
+			{
+				console.log(isNaN(document.getElementById(id).value));
+				if(!isNaN(document.getElementById(id).value)) {
+					amount += parseInt(document.getElementById(id).value);
+				}
+			}						
+		}
+		document.getElementById('spanCurrentAmount').innerHTML = amount;
+	}
+	return amount;
+}
+
+function deleteContributionConfirmation(contributionID)
+{
+	var msgToDisplay = 'Please confirm to delete the contribution?';
+	var actionTakenCallBack = "deleteContributionRequest(" + contributionID + ")";
+	var actionCancelCallBack = "cancelContributionDeleteRequest()";
+	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCancelCallBack);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
+}
+
+function cancelContributionDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+function deleteContributionRequest(contributionID)
+{
+	tempContributionID = contributionID
+	var formPostData = 'req=18&contributionID=' + contributionID;
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:deleteContributionResponse,
+		error:HandleAjaxError
+	});
+}
+
+function deleteContributionResponse(response)
+{
+	if(response) {
+		var alertType = 1;
+		var msgToDisplay = 'Contribution has been deleted successfully.';
+
+		listAllContributions(tempContributionID);
+	}
+	else {
+		var alertType = 2;
+		var msgToDisplay = 'Unable to delete the contribution.';
+	}
+
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
 }

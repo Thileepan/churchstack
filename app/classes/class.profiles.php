@@ -576,12 +576,16 @@ class Profiles
 		return $photo_location;
 	}
 
-	public function getAllProfileNameAndEmailIDs()
+	public function getAllProfileNameAndEmailIDs($ignore_email_id=false)
 	{
 		$profile_emails = array();
 		if($this->db_conn)
 		{
-		   $result = $this->db_conn->Execute('select PROFILE_ID, EMAIL, CONCAT_WS("", NAME, MIDDLE_NAME, LAST_NAME) from PROFILE_DETAILS where EMAIL != ""');
+		   $query = 'select PROFILE_ID, EMAIL, CONCAT_WS("", NAME, MIDDLE_NAME, LAST_NAME) from PROFILE_DETAILS';
+		   if(!$ignore_email_id) {
+			   $query .= ' where EMAIL != ""';
+		   }
+		   $result = $this->db_conn->Execute($query);
             
            if($result) {
                 if(!$result->EOF) {

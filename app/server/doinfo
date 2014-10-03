@@ -7,6 +7,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
 include_once $APPLICATION_PATH . 'classes/class.church.php';
 include_once $APPLICATION_PATH . 'classes/class.utility.php';
+include_once $APPLICATION_PATH . 'classes/class.license.php';
 include_once $APPLICATION_PATH . 'classes/class.users.php';
 include_once $APPLICATION_PATH . 'utils/JSON.php';
 
@@ -250,7 +251,7 @@ else if($req == 3)
 					$to_return .= '<BR><abbr title="Phone">Phone :</abbr>&nbsp;'.$landline;
 					$to_return .= '<BR><abbr title="Mobile">Mobile :</abbr>&nbsp;'.$mobile;
 					$to_return .= '<BR><abbr title="Mobile">Email :</abbr>&nbsp;'.$email;
-					$to_return .= '<BR><abbr title="Website">Website :</abbr>&nbsp;'.$website;
+					$to_return .= "<BR><a href='".$website."' target='_blank'>".$website."</a>";
 					$to_return .= '<BR><abbr title="Country">Country :</abbr>&nbsp;'.$country_name;
 					$to_return .= '<BR><abbr title="TimeZone">Local Time Zone :</abbr>&nbsp;'.$time_zone;
 					$to_return .= '<BR><abbr title="Currency">Local Currency :</abbr>&nbsp;'.$currency_desc;
@@ -275,29 +276,71 @@ else if($req == 4)
 {
 	//get billing details
 
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$license_details = $license_obj->getLicenseDetails();
+	
+	if(is_array($license_details)) {
+		if($license_details[0] == 1) {
+			$plan_id = $license_details[1][0]['plan_id'];
+			$is_trial = $license_details[1][0]['is_on_trial'];
+			$trial_expiry_date = date('M d, Y', $license_details[1][0]['trial_expiry_timestamp']);
+			$lic_expiry_date = date('M d, Y', $license_details[1][0]['lic_expiry_timestamp']);
+			$plan_details =$license_obj->getLicensePlanDetails($plan_id);
+			if(is_array($plan_details) && $plan_details[0] == 1) {
+				$plan_name = $plan_details[1]['plan_name'];
+				$plan_description = $plan_details[1]['plan_description'];
+				$plan_type = $plan_details[1]['plan_type'];
+				$max_count = $plan_details[1]['max_count'];
+				$pricing = $plan_details[1]['pricing'];
+				$validity_in_seconds = $plan_details[1]['validity_in_seconds'];
+				$validity_in_days = $plan_details[1]['validity_in_days'];
+			}
+		}
+	}	
+
 	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span10">';
 			$to_return .= '<div class="widget">';
-				$to_return .= '<div class="widget-header" style="background-color: lightgrey;color:black;">';
-					$to_return .= '<i class="icon-asterisk icon-white"></i>';
-		//			$to_return .= '<h3>Subscriptions ['.$dt->year.'] - In Indian Rupees</h3>';
-					$to_return .= '<h3>Contributions</h3>';
+				$to_return .= '<div class="widget-header" style="background-color:white">';
+					$to_return .= '<i class="icon-asterisk"></i>';
+					$to_return .= '<h3 style="color:black;">Billing overview</h3>';
 					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="widget-content">';
 					$to_return .= '<div class="stats">';
-						$to_return .= '<div class="stat">';
-							$to_return .= '<span class="stat-value">'.$current_month_amount.'</span>';
-							$to_return .= '<span class="muted">'.$current_month_in_string .','.$current_year_in_string.'</span>';
-						$to_return .= '</div>';
-						$to_return .= '<div class="stat">';
-							$to_return .= '<span class="stat-value">'.$last_month_amount.'</span>';
-							$to_return .= '<span class="muted">'.$last_month_in_string . ','.$last_year_in_string.'</span>';
-						$to_return .= '</div>';
-						$to_return .= '<div class="stat">';
-							$to_return .= '<span class="stat-value">'.$prev_month_amount.'</span>';
-							$to_return .= '<span class="muted">'.$prev_month_in_string . ','.$prev_year_in_string.'</span>';
-						$to_return .= '</div>';
+						$to_return .= '<form class="form-horizontal">';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Plan</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= $plan_name.'&nbsp;&nbsp;<span class="label label-info curHand" onclick="getBillingPlans();">Change plan</span>';
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Pricing</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= $pricing.(($validity_in_days == 30)?'/ month':'/ year');
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Max. Profile Count</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= $max_count;
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">License Status</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= (($is_trial == 1)?'Trial &nbsp;&nbsp;<span class="label label-info curHand">Buy Now</span>':'Paid');
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">'.(($is_trial == 1)?'Trial':'License').' Expiry Date</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= (($is_trial == 1)?$trial_expiry_date:$lic_expiry_date);
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+						$to_return .= '</form>';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
 			$to_return .= '</div>';
@@ -307,7 +350,7 @@ else if($req == 4)
 	echo $to_return;
 	exit;
 }
-else if($req==5)
+else if($req == 5)
 {
 	$to_return = '';
 	$to_return .= '<div class="tabbable">';
@@ -383,6 +426,66 @@ else if($req==7)
 	unset($json);
 
 	echo $encode_obj;
+	exit;
+}
+else if($req == 8)
+{
+	//get billing plans
+
+	$license_obj = new License($APPLICATION_PATH);
+	$license_plans = $license_obj->getAllLicensePlanDetails();
+	if(is_array($license_plans) && $license_plans[0] == 1)
+	{
+		$total_plans = COUNT($license_plans[1]);
+		for($i=0; $i<$total_plans; $i++)
+		{
+			$plan_id = $license_plans[1][$i]['plan_id'];
+			$plan_name = $license_plans[1][$i]['plan_name'];
+			$plan_description = $license_plans[1][$i]['plan_description'];
+			$plan_type = $license_plans[1][$i]['plan_type'];
+			$max_count = $license_plans[1][$i]['max_count'];
+			$pricing = $license_plans[1][$i]['pricing'];
+			$validity_in_seconds = $license_plans[1][$i]['validity_in_seconds'];
+			$validity_in_days = $license_plans[1][$i]['validity_in_days'];
+
+			$options .= '<option value="'.$plan_id.'">'.$plan_name.'</option>';
+		}		
+	}
+
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span10">';
+			$to_return .= '<div class="widget">';
+				$to_return .= '<div class="widget-header" style="background-color:white">';
+					$to_return .= '<i class="icon-asterisk"></i>';
+					$to_return .= '<h3 style="color:black;">Choose your plan</h3>';
+					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="widget-content">';
+					$to_return .= '<div class="stats">';
+						$to_return .= '<form class="form-horizontal">';
+/*							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Plan</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= $plan_name.'&nbsp;&nbsp;<span class="label label-info curHand" onclick="getBillingPlans();">Change plan</span>';
+								$to_return .= '</div>';
+							$to_return .= '</div>';*/
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Plans</label>';
+								$to_return .= '<div class="controls" style="padding-top:5px;">';
+									$to_return .= '<select>';
+										$to_return .= $options;
+									$to_return .= '</select>';
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+						$to_return .= '</form>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
 	exit;
 }
 ?>

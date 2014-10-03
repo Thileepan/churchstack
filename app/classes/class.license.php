@@ -309,6 +309,38 @@ class License
 		return $toReturn;
 	}
 
+	public function getAllLicensePlanDetails()
+	{
+		$toReturn = array(); 
+		$toReturn[0] = 0;
+		$toReturn[1] = "Error encountered while trying to get the license plans";
+		$query = 'select * from LICENSE_PLANS';
+		$result = $this->db_conn->Execute($query);
+		if($result) {
+			if(!$result->EOF) {
+				$license_plans = array();
+				while(!$result->EOF) {
+					$plan_id = $result->fields[0];
+					$plan_name = $result->fields[1];
+					$plan_description = $result->fields[2];
+					$plan_type = $result->fields[3];
+					$max_count = $result->fields[4];
+					$pricing = $result->fields[5];
+					$validity_in_seconds = $result->fields[6];
+					$validity_in_days = $result->fields[7];
+					$license_plans[] = array("plan_id"=>$plan_id, "plan_name"=>$plan_name, "plan_description"=>$plan_description, "plan_type"=>$plan_type, "max_count"=>$max_count, "pricing"=>$pricing, "validity_in_seconds"=>$validity_in_seconds, "validity_in_days"=>$validity_in_days);
+
+					$result->MoveNext();
+				}
+				
+				$toReturn[0] = 1;
+				$toReturn[1] = $license_plans;
+				
+			}
+		}
+		return $toReturn;
+	}
+
 	public function putInitialTrialLicenseEntry()
 	{
 		$to_return = array();

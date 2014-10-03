@@ -80,6 +80,8 @@ function addOrUpdateChurchInfoResponse(response)
 
 function getChurchInformation()
 {
+	document.getElementById('myChurch').className = 'active';
+	document.getElementById('billing').className = '';
 	document.getElementById('alertRow').style.display = 'none';
 	var formPostData = 'req=3';
 	$.ajax({
@@ -99,6 +101,8 @@ function getChurchInformationResponse(response)
 
 function getBillingDetails()
 {
+	document.getElementById('myChurch').className = '';
+	document.getElementById('billing').className = 'active';
 	document.getElementById('alertRow').style.display = 'none';
 	var formPostData = 'req=4';
 	$.ajax({
@@ -269,4 +273,23 @@ function infoTabsChangeClass(idToBeActive)
 
 	//Now set the active class for the selected tab
 	document.getElementById(idToBeActive).className = "active";
+}
+
+function getBillingPlans()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=8';
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:getBillingPlansResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getBillingPlansResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "Plans";
+	document.getElementById('pageContent').innerHTML = response;
 }
