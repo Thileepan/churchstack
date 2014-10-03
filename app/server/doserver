@@ -779,8 +779,8 @@ else if($req == 10)
 	$to_return .= '<div class="tabbable">';
 		$to_return .= '<ul class="nav nav-tabs">';
 			$to_return .= '<li id="profileTab" class="active" onclick="showProfileSummary('.$profile_id.')"><a href="#profileTab" data-toggle="tab">Summary</a></li>';
-			$to_return .= '<li id="subscriptionTab" onclick="listAllSubscriptions('.$profile_id.');"><a href="#subscriptionTab" data-toggle="tab">Subscriptions</a></li>';
-			$to_return .= '<li id="harvestTab" onclick="listAllHarvests('.$profile_id.');"><a href="#harvestTab" data-toggle="tab">Harvest Festival</a></li>';
+			$to_return .= '<li style="display:none" id="subscriptionTab" onclick="listAllSubscriptions('.$profile_id.');"><a href="#subscriptionTab" data-toggle="tab">Subscriptions</a></li>';
+			$to_return .= '<li style="display:none" id="harvestTab" onclick="listAllHarvests('.$profile_id.');"><a href="#harvestTab" data-toggle="tab">Harvest Festival</a></li>';
 		$to_return .= '</ul>';
 		$to_return .= '<div class="tab-content">';
 			$to_return .= '<div class="tab-pane active" id="profileDiv">';
@@ -809,19 +809,22 @@ else if($req == 11)
 	$family_photo_path = $profile_details[29];
 	$profile_photo_path = $profile_details[30];
 
+	$parent_profile_id = $profile_details[25];
 	$is_parent_profile = (($profile_details[25] == -1)?true:false);
 	$unique_id = 'STC'.appendZeroInUniqueID($profile_details[3]);
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$salutation = $settings_obj->getOptionValue(1, $profile_details[1]);
 
+	/*
 	$sub_obj = new Subscription($APPLICATION_PATH);
 	$subscription_field_id = 4;
 	$total_paid_amt = $sub_obj->getProfileSubscriptionTotalAmount($profile_id, $subscription_field_id);
+	
 
 	$harvest_obj = new Harvest($APPLICATION_PATH);
 	$total_purchased_amt = $harvest_obj->getProfileHarvestTotal($profile_id);
-
+	*/
 	if($is_parent_profile)
 	{
 		$settings_obj = new ProfileSettings($APPLICATION_PATH);
@@ -853,7 +856,7 @@ else if($req == 11)
 	}
 	else
 	{
-		$parent_profile_id = $profiles_obj->getParentProfileID($profile_details[3]);
+		//$parent_profile_id = $profiles_obj->getParentProfileID($profile_details[3]);
 		$parent_profile_details = $profiles_obj->getProfileInformation($parent_profile_id);
 		$parent_info = '<a href="#" onclick="showProfileDetails('.$parent_profile_id.');">'.$parent_profile_details[2].'</a>';
 		$parent_info .= '<BR><BR>';
@@ -869,10 +872,10 @@ else if($req == 11)
 				$to_return .= '<div class="span4">';
 					$to_return .= '<img id="imgPreviewFamilyPhoto" src="'.(($profile_photo_path != '')?substr($profile_photo_path, 3):'images/photo_rounded.png').'" class="img-rounded" width="140" height="140">';
 					$to_return .= '<BR>';
-					$to_return .= '<form id="profilePhotoForm" action="server/doserver?req=15" method="post" enctype="multipart/form-data" onsubmit="return false">';
+					$to_return .= '<form id="profilePhotoForm" action="server/doserver?req=15" method="post" enctype="multipart/form-data">';
 					$to_return .= '<input type="file" id="profilePhotoPath" name="profilePhotoPath" style="visibility: hidden; width: 1px; height: 1px" multiple /><a href="" onclick="document.getElementById(\'profilePhotoPath\').click(); return false">'.(($profile_photo_path == '')?'Add Photo':'Change Photo').'</a>';
 					$to_return .= '<input type="hidden" name="profileID" id="profileID" value="'.$profile_id.'" /><BR>';
-					$to_return .= '<span id="spanImportBtn"><button class="btn btn-success btn-small" type="submit">Upload</button></span>';
+					$to_return .= '<span id="spanImportBtn" style="display:none"><button class="btn btn-success btn-small" type="submit" id="btnProfilePhotoUpload">Upload</button></span>';
 					$to_return .= '</form>';			
 				$to_return .= '</div>';
 				$to_return .= '<div class="span8">';
@@ -940,6 +943,7 @@ else if($req == 11)
 					}
 					$is_married = $profile_details[7];
 					$marriage_date = $profile_details[8];
+					$marriage_place = $profile_details[9];
 					if($is_married) {
 						if($marriage_date != '0000-00-00')
 						{
@@ -952,7 +956,8 @@ else if($req == 11)
 					$to_return .= 'DOB - <span class="muted">'.$date_of_birth.'</span><BR>';
 					$to_return .=  'Age - <span class="muted">'.$age.'</span><BR>';
 					if($is_married) {
-						$to_return .= 'Marriage Date - <span class="muted">'.$marriage_date.'</span><BR>';
+						$to_return .= 'Date of Marriage - <span class="muted">'.$marriage_date.'</span><BR>';
+						$to_return .= 'Place of Marriage - <span class="muted">'.$marriage_place.'</span><BR>';
 					}
 					$to_return .= 'Baptised - <span class="muted">'.(($profile_details[21] == 1)?"Yes":(($profile_details[21] == 0)?"No":"I'm not Sure")).'</span><BR>';
 					$to_return .= 'Confirmation - <span class="muted">'.(($profile_details[22] == 1)?"Yes":(($profile_details[22] == 0)?"No":"I'm not Sure")).'</span><BR>';

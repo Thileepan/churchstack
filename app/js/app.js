@@ -730,6 +730,11 @@ function getProfileSummaryResponse(response)
 	document.getElementById('pageHeader').innerHTML = 'View Profile';
 	document.getElementById('profileDiv').innerHTML = response;
 
+	var profilePhotoPath = $("#profilePhotoPath");
+	profilePhotoPath.on('change', function(){
+		document.getElementById('btnProfilePhotoUpload').click();
+	});
+
 	$('#existFamilyHeadLink').tooltip();
 	$('#newFamilyHeadLink').tooltip();
 

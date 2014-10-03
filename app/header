@@ -6,7 +6,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
    <head>
 	<meta charset="utf-8">
-    <title>Churchstack - Online Church Management Software</title>
+    <title>ChurchStack - Online Church Management Software</title>
 	<meta name="viewport" content="width=device-width">
 <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	
@@ -64,8 +64,8 @@ include $APPLICATION_PATH."utils/validateauth.php";
 						<span class="icon-bar"></span>
 						</a>
 
-						<!-- Be sure to leave the brand out there if you want it shown -->
-						<a class="brand" href="#"><span style="color:white;font-weight:bold;">ChurchStack</span></a>
+						<!-- Be sure to leave the brand out there if you want it shown <span style="color:white;font-weight:bold;">ChurchStack</span>-->
+						<a class="brand" href="#" style="color:white;font-weight:bold;">ChurchStack</a>
 
 						<div class="nav-collapse collapse">
 							<ul class="nav pull-left">
@@ -81,7 +81,7 @@ include $APPLICATION_PATH."utils/validateauth.php";
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span style="color:white;"><i class="icon-user icon-white"></i>&nbsp;<?php echo $_SESSION['email']; ?><b class="caret"></b></span></a>
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span style="color:white;"><i class="icon-user icon-white"></i>&nbsp;<?php echo $_SESSION['username']; ?><b class="caret"></b></span></a>
 									<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 										<!--
 										<li><a href="#"><i class="icon-fire"></i>&nbsp;Version</a></li>
