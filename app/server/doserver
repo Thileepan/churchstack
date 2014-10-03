@@ -68,7 +68,7 @@ if($req == 1)
 				if($salutation_id != "") {
 					$salutation_value = $re_arranged_salutation[$salutation_id];
 				}
-				$profile_name = $salutation_value .'. '. $profiles[$i][2];
+				$profile_name = $salutation_value .'. '. $profiles[$i][2].' '.$profiles[$i][26].' '.$profiles[$i][27];
 
 				$to_return['aaData'][] = array($unique_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
 			}
@@ -626,7 +626,7 @@ else if($req == 6)
 	$first_name = trim(stripslashes(rawurldecode($_POST['firstName'])));
 	$middle_name = trim(stripslashes(rawurldecode($_POST['middleName'])));
 	$last_name = trim(stripslashes(rawurldecode($_POST['lastName'])));
-	$name = $first_name.' '.$middle_name.' '.$last_name;
+	$name = $first_name;
 	$parent_profile_id = trim($_POST['parentID']);
 	//$unique_id = trim($_POST['uniqueID']);
 	$date_of_birth = trim($_POST['dob']);
@@ -877,7 +877,7 @@ else if($req == 11)
 				$to_return .= '</div>';
 				$to_return .= '<div class="span8">';
 					$to_return .= '<address>';
-						$to_return .= '<strong>'.$salutation.". ".$profile_details[2].'</strong>&nbsp;<span class="muted">('.$unique_id.')</span>&nbsp;<a href="#" onclick="getAddOrEditProfileForm(1, '.$profile_details[0].')"><u>Edit</u></a><br>';
+						$to_return .= '<strong>'.$salutation.". ".$profile_details[2].' '.$profile_details[26].' '.$profile_details[27].'</strong>&nbsp;<span class="muted">('.$unique_id.')</span>&nbsp;<a href="#" onclick="getAddOrEditProfileForm(1, '.$profile_details[0].')"><u>Edit</u></a><br>';
 						if($profile_details[10] != "") {
 							$to_return .= $profile_details[10].'<br>';
 						}
