@@ -18,6 +18,7 @@ define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 define('PRODUCT_CONTACT_US', 'http://www.churchstack.com/contact-us.html');
 define('PRODUCT_PRIV_POLICY_EMAIL', "support@churchstack.com");
 define('PRODUCT_PRIV_POLICY_URL', "http://www.churchstack.com/privacy-policy.html");
+define('PRODUCT_TERMS_CONDITIONS_URL', "http://churchstack.com/terms-of-service.html");
 
 //Company Related stuff
 define('COMPANY_WEBSITE', 'http://www.rapydcloud.com');
