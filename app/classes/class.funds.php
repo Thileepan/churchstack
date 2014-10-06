@@ -610,5 +610,24 @@ class Funds
 
 		return $to_return;
 	}
+
+	public function getMonthlyContributionAmount($start_date, $end_date)
+	{
+		$total_amount = 0;
+		if($this->db_conn)
+		{
+		   $result = $this->db_conn->Execute('select SUM(TOTAL_AMOUNT) from CONTRIBUTION_DETAILS where CONTRIBUTION_DATE >= ? and CONTRIBUTION_DATE <= ?', array($start_date, $end_date));
+            
+           if($result) {
+                if(!$result->EOF) {
+                    if($result->fields[0] != NULL)
+                    {
+                        $total_amount = $result->fields[0];
+                    }
+                }
+            }
+        }
+		return $total_amount;
+	}
 }
 ?>

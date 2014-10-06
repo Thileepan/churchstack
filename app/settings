@@ -23,12 +23,12 @@ include $APPLICATION_PATH."header";
           <li id="listSalutationOptions" onclick="listProfileOptions(1);" class="active"><a href="#">Salutation</a></li>
 		  <li id="listRelationshipOptions" onclick="listProfileOptions(2);" class=""><a href="#">Relationship</a></li>
 		  <li id="listMaritalOptions" onclick="listProfileOptions(3);" class=""><a href="#">Marital Status</a></li>
-		  <li id="listProfileStatusOptions" onclick="listProfileOptions(4);" class=""><a href="#">Profile Status</a></li>
+		  <li id="listProfileStatusOptions" onclick="listProfileOptions(4);" class="" style="display:none;"><a href="#">Profile Status</a></li>
 		  <li id="listProfileCustomFields" onclick="listProfileAllCustomFields();" class=""><a href="#">Custom Profile Fields</a></li>
-		  <li class="divider"></li>
-		  <li class="nav-header">User Management</li>
-          <li id="listUsers" onclick="listAllUsers();" class=""><a href="#">List Users</a></li>
-          <li id="addNewUser" onclick="GetAddOrEditUserForm(0);" class=""><a href="#">Add New User</a></li>
+		  <li class="divider" style="display:none;"></li>
+		  <li class="nav-header" style="display:none;">User Management</li>
+          <li id="listUsers" onclick="listAllUsers();" class="" style="display:none;"><a href="#">List Users</a></li>
+          <li id="addNewUser" onclick="GetAddOrEditUserForm(0);" class="" style="display:none;"><a href="#">Add New User</a></li>		  
         </ul>
     </div>
 	<div class="span10">

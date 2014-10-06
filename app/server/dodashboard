@@ -6,7 +6,8 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
 include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';
-include_once $APPLICATION_PATH . '/classes/class.subscription.php';
+//include_once $APPLICATION_PATH . '/classes/class.subscription.php';
+include_once $APPLICATION_PATH . '/classes/class.funds.php';
 include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
@@ -69,7 +70,9 @@ else if($req == 2)
 	//echo "Current Month:::".$dt;
 	$current_month_in_number = $dt->month;
 	$current_month_in_string = $dt->format('F');
-	$current_year_in_string = $dt->format('Y');	
+	$current_year_in_string = $dt->format('Y');
+	$current_month_start_date = $current_year_in_string .'-'. $current_month_in_number .'-'. '01';
+	$current_month_end_date = $current_year_in_string .'-'. $current_month_in_number .'-'. '31';
 	
 
 	$last_month_first_day = $dt->firstOfMonth();
@@ -78,24 +81,35 @@ else if($req == 2)
 	$last_month_in_number = $last_month->month;
 	$last_month_in_string = $last_month->format('F');	
 	$last_year_in_string = $last_month->format('Y');
+	$last_month_start_date = $last_year_in_string .'-'. $last_month_in_number .'-'. '01';
+	$last_month_end_date = $last_year_in_string .'-'. $last_month_in_number .'-'. '31';
 
 	$prev_month_first_day = $dt->firstOfMonth();
 	$prev_month = $dt->subMonth();
 	//echo "prev_month:::".$prev_month;
 	$prev_month_in_number = $prev_month->month;
-	$prev_month_in_string = $prev_month->format('F');	
-	$prev_year_in_string = $prev_month->format('Y');	
+	$prev_month_in_string = $prev_month->format('F');
+	$prev_year_in_string = $prev_month->format('Y');
+	$prev_month_start_date = $prev_year_in_string .'-'. $prev_month_in_number .'-'. '01';
+	$prev_month_end_date = $prev_year_in_string .'-'. $prev_month_in_number .'-'. '31';
 
+	/*
 	$sub_obj = new Subscription($APPLICATION_PATH);
 	$current_month_amount = $sub_obj->getMonthlySubscriptionAmount($current_month_in_number);
 	$last_month_amount = $sub_obj->getMonthlySubscriptionAmount($last_month_in_number);
 	$prev_month_amount = $sub_obj->getMonthlySubscriptionAmount($prev_month_in_number);
+	*/
+
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$current_month_amount = $funds_obj->getMonthlyContributionAmount($current_month_start_date, $current_month_end_date);
+	$last_month_amount = $funds_obj->getMonthlyContributionAmount($last_month_start_date, $last_month_end_date);
+	$prev_month_amount = $funds_obj->getMonthlyContributionAmount($prev_month_start_date, $prev_month_end_date);
 	
 	$to_return .= '<div class="widget">';
 		$to_return .= '<div class="widget-header">';
 			$to_return .= '<i class="icon-asterisk icon-white"></i>';
 //			$to_return .= '<h3>Subscriptions ['.$dt->year.'] - In Indian Rupees</h3>';
-			$to_return .= '<h3>Contributions</h3>';
+			$to_return .= '<h3>Funds</h3>';
 			$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="widget-content">';

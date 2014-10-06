@@ -466,7 +466,7 @@ else if($req == 2)
 			$toReturn .= '<div class="row-fluid">';
 				$toReturn .= '<div class="span12">';
 					$toReturn .= '<p class="text-left text-info"><b>Notifications</b></p>';					
-					$toReturn .= '<div style="padding-bottom:6px;">';
+					$toReturn .= '<div style="padding-bottom:6px;display:none;">';
 						$toReturn .= '<div class="controls">';
 							$toReturn .= '<input type="checkbox" id="inputSMSNotification" '.(($profile_info[31] == 1)?'checked':'').'>&nbsp;Receive SMS Notifications';
 						$toReturn .= '</div>';
