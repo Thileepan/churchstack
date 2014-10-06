@@ -625,12 +625,21 @@ function validateEventRemainder(option)
 	var remainderTypeIndex = document.getElementById('inputRemainderType' + option).selectedIndex;
 	var remainderType = document.getElementById('inputRemainderType' + option).options[remainderTypeIndex].value;
 
+	if(!isNaN(remainderPeriod))
+	{
+		remainderPeriod = Math.round(remainderPeriod);
+	}
+	document.getElementById('inputRemainderPeriod' + option).value = remainderPeriod;
+
 	if(remainderType == 1)
 	{
 		if(remainderPeriod < 1 || isNaN(remainderPeriod)) {
 			document.getElementById('inputRemainderPeriod' + option).value = 1;
 		} else if(remainderPeriod > 23) {
 			var days = parseInt(remainderPeriod / 24);
+			if(days > 7) {
+				days = 7;
+			}
 			document.getElementById('inputRemainderPeriod' + option).value = days;
 			document.getElementById('inputRemainderType' + option).selectedIndex = 1;
 		}
