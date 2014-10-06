@@ -433,7 +433,12 @@ function listAllContributions(batchID)
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane active';
 
-	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	var currencyCode = "USD";
+	if(document.getElementById("txtCurrencyCode")) {
+		currencyCode = document.getElementById("txtCurrencyCode").value;
+	}
+
+	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('listContributionDiv').innerHTML = table;
 	
 	oTable = $('#listContributionTable').dataTable( {

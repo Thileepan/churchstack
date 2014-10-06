@@ -268,8 +268,11 @@ else if($req == 7)
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label" for="inputExpectedAmount">Expected Amount</label>';
-						$to_return .= '<div class="controls">';
-							$to_return .= '<input type="text" class="span10" id="inputExpectedAmount" placeholder="Expected Amount" value="'.$expected_amount.'">';
+						$to_return .= '<div class="controls span7">';
+							$to_return .= '<div class="input-prepend span12">';
+								$to_return .= '<span class="span2 add-on">'.$_SESSION['currencyCode'].'</span>';
+								$to_return .= '<input type="text" class="span10" id="inputExpectedAmount" placeholder="Expected Amount" value="'.$expected_amount.'">';
+							$to_return .= '</div>';
 						$to_return .= '</div>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="form-actions" align="center">';
@@ -345,6 +348,9 @@ else if($req == 10)
 			$to_return .= '<div class="tab-pane" id="listContributionDiv">';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
+		$to_return .= '<div class="hidden">';
+			$to_return .= '<input type="hidden" id="txtCurrencyCode" value="'.$_SESSION['currencyCode'].'"/>';
+		$to_return .= '</div>';
 	$to_return .= '</div>';
 
 	echo $to_return;
@@ -378,9 +384,9 @@ else if($req == 11)
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span10">';
-			$to_return .= '<div id="myStat" data-text="'.$received_amount.'" data-info="Total Recevied Fund" data-fontsize="15" data-percent="'.$total_percent.'" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd"></div>';
-			$to_return .= '<p><b>Expected Fund:</b>'.$expected_amount.'</p>';
-//			$to_return .= '<p><b>Received Amount:</b>'.$received_amount.'</p>';
+			$to_return .= '<div id="myStat" data-text="'.$_SESSION['currencyCode'].'&nbsp;'.$received_amount.'" data-info="Total Recevied Fund" data-fontsize="15" data-percent="'.$total_percent.'" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd"></div>';
+			$to_return .= '<p><b>Expected Amount: </b>'.$_SESSION['currencyCode'].'&nbsp;'.$expected_amount.'</p>';
+//			$to_return .= '<p><b>Received Amount: </b>'.$received_amount.'</p>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
 
@@ -482,9 +488,9 @@ else if($req == 12)
 		$to_return .= '</div>';
 		$to_return .= '<div class="span6">';
 			$to_return .= '<div class="hero-unit" style="font-size:14px;padding:40px;">';
-				$to_return .= 'Expected Amount: <span class="text-success" id="spanExpectedAmount">'.$expected_amount.'</span><BR>';
-				$to_return .= 'Received Amount: <span class="text-info" id="spanReceivedAmount">'.$received_amount.'</span><BR>';
-				$to_return .= 'You have entered: <span class="text-info" id="spanCurrentAmount">'.$current_amount.'</span>';
+				$to_return .= 'Expected Amount: <span class="text-success">'.$_SESSION['currencyCode'].'&nbsp;</span><span class="text-success" id="spanExpectedAmount">'.$expected_amount.'</span><BR>';
+				$to_return .= 'Received Amount: <span class="text-info">'.$_SESSION['currencyCode'].'&nbsp;</span><span class="text-info" id="spanReceivedAmount">'.$received_amount.'</span><BR>';
+				$to_return .= 'You have entered: <span class="text-info">'.$_SESSION['currencyCode'].'&nbsp;</span><span class="text-info" id="spanCurrentAmount">'.$current_amount.'</span>';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
@@ -497,7 +503,7 @@ else if($req == 12)
 					$to_return .= 'Name';
 				$to_return .= '</div>';
 				$to_return .= '<div class="span4">';
-					$to_return .= 'Amount';
+					$to_return .= 'Amount ('.$_SESSION['currencyCode'].')';
 				$to_return .= '</div>';
 				$to_return .= '<div class="span4">';
 					$to_return .= 'Notes';
@@ -602,7 +608,7 @@ else if($req == 14)
 					$to_return .= '<tbody>';
 					$to_return .= '<tr>';
 						$to_return .= '<th>Fund</th>';
-						$to_return .= '<th>Amount</th>';
+						$to_return .= '<th>Amount ('.$_SESSION['currencyCode'].')</th>';
 						$to_return .= '<th>Notes</th>';
 					$to_return .= '</tr>';
 				for($i=0; $i<$total_splits; $i++)
