@@ -274,32 +274,43 @@ function addOrUpdateEvents(val, doValidation)
 
 	var emailRemainder = 0;
 	var smsRemainder = 0;
-	if(document.getElementById('inputEventNotifications').checked)
+	if(document.getElementById('checkEmailReminder').checked)
 	{
-		var isAtleastOneSelected = false;
-		emailRemainder = document.getElementById('inputRemainderPeriod1').value;
-		smsRemainder = document.getElementById('inputRemainderPeriod2').value;
+		emailRemainder = trim(document.getElementById('inputRemainderPeriod1').value);
 
 		if(emailRemainder != '') {
 			if(isNaN(emailRemainder)) {
-				errMsg = 'Please enter a valid remainder value for email notification';
+				errMsg = 'Please enter a valid reminder value for email notification';
 				var resultToUI = getAlertDiv(2, errMsg);
 				document.getElementById('alertRow').style.display = '';
 				document.getElementById('alertDiv').innerHTML = resultToUI;
+				document.getElementById('inputRemainderPeriod1').select();
 				return false;
 			} else {
-				isAtleastOneSelected = true;
+				//isAtleastOneSelected = true;
 				emailRemainder = emailRemainder * 60 * 60;
 				var index = document.getElementById('inputRemainderType1').selectedIndex;
 				if(index == 1) {
 					emailRemainder = emailRemainder * 60;
 				}
 			}
+		} else {
+				errMsg = 'Please enter a valid reminder value for email notification';
+				var resultToUI = getAlertDiv(2, errMsg);
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = resultToUI;
+				document.getElementById('inputRemainderPeriod1').select();
+				return false;
 		}
+	}
+	
+	if(document.getElementById('checkSMSReminder').checked)
+	{
+		smsRemainder = trim(document.getElementById('inputRemainderPeriod2').value);
 
 		if(smsRemainder != '') {
 			if(isNaN(smsRemainder)) {
-				errMsg = 'Please enter a valid remainder value for sms notification';
+				errMsg = 'Please enter a valid reminder value for sms notification';
 				var resultToUI = getAlertDiv(2, errMsg);
 				document.getElementById('alertRow').style.display = '';
 				document.getElementById('alertDiv').innerHTML = resultToUI;
@@ -312,14 +323,13 @@ function addOrUpdateEvents(val, doValidation)
 					smsRemainder = smsRemainder * 60;
 				}
 			}
-		}
-
-		if(!isAtleastOneSelected)
-		{
-			var resultToUI = getAlertDiv(2, 'Please enter a valid remainder value for email/sms notifications');
-			document.getElementById('alertRow').style.display = '';
-			document.getElementById('alertDiv').innerHTML = resultToUI;
-			return false;
+		} else {
+				errMsg = 'Please enter a valid reminder value for sms notification';
+				var resultToUI = getAlertDiv(2, errMsg);
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = resultToUI;
+				document.getElementById('inputRemainderPeriod2').select();
+				return false;
 		}
 	}
 
@@ -338,7 +348,9 @@ function addOrUpdateEvents(val, doValidation)
 	formPostData += "&monthDay=" + monthDay;
 	formPostData += "&month=" + month;
 	formPostData += "&participantList=" + document.getElementById('participantList').value;
-	formPostData += "&notifications=" + emailRemainder + ',' + smsRemainder;
+//	formPostData += "&notifications=" + emailRemainder + ',' + smsRemainder;
+	formPostData += "&emailnotificationperiod=" + emailRemainder;
+	formPostData += "&smsnotificationperiod=" + smsRemainder;
 	
 
 	$.ajax({

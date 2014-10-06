@@ -331,10 +331,10 @@ else if($req == 2)
 		$to_return .= '</div>';
 		$to_return .= '<div class="span6">';
 			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';				
-				$to_return .= '<p class="text-left muted">Event Notifications <input type="checkbox" id="inputEventNotifications" /></p>';
+				$to_return .= '<p class="text-left muted">Event Notifications <input type="checkbox" id="inputEventNotifications" style="display:none;"/></p>';
 				
 				$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="inputRemainderPeriod1">Email Reminder</label>';
+					$to_return .= '<label class="control-label" for="checkEmailReminder"><input type="checkbox" id="checkEmailReminder" />&nbsp;Email Reminder</label>';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<input type="text" id="inputRemainderPeriod1" class="input-mini" onblur="validateEventRemainder(1);" value="1" />&nbsp;';
 						$to_return .= '<select id="inputRemainderType1" class="input-small">';
@@ -344,7 +344,7 @@ else if($req == 2)
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="inputRemainderPeriod2">SMS Reminder</label>';
+					$to_return .= '<label class="control-label" for="checkSMSReminder"><input type="checkbox" id="checkSMSReminder" />&nbsp;SMS Reminder&nbsp;&nbsp;</label>';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<input type="text" id="inputRemainderPeriod2" class="input-mini" onblur="validateEventRemainder(2);" value="1" />&nbsp;';
 						$to_return .= '<select id="inputRemainderType2" class="input-small">';
@@ -412,6 +412,9 @@ else if($req == 3)
 
 	//event notifications
 	$notification_details = array();
+	/*********************************************************************************************** /
+	LOGIC MODIFIED BY NESAN
+	/*********************************************************************************************** /
 	$notifications = explode(',', trim($_POST['notifications']));
 	for($i=0; $i<2; $i++)
 	{
@@ -419,6 +422,14 @@ else if($req == 3)
 			$notification_details[] = array(($i+1), $notifications[$i]);
 		}
 	}	
+	/************************************************************************************************/
+	if(trim($_POST['emailnotificationperiod']) != "" && trim($_POST['emailnotificationperiod']) > 0) {
+		$notification_details[] = array(1, trim($_POST['emailnotificationperiod']));
+	}
+	if(trim($_POST['smsnotificationperiod']) != "" && trim($_POST['smsnotificationperiod']) > 0) {
+		$notification_details[] = array(2, trim($_POST['smsnotificationperiod']));
+	}
+	/************************************************************************************************/
 	
 	if($freq == 1)
 	{
