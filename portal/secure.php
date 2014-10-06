@@ -5,6 +5,6 @@
 		exit;
 	}
 	$PORTAL_FOLDER = "portal/";
-	$LOGIN_PWD = "21232f297a57a5a743894a0e4a801fc3";
-	$ACCESS_PWD = "21232f297a57a5a743894a0e4a801fc3";
+	$LOGIN_PWD = "16d8dbe45f074dc44cfd0fc4846e03d1";
+	$ACCESS_PWD = "c1b3a13d67c727c063fbccfdfccda859";
 ?>
