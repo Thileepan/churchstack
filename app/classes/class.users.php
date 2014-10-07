@@ -852,8 +852,8 @@ class Users
 		}
 		if($this->db_conn)
 		{
-			$query = 'update USER_DETAILS set EMAIL=? where USER_ID=?';
-			$result = $this->db_conn->Execute($query, array($new_email, $user_id));
+			$query = 'update USER_DETAILS set EMAIL=?, USER_NAME=? where USER_ID=?';
+			$result = $this->db_conn->Execute($query, array($new_email, $new_email, $user_id));
 			if($result) {
 				$to_return[0] = 1;
 				$to_return[1] = "Account updated with new email address successfully";
