@@ -49,12 +49,12 @@ if($req == 1)
 			for($i=0; $i<$profile_count; $i++) {
 				
 				$is_profile_head = (($profiles[$i][25] == -1)?1:0);
-				$unique_id = 'STC'.appendZeroInUniqueID($profiles[$i][3]);
+				$profile_id = 'CS'.appendZeroInUniqueID($profiles[$i][0]);
 				$parent_head_icon = (($is_profile_head)?'<i class="icon-user"></i>':'');
 
 				$actions = '<div class="dropdown">';
 					$actions .= '<i class="curHand icon-pencil" onclick="getAddOrEditProfileForm(1, '.$profiles[$i][0].')"></i>&nbsp;&nbsp;';
-					$actions .= '<i class="curHand icon-trash" onclick="deleteProfileConfirmation('.$profiles[$i][0].',\''. $unique_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>&nbsp;&nbsp;';
+					$actions .= '<i class="curHand icon-trash" onclick="deleteProfileConfirmation('.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>&nbsp;&nbsp;';
 				$actions .= '</div>';				
 				
 				$age = '-';
@@ -70,7 +70,7 @@ if($req == 1)
 				}
 				$profile_name = $salutation_value .'. '. $profiles[$i][2].' '.$profiles[$i][26].' '.$profiles[$i][27];
 
-				$to_return['aaData'][] = array($unique_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
+				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ else if($req == 2)
 	$babtised_list = array('Yes', 'No');
 	$confirmation_list = array('Yes', 'No');
 	$another_church_member_list = array('Yes', 'No');
-	$name_append = 'STC';
+	$name_append = 'CS';
 
 	$is_update = trim($_POST['isEdit']);
 	date_default_timezone_set('UTC');
@@ -667,33 +667,57 @@ else if($req == 6)
 	$profile_photo_location = '';
 	$rsno = 1;//Success by default
 	$msg = "Profile has been added/updated successfully";
-		
-	$profile_id = -1;
+
 	$profiles_obj = new Profiles($APPLICATION_PATH);
-	if($is_update) {
-		$msg = "Profile has been updated successfully";
-		$profile_id = trim($_POST['profileID']);
-		$update_status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
-		$rsno = $update_status[0];
-		if($update_status[0] == 0) {
-			$msg = $update_status[1];
-		}
-	} else {
-		$msg = "New profile has been added successfully";
+	//if the profile is family head, find the family ID
+	$unique_id = -1;
+	if($parent_profile_id == -1)
+	{
 		$unique_id = $profiles_obj->getMaxProfileUniqueID();
-		//echo "UniqueID".$unique_id;
-		if($unique_id != -1) {
-			$unique_id++;
-			//$unique_id = $name_append . appendZeroInUniqueID($unique_id);
-			$add_status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
-			$rsno = $add_status[0];
-			if($add_status[0] == 0) {
-				$msg = $add_status[1];
-			}
-			$profile_id = $profiles_obj->profile_id;
+		$unique_id++;
+	}
+	else
+	{
+		$profile_details = $profiles_obj->getProfileInformation($parent_profile_id);
+		//print_r($profile_details);
+		if(is_array($profile_details) && COUNT($profile_details) > 0)
+		{
+			$unique_id = $profile_details[3];
 		}
 	}
+	//echo $unique_id;
 
+	$profile_id = -1;
+	if($unique_id >= 0)
+	{
+		if($is_update) {
+			$msg = "Profile has been updated successfully";
+			$profile_id = trim($_POST['profileID']);
+			$update_status = $profiles_obj->updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification, $unique_id);
+			$rsno = $update_status[0];
+			if($update_status[0] == 0) {
+				$msg = $update_status[1];
+			}
+		} else {
+			$msg = "New profile has been added successfully";
+			
+			if($unique_id != -1) {
+				
+				//$unique_id = $name_append . appendZeroInUniqueID($unique_id);
+				$add_status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone,  $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+				$rsno = $add_status[0];
+				if($add_status[0] == 0) {
+					$msg = $add_status[1];
+				}
+				$profile_id = $profiles_obj->profile_id;
+			}
+		}
+	}
+	else
+	{
+		$rsno = 0;
+		$msg = 'Unable to add/update the profile details. Couldn\'t find the family ID';
+	}
 
 	if($profile_id > 0) {
 		//custom profile fields
@@ -738,7 +762,7 @@ else if($req == 6)
 		}
 	}
 	
-	unset($profile_obj);
+	unset($profiles_obj);
 	/** /
 	echo $profile_id;
 	exit;
@@ -820,7 +844,8 @@ else if($req == 11)
 
 	$parent_profile_id = $profile_details[25];
 	$is_parent_profile = (($profile_details[25] == -1)?true:false);
-	$unique_id = 'STC'.appendZeroInUniqueID($profile_details[3]);
+	$unique_id = 'CS'.appendZeroInUniqueID($profile_details[0]);
+	$family_id = 'FAM'.appendZeroInUniqueID($profile_details[3]);
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$salutation = $settings_obj->getOptionValue(1, $profile_details[1]);
@@ -890,6 +915,7 @@ else if($req == 11)
 				$to_return .= '<div class="span8">';
 					$to_return .= '<address>';
 						$to_return .= '<strong>'.$salutation.". ".$profile_details[2].' '.$profile_details[26].' '.$profile_details[27].'</strong>&nbsp;<span class="muted">('.$unique_id.')</span>&nbsp;<a href="#" onclick="getAddOrEditProfileForm(1, '.$profile_details[0].')"><u>Edit</u></a><br>';
+						$to_return .= '<span class="muted">Family ID: '.$family_id.'</span>';
 						if($profile_details[10] != "") {
 							$to_return .= $profile_details[10].'<br>';
 						}
@@ -1151,7 +1177,7 @@ else if($req == 14)
 		//change this profile as family head
 		if($parent_profile_status != 3)
 		{
-			$profile_status = 3; //change parent status as expired.
+			$profile_status = 2; //change parent status as inactive.
 			$status = $profiles_obj->updateProfileStatus($parent_profile_id, $profile_status);
 		}
 		$status = $profiles_obj->updateProfileParentID($profile_id, -1);

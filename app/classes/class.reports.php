@@ -81,7 +81,7 @@ class Reports
 		//print_r($report_columns);
 		//echo "<BR>";
 		/***** CONSTRUCTING COLUMNS ************/
-		$column_names = array('MemberID', 'Family Head', 'Name', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address', 'Contacts', 'Email', 'Status', 'Notes', 'Age');
+		$column_names = array('Profile ID', 'Family Head', 'Name', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address', 'Contacts', 'Email', 'Status', 'Notes', 'Age');
 		$column_names_in_db = array('UNIQUE_ID', 'NAME', 'NAME', 'DOB', 'GENDER', 'RELATION_SHIP', 'MARITAL_STATUS', 'MARRIAGE_DATE', 'MARRIAGE_PLACE', 'BABTISED', 'CONFIRMATION', 'OCCUPATION', 'IS_ANOTHER_CHURCH_MEMBER', 'ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE', 'LANDLINE, MOBILE1, MOBILE2', 'EMAIL', 'PROFILE_STATUS', 'NOTES', 'DOB');
 
 		$profiles_obj = new Profiles($APPLICATION_PATH);
@@ -373,7 +373,7 @@ class Reports
 							$temp_value = $result->fields[$j];
 							//echo "::: TEMP_VALUE:::" . $temp_value. "<BR>";
 							if($report_columns[$i] == 0) {
-								$temp_value = 'STC' . appendZeroInUniqueID($temp_value);
+								$temp_value = 'CS' . appendZeroInUniqueID($temp_value);
 							} else if($report_columns[$i] == 1) {
 								//find dependant's family head name
 								if($parent_profile_id != -1) {

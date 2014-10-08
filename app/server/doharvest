@@ -72,7 +72,7 @@ if($req == 1)
 										}
 										$parent_id .= $parent_list[$i][0];
 										$parent_name .= $parent_list[$i][1];
-										$parent_unique_id .= $parent_list[$i][1].'-'.'STC' . appendZeroInUniqueID($parent_list[$i][2]);
+										$parent_unique_id .= $parent_list[$i][1].'-'.'CS' . appendZeroInUniqueID($parent_list[$i][2]);
 									}
 								}
 							//}
@@ -159,7 +159,7 @@ else if($req == 3)
 			$is_results_available = true;
 			for($i=0; $i<$total_harvest; $i++) {
 				
-				$unique_id = 'STC'.appendZeroInUniqueID($harvest_details[$i][3]);
+				$unique_id = 'CS'.appendZeroInUniqueID($harvest_details[$i][3]);
 
 				$actions = '<div class="dropdown">';
 					$actions .= '<a href="#subModal" role="button" data-toggle="modal"><i class="curHand icon-pencil" onclick="getHarvestForm(1, '.$harvest_details[$i][0].', '.$harvest_details[$i][1].')"></i></a>&nbsp;';

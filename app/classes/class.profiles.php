@@ -207,15 +207,15 @@ class Profiles
 		return $to_return;
 	}
 
-	public function updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification)
+	public function updateProfile($profile_id, $salutation_id, $name, $parent_profile_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification, $unique_id)
 	{
 		$to_return = array();
 		$to_return[0] = 0;
 		$to_return[1] = "Unable to update the profile";
 		if($this->db_conn)
 		{
-			$query = 'update PROFILE_DETAILS set SALUTATION_ID=?, NAME=?, DOB=?, GENDER=?, RELATION_SHIP=?, MARITAL_STATUS=?, MARRIAGE_DATE=?, MARRIAGE_PLACE=?, ADDRESS1=?, ADDRESS2=?, ADDRESS3=?, AREA=?, PINCODE=?, LANDLINE=?, MOBILE1=?, MOBILE2=?, EMAIL=?, PROFILE_STATUS=?, NOTES=?, BABTISED=?, CONFIRMATION=?, OCCUPATION=?, IS_ANOTHER_CHURCH_MEMBER=?, PARENT_PROFILE_ID=?, MIDDLE_NAME=?, LAST_NAME=?, WORK_PHONE=?, FAMILY_PHOTO_LOCATION=?, PROFILE_PHOTO_LOCATION=?, SMS_NOTIFICATION=?, EMAIL_NOTIFICATION=? where PROFILE_ID=?';
-			$result = $this->db_conn->Execute($query, array($salutation_id, $name, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $parent_profile_id, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification, $profile_id));
+			$query = 'update PROFILE_DETAILS set SALUTATION_ID=?, NAME=?, UNIQUE_ID=?, DOB=?, GENDER=?, RELATION_SHIP=?, MARITAL_STATUS=?, MARRIAGE_DATE=?, MARRIAGE_PLACE=?, ADDRESS1=?, ADDRESS2=?, ADDRESS3=?, AREA=?, PINCODE=?, LANDLINE=?, MOBILE1=?, MOBILE2=?, EMAIL=?, PROFILE_STATUS=?, NOTES=?, BABTISED=?, CONFIRMATION=?, OCCUPATION=?, IS_ANOTHER_CHURCH_MEMBER=?, PARENT_PROFILE_ID=?, MIDDLE_NAME=?, LAST_NAME=?, WORK_PHONE=?, FAMILY_PHOTO_LOCATION=?, PROFILE_PHOTO_LOCATION=?, SMS_NOTIFICATION=?, EMAIL_NOTIFICATION=? where PROFILE_ID=?';
+			$result = $this->db_conn->Execute($query, array($salutation_id, $name, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $parent_profile_id, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification, $profile_id));
 			//echo $this->db_conn->ErrorMsg();
 			if($result) {
 				$to_return[0] = 1;

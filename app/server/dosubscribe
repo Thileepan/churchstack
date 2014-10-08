@@ -167,7 +167,7 @@ else if($req == 4)
 										}
 										$parent_id .= $parent_list[$i][0];
 										$parent_name .= $parent_list[$i][1];
-										$parent_unique_id .= $parent_list[$i][1].'-'.'STC' . appendZeroInUniqueID($parent_list[$i][2]);
+										$parent_unique_id .= $parent_list[$i][1].'-'.'CS' . appendZeroInUniqueID($parent_list[$i][2]);
 									}
 								}
 							//}
@@ -320,7 +320,7 @@ else if($req == 6)
 			$is_results_available = true;
 			for($i=0; $i<$total_subscriptions; $i++) {
 				
-				$unique_id = 'STC'.appendZeroInUniqueID($subscriptions[$i][5]);
+				$unique_id = 'CS'.appendZeroInUniqueID($subscriptions[$i][5]);
 
 				$actions = '<div class="dropdown">';
 				//$actions .= '<i class="curHand icon-pencil" onclick="getSubscriptionForm(1, '.$subscriptions[$i][0].')"></i>&nbsp;&nbsp;';

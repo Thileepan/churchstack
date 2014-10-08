@@ -142,7 +142,7 @@ function listAllProfiles(opt)
 	document.getElementById('listProfilesContent').style.display = '';
 
 	if(opt == 1) {
-		var table = '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Member ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Landline</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+		var table = '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Landline</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 		document.getElementById('listProfilesContent').innerHTML = table;
 	}
 	

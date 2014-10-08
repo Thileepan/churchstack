@@ -18,13 +18,16 @@ function formatDateOfBirth($dob, $skip_year=false, $show_month_as_number_format=
 function appendZeroInUniqueID($unique_id)
 {
 	$id_length = strlen($unique_id);
-	if($id_length < 3)
+	if($id_length < 4)
 	{
 		if($id_length == 1) {
-			$to_append = '00';
+			$to_append = '000';
 		} else if($id_length == 2) {
+			$to_append = '00';
+		} else if($id_length == 3) {
 			$to_append = '0';
 		}
+
 		$unique_id = $to_append.$unique_id;
 	}
 	return $unique_id;
