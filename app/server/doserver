@@ -19,8 +19,9 @@ if($req == 1)
 	//use Carbon\Carbon;
 	
 	//List all profiles
+	$profile_status = trim($_POST['profileStatus']);
 	$profiles_obj = new Profiles($APPLICATION_PATH);
-	$profiles = $profiles_obj->getAllProfiles();
+	$profiles = $profiles_obj->getAllProfiles($profile_status);
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$salutation_values = $settings_obj->getOptions(1);
 	$re_arranged_salutation = array();
@@ -70,7 +71,12 @@ if($req == 1)
 				}
 				$profile_name = $salutation_value .'. '. $profiles[$i][2].' '.$profiles[$i][26].' '.$profiles[$i][27];
 
-				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
+				$append_status = '';
+				if($profiles[$i][19] == 2) {
+					$append_status = '<span class="label label-important">Inactive</span>';
+				}
+
+				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>'.$append_status, formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
 			}
 		}
 	}
@@ -448,7 +454,7 @@ else if($req == 2)
 							$toReturn .= '<input type="email" id="inputEmail" placeholder="Email" value="'.$profile_info[18].'" >';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
-					$toReturn .= '<div style="padding-bottom:6px; display:none;">';
+					$toReturn .= '<div style="padding-bottom:6px;">';
 						$toReturn .= '<label class="control-label" for="inputProfileStatus">Profile Status</label>';
 						$toReturn .= '<div class="controls">';
 							$toReturn .= '<select id="inputProfileStatus" >';

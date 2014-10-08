@@ -130,8 +130,12 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
     });
 }
 
-function listAllProfiles(opt)
+function listAllProfiles(profileStatus)
 {
+	//profileStatus - 1; Active
+	//profileStatus - 2; In-Active
+	//profileStatus - 3; All
+
 	document.getElementById('listProfiles').className = 'active';
 	document.getElementById('addNewProfile').className = '';
 	document.getElementById('importProfiles').className = '';
@@ -141,10 +145,23 @@ function listAllProfiles(opt)
 	document.getElementById('pageContent').style.display = 'none';
 	document.getElementById('listProfilesContent').style.display = '';
 
-	if(opt == 1) {
-		var table = '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Landline</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
-		document.getElementById('listProfilesContent').innerHTML = table;
+	//get profiles filter option value from cookie if exists
+	var cName = 'cs_list_profiles_filter_value';
+	var cValue = getCookie(cName);
+	if(cValue != '') {
+		profileStatus = cValue;
 	}
+	
+	var table = '<div class="pull-right">';
+		table += 'Filter by profile status: ';
+		table += '<select onchange="filterProfilesList(this)">';
+			table += '<option value="1"'+ ((profileStatus == 1 || cValue == '')?'selected':'') +'>Active</option>';
+			table += '<option value="2"'+ ((profileStatus == 2)?'selected':'') +'>Inactive</option>';
+			table += '<option value="3"'+ ((profileStatus == 3)?'selected':'') +'>All</option>';
+		table += '</select>';
+	table += '</div>';
+	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Landline</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	document.getElementById('listProfilesContent').innerHTML = table;
 	
 	oTable = $('#listProfilesTable').dataTable( {
 		"aoColumns": [
@@ -166,7 +183,7 @@ function listAllProfiles(opt)
                 "dataType": 'json',
                 "type": "POST",
                 "url": sSource,
-                "data": "req=1",
+                "data": "req=1&profileStatus=" + profileStatus,
                 "success": fnCallback
             } );
         }
@@ -613,7 +630,7 @@ function deleteProfileResponse(response)
 	var resultToUI;
 	if(response) {
 		resultToUI = getAlertDiv(1, 'Profile has been deleted successfully!');
-		listAllProfiles(0);
+		listAllProfiles(1);
 	} else {
 		resultToUI = getAlertDiv(2, 'Profile failed to delete.');
 	}
@@ -1104,4 +1121,18 @@ function saveChurchMiscDetailsResponse(response)
 	}
 
 	return false;
+}
+
+function filterProfilesList(obj)
+{
+	var index = obj.selectedIndex;
+	var profileStatus = obj.options[index].value;
+	
+	//set cookie to remember the filter option.
+	var exDays = 1;
+	var cName = 'cs_list_profiles_filter_value';
+	var cValue = profileStatus;
+	setCookie(cName, cValue, exDays);
+
+	listAllProfiles(profileStatus);
 }

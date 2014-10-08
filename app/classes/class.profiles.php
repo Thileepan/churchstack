@@ -53,12 +53,18 @@ class Profiles
 		return $profile_details;
 	}
 
-	public function getAllProfiles()
+	public function getAllProfiles($profile_status=1)
 	{
 		$profile_details = array();
 		if($this->db_conn)
 		{
-		   $result = $this->db_conn->Execute('select * from PROFILE_DETAILS where PROFILE_STATUS=1;');
+			//always don't show deleted profiles
+			$query = 'select * from PROFILE_DETAILS where PROFILE_STATUS != 3';
+			if($profile_status != 3) {
+				$query .= ' and PROFILE_STATUS=' . $profile_status;
+			}
+
+		   $result = $this->db_conn->Execute($query);
             
            if($result) {
                 if(!$result->EOF) {
