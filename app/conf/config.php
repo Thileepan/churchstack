@@ -41,9 +41,28 @@ define('EMAIL_FROM_DONOTREPLY', 3);
 define('EMAIL_FROM_INFO', 4);
 define('EMAIL_FROM_NOTIFICATIONS', 5);
 
+//SMTP stuff
 define('SMTP_SERVER', 'smtp.gmail.com');
 define('SMTP_USERNAME', 'help@churchstack.com');
 define('SMTP_PASSWORD', 'churchstack123$');
+
+define('SALES_SMTP_SERVER', 'smtp.gmail.com');
+define('SALES_SMTP_USERNAME', 'help@churchstack.com');
+define('SALES_SMTP_PASSWORD', 'churchstack123$');
+
+define('SUPPORT_SMTP_SERVER', 'smtp.gmail.com');
+define('SUPPORT_SMTP_USERNAME', 'help@churchstack.com');
+define('SUPPORT_SMTP_PASSWORD', 'churchstack123$');
+
+define('DONOTREPLY_SMTP_SERVER', 'smtp.gmail.com');
+define('DONOTREPLY_SMTP_USERNAME', 'help@churchstack.com');
+define('DONOTREPLY_SMTP_PASSWORD', 'churchstack123$');
+
+define('INFO_SMTP_SERVER', 'smtp.gmail.com');
+define('INFO_SMTP_USERNAME', 'help@churchstack.com');
+define('INFO_SMTP_PASSWORD', 'churchstack123$');
+
+//Email addresses
 define('FROM_ADDRESS', 'help@churchstack.com');
 define('FROM_NAME', 'ChurchStack');
 define('FROM_SALES_ADDRESS', 'accounts@churchstack.com');

@@ -27,17 +27,39 @@ class Email
 		include_once($this->APPLICATION_PATH . 'plugins/PHPMailer/class.phpmailer.php');
 
 		//set SMTP settings
-		$this->setSMTPSettings();
+		$this->setSMTPSettings($FROM_ADDRESS_ID);
 
 		//set FROM address
 		$this->setFromAddress($FROM_ADDRESS_ID);
 	}
 
-	public function setSMTPSettings()
+	public function setSMTPSettings($FROM_ADDRESS_ID)
 	{
 		$this->host = SMTP_SERVER;
 		$this->username = SMTP_USERNAME;
 		$this->password = SMTP_PASSWORD;
+
+		if($FROM_ADDRESS_ID==EMAIL_FROM_SALES) {
+			$this->host = SALES_SMTP_SERVER;
+			$this->username = SALES_SMTP_USERNAME;
+			$this->password = SALES_SMTP_PASSWORD;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_SUPPORT) {
+			$this->host = SUPPORT_SMTP_SERVER;
+			$this->username = SUPPORT_SMTP_USERNAME;
+			$this->password = SUPPORT_SMTP_PASSWORD;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_DONOTREPLY) {
+			$this->host = DONOTREPLY_SMTP_SERVER;
+			$this->username = DONOTREPLY_SMTP_USERNAME;
+			$this->password = DONOTREPLY_SMTP_PASSWORD;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_INFO) {
+			$this->host = INFO_SMTP_SERVER;
+			$this->username = INFO_SMTP_USERNAME;
+			$this->password = INFO_SMTP_PASSWORD;
+		} else {
+			$this->host = SMTP_SERVER;
+			$this->username = SMTP_USERNAME;
+			$this->password = SMTP_PASSWORD;
+		}
 	}
 
 	public function setFromAddress($FROM_ADDRESS_ID)
