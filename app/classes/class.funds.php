@@ -240,7 +240,7 @@ class Funds
 		{
 			$batch_details = array();
 			//$query = 'select a.BATCH_ID, a.BATCH_NAME, a.BATCH_DESCRIPTION, a.BATCH_CREATED_TIME, a.LAST_UPDATED_TIME, a.EXPECTED_AMOUNT, SUM(c.AMOUNT) from BATCH_DETAILS as a left outer join CONTRIBUTION_DETAILS as b on a.BATCH_ID = b.BATCH_ID, CONTRIBUTION_SPLIT_DETAILS as c where b.CONTRIBUTION_ID=c.CONTRIBUTION_ID';
-			$query = 'select BATCH_ID, BATCH_NAME, BATCH_DESCRIPTION, BATCH_CREATED_TIME, LAST_UPDATE_TIME, EXPECTED_AMOUNT from BATCH_DETAILS';
+			$query = 'SELECT A.BATCH_ID, A.BATCH_NAME, A.BATCH_DESCRIPTION, A.BATCH_CREATED_TIME, A.LAST_UPDATE_TIME, A.EXPECTED_AMOUNT, (SELECT SUM(C.TOTAL_AMOUNT)  FROM CONTRIBUTION_DETAILS as C where C.BATCH_ID=A.BATCH_ID) AS TOTAL_RECEIVED_FOR_BATCH FROM BATCH_DETAILS as A left join CONTRIBUTION_DETAILS as B ON A.BATCH_ID=B.BATCH_ID group by A.BATCH_ID;';
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
@@ -253,7 +253,7 @@ class Funds
 						$batch_created_time = $result->fields[3];
 						$last_updated_time = $result->fields[4];
 						$expected_amount = $result->fields[5];
-						$received_amount = 0;//$result->fields[6];
+						$received_amount = (($result->fields[6] != null)? $result->fields[6] : 0);
 						$batch_details[] = array($batch_id, $batch_name, $batch_description, $batch_created_time, $last_updated_time, $expected_amount, $received_amount);
 
 						$result->MoveNext();
