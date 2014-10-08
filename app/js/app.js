@@ -871,13 +871,36 @@ function getImportProfileFormResponse(response)
 	$("#myForm").ajaxForm(options);
 }
 
+function migrateProfileConfirmation(option, profileID, parentProfileID, parentProfileStatus)
+{
+	var msgToDisplay;
+	if(option == 1) {
+		msgToDisplay = 'This will make this person the head of this family and deactivate the current family head.';
+	} else {
+		msgToDisplay = 'This will move this person from the current family and a new family will be created for this person.';
+	}	
+	
+	msgToDisplay += ' Please confirm your request?';
+	var actionTakenCallBack = "migrateProfile(" + option + "," + profileID + "," + parentProfileID + "," + parentProfileStatus + ")";
+	var actionCanelCallBack = "cancelMigrateProfileRequest()";
+	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCanelCallBack);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
+}
+
+function cancelMigrateProfileRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
 function migrateProfile(option, profileID, parentProfileID, parentProfileStatus)
 {
 	var resultToUI, formPostData;
 	gRequest = option;
 	gProfileID = profileID;
-	
-	document.getElementById('alertRow').style.display = 'none';
+
 	if(gRequest == 1)
 	{
 		//change this profile as family head

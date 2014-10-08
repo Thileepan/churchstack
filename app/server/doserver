@@ -901,8 +901,8 @@ else if($req == 11)
 		$parent_info = '<a href="#" onclick="showProfileDetails('.$parent_profile_id.');">'.$parent_profile_details[2].'</a>';
 		$parent_info .= '<BR><BR>';
 		$parent_info .= '<b>Actions</b>';
-		$parent_info .= '<BR><a href="#" id="existFamilyHeadLink" data-toggle="tooltip" title="You can use this option to make this person, the family head if the current family head is going to be or has been deactivated/deleted." onclick="migrateProfile(1, '.$profile_id.', '.$parent_profile_id.','.$parent_profile_details[19].');">Make this person the head of this family</a>';
-		$parent_info .= '<BR><a href="#" id="newFamilyHeadLink" data-toggle="tooltip" title="You can use this option to move this profile from this family and make a new family with this profile as its family head." onclick="migrateProfile(2, '.$profile_id.', '.$parent_profile_id.','.$parent_profile_details[19].');">Move and make this profile a new family head by creating a new family</a>';
+		$parent_info .= '<BR><a href="#" id="existFamilyHeadLink" data-toggle="tooltip" title="You can use this option to make this person, the family head if the current family head is going to be or has been deactivated/deleted." onclick="migrateProfileConfirmation(1, '.$profile_id.', '.$parent_profile_id.','.$parent_profile_details[19].');">Make this person the head of this family</a>';
+		$parent_info .= '<BR><a href="#" id="newFamilyHeadLink" data-toggle="tooltip" title="You can use this option to move this profile from this family and make a new family with this profile as its family head." onclick="migrateProfileConfirmation(2, '.$profile_id.', '.$parent_profile_id.','.$parent_profile_details[19].');">Move and make this profile a new family head by creating a new family</a>';
 	}	
 	
 	$to_return = '';
