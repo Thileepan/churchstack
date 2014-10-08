@@ -482,7 +482,7 @@ function listAllContributions(batchID)
                 "dataType": 'json',
                 "type": "POST",
                 "url": sSource,
-                "data": "req=13",
+                "data": "req=13&batchID=" + batchID,
                 "success": fnCallback
             } );		
         }

@@ -550,8 +550,9 @@ else if($req == 13)
 {
 	//list contribution details
 
+	$batch_id = trim($_POST['batchID']);
 	$fund_obj = new Funds($APPLICATION_PATH);
-	$contribution_result = $fund_obj->getAllContributions();
+	$contribution_result = $fund_obj->getAllContributions($batch_id);
 	//print_r($contribution_result);
 	
 	$is_results_available = false;

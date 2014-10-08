@@ -409,7 +409,7 @@ class Funds
 		return false;
 	}	
 
-	public function getAllContributions()
+	public function getAllContributions($batch_id)
 	{
 		$return_data = array();
 		$return_data[0] = 0;
@@ -418,8 +418,8 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select a.CONTRIBUTION_ID, a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID=c.BATCH_ID';
-			$result = $this->db_conn->Execute($query);
+			$query = 'select a.CONTRIBUTION_ID, a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID=c.BATCH_ID and a.BATCH_ID=?';
+			$result = $this->db_conn->Execute($query, array($batch_id));
 			
 			if($result) {
                 if(!$result->EOF) {
