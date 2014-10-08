@@ -923,7 +923,7 @@ function migrateProfileResponse(response)
 	document.getElementById('alertRow').style.display = '';
 	if(response)
 	{
-		var message = ((gRequest == 1)?'Profile has been migrated as family head and dependants are linked to this new head however the relationship status with family head will not be changed automatically.':'Profile has been migrated successfully into new family head.');
+		var message = ((gRequest == 1)?'Profile has been made the family head and dependants are now linked to this new head. However, the relationship status of all the dependents with the family head has not been changed and we suggest you to do it manually.':'New family has been created and the selected profile has been made its family head.');
 		document.getElementById('alertDiv').innerHTML = getAlertDiv(1, message);
 		showProfileSummary(gProfileID);
 	}
