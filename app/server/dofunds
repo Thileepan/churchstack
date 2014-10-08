@@ -567,7 +567,7 @@ else if($req == 13)
 			$is_results_available = true;
 			for($i=0; $i<$total_contributions; $i++) {
 				
-				$actions = '<i class="curHand icon-trash" onclick="deleteContributionConfirmation('.$contributions[$i][0].')"></i>&nbsp;&nbsp;';
+				$actions = '<i class="curHand icon-trash" onclick="deleteContributionConfirmation('.$contributions[$i][0].','.$batch_id.')"></i>&nbsp;&nbsp;';
 				
 				$transaction_type = (($contributions[$i][6] == 1)?'Cash Gift':'Non-Cash Gift');
 				
@@ -712,11 +712,19 @@ else if($req == 18)
 {
 	//delete the contribution
 	$contribution_id = trim($_POST['contributionID']);
+	$batch_id = trim($_POST['batchID']);
 
 	$funds_obj = new Funds($APPLICATION_PATH);
 	$status = $funds_obj->deleteContribution($contribution_id);
+	$rsno = $status[0];
+	$msg = $status[1];
 
-	echo $status;
+	$to_ret = array("rsno"=>$rsno, "msg"=>$msg, "batchID"=>$batch_id);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_ret);
+	unset($json);
+
+	echo $encode_obj;
 	exit;
 }
 ?>

@@ -784,10 +784,10 @@ function calReceivedAmount()
 	return amount;
 }
 
-function deleteContributionConfirmation(contributionID)
+function deleteContributionConfirmation(contributionID, batchID)
 {
 	var msgToDisplay = 'Please confirm to delete the contribution?';
-	var actionTakenCallBack = "deleteContributionRequest(" + contributionID + ")";
+	var actionTakenCallBack = "deleteContributionRequest(" + contributionID + ","+batchID+")";
 	var actionCancelCallBack = "cancelContributionDeleteRequest()";
 	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Proceed", "Cancel", actionTakenCallBack, actionCancelCallBack);
 	document.getElementById('alertRow').style.display = '';
@@ -801,10 +801,10 @@ function cancelContributionDeleteRequest()
 	document.getElementById('alertRow').style.display = 'none';
 }
 
-function deleteContributionRequest(contributionID)
+function deleteContributionRequest(contributionID, batchID)
 {
 	tempContributionID = contributionID
-	var formPostData = 'req=18&contributionID=' + contributionID;
+	var formPostData = 'req=18&contributionID=' + contributionID+'&batchID='+batchID;
 	$.ajax({
 		type:'POST',
 		url:doFundsFile,
@@ -816,15 +816,16 @@ function deleteContributionRequest(contributionID)
 
 function deleteContributionResponse(response)
 {
-	if(response) {
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.rsno == 1) {
 		var alertType = 1;
-		var msgToDisplay = 'Contribution has been deleted successfully.';
+		var msgToDisplay = dataObj.msg;
 
-		listAllContributions(tempContributionID);
+		listAllContributions(dataObj.batchID);
 	}
 	else {
 		var alertType = 2;
-		var msgToDisplay = 'Unable to delete the contribution.';
+		var msgToDisplay = dataObj.msg;
 	}
 
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);

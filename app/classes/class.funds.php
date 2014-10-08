@@ -23,7 +23,7 @@ class Funds
 		{
 			$query = 'insert into FUND_DETAILS (FUND_NAME, FUND_DESCRIPTION, VISIBILITY) values (?, ?, ?)';
 			$result = $this->db_conn->Execute($query, array($fund_name, $fund_description, $fund_visibility));
-			echo $this->db_conn->ErrorMsg();
+//			echo $this->db_conn->ErrorMsg();
 			if($result) {
 				return true;
 			}
@@ -526,18 +526,28 @@ class Funds
 
 	public function deleteContribution($contribution_id)
 	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to delete the contribution';
 		if($this->db_conn)
 		{
-			if($this->deleteContributionSplitsUsingContributionID($contribution_id))
+			$del_cont_splits = $this->deleteContributionSplitsUsingContributionID($contribution_id);
+			if($del_cont_splits[0]==1)
 			{
 				$query = 'delete from CONTRIBUTION_DETAILS where CONTRIBUTION_ID=?';
 				$result = $this->db_conn->Execute($query, array($contribution_id));
 				if($result) {
-					return true;
+					$return_data[0] = 1;
+					$return_data[1] = 'Contribution has been deleted successfully';
 				}
-			}			
+			}
+			else
+			{
+				$return_data[0] = 0;
+				$return_data[1] = $del_cont_splits[1];
+			}
 		}
-		return false;
+		return $return_data;
 	}
 
 	private function deleteContributionUsingBatchID($batch_id)
@@ -581,16 +591,19 @@ class Funds
 
 	private function deleteContributionSplitsUsingContributionID($contribution_id)
 	{
+		$to_return = array();
+		$to_return[0]=0;
+		$to_return[1]="Unable to delete the contribution splits";
 		if($this->db_conn)
 		{
 			$query = 'delete from CONTRIBUTION_SPLIT_DETAILS where CONTRIBUTION_ID=?';
 			$result = $this->db_conn->Execute($query, array($contribution_id));
-			echo $this->db_conn->ErrorMsg();
 			if($result) {
-				return true;
+				$to_return[0]=1;
+				$to_return[1]="Successfully deleted the contribution splits";
 			}
 		}
-		return false;
+		return $to_return;
 	}
 
 	public function getBatchTotalReceivedAmount($batch_id)
