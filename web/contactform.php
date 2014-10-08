@@ -1,6 +1,6 @@
 <?php
 
-$email = "sktgthill@gmail,bala.d7868@gmail.com,nesanjoseph@yahoo.com,shijuchintu@gmail.com";// Change your email address
+$to_email = "sktgthill@gmail,bala.d7868@gmail.com,nesanjoseph@yahoo.com,shijuchintu@gmail.com";// Change your email address
 	
 if ($_POST['message']) {
 	
@@ -20,14 +20,14 @@ if ($_POST['message']) {
 		$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 							
 		$message = 
-"$name - $email - $phone - send you message.\n\n
+"$name - $email - $phone - has sent you message.\n\n
 $message\n\n
 _____________________________________________
 PLEASE DO NOT REPLY \n\
 
 ";
 
-        $mail_status = mail($email , "RapydCloud Contact Form", $message,
+        $mail_status = mail($to_email , "RapydCloud Contact Form", $message,
 		"From: \"Website Contact Form\" <no-reply@$host>\r\n" .
 		"X-Mailer: PHP/" . phpversion());
 		//unset($_SESSION['ckey']);    
