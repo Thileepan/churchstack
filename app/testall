@@ -3,6 +3,7 @@ error_reporting(-1);
 ini_set("display_errors", "1");
 $PATH = __DIR__."/";
 //$PATH = "./";
+include_once($PATH."conf/config.php");
 include_once($PATH."classes/class.users.php");
 include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
@@ -314,13 +315,13 @@ print_r($res);
 /** /
 for($i=0; $i < 1; $i++)
 {
-$email_obj = new Email($PATH, EMAIL_FROM_DONOTREPLY);
+$email_obj = new Email($PATH, EMAIL_FROM_SALES);
 $recipients = array();
 $recipients['to_address'] = "nesanjoseph@yahoo.com";
 $email_obj->setRecipients($recipients);
-$email_obj->setSubject("set subjecting... to ..");
+$email_obj->setSubject("Hellpo...");
 
-$body = 'bhbhbhbh';
+$body = 'yhyhyhyhyh';
 
 $email_obj->setBody($body);
 $result = $email_obj->sendEmail();

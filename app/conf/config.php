@@ -31,7 +31,7 @@ define('COMPANY_CONTACT_US', 'http://www.rapydcloud.com/contact-us.html');
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
 define('DB_DSN', 'churchstack');
 define('DB_USER_NAME', 'root');
-define('DB_PASSWORD', 'admin');
+define('DB_PASSWORD', 'Rapydcloud123$');
 define('DB_NAME', 'churchstack');
 
 //email configurations
@@ -43,43 +43,43 @@ define('EMAIL_FROM_NOTIFICATIONS', 5);
 
 //SMTP stuff
 define('SMTP_SERVER', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'help@churchstack.com');
+define('SMTP_USERNAME', 'support@churchstack.com');
 define('SMTP_PASSWORD', 'churchstack123$');
 
 define('SALES_SMTP_SERVER', 'smtp.gmail.com');
-define('SALES_SMTP_USERNAME', 'help@churchstack.com');
+define('SALES_SMTP_USERNAME', 'support@churchstack.com');
 define('SALES_SMTP_PASSWORD', 'churchstack123$');
 
 define('SUPPORT_SMTP_SERVER', 'smtp.gmail.com');
-define('SUPPORT_SMTP_USERNAME', 'help@churchstack.com');
+define('SUPPORT_SMTP_USERNAME', 'support@churchstack.com');
 define('SUPPORT_SMTP_PASSWORD', 'churchstack123$');
 
 define('DONOTREPLY_SMTP_SERVER', 'smtp.gmail.com');
-define('DONOTREPLY_SMTP_USERNAME', 'help@churchstack.com');
+define('DONOTREPLY_SMTP_USERNAME', 'support@churchstack.com');
 define('DONOTREPLY_SMTP_PASSWORD', 'churchstack123$');
 
 define('INFO_SMTP_SERVER', 'smtp.gmail.com');
-define('INFO_SMTP_USERNAME', 'help@churchstack.com');
+define('INFO_SMTP_USERNAME', 'support@churchstack.com');
 define('INFO_SMTP_PASSWORD', 'churchstack123$');
 
 //Email addresses
-define('FROM_ADDRESS', 'help@churchstack.com');
+define('FROM_ADDRESS', 'support@churchstack.com');
 define('FROM_NAME', 'ChurchStack');
-define('FROM_SALES_ADDRESS', 'accounts@churchstack.com');
+define('FROM_SALES_ADDRESS', 'support@churchstack.com');
 define('FROM_SALES_NAME', 'ChurchStack');
 define('FROM_SUPPORT_ADDRESS', 'support@churchstack.com');
 define('FROM_SUPPORT_NAME', 'ChurchStack');
 define('FROM_DONOTREPLY_ADDRESS', 'do-not-reply@churchstack.com');
 define('FROM_DONOTREPLY_NAME', 'ChurchStack');
-define('FROM_INFO_ADDRESS', 'accounts@churchstack.com');
+define('FROM_INFO_ADDRESS', 'support@churchstack.com');
 define('FROM_INFO_NAME', 'ChurchStack');
-define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
+define('FROM_NOTIFICATIONS_ADDRESS', 'support@churchstack.com');
 define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
-define('SALES_EMAIL', 'accounts@churchstack.com');
+define('SALES_EMAIL', 'support@churchstack.com');
 define('DONOTREPLY_EMAIL', 'do-not-reply@churchstack.com');
-define('INVOICE_COPY_TO_ADDRESS', 'accounts@churchstack.com');
-define('NEW_SIGNUP_COPY_TO_ADDRESS', 'accounts@churchstack.com,bala.d7868@gmail.com,shijuchintu@gmail.com,sktgthill@gmail.com');
+define('INVOICE_COPY_TO_ADDRESS', 'support@churchstack.com');
+define('NEW_SIGNUP_COPY_TO_ADDRESS', 'support@churchstack.com,bala.d7868@gmail.com,shijuchintu@gmail.com,sktgthill@gmail.com,nesanjoseph@yahoo.com');
 
 if (System::getOS() == 2) {
     define('PHP_EXE_PATH', 'C:/Program Files (x86)/php/php.exe');
