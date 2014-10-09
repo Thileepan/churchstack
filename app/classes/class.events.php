@@ -19,7 +19,7 @@ class Events
 
 		$this->event_id = -1;
 
-		$this->time_zone = "GMT";//Default is this
+		$this->time_zone = "UTC";//Default is this
 		$this->time_zone = ((isset($_SESSION["churchTimeZone"]) && trim($_SESSION["churchTimeZone"]) != "")? trim($_SESSION["churchTimeZone"]) : $this->time_zone);
 	}
 
