@@ -51,4 +51,17 @@ function regenerateGlobalSessionSecurityTokens()
 	$_SESSION["globalSessionSecuritySalt-2"] = md5(time()/(time()-(rand(1, 1000))).rand(1,100000));
 	$_SESSION["globalSessionSecurityToken"] = strtoupper(md5(md5($_SESSION["globalSessionSecuritySalt-1"]).md5($_SESSION["globalSessionSecuritySalt-1"])));
 }
+
+function convertRailwayTimeToFullTime($time)
+{
+	if(strlen($time) > 3) {
+		$hour = substr($time, 0, 2);
+		$min = substr($time, 2, 2);
+	} else {
+		$hour = "0".substr($time, 0, 1);
+		$min = substr($time, 1, 2);
+	}
+
+	return $hour.":".$min.":00";
+}
 ?>

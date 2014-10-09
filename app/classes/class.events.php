@@ -4,6 +4,7 @@ class Events
 {
 	protected $db_conn;
 	private $APPLICATION_PATH;
+	private $time_zone;
 	
 	public function __construct($APPLICATION_PATH, $shardedDBName="")
 	{
@@ -17,6 +18,16 @@ class Events
 		}
 
 		$this->event_id = -1;
+
+		$this->time_zone = "GMT";//Default is this
+		$this->time_zone = ((isset($_SESSION["churchTimeZone"]) && trim($_SESSION["churchTimeZone"]) != "")? trim($_SESSION["churchTimeZone"]) : $this->time_zone);
+	}
+
+	public function setTimeZone($time_zone)
+	{
+		if(trim($time_zone) != "") {
+			$this->time_zone = $time_zone;
+		}
 	}
 
 	public function addEvent($title, $desc, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details)
@@ -313,7 +324,7 @@ class Events
 			} else {				
 				if($event_status == 1) {
 					//upcoming events
-					$query = 'select * from EVENT_DETAILS where (END_DATE > ? and END_DATE != ?) || (START_DATE >= ? and END_DATE = ?) || (START_DATE <= ? and END_DATE = ?)';
+					$query = 'select * from EVENT_DETAILS where (END_DATE >= ? and END_DATE != ?) || (START_DATE >= ? and END_DATE = ?) || (START_DATE <= ? and END_DATE = ?)';
 					$result = $this->db_conn->Execute($query, array($end_date, '0000-00-00', $end_date, '0000-00-00', $end_date, '0000-00-00'));
 				} else if($event_status == 2) {
 					//past events
@@ -364,7 +375,7 @@ class Events
 			$type = 2;
 			$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
 			$recurr_obj->setUp($type);
-			$recurr_obj->setTimeZone($time_zone);
+			$recurr_obj->setTimeZone($this->time_zone);
 
 			for($i=0; $i<$total_events; $i++)
 			{
@@ -436,7 +447,7 @@ class Events
 			$type = 2;
 			$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
 			$recurr_obj->setUp($type);
-			$recurr_obj->setTimeZone($time_zone);
+			$recurr_obj->setTimeZone($this->time_zone);
 		} else {
 			if(!is_object($recurr_obj)) {
 				return $event_date;
@@ -446,8 +457,8 @@ class Events
 		if($rrule != '')
 		{
 			$recurr_obj->setRRule($rrule);
-			$recurr_obj->setStartDate($start_date_db);
-			$recurr_obj->setEndDate($end_date_db);
+			$recurr_obj->setStartDate($start_date);
+			$recurr_obj->setEndDate($end_date);
 			$recurr_obj->setVirtualLimit($virtualLimit);
 			$occurrences = $recurr_obj->getOccurrences();
 			//print_r($occurrences);
@@ -480,7 +491,7 @@ class Events
 		$event_details = array();
 		if($this->db_conn)
 		{
-			$query = 'select a.EVENT_ID, a.TITLE, a.DESCRIPTION, a.EVENT_LOCATION, a.START_DATE, a.END_DATE, a.START_TIME, a.END_TIME, a.RRULE, a.PRIORITY, a.ORGANISER, a.ACCESS_LEVEL, b.NOTIFICATION_ID, b.NOTIFICATION_TYPE, b.NOTIFICATION_PERIOD from EVENT_DETAILS as a, EVENT_NOTIFICATIONS as b where ((a.END_DATE > ? and a.END_DATE != ?) || (a.START_DATE >= ? and a.END_DATE = ?) || (a.START_DATE <= ? and a.END_DATE = ?)) and a.EVENT_ID=b.EVENT_ID and b.NOTIFICATION_TYPE=?';
+			$query = 'select a.EVENT_ID, a.TITLE, a.DESCRIPTION, a.EVENT_LOCATION, a.START_DATE, a.END_DATE, a.START_TIME, a.END_TIME, a.RRULE, a.PRIORITY, a.ORGANISER, a.ACCESS_LEVEL, b.NOTIFICATION_ID, b.NOTIFICATION_TYPE, b.NOTIFICATION_PERIOD from EVENT_DETAILS as a, EVENT_NOTIFICATIONS as b where ((a.END_DATE >= ? and a.END_DATE != ?) || (a.START_DATE >= ? and a.END_DATE = ?) || (a.START_DATE <= ? and a.END_DATE = ?)) and a.EVENT_ID=b.EVENT_ID and b.NOTIFICATION_TYPE=?';
 			$result = $this->db_conn->Execute($query, array($today, '0000-00-00', $today, '0000-00-00', $today, '0000-00-00', $notification_type));
 
 			if($result) {
@@ -516,9 +527,10 @@ class Events
 	{
 		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 		include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
+		include_once $this->APPLICATION_PATH . 'utils/utilfunctions.php';
 		
-		$time_zone = 'Asia/Calcutta';
-		$current_time = Carbon::now($time_zone);
+		$time_zone = $this->time_zone;
+		$current_time = Carbon::now($this->time_zone);
 		$today = $current_time->year."-".$current_time->month."-".$current_time->day;	
 
 		$to_return = array();
@@ -534,7 +546,7 @@ class Events
 				$is_obj_initialized = true;
 				$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
 				$recurr_obj->setUp($type);
-				$recurr_obj->setTimeZone($time_zone);
+				$recurr_obj->setTimeZone($this->time_zone);
 				for($i=0; $i<$total_events; $i++)
 				{
 					//find the next immediate event occurrence
@@ -557,12 +569,14 @@ class Events
 					$notification_period = $event_details[$i][14];
 					
 					if($rrule != '') {
-						$event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+						$next_event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $this->time_zone, $rrule, $virtualLimit);					
+					} else {
+						$next_event_date = $start_date." ".convertRailwayTimeToFullTime($start_time);
 					}
-
-					if($event_date != '-')
+				
+					if($next_event_date != '-')
 					{
-						$event_time = Carbon::createFromFormat('Y-m-d H:i:s', $event_date, $time_zone);
+						$event_time = Carbon::createFromFormat('Y-m-d H:i:s', $next_event_date, $this->time_zone);
 						$diff_in_seconds = $current_time->diffInSeconds($event_time);
 						//echo "Current Time::".$current_time."<BR>";
 						//echo "Next Event Time::".$event_time."<BR>";
@@ -589,7 +603,7 @@ class Events
 
 							//Following details are very important and should be unique for an event through out the events life time.
 							$notification_details["event_id"] = $event_id;
-							$notification_details["exact_occurrence_time"] = $event_date;//This will be used to avoid sending duplicate emails for the same event.
+							$notification_details["exact_occurrence_time"] = $next_event_date;//This will be used to avoid sending duplicate emails for the same event.
 
 							$to_return[] = $notification_details;
 						}
