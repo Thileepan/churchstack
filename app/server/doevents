@@ -19,7 +19,7 @@ if($req == 1)
 
 	include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 	
-	$time_zone = 'Asia/Calcutta';
+	$time_zone = $_SESSION['churchTimeZone'];
 //	$dt = Carbon::now($time_zone)->startOfMonth();
 //	$start_date = $dt->year."-".$dt->month."-".$dt->day;	
 //	$dt = Carbon::now($time_zone)->lastOfMonth();
@@ -464,7 +464,7 @@ else if($req == 3)
 		if($end_date != '0000-00-00')
 		{
 			$end_date_time = $end_date . ' 23:59:00';
-			$end_date_time = new \DateTime($end_date_time, new \DateTimeZone('Asia/Calcutta'));
+			$end_date_time = new \DateTime($end_date_time, new \DateTimeZone($_SESSION['churchTimeZone']));
 		}
 
 		$recurr_obj = new RecurrInterface($APPLICATION_PATH);
@@ -539,7 +539,7 @@ else if($req == 5)
 	include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
 	include_once $APPLICATION_PATH . '/classes/class.recurr.php';
 
-	$time_zone = 'Asia/Calcutta';
+	$time_zone = $_SESSION['churchTimeZone'];
 	$dt = Carbon::now($time_zone);
 	$today = $dt->year."-".$dt->month."-".$dt->day;
 	//echo $today;

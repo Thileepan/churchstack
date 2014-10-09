@@ -298,7 +298,7 @@ else if($req == 8)
 	$batch_description = trim(stripslashes(rawurldecode($_POST['batchDesc'])));
 	$expected_amount = trim($_POST['expectedAmount']);
 	
-	$dt = Carbon::now('Asia/Calcutta');
+	$dt = Carbon::now($_SESSION['churchTimeZone']);
 	if($is_update) {
 		$last_updated_time = $dt->toDateTimeString();
 	} else {
@@ -673,7 +673,7 @@ else if($req == 16)
 	$user_id = $_SESSION['userID'];
 	$user_name = $_SESSION['username'];
 	
-	$dt = Carbon::now('Asia/Calcutta');
+	$dt = Carbon::now($_SESSION['churchTimeZone']);
 	$last_updated_time = $dt->toDateTimeString();
 	
 	$funds_obj = new Funds($APPLICATION_PATH);

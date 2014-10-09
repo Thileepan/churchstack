@@ -29,7 +29,8 @@
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
 			$shardedDB = $churches_result[1][$i][10];
-			$commands[] = PHP_EXE_PATH.' "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB).' > /dev/null 2>/dev/null &';
+			$timeZone = $churches_result[1][$i][24];
+			$commands[] = PHP_EXE_PATH.' "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' > /dev/null 2>/dev/null &';
 		}
 		$threads = new Multithread( $commands );
 		$threads->run();

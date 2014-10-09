@@ -31,7 +31,7 @@ if(isset($_FILES["filePath"]))
 set_time_limit(0);
 define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
 
-date_default_timezone_set('Asia/Calcutta');
+date_default_timezone_set($_SESSION['churchTimeZone']);
 
 /** PHPExcel_IOFactory */
 require_once 'plugins/PHPExcel/Classes/PHPExcel/IOFactory.php';
