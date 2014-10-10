@@ -13,18 +13,18 @@
 //	print_r($_GET);
 	//echo $argv[1]."<BR>";
 
-	$numbers_list_csv = base64_decode($_GET["csvToNumbers"]);
+	$numbers_list_csv = urldecode($_GET["csvToNumbers"]);
 	/** /
 	if(trim($numbers_list_csv) != "")
 	{
 		$numbers_list_array = explode(",", $numbers_list_csv);
 	}
 	/**/
-	$username = base64_decode($_GET["username"]);
-	$password = base64_decode($_GET["password"]);
-	$senderid = base64_decode($_GET["senderid"]);
-	$priority = base64_decode($_GET["priority"]);
-	$sms_body = base64_decode($_GET["smsBody"]);
+	$username = urldecode($_GET["username"]);
+	$password = urldecode($_GET["password"]);
+	$senderid = urldecode($_GET["senderid"]);
+	$priority = urldecode($_GET["priority"]);
+	$sms_body = urldecode($_GET["smsBody"]);
 
 	use \Curl\Curl;
 	$curl = new Curl();

@@ -9,6 +9,9 @@ include_once($PATH."classes/class.license.php");
 include_once($PATH."classes/class.email.php");
 include_once($PATH."classes/class.notification.php");
 include_once($PATH."plugins/twilio/Services/Twilio.php");
+include_once($PATH."classes/class.sms.php");
+include_once($PATH."plugins/phpcurl/src/Curl/Curl.php");
+include_once($PATH."plugins/nexmo/src/NexmoMessage.php");
 include_once($PATH."classes/class.sharded.php");
 include_once($PATH . 'plugins/thread/class.thread.php');
 include_once($PATH."classes/class.church.php");
@@ -28,6 +31,23 @@ $other = $lic_obj->justChangeTheLicensePlanAlone(2, 1);
 print_r($other);
 /**/
 /** /
+$sms_obj = new SMS($PATH, "cs_f81c2dd2c35ea985c3987c1ad9784330");
+//$res = $sms_obj->getSMSConfiguration();
+//$res = $sms_obj->enableSMSFeature();
+//$res = $sms_obj->disableSMSFeature();
+//$res = $sms_obj->updateSMSProvider(3);
+$res = $sms_obj->getNexmoConfig(0);
+$api_key="huhuh";
+$api_secret="7y8yoh";
+$from_number="+9199a62131353";
+$status=1;
+$config_id = 1;
+$res = $sms_obj->addNexmoConfig($api_key, $api_secret, $from_number, $status);
+//$res = $sms_obj->modifyNexmoConfig($config_id, $api_key, $api_secret, $from_number, $status);
+//$res = $sms_obj->disableNexmoConfig(1);
+//$res = $sms_obj->enableNexmoConfig(1);
+//$res = $sms_obj->deleteNexmoConfig(1);
+
 $lic_obj = new License($PATH);
 print_r($lic_obj->calculateServiceTaxSplitup(59.99));
 //echo strtotime("+1 month", 1391126400);
@@ -143,6 +163,14 @@ foreach ( $threads->commands as $key=>$command )
 /**************************************************************************************/
 
 /** /
+$api_key = "7b1fc9c2";
+$api_secret = "d77ff32b";
+$sms = new NexmoMessage($api_key, $api_secret);
+$info = $sms->sendText( '919962131353', '919176131353', 'Hello My world!' );
+echo $sms->displayOverview($info);
+/**/
+
+/** /
 $users_obj = new Users($PATH);
 $signup_details = array();
 $signup_details["customer_email"] = "nesanjoseph@yahoo.com";
@@ -157,11 +185,64 @@ print_r($res);
 /**/
 
 /** /
-$sharded_obj = new Sharded($PATH, "CS_95a18fe48afd74aef574ed917d30b853");
-$result = $sharded_obj->cleanupAllTables();
-print_r($result);
+use \Curl\Curl;
+$curl = new Curl();
+$url_to_access = "http://bhashsms.com/api/sendmsg.php";
+$get_array = array("user"=>"nesanjoseph", "pass"=>"godsgrace1", "sender"=>"UHUHUS", "phone"=>"9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353,9962131353","text"=>"nice test","priority"=>"ndnd","stype"=>"normal");
+$curl->get($url_to_access,$get_array);
+if ($curl->error) {
+    echo 'Error: ' . $curl->error_code . ': ' . $curl->error_message;
+}
+else {
+    echo $curl->response;
+}/**/
+
+/** /
+$sms_obj = new SMS($PATH, "cs_cfaaa60bf132e18f76e387f960a81ee1");
+$res = $sms_obj->getSMSConfiguration();
+$res = $sms_obj->enableSMSFeature();
+//$res = $sms_obj->disableSMSFeature();
+$res = $sms_obj->updateSMSProvider(2);
+//$res = $sms_obj->getBhashSMSConfig(0);
+$username="nesanjoseph";
+$password="godsgrace1";
+$senderid="TESTTO";
+$priority="ndnd";
+$status=1;
+$config_id = 1;
+//$res = $sms_obj->addBhashSMSConfig($username, $password, $senderid, $priority, $status);
+//$res = $sms_obj->modifyBhashSMSConfig($config_id, $username, $password, $senderid, $priority, $status);
+//$res = $sms_obj->disableBhashSMSConfig(1);
+//$res = $sms_obj->enableBhashSMSConfig(1);
+//$res = $sms_obj->deleteBhashSMSConfig(1);
+
+
+
+print_r($res);
 /**/
 
+/** /
+$sms_obj = new SMS($PATH, "cs_f81c2dd2c35ea985c3987c1ad9784330");
+//$res = $sms_obj->getSMSConfiguration();
+//$res = $sms_obj->enableSMSFeature();
+//$res = $sms_obj->disableSMSFeature();
+//$res = $sms_obj->updateSMSProvider(1);
+$res = $sms_obj->getTwilioConfig(0);
+$account_sid="AC8ac594144120c306d08a168840bb2ef6";
+$auth_token="36cf1edb845cb960fe40bb04c4e7b66b";
+$from_number="+12626313131";
+$status=1;
+$config_id = 1;
+//$res = $sms_obj->addTwilioConfig($account_sid, $auth_token, $from_number, $status);
+//$res = $sms_obj->modifyTwilioConfig($config_id, $account_sid, $auth_token, $from_number, $status);
+//$res = $sms_obj->disableTwilioConfig(1);
+//$res = $sms_obj->enableTwilioConfig(2);
+//$res = $sms_obj->deleteTwilioConfig(3);
+
+
+
+print_r($res);
+/**/
 
 /** /
 $sid = "AC8ac594144120c306d08a168840bb2ef6"; // Your Account SID from www.twilio.com/user/account

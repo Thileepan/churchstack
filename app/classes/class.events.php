@@ -486,13 +486,13 @@ class Events
 		return $event_date;
 	}
 
-	public function getUpcomingEventNotificationDetails($today, $notification_type)
+	public function getUpcomingEventNotificationDetails($today)
 	{
 		$event_details = array();
 		if($this->db_conn)
 		{
-			$query = 'select a.EVENT_ID, a.TITLE, a.DESCRIPTION, a.EVENT_LOCATION, a.START_DATE, a.END_DATE, a.START_TIME, a.END_TIME, a.RRULE, a.PRIORITY, a.ORGANISER, a.ACCESS_LEVEL, b.NOTIFICATION_ID, b.NOTIFICATION_TYPE, b.NOTIFICATION_PERIOD from EVENT_DETAILS as a, EVENT_NOTIFICATIONS as b where ((a.END_DATE >= ? and a.END_DATE != ?) || (a.START_DATE >= ? and a.END_DATE = ?) || (a.START_DATE <= ? and a.END_DATE = ?)) and a.EVENT_ID=b.EVENT_ID and b.NOTIFICATION_TYPE=?';
-			$result = $this->db_conn->Execute($query, array($today, '0000-00-00', $today, '0000-00-00', $today, '0000-00-00', $notification_type));
+			$query = 'select a.EVENT_ID, a.TITLE, a.DESCRIPTION, a.EVENT_LOCATION, a.START_DATE, a.END_DATE, a.START_TIME, a.END_TIME, a.RRULE, a.PRIORITY, a.ORGANISER, a.ACCESS_LEVEL, b.NOTIFICATION_ID, b.NOTIFICATION_TYPE, b.NOTIFICATION_PERIOD from EVENT_DETAILS as a, EVENT_NOTIFICATIONS as b where ((a.END_DATE >= ? and a.END_DATE != ?) || (a.START_DATE >= ? and a.END_DATE = ?) || (a.START_DATE <= ? and a.END_DATE = ?)) and a.EVENT_ID=b.EVENT_ID';
+			$result = $this->db_conn->Execute($query, array($today, '0000-00-00', $today, '0000-00-00', $today, '0000-00-00'));
 
 			if($result) {
                 if(!$result->EOF) {
@@ -525,6 +525,8 @@ class Events
 
 	public function getEventsToNotifyNow()
 	{
+		//$notification_type=>1 : EMAIL
+		//$notification_type=>2 : SMS
 		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 		include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
 		include_once $this->APPLICATION_PATH . 'utils/utilfunctions.php';
@@ -534,8 +536,9 @@ class Events
 		$today = $current_time->year."-".$current_time->month."-".$current_time->day;	
 
 		$to_return = array();
-		$notification_type = 1; //EMAIL NOTIFICATIONS
-		$event_details = $this->getUpcomingEventNotificationDetails($today, $notification_type);
+		//$notification_type = 1; //EMAIL NOTIFICATIONS
+		
+		$event_details = $this->getUpcomingEventNotificationDetails($today);
 		if(is_array($event_details))
 		{
 			$total_events = COUNT($event_details);
@@ -589,11 +592,17 @@ class Events
 							$notification_details = array();
 							$notification_details["event_attendees"] = array();
 							$notification_details["event_email_recipients"] = array();
+							$notification_details["event_sms_recipients"] = array();
+							$notification_details["notification_type"] = $notification_type;
 							$recipient_details = $this->getEventRecipients($event_id);
 							for($j=0; $j<COUNT($recipient_details); $j++)
 							{
 								$notification_details["event_attendees"][] = $recipient_details[$j][0];
-								$notification_details["event_email_recipients"][] = $recipient_details[$j][1];
+								if($notification_type == 1 && $recipient_details[$j][2] == 1) {//Email Notification enabled
+									$notification_details["event_email_recipients"][] = $recipient_details[$j][1];
+								} else if($notification_type == 2 && $recipient_details[$j][4] == 1) {//SMS Notification enabled
+									$notification_details["event_sms_recipients"][] = $recipient_details[$j][3];
+								}
 							}
 							$notification_details["event_organizers"] = $organiser;
 							$notification_details["event_title"] = $title;
@@ -621,10 +630,13 @@ class Events
 		include_once $this->APPLICATION_PATH . 'classes/class.groups.php';
 
 		$recipient_details = array();
+		$unique_list_profile_ids = array();
 		if($this->db_conn)
 		{
 			$profiles_obj = new Profiles($this->APPLICATION_PATH);
 			$groups_obj = new Groups($this->APPLICATION_PATH);
+
+			$all_profiles = $profiles_obj->getAllProfiles(1);
 
 			$query = 'select PARTICIPANT_TYPE, PARTICIPANT_ID from EVENT_PARTICIPANTS where EVENT_ID=?';
 			$result = $this->db_conn->Execute($query, array($event_id));
@@ -640,16 +652,47 @@ class Events
 						{
 							//individual profile
 							$profile_id = $participant_id;
+							if(in_array($profile_id, $unique_list_profile_ids)) {
+								$result->MoveNext();
+								continue;
+							}
+							for($p=0; $p < COUNT($all_profiles); $p++) {
+								if($profile_id == $all_profiles[$p][0]) {
+									$full_name = $all_profiles[$p][2]." ".$all_profiles[$p][26]." ".$all_profiles[$p][27];
+									$recipient_details[] = array($full_name, $all_profiles[$p][18], $all_profiles[$p][31], $all_profiles[$p][16], $all_profiles[$p][32]);
+									$unique_list_profile_ids[] = $profile_id;
+									break;
+								}
+							}
+							/** /
 							$profile_details = $profiles_obj->getProfileNameAndEmailID($profile_id);
 							if(is_array($profile_details) && COUNT($profile_details) > 0)
 							{
 								$recipient_details[] = $profile_details;
 							}
+							/**/
 						}
 						else if($participant_type == 2)
 						{
 							//group profile
 							$group_id = $participant_id;
+							$all_members_of_group = $groups_obj->getListOfGroupMembers($group_id);
+							for($g=0; $g < COUNT($all_members_of_group); $g++)
+							{
+								if(in_array($all_members_of_group[$g][0], $unique_list_profile_ids)) {
+									continue;
+								}
+								for($p=0; $p < COUNT($all_profiles); $p++) {
+									if($all_members_of_group[$g][0] == $all_profiles[$p][0]) {
+										$full_name = $all_profiles[$p][2]." ".$all_profiles[$p][26]." ".$all_profiles[$p][27];
+										$recipient_details[] = array($full_name, $all_profiles[$p][18], $all_profiles[$p][31], $all_profiles[$p][16], $all_profiles[$p][32]);
+										$unique_list_profile_ids[] = $all_members_of_group[$g][0];
+										break;
+									}
+								}
+							}
+
+							/** /
 							$group_member_details = $groups_obj->getGroupMembersNameAndEmailID($group_id);
 							if(is_array($group_member_details) && COUNT($group_member_details) > 0)
 							{
@@ -658,6 +701,7 @@ class Events
 									$recipient_details[] = $group_member_details[$i];
 								}
 							}
+							/**/
 						}
 											
 						$result->MoveNext();
@@ -764,6 +808,62 @@ class Events
 		$older_than_days = ((trim($older_than_days) != "" && trim($older_than_days) > 0)? trim($older_than_days) : 60);
 		$updated_on_date_threshold = time()-($older_than_days*24*60*60);
 		$notification_type = "#EMAIL_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'delete from EVENT_AUTO_NOTIFY_REPORTS where UPDATED_ON < FROM_UNIXTIME(?)';
+			$result = $this->db_conn->Execute($query, array($updated_on_date_threshold));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Reports deleted successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function insertSMSNotificationReport($event_id, $for_occurrence)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to insert the report";
+		$notification_type = "#SMS_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'insert into EVENT_AUTO_NOTIFY_REPORTS (NOTIFICATION_TYPE, EVENT_ID, FOR_OCCURRENCE, UPDATED_ON) values(?,?,?, NOW())';
+			$result = $this->db_conn->Execute($query, array($notification_type, $event_id, $for_occurrence));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Report inserted successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function isSMSNotificationSent($event_id, $for_occurrence)
+	{
+		$toReturn = true;//keep this as default
+		$notification_type = "#SMS_EVENT_REMINDER#";
+		if($this->db_conn)
+		{
+			$query = 'select FOR_OCCURRENCE from EVENT_AUTO_NOTIFY_REPORTS where NOTIFICATION_TYPE=? and EVENT_ID=? and FOR_OCCURRENCE=? limit 1';
+			$result = $this->db_conn->Execute($query, array($notification_type, $event_id, $for_occurrence));
+
+			if($result) {
+				if($result->EOF) {
+					$toReturn = false;
+				}
+			}
+		}
+		return $toReturn;
+	}
+
+	public function cleanupOldSMSNotificationReports($older_than_days=60)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to delete the reports";
+		$older_than_days = ((trim($older_than_days) != "" && trim($older_than_days) > 0)? trim($older_than_days) : 60);
+		$updated_on_date_threshold = time()-($older_than_days*24*60*60);
+		$notification_type = "#SMS_EVENT_REMINDER#";
 		if($this->db_conn)
 		{
 			$query = 'delete from EVENT_AUTO_NOTIFY_REPORTS where UPDATED_ON < FROM_UNIXTIME(?)';

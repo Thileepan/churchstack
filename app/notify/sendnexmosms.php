@@ -13,15 +13,15 @@
 //	print_r($_GET);
 	//echo $argv[1]."<BR>";
 
-	$numbers_list_csv = base64_decode($_GET["csvToNumbers"]);
+	$numbers_list_csv = urldecode($_GET["csvToNumbers"]);
 	if(trim($numbers_list_csv) != "")
 	{
 		$numbers_list_array = explode(",", $numbers_list_csv);
 	}
-	$api_key = base64_decode($_GET["apiKey"]);
-	$api_secret = base64_decode($_GET["apiSecret"]);
-	$from_number = base64_decode($_GET["fromNumber"]);
-	$sms_body = base64_decode($_GET["smsBody"]);
+	$api_key = urldecode($_GET["apiKey"]);
+	$api_secret = urldecode($_GET["apiSecret"]);
+	$from_number = urldecode($_GET["fromNumber"]);
+	$sms_body = urldecode($_GET["smsBody"]);
 
 	//Set and Send SMS
 	$sms = new NexmoMessage($api_key, $api_secret);

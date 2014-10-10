@@ -343,7 +343,7 @@ else if($req == 2)
 						$to_return .= '</select>';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group" style="display:none;">';
+				$to_return .= '<div class="control-group" style="display:;">';
 					$to_return .= '<label class="control-label" for="checkSMSReminder"><input type="checkbox" id="checkSMSReminder" />&nbsp;SMS Reminder&nbsp;&nbsp;</label>';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<input type="text" id="inputRemainderPeriod2" class="input-mini" onblur="validateEventRemainder(2);" value="1" />&nbsp;';

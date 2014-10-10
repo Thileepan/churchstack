@@ -486,7 +486,7 @@ else if($req == 2)
 							$toReturn .= '<input type="checkbox" id="inputEmailNotification" '.(($profile_info[32] == 1)?'checked':'').'>&nbsp;Receive Email Notifications';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
-					$toReturn .= '<div style="padding-bottom:6px; display:none;">';
+					$toReturn .= '<div style="padding-bottom:6px; display:;">';
 						$toReturn .= '<div class="controls">';
 							$toReturn .= '<input type="checkbox" id="inputSMSNotification" '.(($profile_info[31] == 1)?'checked':'').'>&nbsp;Receive SMS Notifications';
 						$toReturn .= '</div>';

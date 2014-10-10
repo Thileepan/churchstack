@@ -13,15 +13,15 @@
 //	print_r($_GET);
 	//echo $argv[1]."<BR>";
 
-	$numbers_list_csv = base64_decode($_GET["csvToNumbers"]);
+	$numbers_list_csv = urldecode($_GET["csvToNumbers"]);
 	if(trim($numbers_list_csv) != "")
 	{
 		$numbers_list_array = explode(",", $numbers_list_csv);
 	}
-	$account_sid = base64_decode($_GET["accountSID"]);
-	$auth_token = base64_decode($_GET["authToken"]);
-	$from_number = base64_decode($_GET["fromNumber"]);
-	$sms_body = base64_decode($_GET["smsBody"]);
+	$account_sid = urldecode($_GET["accountSID"]);
+	$auth_token = urldecode($_GET["authToken"]);
+	$from_number = urldecode($_GET["fromNumber"]);
+	$sms_body = urldecode($_GET["smsBody"]);
 
 	//Set and Send SMS
 	$client = new Services_Twilio($account_sid, $auth_token);
