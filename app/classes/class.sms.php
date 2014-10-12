@@ -491,6 +491,95 @@ class SMS
 		}
 		return $to_return;
 	}
+
+	public function testTwilioConfig($sid, $token, $from_number, $to_number, $message)
+	{
+		include_once($this->APPLICATION_PATH."plugins/twilio/Services/Twilio.php");
+		$client = new Services_Twilio($sid, $token);
+
+		try
+		{
+			$message = $client->account->messages->sendMessage(
+							$from_number, // From a valid Twilio number
+							$to_number, // Text this number
+							$message
+						);
+		}
+		catch(Services_Twilio_RestException $excep)
+		{
+			$to_ret = array();
+			$to_ret[0] = 0;
+			$to_ret[1] = "Twilio configuration test seems failed. Code : ".$excep->getCode()."; Message : ".$excep->getMessage().";";
+			return $to_ret;
+		}
+
+		$to_ret = array();
+		$to_ret[0] = 1;
+		$to_ret[1] = "Test seems successful, however we suggest you to check if you have received the SMS to the recipient mobile and then save the configuration.<BR/>Message SID : ".$message->sid;
+		return $to_ret;
+	}
+	
+	public function testNexmoConfig($api_key, $api_secret, $from_number, $to_number, $message)
+	{
+		include_once($this->APPLICATION_PATH."plugins/nexmo/src/NexmoMessage.php");
+
+		$sms = new NexmoMessage($api_key, $api_secret);
+		$info = $sms->sendText($from_number, $to_number, $message);
+		if(!$info) {
+			$to_ret = array();
+			$to_ret[0] = 0;
+			$to_ret[1] = "SMS sending failed. Please check the credentials and other details you have supplied.";
+		} else {
+			$send_status_code = 0;
+			$send_result_msg = "";
+			foreach ( $info->messages as $message ) {
+				if($message->status != 0) {
+					$send_status_code = $message->status;
+					$send_result_msg = $message->errortext;
+					break;
+				}
+			}
+
+			if($send_status_code == 0) {
+				$to_ret = array();
+				$to_ret[0] = 1;
+				$to_ret[1] = "Test seems successful, however we suggest you to check if you have received the SMS to the recipient mobile and then save the configuration. Messaging overview : ".$sms->displayOverview($info);
+			} else {
+				$to_ret = array();
+				$to_ret[0] = 0;
+				$to_ret[1] = "Nexmo configuration test seems failed. Code : ".$send_status_code."; Message : ".$send_result_msg.";";
+			}
+		}
+		return $to_ret;
+	}
+
+	public function testBhashSMSConfig($username, $password, $sender_id, $priority, $to_number, $message)
+	{
+		include_once($this->APPLICATION_PATH."plugins/phpcurl/src/Curl/Curl.php");
+		//use \Curl\Curl;
+		$curl = new \Curl\Curl();
+		$url_to_access = "http://bhashsms.com/api/sendmsg.php";
+		$get_array = array("user"=>$username, "pass"=>$password, "sender"=>$sender_id, "phone"=>$to_number,"text"=>$message,"priority"=>$priority,"stype"=>"normal");
+		$curl->get($url_to_access,$get_array);
+		if ($curl->error) {
+			$result_message = 'CURL Error Code : ' . $curl->error_code . '; CURL Error String : ' . $curl->error_message.';';
+			$to_ret = array();
+			$to_ret[0] = 0;
+			$to_ret[1] = "BhashSMS configuration test seems failed. ".$result_message;
+		} else {
+			$to_ret = array();
+			$curl_output = trim($curl->response);
+			if(strpos($curl_output, "S.") === 0) {
+				//Success...
+				$to_ret[0] = 1;
+				$to_ret[1] = "Test seems successful, however we suggest you to check if you have received the SMS to the recipient mobile and then save the configuration. Output : ".$curl_output;
+			} else {
+				$to_ret[0] = 0;
+				$to_ret[1] = "BhashSMS configuration test seems failed. Error : ".$curl_output;
+			}
+		}
+		return $to_ret;
+	}
 }
 
 ?>

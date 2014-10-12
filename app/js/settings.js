@@ -552,3 +552,494 @@ function deleteCustomFieldResponse(response)
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
+
+function highlightSelectedMenu(menu)
+{
+	//First set empty class for all the menus
+	document.getElementById('listSalutationOptions').className = '';
+	document.getElementById('listRelationshipOptions').className = '';
+	document.getElementById('listMaritalOptions').className = '';
+	document.getElementById('listProfileStatusOptions').className = '';
+	document.getElementById('listProfileCustomFields').className = '';
+	document.getElementById('listUsers').className = '';
+	document.getElementById('addNewUser').className = '';
+	document.getElementById('smsConfig').className = '';
+
+	//Now set the active class for the selected menu
+	var classNameToSet = 'active';
+	if(menu == 1) {
+		document.getElementById('listSalutationOptions').className = classNameToSet;
+	} else if(menu == 2) {
+		document.getElementById('listRelationshipOptions').className = classNameToSet;
+	} else if(menu == 3) {
+		document.getElementById('listMaritalOptions').className = classNameToSet;
+	} else if(menu == 4) {
+		document.getElementById('listProfileStatusOptions').className = classNameToSet;
+	} else if(menu == 5) {
+		document.getElementById('listProfileCustomFields').className = classNameToSet;
+	} else if(menu == 6) {
+		document.getElementById('listUsers').className = classNameToSet;
+	} else if(menu == 7) {
+		document.getElementById('addNewUser').className = classNameToSet;
+	} else if(menu == 8) {
+		document.getElementById('smsConfig').className = classNameToSet;
+	}
+}
+
+function getSMSConfigForm()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=12';
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:getSMSConfigFormResponse,
+		error:HandleAjaxError
+	});	
+}
+
+function getSMSConfigFormResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "SMS Gateway Settings";
+	document.getElementById('pageContent').innerHTML = response;
+
+	loadSMSConfig(1, 0);
+}
+
+function loadSMSConfig(tabType, doNotHideAlertDiv)
+{
+	if(doNotHideAlertDiv!=1) {
+		document.getElementById('alertRow').style.display = 'none';
+	}
+	if(tabType==1)
+	{
+		document.getElementById('currentGatewayDiv').className = 'tab-pane active';
+		document.getElementById('chooseGatewayDiv').className = 'tab-pane';
+
+		//Special thing...
+		document.getElementById('chooseGatewayTab').className = '';
+		document.getElementById('currentGatewayTab').className = 'active';
+	}
+	else if(tabType==2)
+	{
+		document.getElementById('currentGatewayDiv').className = 'tab-pane';
+		document.getElementById('chooseGatewayDiv').className = 'tab-pane active';
+
+		//Special thing...
+		document.getElementById('chooseGatewayTab').className = 'active';
+		document.getElementById('currentGatewayTab').className = '';
+	}
+	var formPostData = 'req=13&tabType='+tabType;
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:loadSMSConfigResponse,
+		error:HandleAjaxError
+	});
+}
+
+function loadSMSConfigResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.tabType==1)
+	{
+		document.getElementById("currentGatewayDiv").innerHTML = dataObj.divHTML;
+	}
+	else if(dataObj.tabType==2)
+	{
+		document.getElementById("chooseGatewayDiv").innerHTML = dataObj.divHTML;
+	}
+	return false;
+}
+
+function chooseSMSGateway(gatewayType, isEdit)
+{
+	var formPostData = 'req=14&gatewayType='+gatewayType+'&isEdit='+isEdit;
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:chooseSMSGatewayResponse,
+		error:HandleAjaxError
+	});
+}
+
+
+function chooseSMSGatewayResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	document.getElementById("chooseGatewayDiv").innerHTML = dataObj.divHTML;
+}
+
+function saveTwilioConfig(saveType)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	if(saveType != 3 && saveType != 4)
+	{
+		txtAccountSID = trim(document.getElementById("txtAccountSID").value);
+		txtAuthToken = trim(document.getElementById("txtAuthToken").value);
+		txtFromNumber = trim(document.getElementById("txtFromNumber").value);
+		txtTestToNumber = trim(document.getElementById("txtTestToNumber").value);
+		txtMessage = trim(document.getElementById("txtMessage").value);
+	}
+
+	if(saveType == 1)
+	{
+		if(txtAccountSID == "" || txtAuthToken == "" || txtFromNumber == "")
+		{
+			var alertMsg = "The following fields are required and cannot be left empty : Account SID, Auth Token, From Number";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 2)
+	{
+		if(txtAccountSID == "" || txtAuthToken == "" || txtFromNumber == "" || txtTestToNumber == "" || txtMessage == "")
+		{
+			var alertMsg = "All the fields have to be filled up to test the configuration";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 3)//Confirm Delete existing twilio config
+	{
+		msgToDisplay = 'Deleting this configuration will also deactivate your SMS notifications. Do you want to delete it anyway?';
+		var actionTakenCallBack = "saveTwilioConfig(4)";
+		var actionCancelCallBack = "cancelTwilioDeleteRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Delete", "No, Cancel", actionTakenCallBack, actionCancelCallBack);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		$('html,body').scrollTop(0);
+		return false;
+	}
+	else if(saveType == 4)//Delete existing twilio config
+	{
+		//Anything else?
+	}
+	
+	var formPostData = 'req=15&saveType='+saveType;
+	if(saveType == 1 || saveType == 2)
+	{
+		formPostData += '&txtAccountSID='+escString(txtAccountSID);
+		formPostData += '&txtAuthToken='+escString(txtAuthToken);
+		formPostData += '&txtFromNumber='+escString(txtFromNumber);
+		formPostData += '&txtTestToNumber='+escString(txtTestToNumber);
+		formPostData += '&txtMessage='+escString(txtMessage);
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:saveTwilioConfigResponse,
+		error:HandleAjaxError
+	});
+}
+
+function saveTwilioConfigResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.saveType == 1)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 2)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 3)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 4)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	return false;
+}
+
+function cancelTwilioDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+
+function saveNexmoConfig(saveType)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	if(saveType != 3 && saveType != 4)
+	{
+		txtAPIKey = trim(document.getElementById("txtAPIKey").value);
+		txtAPISecret = trim(document.getElementById("txtAPISecret").value);
+		txtFromNumber = trim(document.getElementById("txtFromNumber").value);
+		txtTestToNumber = trim(document.getElementById("txtTestToNumber").value);
+		txtMessage = trim(document.getElementById("txtMessage").value);
+	}
+
+	if(saveType == 1)
+	{
+		if(txtAPIKey == "" || txtAPISecret == "" || txtFromNumber == "")
+		{
+			var alertMsg = "The following fields are required and cannot be left empty : API Key, API Secret, From Number";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 2)
+	{
+		if(txtAPIKey == "" || txtAPISecret == "" || txtFromNumber == "" || txtTestToNumber == "" || txtMessage == "")
+		{
+			var alertMsg = "All the fields have to be filled up to test the configuration";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 3)//Confirm Delete existing Nexmo config
+	{
+		msgToDisplay = 'Deleting this configuration will also deactivate your SMS notifications. Do you want to delete it anyway?';
+		var actionTakenCallBack = "saveNexmoConfig(4)";
+		var actionCancelCallBack = "cancelNexmoDeleteRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Delete", "No, Cancel", actionTakenCallBack, actionCancelCallBack);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		$('html,body').scrollTop(0);
+		return false;
+	}
+	else if(saveType == 4)//Delete existing Nexmo config
+	{
+		//Anything else?
+	}
+	
+	var formPostData = 'req=16&saveType='+saveType;
+	if(saveType == 1 || saveType == 2)
+	{
+		formPostData += '&txtAPIKey='+escString(txtAPIKey);
+		formPostData += '&txtAPISecret='+escString(txtAPISecret);
+		formPostData += '&txtFromNumber='+escString(txtFromNumber);
+		formPostData += '&txtTestToNumber='+escString(txtTestToNumber);
+		formPostData += '&txtMessage='+escString(txtMessage);
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:saveNexmoConfigResponse,
+		error:HandleAjaxError
+	});
+}
+
+function saveNexmoConfigResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.saveType == 1)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 2)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 3)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 4)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	return false;
+}
+
+function cancelNexmoDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+function saveBhashSMSConfig(saveType)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	if(saveType != 3 && saveType != 4)
+	{
+		txtUsername = trim(document.getElementById("txtUsername").value);
+		txtPassword = trim(document.getElementById("txtPassword").value);
+		txtSenderID = trim(document.getElementById("txtSenderID").value);
+		txtPriority = trim(document.getElementById("txtPriority").value);
+		txtTestToNumber = trim(document.getElementById("txtTestToNumber").value);
+		txtMessage = trim(document.getElementById("txtMessage").value);
+	}
+
+	if(saveType == 1)
+	{
+		if(txtUsername == "" || txtPassword == "" || txtSenderID == "")
+		{
+			var alertMsg = "The following fields are required and cannot be left empty : Username, Password, Sender ID, Priority";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 2)
+	{
+		if(txtUsername == "" || txtPassword == "" || txtSenderID == "" || txtTestToNumber == "" || txtMessage == "")
+		{
+			var alertMsg = "All the fields have to be filled up to test the configuration";
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+	else if(saveType == 3)//Confirm Delete existing bhashSMS config
+	{
+		msgToDisplay = 'Deleting this configuration will also deactivate your SMS notifications. Do you want to delete it anyway?';
+		var actionTakenCallBack = "saveBhashSMSConfig(4)";
+		var actionCancelCallBack = "cancelBhashSMSDeleteRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Delete", "No, Cancel", actionTakenCallBack, actionCancelCallBack);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		$('html,body').scrollTop(0);
+		return false;
+	}
+	else if(saveType == 4)//Delete existing BhashSMS config
+	{
+		//Anything else?
+	}
+	
+	var formPostData = 'req=17&saveType='+saveType;
+	if(saveType == 1 || saveType == 2)
+	{
+		formPostData += '&txtUsername='+escString(txtUsername);
+		formPostData += '&txtPassword='+escString(txtPassword);
+		formPostData += '&txtSenderID='+escString(txtSenderID);
+		formPostData += '&txtPriority='+escString(txtPriority);
+		formPostData += '&txtTestToNumber='+escString(txtTestToNumber);
+		formPostData += '&txtMessage='+escString(txtMessage);
+	}
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:saveBhashSMSConfigResponse,
+		error:HandleAjaxError
+	});
+}
+
+function saveBhashSMSConfigResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.saveType == 1)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 2)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 3)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	else if(dataObj.saveType == 4)
+	{
+		if(dataObj.rsno == 1) {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+			loadSMSConfig(1, 1);
+		} else {
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+		}
+	}
+	return false;
+}
+
+function cancelBhashSMSDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}

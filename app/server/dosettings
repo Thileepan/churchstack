@@ -1,13 +1,16 @@
 <?php
+//error_reporting(-1);
+//ini_set("display_errors", "1");
 $APPLICATION_PATH = "../";
 
 //This files secures the action being triggered by cross-domain attacks
 include $APPLICATION_PATH."utils/validateauth.php";
 
 include $APPLICATION_PATH.'utils/JSON.php';
-include_once $APPLICATION_PATH . '/classes/class.settings.php';
-include_once $APPLICATION_PATH . '/classes/class.users.php';
-include_once $APPLICATION_PATH . '/classes/class.profiles.php';
+include_once $APPLICATION_PATH . 'classes/class.settings.php';
+include_once $APPLICATION_PATH . 'classes/class.users.php';
+include_once $APPLICATION_PATH . 'classes/class.profiles.php';
+include_once $APPLICATION_PATH . 'classes/class.sms.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -476,4 +479,550 @@ else if($req == 11)
 	echo $encode_obj;	
 	exit;
 }
+else if($req == 12)
+{
+	$to_return = '';
+	$to_return .= '<div class="tabbable">';
+		$to_return .= '<ul class="nav nav-tabs">';
+			$to_return .= '<li id="currentGatewayTab" class="active" onclick="loadSMSConfig(1, 0);"><a href="#currentGatewayTab" data-toggle="tab">Current SMS Gateway</a></li>';
+			$to_return .= '<li id="chooseGatewayTab"  onclick="loadSMSConfig(2, 0);"><a href="#chooseGatewayTab" data-toggle="tab">Choose SMS Gateway</a></li>';
+		$to_return .= '</ul>';
+		$to_return .= '<div class="tab-content">';
+			$to_return .= '<div class="tab-pane active" id="currentGatewayDiv">';
+			$to_return .= '</div>';
+			$to_return .= '<div class="tab-pane" id="chooseGatewayDiv">';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
+	exit;
+}
+else if($req==13)
+{
+	$tabType = trim($_POST["tabType"]);
+	$sms_obj =  new SMS($APPLICATION_PATH);
+	if($tabType==1)
+	{
+		$sms_result = $sms_obj->getSMSConfiguration();
+		if($sms_result[0]==1)
+		{
+			$active_gateway_available = 0;
+			if(is_array($sms_result[1]) && $sms_result[1]["SMS_ENABLED"] == 1 && $sms_result[1]["SMS_PROVIDER_ID"] > 0)
+			{
+				if($sms_result[1]["SMS_PROVIDER_ID"] == 1)//Twilio
+				{
+					$twilio_config = $sms_obj->getTwilioConfig(1);
+					if($twilio_config[0]==1 && COUNT($twilio_config[1]) > 0)
+					{
+						$active_gateway_available = 1;
+						$divHTML = '<div class="span11">';
+							$divHTML .= '<div class="span3"><a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a></div>';
+						$divHTML .= '</div>';
+						$divHTML .= '<div class="row-fluid">';
+							$divHTML .= '<div class="span8">';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>Account SID : </b>'.$twilio_config[1][0][1].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>Auth Token : </b>'.$twilio_config[1][0][2].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>From Number : </b>'.$twilio_config[1][0][3].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(1, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveTwilioConfig(3);">Delete</button></div>';
+							$divHTML .= '</div>';
+						$divHTML .= '</div>';
+					}
+				}
+				else if($sms_result[1]["SMS_PROVIDER_ID"] == 2)//Nexmo
+				{
+					$nexmo_config = $sms_obj->getNexmoConfig(1);
+					if($nexmo_config[0]==1 && COUNT($nexmo_config[1]) > 0)
+					{
+						$active_gateway_available = 1;
+						$divHTML = '<div class="span11">';
+							$divHTML .= '<div class="span3"><a href="https://www.nexmo.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/nexmo-logo.png"></a></div>';
+						$divHTML .= '</div>';
+						$divHTML .= '<div class="row-fluid">';
+							$divHTML .= '<div class="span8">';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>API Key : </b>'.$nexmo_config[1][0][1].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>API Secret : </b>'.$nexmo_config[1][0][2].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>From Number : </b>'.$nexmo_config[1][0][3].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(2, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveNexmoConfig(3);">Delete</button></div>';
+							$divHTML .= '</div>';
+						$divHTML .= '</div>';
+					}
+				}
+				else if($sms_result[1]["SMS_PROVIDER_ID"] == 3)//BhashSMS
+				{
+					$bhashSMS_config = $sms_obj->getBhashSMSConfig(1);
+					if($bhashSMS_config[0]==1 && COUNT($bhashSMS_config[1]) > 0)
+					{
+						$active_gateway_available = 1;
+						$divHTML = '<div class="span11">';
+							$divHTML .= '<div class="span3"><a href="http://www.bhashsms.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a></div>';
+						$divHTML .= '</div>';
+						$divHTML .= '<div class="row-fluid">';
+							$divHTML .= '<div class="span8">';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>Username : </b>'.$bhashSMS_config[1][0][1].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									//$divHTML .= '<b>Password : </b>'.$bhashSMS_config[1][0][2].'';
+									$divHTML .= '<b>Password : </b>************';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>Sender ID : </b>'.$bhashSMS_config[1][0][3].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div>';
+									$divHTML .= '<b>Priority : </b>'.$bhashSMS_config[1][0][4].'';
+								$divHTML .= '</div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(3, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveBhashSMSConfig(3);">Delete</button></div>';
+							$divHTML .= '</div>';
+						$divHTML .= '</div>';
+					}
+				}
+			}
+
+			if($active_gateway_available == 0)
+			{
+				$divHTML = '';
+				$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">You have not yet configured any SMS gateway to use it for SMS notifications. You must select an SMS gateway and give your credentials inorder to trigger SMS notifications to your church members.</div>';
+				$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="document.getElementById(\'chooseGatewayTab\').click();">Choose an SMS Gateway Now</button></div>';
+			}
+		}
+		else
+		{
+			$divHTML = '<font color="red">'.$sms_result[1].'</font>';
+		}
+	}
+	else if($tabType==2)
+	{
+		$is_twilio_chosen = 0;
+		$is_nexmo_chosen = 0;
+		$is_bhashsms_chosen = 0;
+		$sms_obj =  new SMS($APPLICATION_PATH);
+		$sms_result = $sms_obj->getSMSConfiguration();
+		if($sms_result[0]==1)
+		{
+			$active_gateway_available = 0;
+			if(is_array($sms_result[1]) && $sms_result[1]["SMS_ENABLED"] == 1 && $sms_result[1]["SMS_PROVIDER_ID"] > 0)
+			{
+				if($sms_result[1]["SMS_PROVIDER_ID"] == 1) {//Twilio
+					$is_twilio_chosen = 1;
+				}
+				if($sms_result[1]["SMS_PROVIDER_ID"] == 2) {//Nexmo
+					$is_nexmo_chosen = 1;
+				}
+				if($sms_result[1]["SMS_PROVIDER_ID"] == 3) {//BhashSMS
+					$is_bhashsms_chosen = 1;
+				}
+			}
+		}
+		$divHTML = '<div class="span11">';
+		$divHTML .= '<div class="span3"><a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a></div>';
+		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.TWILIO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		if($is_twilio_chosen==1) {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
+		} else {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(1, 0);" style="width:180px;">Choose This</button></div>';
+		}
+		$divHTML .= '</div>';
+		$divHTML .= '<div class="span11" style="display:;">';
+		$divHTML .= '<div class="span3"><a href="https://www.nexmo.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/nexmo-logo.png"></a></div>';
+		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.NEXMO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		if($is_nexmo_chosen==1) {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
+		} else {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(2, 0);" style="width:180px;">Choose This</button></div>';
+		}
+		$divHTML .= '</div>';
+		$divHTML .= '<div class="span11" style="display:;">';
+		$divHTML .= '<div class="span3"><a href="http://bhashsms.com/" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a></div>';
+		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		if($is_bhashsms_chosen==1) {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
+		} else {
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(3, 0);" style="width:180px;">Choose This</button></div>';
+		}
+		$divHTML .= '</div>';
+	}
+
+	$ret_array = array("tabType"=>$tabType, "divHTML"=>$divHTML);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==14)
+{
+	$gatewayType = trim($_POST["gatewayType"]);
+	$isEdit = trim($_POST["isEdit"]);
+
+	if($gatewayType == 1)//Twilio
+	{
+		$account_sid = "";
+		$auth_token = "";
+		$from_number = "";
+		if($isEdit == 1) {
+			$sms_obj = new SMS($APPLICATION_PATH);
+			$get_result = $sms_obj->getTwilioConfig(1);
+			if($get_result[0]==1 && COUNT($get_result[1]) > 0)
+			{
+				$account_sid = $get_result[1][0][1];
+				$auth_token = $get_result[1][0][2];
+				$from_number = $get_result[1][0][3];
+			}
+		}
+
+		$divHTML = '<div class="span12">';
+			$divHTML .= '<div class="span3"><a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a></div>';
+			$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span6"><a href="'.TWILIO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		$divHTML .= "</div>";
+		//$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">This is the email address with which you will login to your church account. All notifications and invoices will also be sent to this email address only. Make sure you have access to the new email address you are going to specify now.</div>';
+		$divHTML .= '<div class="span12"><BR/>&nbsp;';
+		$divHTML .= "</div>";
+		$divHTML .= '<div class="span6">';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAccountSID">Account SID</label><div class="controls"><input type="text" id="txtAccountSID" placeholder="Account SID" value="'.$account_sid.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAuthToken">Auth Token</label><div class="controls"><input type="text" id="txtAuthToken" placeholder="Auth Token" value="'.$auth_token.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number" value="'.$from_number.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveTwilioConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveTwilioConfig(2);">Test Configuration</button></div>';
+		$divHTML .= "</div>";
+	}
+	else if($gatewayType == 2)//Nexmo
+	{
+		$api_key = "";
+		$api_secret = "";
+		$from_number = "";
+		if($isEdit == 1) {
+			$sms_obj = new SMS($APPLICATION_PATH);
+			$get_result = $sms_obj->getNexmoConfig(1);
+			if($get_result[0]==1 && COUNT($get_result[1]) > 0)
+			{
+				$api_key = $get_result[1][0][1];
+				$api_secret = $get_result[1][0][2];
+				$from_number = $get_result[1][0][3];
+			}
+		}
+
+		$divHTML = '<div class="span12">';
+			$divHTML .= '<div class="span3"><a href="https://www.nexmo.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/nexmo-logo.png"></a></div>';
+			$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span6"><a href="'.NEXMO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		$divHTML .= "</div>";
+		//$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">This is the email address with which you will login to your church account. All notifications and invoices will also be sent to this email address only. Make sure you have access to the new email address you are going to specify now.</div>';
+		$divHTML .= '<div class="span12"><BR/>&nbsp;';
+		$divHTML .= "</div>";
+		$divHTML .= '<div class="span6">';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAPIKey">API Key</label><div class="controls"><input type="text" id="txtAPIKey" placeholder="API Key" value="'.$api_key.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAPISecret">API Secret</label><div class="controls"><input type="text" id="txtAPISecret" placeholder="API Secret" value="'.$api_secret.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number" value="'.$from_number.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveNexmoConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveNexmoConfig(2);">Test Configuration</button></div>';
+		$divHTML .= "</div>";
+	}
+	else if($gatewayType == 3)//BhashSMS
+	{
+		$username = "";
+		$password = "";
+		$sender_id = "";
+		$priority = "";
+		if($isEdit == 1) {
+			$sms_obj = new SMS($APPLICATION_PATH);
+			$get_result = $sms_obj->getBhashSMSConfig(1);
+			if($get_result[0]==1 && COUNT($get_result[1]) > 0)
+			{
+				$username = $get_result[1][0][1];
+				$password = $get_result[1][0][2];
+				$sender_id = $get_result[1][0][3];
+				$priority = $get_result[1][0][4];
+			}
+		}
+
+		$divHTML = '<div class="span12">';
+			$divHTML .= '<div class="span3"><a href="http://www.bhashsms.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a></div>';
+			$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span6"><a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		$divHTML .= "</div>";
+		//$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">This is the email address with which you will login to your church account. All notifications and invoices will also be sent to this email address only. Make sure you have access to the new email address you are going to specify now.</div>';
+		$divHTML .= '<div class="span12"><BR/>&nbsp;';
+		$divHTML .= "</div>";
+		$divHTML .= '<div class="span6">';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtUsername">Username</label><div class="controls"><input type="text" id="txtUsername" placeholder="Username" value="'.$username.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtPassword">Password</label><div class="controls"><input type="password" id="txtPassword" placeholder="Password" value="'.$password.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtSenderID">Sender ID</label><div class="controls"><input type="text" id="txtSenderID" placeholder="Sender ID" value="'.$sender_id.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtPriority">Priority</label><div class="controls"><select id="txtPriority">';
+				$divHTML .= '<option value="ndnd" '.(($priority=="ndnd" || $priority=="")? 'selected' : '').'>ndnd</option>';
+				$divHTML .= '<option value="dnd" '.(($priority=="dnd")? 'selected' : '').'>dnd</option>';
+			$divHTML .= '</select></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(2);">Test Configuration</button></div>';
+		$divHTML .= "</div>";
+	}
+
+
+	$ret_array = array("gatewayType"=>$gatewayType, "divHTML"=>$divHTML);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==15)
+{
+	$saveType = trim($_POST["saveType"]);
+	$account_sid = trim(stripslashes(rawurldecode($_POST["txtAccountSID"])));
+	$auth_token = trim(stripslashes(rawurldecode($_POST["txtAuthToken"])));
+	$from_number = trim(stripslashes(rawurldecode($_POST["txtFromNumber"])));
+	$test_to_number = trim(stripslashes(rawurldecode($_POST["txtTestToNumber"])));
+	$message = trim(stripslashes(rawurldecode($_POST["txtMessage"])));
+	$rsno = 0;
+	$msg = "Failed to perform the action specified";
+
+	$sms_obj = new SMS($APPLICATION_PATH);
+	if($saveType == 1)
+	{
+		$status=1;
+		$rsno = 0;
+		$msg = "Unable to save the configuration";
+		/**/
+		$all_twilio_configs = $sms_obj->getTwilioConfig(0);
+		if($all_twilio_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_twilio_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteTwilioConfig($all_twilio_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableTwilioConfig($all_twilio_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->enableSMSFeature();
+		$res = $sms_obj->updateSMSProvider(1);
+
+		$save_res = $sms_obj->addTwilioConfig($account_sid, $auth_token, $from_number, $status);
+		$rsno = $save_res[0];
+		$msg = $save_res[1];
+
+		$all_twilio_configs = array();
+		$all_twilio_configs = $sms_obj->getTwilioConfig(0);
+		if($all_twilio_configs[0] == 1 && COUNT($all_twilio_configs[1]) > 0)
+		{
+			$config_id = $all_twilio_configs[1][0][0];
+		}
+		$res = $sms_obj->enableTwilioConfig($config_id);
+		/**/
+	}
+	else if($saveType == 4)
+	{
+		$sms_obj = new SMS($APPLICATION_PATH);
+		$rsno = 0;
+		$msg = "Unable to delete the configuration";
+		$all_twilio_configs = $sms_obj->getTwilioConfig(0);
+		if($all_twilio_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_twilio_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteTwilioConfig($all_twilio_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableTwilioConfig($all_twilio_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->disableSMSFeature();
+		if($res[0]==1) {
+			$rsno = 1;
+			$msg = "Configuration has been deleted successfully and SMS notifications deactivated.";
+		}
+	}
+	else
+	{
+		$rsno = 0;
+		$msg = "Unable to test the configuration";
+
+		$test_res = $sms_obj->testTwilioConfig($account_sid, $auth_token, $from_number, $test_to_number, $message);
+		$rsno = $test_res[0];
+		$msg = $test_res[1];
+	}
+
+	$ret_array = array("saveType"=>$saveType, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==16)
+{
+	$saveType = trim($_POST["saveType"]);
+	$api_key = trim(stripslashes(rawurldecode($_POST["txtAPIKey"])));
+	$api_secret = trim(stripslashes(rawurldecode($_POST["txtAPISecret"])));
+	$from_number = trim(stripslashes(rawurldecode($_POST["txtFromNumber"])));
+	$test_to_number = trim(stripslashes(rawurldecode($_POST["txtTestToNumber"])));
+	$message = trim(stripslashes(rawurldecode($_POST["txtMessage"])));
+	$rsno = 0;
+	$msg = "Failed to perform the action specified";
+
+	$sms_obj = new SMS($APPLICATION_PATH);
+	if($saveType == 1)
+	{
+		$status=1;
+		$rsno = 0;
+		$msg = "Unable to save the configuration";
+		/**/
+		$all_nexmo_configs = $sms_obj->getNexmoConfig(0);
+		if($all_nexmo_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_nexmo_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteNexmoConfig($all_nexmo_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableNexmoConfig($all_nexmo_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->enableSMSFeature();
+		$res = $sms_obj->updateSMSProvider(2);
+
+		$save_res = $sms_obj->addNexmoConfig($api_key, $api_secret, $from_number, $status);
+		$rsno = $save_res[0];
+		$msg = $save_res[1];
+
+		$all_nexmo_configs = array();
+		$all_nexmo_configs = $sms_obj->getNexmoConfig(0);
+		if($all_nexmo_configs[0] == 1 && COUNT($all_nexmo_configs[1]) > 0)
+		{
+			$config_id = $all_nexmo_configs[1][0][0];
+		}
+		$res = $sms_obj->enableNexmoConfig($config_id);
+		/**/
+	}
+	else if($saveType == 4)
+	{
+		$sms_obj = new SMS($APPLICATION_PATH);
+		$rsno = 0;
+		$msg = "Unable to delete the configuration";
+		$all_nexmo_configs = $sms_obj->getNexmoConfig(0);
+		if($all_nexmo_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_nexmo_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteNexmoConfig($all_nexmo_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableNexmoConfig($all_nexmo_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->disableSMSFeature();
+		if($res[0]==1) {
+			$rsno = 1;
+			$msg = "Configuration has been deleted successfully and SMS notifications deactivated.";
+		}
+	}
+	else
+	{
+		$rsno = 0;
+		$msg = "Unable to test the configuration";
+
+		$test_res = $sms_obj->testNexmoConfig($api_key, $api_secret, $from_number, $test_to_number, $message);
+		$rsno = $test_res[0];
+		$msg = $test_res[1];
+	}
+
+	$ret_array = array("saveType"=>$saveType, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==17)
+{
+	$saveType = trim($_POST["saveType"]);
+	$username = trim(stripslashes(rawurldecode($_POST["txtUsername"])));
+	$password = trim(stripslashes(rawurldecode($_POST["txtPassword"])));
+	$sender_id = trim(stripslashes(rawurldecode($_POST["txtSenderID"])));
+	$priority = trim(stripslashes(rawurldecode($_POST["txtPriority"])));
+	$test_to_number = trim(stripslashes(rawurldecode($_POST["txtTestToNumber"])));
+	$message = trim(stripslashes(rawurldecode($_POST["txtMessage"])));
+	$rsno = 0;
+	$msg = "Failed to perform the action specified";
+
+	$sms_obj = new SMS($APPLICATION_PATH);
+	if($saveType == 1)
+	{
+		$status=1;
+		$rsno = 0;
+		$msg = "Unable to save the configuration";
+		/**/
+		$all_bhashSMS_configs = $sms_obj->getBhashSMSConfig(0);
+		if($all_bhashSMS_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_bhashSMS_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteBhashSMSConfig($all_bhashSMS_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableBhashSMSConfig($all_bhashSMS_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->enableSMSFeature();
+		$res = $sms_obj->updateSMSProvider(3);
+
+		$save_res = $sms_obj->addBhashSMSConfig($username, $password, $sender_id, $priority, $from_number, $status);
+		$rsno = $save_res[0];
+		$msg = $save_res[1];
+
+		$all_bhashSMS_configs = array();
+		$all_bhashSMS_configs = $sms_obj->getBhashSMSConfig(0);
+		if($all_bhashSMS_configs[0] == 1 && COUNT($all_bhashSMS_configs[1]) > 0)
+		{
+			$config_id = $all_bhashSMS_configs[1][0][0];
+		}
+		$res = $sms_obj->enableBhashSMSConfig($config_id);
+		/**/
+	}
+	else if($saveType == 4)
+	{
+		$sms_obj = new SMS($APPLICATION_PATH);
+		$rsno = 0;
+		$msg = "Unable to delete the configuration";
+		$all_bhashSMS_configs = $sms_obj->getBhashSMSConfig(0);
+		if($all_bhashSMS_configs[0] == 1)
+		{
+			for($t=0; $t < COUNT($all_bhashSMS_configs[1]); $t++)
+			{
+				$delete_res = $sms_obj->deleteBhashSMSConfig($all_bhashSMS_configs[1][$t][0]);
+				//$disable_res = $sms_obj->disableBhashSMSConfig($all_BhashSMS_configs[1][$t][0]);
+			}
+		}
+		$res = $sms_obj->disableSMSFeature();
+		if($res[0]==1) {
+			$rsno = 1;
+			$msg = "Configuration has been deleted successfully and SMS notifications deactivated.";
+		}
+	}
+	else
+	{
+		$rsno = 0;
+		$msg = "Unable to test the configuration";
+
+		$test_res = $sms_obj->testBhashSMSConfig($username, $password, $sender_id, $priority, $test_to_number, $message);
+		$rsno = $test_res[0];
+		$msg = $test_res[1];
+	}
+
+	$ret_array = array("saveType"=>$saveType, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+
 ?>
