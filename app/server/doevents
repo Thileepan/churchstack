@@ -616,7 +616,7 @@ else if($req == 7)
 
 	$participants_list = array();
 	$profiles_obj = new Profiles($APPLICATION_PATH);
-	$email_list = $profiles_obj->getAllProfileNameAndEmailIDs();
+	$email_list = $profiles_obj->getAllProfileNameAndEmailIDs(true);
 
 	$groups_obj = new Groups($APPLICATION_PATH);
 	$groups = $groups_obj->getAllGroups();

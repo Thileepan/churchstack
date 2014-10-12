@@ -527,7 +527,12 @@ function getParticipantsListResponse(response)
 		for(i=0; i<totalIndividualParticipants; i++)
 		{
 			var id = participantType + "<:|:>" + individualParticipants[i][0] + "<:|:>" + individualParticipants[i][1];
-			var name = individualParticipants[i][2]+" ("+individualParticipants[i][1]+")";
+			var name = "";
+			if(trim(individualParticipants[i][1]) != "") {
+				name = individualParticipants[i][2]+" ("+individualParticipants[i][1]+")";
+			} else {
+				name = individualParticipants[i][2];
+			}
 			sourceList.push({"id":id, "name":name});
 		}
 

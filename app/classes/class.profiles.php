@@ -587,7 +587,7 @@ class Profiles
 		$profile_emails = array();
 		if($this->db_conn)
 		{
-		   $query = 'select PROFILE_ID, EMAIL, CONCAT_WS("", NAME, MIDDLE_NAME, LAST_NAME) from PROFILE_DETAILS';
+		   $query = 'select PROFILE_ID, EMAIL, CONCAT_WS(" ", NAME, MIDDLE_NAME, LAST_NAME) from PROFILE_DETAILS';
 		   if(!$ignore_email_id) {
 			   $query .= ' where EMAIL != ""';
 		   }
