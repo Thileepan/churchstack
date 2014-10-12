@@ -609,5 +609,15 @@ class Profiles
         }
 		return $profile_emails;
 	}
+
+	public function deactivateProfile($profile_id)
+	{
+		return $this->updateProfileStatus($profile_id, 2);//Deactivate
+	}
+
+	public function activateProfile($profile_id)
+	{
+		return $this->updateProfileStatus($profile_id, 1);//Activate
+	}
 }
 ?>

@@ -592,15 +592,16 @@ function getAlertDiv(alertType, alertMsg, actionToDo, actionTakenMsg, actionCanc
 
 function deleteProfileConfirmation(profileID, uniqueID, profileName, isHead)
 {
-	var msgToDisplay = 'You are requesting to delete <a href="#">' + profileName + ' (' + uniqueID + ')</a> profile.';
+	var msgToDisplay = 'You are requesting to delete the profile of <a href="#" onclick="showProfileDetails('+profileID+');">' + profileName + ' (' + uniqueID + ')</a>.';
 	if(isHead) {
-		msgToDisplay += ' This profile is family head and it will delete your dependant profile also.';
+		msgToDisplay += '<BR/><b>This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile.</b>';
 	}
+	msgToDisplay += '<BR/><b>Note that once a profile is deleted, there is no way to retrieve the profile data and it will never be shown or listed in any pages of the application.</b>';
 
-	msgToDisplay += ' Please confirm your request?';
+	msgToDisplay += '<BR/><BR/>Are you sure you want to delete this profile?<BR/>';
 	var actionTakenCallBack = "deleteProfile(" + profileID + "," + isHead + ")";
 	var actionCanelCallBack = "cancelProfileDeleteRequest()";
-	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Delete", "Cancel", actionTakenCallBack, actionCanelCallBack);
+	var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Delete", "No, Cancel", actionTakenCallBack, actionCanelCallBack);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 	$('html,body').scrollTop(0);
@@ -632,7 +633,7 @@ function deleteProfileResponse(response)
 		resultToUI = getAlertDiv(1, 'Profile has been deleted successfully!');
 		listAllProfiles(1);
 	} else {
-		resultToUI = getAlertDiv(2, 'Profile failed to delete.');
+		resultToUI = getAlertDiv(2, 'Failed to delete the profile');
 	}
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
@@ -1158,4 +1159,81 @@ function filterProfilesList(obj)
 	setCookie(cName, cValue, exDays);
 
 	listAllProfiles(profileStatus);
+}
+
+function deactivateProfileConfirmation(actOrDeact, profileID, uniqueID, profileName, isHead)
+{
+	var msgToDisplay = "";
+	if(actOrDeact == 1)
+	{
+		msgToDisplay += 'You are requesting to deactivate the profile of <a href="#" onclick="showProfileDetails('+profileID+');">' + profileName + ' (' + uniqueID + ')</a>.';
+	//	if(isHead) {
+	//		msgToDisplay += '<BR/><b>This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile.</b>';
+	//	}
+		msgToDisplay += '<BR/><b>Note that once a profile is deactivated, by default, it will not be shown or listed in any pages of the application. However, you will have options to list them in the profiles and reports related pages.</b>';
+		msgToDisplay += '<BR/><BR/>Are you sure you want to deactivate this profile?<BR/>';
+		var actionTakenCallBack = "deactivateProfile(1, " + profileID + "," + isHead + ")";
+		var actionCanelCallBack = "cancelProfileDeactivateRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Deactivate", "No, Cancel", actionTakenCallBack, actionCanelCallBack);
+	}
+	else if(actOrDeact == 2)
+	{
+		msgToDisplay += 'You are requesting to activate the profile of <a href="#" onclick="showProfileDetails('+profileID+');">' + profileName + ' (' + uniqueID + ')</a>.';
+	//	if(isHead) {
+	//		msgToDisplay += '<BR/><b>This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile.</b>';
+	//	}
+		msgToDisplay += '<BR/><BR/>Are you sure you want to activate this profile?<BR/>';
+		var actionTakenCallBack = "deactivateProfile(2, " + profileID + "," + isHead + ")";
+		var actionCanelCallBack = "cancelProfileDeactivateRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Activate", "No, Cancel", actionTakenCallBack, actionCanelCallBack);
+	}
+
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
+	$('html,body').scrollTop(0);
+}
+
+function cancelProfileDeactivateRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+function deactivateProfile(actOrDeact, profileID, isHead)
+{
+	var formPostData = 'req=16&actOrDeact='+actOrDeact+'&profile=' + profileID + '&isProfileHead=' + isHead;
+
+	$.ajax({
+		type:'POST',
+		url:serverFile,
+		data:formPostData,
+		success:deactivateProfileResponse,
+		error:HandleAjaxError
+	});
+}
+
+function deactivateProfileResponse(response)
+{
+	var resultToUI;
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.actOrDeact == 1)
+	{
+		if(dataObj.status) {
+			resultToUI = getAlertDiv(1, 'Profile has been deactivated successfully!');
+			listAllProfiles(1);
+		} else {
+			resultToUI = getAlertDiv(2, 'Failed to deactivate the profile.');
+		}
+	}
+	else if(dataObj.actOrDeact == 2)
+	{
+		if(dataObj.status) {
+			resultToUI = getAlertDiv(1, 'Profile has been activated successfully!');
+			listAllProfiles(1);
+		} else {
+			resultToUI = getAlertDiv(2, 'Failed to activate the profile.');
+		}
+	}
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
