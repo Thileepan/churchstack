@@ -530,7 +530,7 @@ else if($req==13)
 								$divHTML .= '<div>';
 									$divHTML .= '<b>From Number : </b>'.$twilio_config[1][0][3].'';
 								$divHTML .= '</div>';
-								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(1, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveTwilioConfig(3);">Delete</button></div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(1, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveTwilioConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
 						$divHTML .= '</div>';
 					}
@@ -555,7 +555,7 @@ else if($req==13)
 								$divHTML .= '<div>';
 									$divHTML .= '<b>From Number : </b>'.$nexmo_config[1][0][3].'';
 								$divHTML .= '</div>';
-								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(2, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveNexmoConfig(3);">Delete</button></div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(2, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveNexmoConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
 						$divHTML .= '</div>';
 					}
@@ -584,7 +584,7 @@ else if($req==13)
 								$divHTML .= '<div>';
 									$divHTML .= '<b>Priority : </b>'.$bhashSMS_config[1][0][4].'';
 								$divHTML .= '</div>';
-								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(3, 1);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveBhashSMSConfig(3);">Delete</button></div>';
+								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(3, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveBhashSMSConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
 						$divHTML .= '</div>';
 					}
@@ -605,6 +605,7 @@ else if($req==13)
 	}
 	else if($tabType==2)
 	{
+		$atleast_one_gateway_chosen = 0;
 		$is_twilio_chosen = 0;
 		$is_nexmo_chosen = 0;
 		$is_bhashsms_chosen = 0;
@@ -615,6 +616,7 @@ else if($req==13)
 			$active_gateway_available = 0;
 			if(is_array($sms_result[1]) && $sms_result[1]["SMS_ENABLED"] == 1 && $sms_result[1]["SMS_PROVIDER_ID"] > 0)
 			{
+				$atleast_one_gateway_chosen = 1;
 				if($sms_result[1]["SMS_PROVIDER_ID"] == 1) {//Twilio
 					$is_twilio_chosen = 1;
 				}
@@ -628,11 +630,12 @@ else if($req==13)
 		}
 		$divHTML = '<div class="span11">';
 		$divHTML .= '<div class="span3"><a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a></div>';
+		$divHTML .= '<input type="hidden" id="isAtleastOneGatewayChosen" value="'.$atleast_one_gateway_chosen.'"/>';
 		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.TWILIO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
 		if($is_twilio_chosen==1) {
 			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
 		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(1, 0);" style="width:180px;">Choose This</button></div>';
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(1, 0, 1);" style="width:180px;">Choose This</button></div>';
 		}
 		$divHTML .= '</div>';
 		$divHTML .= '<div class="span11" style="display:;">';
@@ -641,7 +644,7 @@ else if($req==13)
 		if($is_nexmo_chosen==1) {
 			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
 		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(2, 0);" style="width:180px;">Choose This</button></div>';
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(2, 0, 1);" style="width:180px;">Choose This</button></div>';
 		}
 		$divHTML .= '</div>';
 		$divHTML .= '<div class="span11" style="display:;">';
@@ -650,7 +653,7 @@ else if($req==13)
 		if($is_bhashsms_chosen==1) {
 			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
 		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(3, 0);" style="width:180px;">Choose This</button></div>';
+			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(3, 0, 1);" style="width:180px;">Choose This</button></div>';
 		}
 		$divHTML .= '</div>';
 	}

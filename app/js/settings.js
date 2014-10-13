@@ -655,8 +655,20 @@ function loadSMSConfigResponse(response)
 	return false;
 }
 
-function chooseSMSGateway(gatewayType, isEdit)
+function chooseSMSGateway(gatewayType, isEdit, askConfirm)
 {
+	document.getElementById('alertRow').style.display = 'none';
+	if(document.getElementById("isAtleastOneGatewayChosen") && document.getElementById("isAtleastOneGatewayChosen").value == 1 && askConfirm == 1) {
+		msgToDisplay = 'There is an SMS gateway already active for your account. Choosing a different gateway now will delete the currently active configuration permanently. Are you sure you want to use a different SMS gateway?';
+		var actionTakenCallBack = "chooseSMSGateway("+gatewayType+", "+isEdit+", 0)";
+		var actionCancelCallBack = "cancelChangeSMSGatewayRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, I'm Sure", "No, Cancel", actionTakenCallBack, actionCancelCallBack);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		$('html,body').scrollTop(0);
+		return false;
+
+	}
 	var formPostData = 'req=14&gatewayType='+gatewayType+'&isEdit='+isEdit;
 
 	$.ajax({
@@ -1039,6 +1051,12 @@ function saveBhashSMSConfigResponse(response)
 }
 
 function cancelBhashSMSDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
+}
+
+function cancelChangeSMSGatewayRequest()
 {
 	document.getElementById('alertDiv').innerHTML = '';
 	document.getElementById('alertRow').style.display = 'none';
