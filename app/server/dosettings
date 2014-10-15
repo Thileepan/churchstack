@@ -11,6 +11,7 @@ include_once $APPLICATION_PATH . 'classes/class.settings.php';
 include_once $APPLICATION_PATH . 'classes/class.users.php';
 include_once $APPLICATION_PATH . 'classes/class.profiles.php';
 include_once $APPLICATION_PATH . 'classes/class.sms.php';
+include_once $APPLICATION_PATH . 'conf/config.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -528,7 +529,7 @@ else if($req==13)
 									$divHTML .= '<b>Auth Token : </b>'.$twilio_config[1][0][2].'';
 								$divHTML .= '</div>';
 								$divHTML .= '<div>';
-									$divHTML .= '<b>From Number : </b>'.$twilio_config[1][0][3].'';
+									$divHTML .= '<b>From Number / Short Code : </b>'.$twilio_config[1][0][3].'';
 								$divHTML .= '</div>';
 								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(1, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveTwilioConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
@@ -553,7 +554,7 @@ else if($req==13)
 									$divHTML .= '<b>API Secret : </b>'.$nexmo_config[1][0][2].'';
 								$divHTML .= '</div>';
 								$divHTML .= '<div>';
-									$divHTML .= '<b>From Number : </b>'.$nexmo_config[1][0][3].'';
+									$divHTML .= '<b>From Number / Short Code : </b>'.$nexmo_config[1][0][3].'';
 								$divHTML .= '</div>';
 								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(2, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveNexmoConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
@@ -697,7 +698,7 @@ else if($req==14)
 		$divHTML .= '<div class="span6">';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAccountSID">Account SID</label><div class="controls"><input type="text" id="txtAccountSID" placeholder="Account SID" value="'.$account_sid.'"></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAuthToken">Auth Token</label><div class="controls"><input type="text" id="txtAuthToken" placeholder="Auth Token" value="'.$auth_token.'"></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number" value="'.$from_number.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number / Short Code</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number or Short Code" value="'.$from_number.'"></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveTwilioConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveTwilioConfig(2);">Test Configuration</button></div>';
@@ -729,7 +730,7 @@ else if($req==14)
 		$divHTML .= '<div class="span6">';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAPIKey">API Key</label><div class="controls"><input type="text" id="txtAPIKey" placeholder="API Key" value="'.$api_key.'"></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtAPISecret">API Secret</label><div class="controls"><input type="text" id="txtAPISecret" placeholder="API Secret" value="'.$api_secret.'"></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number" value="'.$from_number.'"></div></div>';
+			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtFromNumber">From Number / Short Code</label><div class="controls"><input type="text" id="txtFromNumber" placeholder="From Number or Short Code" value="'.$from_number.'"></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
 			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveNexmoConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveNexmoConfig(2);">Test Configuration</button></div>';

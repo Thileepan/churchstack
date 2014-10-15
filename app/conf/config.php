@@ -12,13 +12,18 @@ define('APP_BUILD_NUMBER', '20140118');
 define('PRODUCT_NAME', 'ChurchStack');
 define('PRODUCT_WEBSITE', 'http://www.ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
+
+//Website URLs
 define('REFERRAL_PROGRAM_URL', 'http://www.churchstack.com/referral-program.html');
 define('FORGOT_PASSWORD_URL', 'https://account.churchstack.com/user/forgotpwd');
 define('PRICING_URL', 'http://www.churchstack.com/pricing.html');
 define('PRODUCT_CONTACT_US', 'http://www.churchstack.com/contact-us.html');
 define('PRODUCT_PRIV_POLICY_EMAIL', "support@churchstack.com");
 define('PRODUCT_PRIV_POLICY_URL', "http://www.churchstack.com/privacy-policy.html");
-define('PRODUCT_TERMS_CONDITIONS_URL', "http://churchstack.com/terms-of-service.html");
+define('PRODUCT_TERMS_CONDITIONS_URL', "http://www.churchstack.com/terms-of-service.html");
+define('TWILIO_HELP_DOC_URL', "http://www.churchstack.com/help/twilio-configuration.html");
+define('NEXMO_HELP_DOC_URL', "http://www.churchstack.com/help/nexmo-configuration.html");
+define('BHASHSMS_HELP_DOC_URL', "http://www.churchstack.com/help/bhashsms-configuration.html");
 
 //Company Related stuff
 define('COMPANY_WEBSITE', 'http://www.rapydcloud.com');
