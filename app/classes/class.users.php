@@ -602,7 +602,7 @@ class Users
 		$toReturn[1] = "There was an error while trying to get the account info.";
 		if($this->db_conn)
 		{
-		   $query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS from USER_DETAILS where CHURCH_ID=? and ROLE_ID=1';
+		   $query = 'select USER_ID, CHURCH_ID, USER_NAME, EMAIL, ROLE_ID, UNIQUE_HASH, PASSWORD_RESET_HASH, PASSWORD_RESET_EXPIRY, STATUS, PROFILE_ID, PROFILE_FULL_NAME from USER_DETAILS where CHURCH_ID=? and ROLE_ID=1 limit 1';
 		   $result = $this->db_conn->Execute($query, array($church_id));
             
            if($result) {
@@ -617,8 +617,10 @@ class Users
 					$password_reset_hash = $result->fields[6];
 					$password_reset_expiry = $result->fields[7];
 					$status = $result->fields[8];
+					$profile_id = $result->fields[9];
+					$profile_full_name = $result->fields[10];
 
-					$admin_details_array = array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $password_reset_hash, $password_reset_expiry, $status);
+					$admin_details_array = array($user_id, $church_id, $user_name, $email, $role_id, $unique_hash, $password_reset_hash, $password_reset_expiry, $status, $profile_id, $profile_full_name);
 
 					$toReturn[0] = 1;
 					$toReturn[1] = $admin_details_array;

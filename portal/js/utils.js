@@ -38,3 +38,15 @@ function HandleAjaxError(obj,errorType)
 	return false;
 	//console.log(obj);
 }
+
+function escString(encStr)
+{
+	encStr = escape(encStr);
+	encStr = encStr.replace(/\//g,"%2F");
+	encStr = encStr.replace(/\?/g,"%3F");
+	encStr = encStr.replace(/=/g,"%3D");
+	encStr = encStr.replace(/&/g,"%26");
+	encStr = encStr.replace(/@/g,"%40");
+	encStr = encStr.replace(/\+/g,"%2B");
+	return encStr;
+}

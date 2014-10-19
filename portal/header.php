@@ -60,6 +60,7 @@
 			<li<?php echo (($page_id==2)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/user.php"; ?>">Users</a></li>
 			<li<?php echo (($page_id==3)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/payment.php"; ?>">Payments</a></li>
 			<li<?php echo (($page_id==4)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/coupon.php"; ?>">Coupons</a></li>
+			<li<?php echo (($page_id==5)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/tools.php"; ?>">Tools</a></li>
 			<!-- li class="dropdown open">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 					Dropdown <span class="caret"></span>

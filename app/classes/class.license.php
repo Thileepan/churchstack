@@ -6,6 +6,7 @@ class License
 	protected $church_id = -1;
 	protected $user_id = -1;
 	protected $email_id = "";
+	protected $sharded_db = "";
 
 	private $APPLICATION_PATH;
 
@@ -81,6 +82,11 @@ class License
 			}
 		}
 	}	
+
+	public function setShardedDB($sharded_db)
+	{
+		$this->sharded_db = $sharded_db;
+	}
 
 	public function getLicenseDetails($plan_type="")
 	{
@@ -1330,6 +1336,7 @@ class License
 		$invoice_report = str_replace("{{SUBTOTAL}}", $purchase_details_arr["subtotal"], $invoice_report);
 		$invoice_report = str_replace("{{DISCOUNT}}", $purchase_details_arr["discount_amount"], $invoice_report);
 		$invoice_report = str_replace("{{NET_TOTAL}}", $purchase_details_arr["net_total"], $invoice_report);
+		$invoice_report = str_replace("{{TAX_AMOUNT}}", $purchase_details_arr["tax_amount"], $invoice_report);
 		$invoice_report = str_replace("{{PAYMENT_GATEWAY}}", $purchase_details_arr["payment_gateway"], $invoice_report);
 		$invoice_report = str_replace("{{PAYMENT_MODE}}", $purchase_details_arr["payment_mode"], $invoice_report);
 
@@ -1382,6 +1389,7 @@ class License
 			$purchase_details_arr["billing_addr"] = $inv_rep_result[1][0][10];
 			$purchase_details_arr["subtotal"] = $inv_rep_result[1][0][14];
 			$purchase_details_arr["discount_amount"] = $inv_rep_result[1][0][17];
+			$purchase_details_arr["tax_amount"] = $inv_rep_result[1][0][19];
 			$purchase_details_arr["net_total"] = $inv_rep_result[1][0][24];
 			$purchase_details_arr["payment_gateway"] = $inv_rep_result[1][0][27];
 			$purchase_details_arr["payment_mode"] = $inv_rep_result[1][0][28];
@@ -1843,6 +1851,9 @@ class License
 		}
 
 		$shardedDB = trim($_SESSION["shardedDB"]);
+		if(trim($shardedDB) == "") {//Used when callec this function from portal login
+			$shardedDB = $this->sharded_db;
+		}
 
 		$profiles_obj = new Profiles($this->APPLICATION_PATH, $shardedDB);
 		$profile_counts_result = $profiles_obj->getProfCountGroupedByStatus();
