@@ -31,14 +31,19 @@
 				$church_sharded_db[] = $churches_res[1][$i][10];
 			}
 		}
+
+		$all_license_plans = array();
+		$lic_obj = new License($APPLICATION_PATH."app/");
+		$lic_plans_res = $lic_obj->getAllLicensePlanDetails();
+		if($lic_plans_res[0] == 1) {
+			$all_license_plans = $lic_plans_res[1];
+		}
+	}
+	else if($submenu_id==2)//Calculate Service Tax
+	{
+
 	}
 
-	$all_license_plans = array();
-	$lic_obj = new License($APPLICATION_PATH."app/");
-	$lic_plans_res = $lic_obj->getAllLicensePlanDetails();
-	if($lic_plans_res[0] == 1) {
-		$all_license_plans = $lic_plans_res[1];
-	}
 
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>portal/js/tools.js"></script>
@@ -46,10 +51,15 @@
 		<div class="span2">
 			<ul class="nav nav-pills nav-stacked">
 				<li<?php echo (($submenu_id==1)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/tools.php?si=1"; ?>">Manual Invoice</a></li>
-				<li<?php echo (($submenu_id==2)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/tools.php?si=2"; ?>">Calculate Service Tax</a></li>
+				<li<?php echo (($submenu_id==2)?' class="active"' : '');?>><a href="<?php echo $APPLICATION_PATH."portal/tools.php?si=2"; ?>">Split Service Tax</a></li>
 			</ul>
 		</div>
 
+
+<?php
+	if($submenu_id==1)
+	{
+?>
 		<div class="span10" style="display:<?php echo (($submenu_id==1)? '': 'none'); ?>;">
 			<div class="row-fluid" id="alertRow" style="display: none;">
 				<div id="alertDiv" class="span12"></div>
@@ -324,6 +334,41 @@
 			</div>
 		</div>
 	</div>
+
+<?php
+	}
+	else if($submenu_id==2)
+	{
+?>
+
+	<div class="span10" style="display:<?php echo (($submenu_id==2)? '': 'none'); ?>;">
+		<div class="row-fluid" id="alertRow" style="display: none;">
+			<div id="alertDiv" class="span12"></div>
+		</div>
+		<div class="row-fluid">
+			<form id="toolsForm" class="form-horizontal" action="server/dotools.php" method="post" enctype="multipart/form-data" onsubmit="return false;">
+				<div class="row-fluid">
+					<div class="span6">
+						<div style="padding-bottom:6px;"><label class="control-label" for="txtAmtWithST">Amount Including Service Tax</label><div class="controls"><input type="text" id="txtAmtWithST" placeholder="Final Net Amount" value="0"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="form-actions"><button class="btn btn-primary" type="submit" onclick="return calculateServiceTaxSplitup();">Split Service Tax</button></div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="alert alert-info" role="alert" id="STInfoDiv" style="display:none;"></div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+<?php
+	}
+?>
 <!-- Button trigger modal -->
 <!--button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#churchDetailsModal">
   Launch demo modal
@@ -424,8 +469,20 @@
 	<form>
 
 	<script type="text/javascript">
-		$('#invoiceDetailsModal').modal({ show: false})
-		selPlanOnChange(document.getElementById("selPlanId_1"));
+		<?php
+			if($submenu_id==1)
+			{
+		?>
+				$('#invoiceDetailsModal').modal({ show: false})
+				selPlanOnChange(document.getElementById("selPlanId_1"));
+		<?php
+			}
+			else if($submenu_id==2)
+			{
+		?>
+		<?php
+			}
+		?>
 	</script>
 <?php
 	@include($APPLICATION_PATH."portal/footer.php")

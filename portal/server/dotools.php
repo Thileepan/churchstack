@@ -139,4 +139,26 @@ else if($req == 2)//Validate selected plan and Update invoice
 	exit;
 	/**/
 }
+else if($req == 3)
+{
+	$amount_including_ST = trim($_POST["amount_including_ST"]);
+	$lic_obj = new License($APPLICATION_PATH."app/");
+	$result = $lic_obj->calculateServiceTaxSplitup($amount_including_ST);
+
+	$html_data = "";
+	$html_data .= '<div class="row-fluid">';
+		$html_data .= '<div class="span12">Amount WITHOUT Service Tax : '.$result["amount_without_ST"].'</div>';
+	$html_data .= '</div>';
+	$html_data .= '<div class="row-fluid">';
+		$html_data .= '<div class="span12">Service Tax Amount : '.$result["service_tax_amount"].'</div>';
+	$html_data .= '</div>';
+
+	$to_return = array("rslt"=>$html_data);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
 ?>

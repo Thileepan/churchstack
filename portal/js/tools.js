@@ -244,3 +244,25 @@ function updateInvoiceAndApplyLicenseResponse(response)
 	}
 	return false;
 }
+
+function calculateServiceTaxSplitup()
+{
+	var formPostData = "";
+	formPostData += "req=3";
+	formPostData += "&amount_including_ST="+document.getElementById("txtAmtWithST").value;
+	$.ajax({
+		type:'POST',
+		url:doTools,
+		data:formPostData,
+		success:calculateServiceTaxSplitupResponse,
+		error:HandleAjaxError
+	});
+	return false;
+}
+
+function calculateServiceTaxSplitupResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	document.getElementById("STInfoDiv").innerHTML = dataObj.rslt;
+	document.getElementById("STInfoDiv").style.display = "";
+}
