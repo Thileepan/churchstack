@@ -108,6 +108,9 @@ function churchActions(actionType, churchID, churchName)
 		daysToExtend = document.getElementById("txtValidityDays").value;
 		churchID = document.getElementById("txtChurchIDToExtend").value;
 		churchName = document.getElementById("txtChurchIDToExtend").value;
+		if(!confirm("Are you sure you want to extend the validity the following church?\n\n"+churchName+" (ID : "+churchID+")" )) {
+			return false;
+		}
 	}
 	var formPostData = "req="+reqType;
 	formPostData += "&act_num="+actionType;
