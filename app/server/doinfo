@@ -5,6 +5,7 @@ $APPLICATION_PATH = "../";
 //This files secures the action being triggered by cross-domain attacks
 include $APPLICATION_PATH."utils/validateauth.php";
 
+include_once $APPLICATION_PATH . 'conf/config.php';
 include_once $APPLICATION_PATH . 'classes/class.church.php';
 include_once $APPLICATION_PATH . 'classes/class.utility.php';
 include_once $APPLICATION_PATH . 'classes/class.license.php';
@@ -488,4 +489,113 @@ else if($req == 8)
 	echo $to_return;
 	exit;
 }
+else if($req == 9)
+{
+	//list all invoices
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$invoices_list = $license_obj->getAllPurchaseReports(0, $_SESSION["churchID"]);
+	
+	$is_results_available = false;
+	if($invoices_list[0]==1 && is_array($invoices_list[1]) && COUNT($invoices_list[1]) > 0)
+	{
+		$is_results_available = true;
+	//	$invoice_details = array($invoice_id, $invoice_date, $transaction_id, $reference_id, $unique_hash, $church_id, $church_name, $user_id, $email, $billing_name, $billing_address, $other_address, $phone, $currency_code, $subtotal, $additional_charge, $discount_percentage, $discount_amount, $tax_percentage, $tax_amount, $tax_2_percentage, $tax_2_amount, $vat_percentage, $vat_amount, $net_total, $coupon_code, $invoice_notes, $payment_gateway, $payment_mode, $ip_address, $purchase_status_code, $purchase_status_remarks, $pg_status_code, $pg_status_remarks, $last_update_date, $is_refund);
+		for($i=0; $i<COUNT($invoices_list[1]); $i++)
+		{
+			$invoice_id = $invoices_list[1][$i][0];
+			$invoice_date = $invoices_list[1][$i][1];
+			$trans_id = $invoices_list[1][$i][2];
+			$total_paid = $invoices_list[1][$i][24];
+			$status_code = $invoices_list[1][$i][30];
+			$invoice_info = '<a style="cursor: pointer;" data-toggle="modal" data-target="#invoiceDetailsModal" onclick="showInvoiceReport('.$invoice_id.');" nowrap>'.$trans_id.'</a>';
+
+			$action_btn_html = '<div class="btn-group">';
+				$action_btn_html .= '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>';
+				$action_btn_html .= '<ul class="dropdown-menu" role="menu">';
+					/** /
+					if($eligible_for_extension==1) {
+						$action_btn_html .= '<li><a href="#" data-toggle="modal" data-target="#extendValidityModal" onclick="churchActions(1, '.$curr_church[0].',\''.$curr_church[1].'\');">Extend Validity</a></li>';
+					} else {
+						$action_btn_html .= '<li class="disabled"><a href="#">Extend Validity</a></li>';
+					}
+					/**/
+					//$action_btn_html .= '<li><a href="#">Another action</a></li>';
+					//$action_btn_html .= '<li><a href="#">Something else here</a></li>';
+					//$action_btn_html .= '<li class="divider"></li>';
+					$action_btn_html .= '<li><a href="#" onclick="downloadInvoiceReportPDF('.$invoice_id.',\''.$trans_id.'\');">Download As PDF</a></li>';
+					$action_btn_html .= '<li><a href="#" onclick="invoiceActions(2, '.$invoice_id.');">Email This Invoice</a></li>';
+				$action_btn_html .= '</ul>';
+			$action_btn_html .= '</div>';
+
+			$to_return['aaData'][] = array($invoice_id, $invoice_info, $invoice_date, $total_paid, $status_code, $action_btn_html);
+		}
+	}
+	
+	if( !$is_results_available )
+	{
+		$to_return['aaData'] = array();
+	}
+
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 10)//get details of a invoice
+{
+	$invoice_id = trim($_REQUEST['invoice_id']);
+
+	//list all invoices
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$invoice_data_html = $license_obj->constructInvoiceHTML($invoice_id);
+	$to_return = array("rsno"=>1, "rslt"=>$invoice_data_html);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 11)//download invoice as PDF
+{
+	$invoice_id = trim($_REQUEST['invoice_id']);
+	$transaction_id = trim($_REQUEST['transaction_id']);
+	$target_file = PRODUCT_NAME."_".$transaction_id.".pdf";
+
+	//list all invoices
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$invoice_data_html = $license_obj->prepareAndSendOrderDetailsEmail($invoice_id, "", 1);
+	$full_html = $invoice_data_html[1][2];
+
+	$full_html = str_replace('cid:cs_head_logo', '../images/email/cs_email_head.png', $full_html);
+	$full_html = str_replace('cid:cs_site_text_logo', '../images/email/cs-website-text.png', $full_html);
+	$full_html = str_replace('cid:cs_vertical_stripe', '../images/email/vertical_stripe.gif', $full_html);
+	$full_html = str_replace('cid:cs_horizontal_stripe', '../images/email/horizontal_stripe.gif', $full_html);
+
+//	$invoice_data_html = $license_obj->constructInvoiceHTML($invoice_id);
+
+//	$full_html = $license_obj->constructInvoiceTopHTML();
+//	$full_html .= $invoice_data_html;
+//	$full_html .= $license_obj->constructInvoiceBottomHTML();
+	/** /
+	$util = new Utility($PATH);
+	$target_file = "cst_incoive.pdf";
+	$force_download = 1;
+	//$res = $util->downloadHTMLAsPDF($invoice_data_html, $target_file, $force_download);
+	/**/
+
+	$to_return = array("rsno"=>1, "input_html"=>$full_html, "target_file"=>$target_file);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+
 ?>

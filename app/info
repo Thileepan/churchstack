@@ -21,9 +21,11 @@ include $APPLICATION_PATH."header";
         <ul class="nav nav-list">
           <li class="nav-header">Account Management</li>
           <li id="myChurch" onclick="infoTabsChangeClass('myChurch'); getChurchInformation();" class="active"><a href="#">My Church</a></li>
-	  <li id="notifications" style="display:none;" onclick="infoTabsChangeClass('notifications');"><a href="#">Notifications</a></li>
-	  <li id="billing" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
-	  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#">My Login Credentials</a></li>
+		  <li id="notifications" style="display:none;" onclick="infoTabsChangeClass('notifications');"><a href="#">Notifications</a></li>
+		  <li id="billing" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
+		  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#">My Login Credentials</a></li>
+          <li class="nav-header">Reports</li>
+          <li id="myInvoices" onclick="infoTabsChangeClass('myInvoices'); getInvoicesList();"><a href="#">My Invoices</a></li>
 	</ul>
     </div>
     <div class="span10">
@@ -36,6 +38,34 @@ include $APPLICATION_PATH."header";
 			</div>
 		</div>
 	</div>
+</div>
+
+<form name="pdfForm" method="post" action="uiactions/downloadaspdf.php" target="_blank">
+	<input type="hidden" name="pdfInputHtml" id="pdfInputHtml" value=''>
+	<input type="hidden" name="pdfTargetFile" id="pdfTargetFile" value=''>
+	<input type="hidden" name="pdfForceDownload" id="pdfForceDownload" value=''>
+	<input type="hidden" name="pdfPaperSize" id="pdfPaperSize" value=''>
+	<input type="hidden" name="pdfOrientation" id="pdfOrientation" value=''>
+</form>
+
+<div class="bigModal fade" id="invoiceDetailsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" width="1000" style="display:none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><!-- span class="sr-only">Close</span--></button>
+        <h4 class="modal-title" id="invoiceDetailsModalLabel">Invoice Details</h4>
+      </div>
+      <div class="modal-body" id="invoiceDetailsBody">
+			Loading data...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Email This Invoice</button>
+        <button type="button" class="btn btn-primary">Download as PDF</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <!-- button type="button" class="btn btn-primary">Save changes</button -->
+      </div>
+    </div>
+  </div>
 </div>
 <?php
 include "footer";

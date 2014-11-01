@@ -270,6 +270,7 @@ function infoTabsChangeClass(idToBeActive)
 	document.getElementById("notifications").className = "";
 	document.getElementById("billing").className = "";
 	document.getElementById("logininfo").className = "";
+	document.getElementById("myInvoices").className = "";
 
 	//Now set the active class for the selected tab
 	document.getElementById(idToBeActive).className = "active";
@@ -292,4 +293,81 @@ function getBillingPlansResponse(response)
 {
 	document.getElementById('pageHeader').innerHTML = "Plans";
 	document.getElementById('pageContent').innerHTML = response;
+}
+
+function getInvoicesList()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	document.getElementById('pageHeader').innerHTML = "My Invoices/Payments";
+	var table = '<table id="listInvoicesTable" class="table table-striped"><thead><tr><th>Order ID</th><th>Transaction ID</th><th>Date</th><th>Amount Paid</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	document.getElementById('pageContent').innerHTML = table;
+	
+	oTable = $('#listInvoicesTable').dataTable( {
+		/*"aoColumns": [
+			{ "sWidth": "5%" },
+			{ "sWidth": "30%"  },
+			{ "sWidth": "20%"  },
+			{ "sWidth": "30%" },
+			{ "sWidth": "15%"  },			
+		],*/
+        "bProcessing": true,
+		"bDestroy": true,
+        "sAjaxSource": "server/doinfo",
+		"iDisplayLength":100,
+        "fnServerData": function ( sSource, aoData, fnCallback ) {
+            $.ajax( {
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": "req=9",
+                "success": fnCallback
+            } );
+        }
+	});
+}
+
+function showInvoiceReport(invoiceID)
+{
+	document.getElementById("invoiceDetailsBody").innerHTML = "Loading the data ...";
+	var formPostData = "req=10";
+	formPostData += "&invoice_id="+invoiceID;
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:showInvoiceDataFromResponse,
+		error:HandleAjaxError
+	});
+	return false;
+}
+
+function showInvoiceDataFromResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	document.getElementById("invoiceDetailsBody").innerHTML = dataObj.rslt;
+	return false;
+}
+
+function downloadInvoiceReportPDF(invoiceID, transactionID)
+{
+	var formPostData = "req=11";
+	formPostData += "&invoice_id="+invoiceID;
+	formPostData += "&transaction_id="+transactionID;
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:downloadInvoiceReportPDFResponse,
+		error:HandleAjaxError
+	});
+	return false;
+}
+
+function downloadInvoiceReportPDFResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	document.getElementById("pdfInputHtml").value = dataObj.input_html;
+	document.getElementById("pdfTargetFile").value = dataObj.target_file;
+	document.pdfForm.submit();
+	return false;
 }

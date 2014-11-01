@@ -957,22 +957,40 @@ class License
 		return $toReturn;
 	}
 
-	public function getAllPurchaseReports($input_inv_id=0)
+	public function getAllPurchaseReports($input_inv_id=0, $church_id=0)
 	{
 		$toReturn = array();
 		$toReturn[0] = 0;
 		$toReturn[1] = "No payments to list";
 		if($this->db_conn)
 		{
+			$query_col_array = array();
 		   if(trim($input_inv_id) == "" || $input_inv_id <= 0) {
-			   $query = 'select * from INVOICE_REPORT order by INVOICE_ID DESC';
-			   $result = $this->db_conn->Execute($query);
+			   $query = 'select * from INVOICE_REPORT ';
+			   if(trim($church_id) != "" && trim($church_id) > 0) {
+				   $query .= " where CHURCH_ID=?";
+				   $query_col_array[0] = $church_id;
+			   }
+			   $query .= " order by INVOICE_ID DESC";
+			   $result = $this->db_conn->Execute($query, $query_col_array);
 		   } else if(trim($input_inv_id) != "" && $input_inv_id > 0) {
 			   $query = 'select * from INVOICE_REPORT where INVOICE_ID=?';
-			   $result = $this->db_conn->Execute($query, array($input_inv_id));
+			   $query_col_array[0] = $input_inv_id;
+			   if(trim($church_id) != "" && trim($church_id) > 0) {
+				   $query .= " and CHURCH_ID=?";
+				   $query_col_array[1] = $church_id;
+			   }
+			   $query .= " order by INVOICE_ID DESC";
+			   $result = $this->db_conn->Execute($query, $query_col_array);
 		   } else {
-			   $query = 'select * from INVOICE_REPORT order by INVOICE_ID DESC';
-			   $result = $this->db_conn->Execute($query);
+			   $query = 'select * from INVOICE_REPORT ';
+			   $query_col_array[0] = $input_inv_id;
+			   if(trim($church_id) != "" && trim($church_id) > 0) {
+				   $query .= " where CHURCH_ID=?";
+				   $query_col_array[1] = $church_id;
+			   }
+			   $query .= " order by INVOICE_ID DESC";
+			   $result = $this->db_conn->Execute($query, $query_col_array);
 		   }
             
            if($result) {
@@ -1326,6 +1344,7 @@ class License
 		//Replacing place holder with values
 		$invoice_report = str_replace("<!--ALL_ITEMS_ROWS-->", $invoiced_items_row, $invoice_report);
 		$invoice_report = str_replace("{{PRODUCT_NAME}}", PRODUCT_NAME, $invoice_report);
+		$invoice_report = str_replace("{{PRODUCT_WEBSITE}}", PRODUCT_WEBSITE, $invoice_report);
 		$invoice_report = str_replace("{{CUSTOMER_NAME}}", $purchase_details_arr["billing_name"], $invoice_report);
 		$invoice_report = str_replace("{{BILLING_ADDRESS}}", $purchase_details_arr["billing_addr"], $invoice_report);
 		$invoice_report = str_replace("{{CUSTOMER_EMAIL}}", $purchase_details_arr["email"], $invoice_report);
@@ -2017,6 +2036,184 @@ class License
 		return $to_return;
 	}
 
+	public function constructInvoiceHTML($invoice_id)
+	{
+		$invoices_list = $this->getAllPurchaseReports($invoice_id);
+		$invoiced_items = $this->getInvoicedItemsList($invoice_id);
+		
+		$invoice_data_html = "";
+		if($invoices_list[0]==0) {
+			$invoice_data_html = '<font color="red">'.$invoices_list[1].'</font>';
+		} else {
+			$invoice_data_html .= '<div class="row-fluid">';
+				$invoice_data_html .= '<div class="span6">';
+					$invoice_data_html .= '<div class="row-fluid">';
+							$invoice_data_html .= '<div class="span12">';
+							$invoice_data_html .= 'Billing Name : '.$invoices_list[1][0][9];
+							$invoice_data_html .= '</div>';
+					$invoice_data_html .= '</div>';
+					$invoice_data_html .= '<div class="row-fluid">';
+							$invoice_data_html .= '<div class="span12">';
+							$invoice_data_html .= 'Billing Address : '.$invoices_list[1][0][10];
+							$invoice_data_html .= '</div>';
+					$invoice_data_html .= '</div>';
+					$invoice_data_html .= '<div class="row-fluid">';
+							$invoice_data_html .= '<div class="span12">';
+							$invoice_data_html .= 'Email : '.$invoices_list[1][0][8];
+							$invoice_data_html .= '</div>';
+					$invoice_data_html .= '</div>';
+				$invoice_data_html .= '</div>';
+				$invoice_data_html .= '<div class="span6">';
+					$invoice_data_html .= '<div class="table-responsive">';
+						$invoice_data_html .= '<table class="table table-bordered">';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td style="background: #eee;">Order #</td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][0].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td style="background: #eee;">Transaction ID </td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][2].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td style="background: #eee;">Date</td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][1].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td style="background: #eee;">Amount Paid</td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][13]."&nbsp;".$invoices_list[1][0][24].'</td>';
+							$invoice_data_html .= '</tr>';
+						$invoice_data_html .= '</table>';
+					$invoice_data_html .= '</div>';
+				$invoice_data_html .= '</div>';
+			$invoice_data_html .= '</div>';
+			$invoice_data_html .= '<div class="row-fluid">';
+				$invoice_data_html .= '<div class="span12">';
+					$invoice_data_html .= '<div class="table-responsive">';
+						$invoice_data_html .= '<table class="table table-bordered">';
+							$invoice_data_html .= '<thead>';
+								$invoice_data_html .= '<tr>';
+									$invoice_data_html .= '<th style="background: #eee;"><b>Item</b></th>';
+									$invoice_data_html .= '<th style="background: #eee;"><b>Description</b></th>';
+									$invoice_data_html .= '<th style="background: #eee;"><b>Unit Price ('.$invoices_list[1][0][13].')</b></th>';
+									$invoice_data_html .= '<th style="background: #eee;"><b>Quantity</b></th>';
+									$invoice_data_html .= '<th style="background: #eee;"><b>Amount ('.$invoices_list[1][0][13].')</b></th>';
+								$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '</thead>';
+							$invoice_data_html .= '<tbody>';
+					if($invoiced_items[0]==1)
+					{
+						for($p=0; $p < COUNT($invoiced_items[1]); $p++)
+						{
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td>'.$invoiced_items[1][$p][3].'</td>';
+								$invoice_data_html .= '<td>'.$invoiced_items[1][$p][4].'</td>';
+								$invoice_data_html .= '<td>'.$invoiced_items[1][$p][8].'</td>';
+								$invoice_data_html .= '<td>'.$invoiced_items[1][$p][9].'</td>';
+								$invoice_data_html .= '<td>'.$invoiced_items[1][$p][10].'</td>';
+							$invoice_data_html .= '</tr>';
+						}
+					}
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td colspan="2" rowspan="4">&nbsp;</td>';
+								$invoice_data_html .= '<td colspan="2"><b>Subtotal</b></td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][14].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td colspan="2"><b>Discount (less)</b></td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][17].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td colspan="2"><b>Service Tax @ 12.36%</b></td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][19].'</td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td colspan="2" style="background: #eee;"><b>Net Total</b></td>';
+								$invoice_data_html .= '<td style="background: #eee;"><b>'.$invoices_list[1][0][24].'</b></td>';
+							$invoice_data_html .= '</tr>';
+							$invoice_data_html .= '</tbody>';
+						$invoice_data_html .= '</table>';
+					$invoice_data_html .= '</div>';
+				$invoice_data_html .= '</div>';
+			$invoice_data_html .= '</div>';
+			$invoice_data_html .= '<div class="row-fluid">';
+				$invoice_data_html .= '<div class="span6">';
+				$invoice_data_html .= '&nbsp;';
+				$invoice_data_html .= '</div>';
+				$invoice_data_html .= '<div class="span6">';
+					$invoice_data_html .= '<div class="table-responsive">';
+						$invoice_data_html .= '<table class="table table-bordered">';
+							$invoice_data_html .= '<tr>';
+								$invoice_data_html .= '<td style="background: #eee;">Payment Gateway</td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][27].'</td>';
+								$invoice_data_html .= '<td style="background: #eee;">Payment Mode</td>';
+								$invoice_data_html .= '<td>'.$invoices_list[1][0][28].'</td>';
+							$invoice_data_html .= '</tr>';
+						$invoice_data_html .= '</table>';
+					$invoice_data_html .= '</div>';
+				$invoice_data_html .= '</div>';
+			$invoice_data_html .= '</div>';
+
+		}
+		return $invoice_data_html;
+	}
+
+	public function constructInvoiceTopHTML()
+	{
+		$html_to_return = "";
+		$html_to_return .= '<!DOCTYPE html>';
+		$html_to_return .= '<html lang="en">';
+			$html_to_return .= '<head>';
+				$html_to_return .= '<meta charset="utf-8">';
+				$html_to_return .= '<title>ChurchStack - Your Invoice</title>';
+				$html_to_return .= '<meta name="viewport" content="width=device-width">';
+				$html_to_return .= '<link href="../plugins/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">';
+				$html_to_return .= '<link href="../plugins/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" media="screen">	';
+				$html_to_return .= '<link href="../css/custom.css" rel="stylesheet">';
+				$html_to_return .= '<link href="../plugins/fullcalendar1/fullcalendar.css" rel="stylesheet">';
+			$html_to_return .= '</head>';
+			//$html_to_return .= '<body data-offset="50" data-twttr-rendered="true">';
+			$html_to_return .= '<body>';
+				$html_to_return .= '<div class="container">';
+					//$html_to_return .= '<div class="col-sm-10 col-sm-offset-1">';
+					$html_to_return .= '<div class="span12">';
+						$html_to_return .= '<div class="table-responsive">';
+							$html_to_return .= '<table class="table table-bordered">';
+								$html_to_return .= '<tbody>';
+									$html_to_return .= '<tr>';
+										$html_to_return .= '<td style="background: #eee;">';
+											$html_to_return .= '<div class="row-fluid" style="background:#eee;">';
+												$html_to_return .= '<div class="span6"><a href="http://www.ChurchStack.com" target="_blank"><img src="../images/cs-web-logo.png" width="1000" height="300"></a></div>';
+												$html_to_return .= '<div class="span6"><a href="http://www.ChurchStack.com" target="_blank"><img src="../images/email/cs-website-text.png" class="pull-right"></a></div>';
+											$html_to_return .= '</div>';
+										$html_to_return .= '</td>';
+									$html_to_return .= '</tr>';
+									$html_to_return .= '<tr>';
+										$html_to_return .= '<td>';
+
+		return $html_to_return;
+	}
+
+	public function constructInvoiceBottomHTML()
+	{
+		$html_to_return = "";
+											$html_to_return .= '</td>';
+										$html_to_return .= '</tr>';
+										$html_to_return .= '<tr>';
+											$html_to_return .= '<td style="background: #eee;">';
+												$html_to_return .= '<div class="row-fluid" style="background:#eee;">';
+													$html_to_return .= '<div class="span6">Contact Us : <a href="mailto:support@churchstack.com" target="_blank">support@churchstack.com</a></div>';
+													$html_to_return .= '<div class="span6"><a href="http://www.rapydcloud.com" target="_blank" class="pull-right">RapydCloud Technologies Pvt Ltd</a></div>';
+												$html_to_return .= '</div>';
+											$html_to_return .= '</td>';
+										$html_to_return .= '</tr>';
+									$html_to_return .= '<tbody>';
+								$html_to_return .= '</table>';
+							$html_to_return .= '</div>';
+					$html_to_return .= '</div>';
+			$html_to_return .= '</body>';
+		$html_to_return .= '</html>';
+		return $html_to_return;
+	}
 }
 
 ?>
