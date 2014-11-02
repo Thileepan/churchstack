@@ -510,25 +510,31 @@ else if($req == 9)
 			$status_code = $invoices_list[1][$i][30];
 			$invoice_info = '<a style="cursor: pointer;" data-toggle="modal" data-target="#invoiceDetailsModal" onclick="showInvoiceReport('.$invoice_id.');" nowrap>'.$trans_id.'</a>';
 
+			$action_btn_html = '<div class="dropdown">';
+				$action_btn_html .= '&nbsp;&nbsp;&nbsp;<i class="curHand icon-envelope" data-toggle="modal" data-target="#emailInvoiceModal" onclick="emailTheInvoice(1, '.$invoices_list[1][$i][0].', \''.$invoices_list[1][$i][8].'\');" title="Email This Invoice"></i>';
+			$action_btn_html .= '</div>';
+
+			/** /
+			
 			$action_btn_html = '<div class="btn-group">';
 				$action_btn_html .= '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></button>';
 				$action_btn_html .= '<ul class="dropdown-menu" role="menu">';
-					/** /
-					if($eligible_for_extension==1) {
-						$action_btn_html .= '<li><a href="#" data-toggle="modal" data-target="#extendValidityModal" onclick="churchActions(1, '.$curr_church[0].',\''.$curr_church[1].'\');">Extend Validity</a></li>';
-					} else {
-						$action_btn_html .= '<li class="disabled"><a href="#">Extend Validity</a></li>';
-					}
-					/**/
 					//$action_btn_html .= '<li><a href="#">Another action</a></li>';
 					//$action_btn_html .= '<li><a href="#">Something else here</a></li>';
 					//$action_btn_html .= '<li class="divider"></li>';
 					$action_btn_html .= '<li><a href="#" onclick="downloadInvoiceReportPDF('.$invoice_id.',\''.$trans_id.'\');">Download As PDF</a></li>';
-					$action_btn_html .= '<li><a href="#" onclick="invoiceActions(2, '.$invoice_id.');">Email This Invoice</a></li>';
+					$action_btn_html .= '<li><a href="#" data-toggle="modal" data-target="#emailInvoiceModal" onclick="emailTheInvoice(1, '.$invoices_list[1][$i][0].', \''.$invoices_list[1][$i][8].'\');">Email This Invoice</a></li>';
 				$action_btn_html .= '</ul>';
 			$action_btn_html .= '</div>';
+			/**/
 
-			$to_return['aaData'][] = array($invoice_id, $invoice_info, $invoice_date, $total_paid, $status_code, $action_btn_html);
+			if($status_code == 1) {
+				$status_text = "Success";
+			} else {
+				$status_text = "Failed";
+			}
+			$net_paid = $invoices_list[1][$i][13]." ".$total_paid;
+			$to_return['aaData'][] = array($invoice_id, $invoice_info, $invoice_date, $net_paid, $status_text, $action_btn_html);
 		}
 	}
 	
@@ -590,6 +596,23 @@ else if($req == 11)//download invoice as PDF
 	/**/
 
 	$to_return = array("rsno"=>1, "input_html"=>$full_html, "target_file"=>$target_file);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 13)//Email an Invoice
+{
+	$invoice_id = trim($_REQUEST['invoice_id']);
+	$act_num = trim($_REQUEST['act_num']);
+	$email = trim($_REQUEST['email']);
+	$lic_obj = new License($APPLICATION_PATH);
+	$result_data = $lic_obj->prepareAndSendOrderDetailsEmail($invoice_id, $email);
+	$rsno = $result_data[0];
+	$msg = $result_data[1];
+	$to_return = array("actno"=>$act_num, "rsno"=>$rsno, "msg"=>$msg);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);

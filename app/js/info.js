@@ -303,13 +303,14 @@ function getInvoicesList()
 	document.getElementById('pageContent').innerHTML = table;
 	
 	oTable = $('#listInvoicesTable').dataTable( {
-		/*"aoColumns": [
-			{ "sWidth": "5%" },
-			{ "sWidth": "30%"  },
+		"aoColumns": [
+			{ "sWidth": "10%" },
 			{ "sWidth": "20%"  },
-			{ "sWidth": "30%" },
+			{ "sWidth": "25%"  },
+			{ "sWidth": "15%" },
 			{ "sWidth": "15%"  },			
-		],*/
+			{ "sWidth": "15%"  },
+		],
         "bProcessing": true,
 		"bDestroy": true,
         "sAjaxSource": "server/doinfo",
@@ -369,5 +370,85 @@ function downloadInvoiceReportPDFResponse(response)
 	document.getElementById("pdfInputHtml").value = dataObj.input_html;
 	document.getElementById("pdfTargetFile").value = dataObj.target_file;
 	document.pdfForm.submit();
+	return false;
+}
+
+
+function emailTheInvoice(actionType, invoiceID, emailID)
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var reqType = 12;//Open div
+	if(actionType==1) {
+		reqType = 12;//Open Div
+		/**/
+		document.getElementById("emailFailureSpan").innerHTML = "";
+		document.getElementById("emailSuccessSpan").innerHTML = "";
+		document.getElementById("emailFailureSpan").style.display = "none";
+		document.getElementById("emailSuccessSpan").style.display = "none";
+		document.getElementById("sendEmailBtnSpan").style.display = "";
+		document.getElementById("sendEmailProgSpan").style.display = "none";
+		document.getElementById("txtEmailInvoice").value = emailID;
+		document.getElementById("txtInvoiceIDToEmail").value = invoiceID;
+		return false;
+	} else if(actionType==2) {
+		reqType = 13;//Email Invoice
+		document.getElementById("emailFailureSpan").innerHTML = "";
+		document.getElementById("emailSuccessSpan").innerHTML = "";
+		document.getElementById("emailFailureSpan").style.display = "none";
+		document.getElementById("emailSuccessSpan").style.display = "none";
+		document.getElementById("sendEmailBtnSpan").style.display = "none";
+		document.getElementById("sendEmailProgSpan").style.display = "";
+	} else {
+		return false;
+	}
+
+	var formPostData = "req="+reqType;
+	formPostData += "&act_num="+actionType;
+	formPostData += "&invoice_id="+document.getElementById("txtInvoiceIDToEmail").value;
+	formPostData += "&email="+document.getElementById("txtEmailInvoice").value;
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:emailTheInvoiceResponse,
+		error:HandleAjaxError
+	});
+	return false;
+}
+
+function emailTheInvoiceResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.actno == 2)
+	{
+		document.getElementById("sendEmailProgSpan").style.display = "none";
+		document.getElementById("sendEmailBtnSpan").style.display = "";
+
+		if(dataObj.rsno==0) {
+			$('#emailInvoiceModal').modal('hide');
+			var resultToUI = getAlertDiv(2, dataObj.msg);
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = resultToUI;
+		} else {
+			$('#emailInvoiceModal').modal('hide');
+			var resultToUI = getAlertDiv(1, dataObj.msg);
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = resultToUI;
+		}
+
+		/** /
+		document.getElementById("sendEmailProgSpan").style.display = "none";
+		document.getElementById("sendEmailBtnSpan").style.display = "";
+		if(dataObj.rsno==0) {
+			document.getElementById("emailFailureSpan").innerHTML = dataObj.msg;
+			document.getElementById("emailFailureSpan").style.display = "";
+			return false;
+		} else {
+			document.getElementById("emailSuccessSpan").innerHTML = dataObj.msg;
+			document.getElementById("emailSuccessSpan").style.display = "";
+			return false;
+		}
+		/**/
+	}
 	return false;
 }

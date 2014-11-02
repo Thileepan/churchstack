@@ -59,14 +59,47 @@ include $APPLICATION_PATH."header";
 			Loading data...
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Email This Invoice</button>
-        <button type="button" class="btn btn-primary">Download as PDF</button>
+        <!-- button type="button" class="btn btn-primary" data-toggle="modal" data-target="#emailInvoiceModal" onclick="emailTheInvoice(1, '.$invoices_list[1][$i][0].', \''.$invoices_list[1][$i][8].'\');">Email This Invoice</button>
+        <button type="button" class="btn btn-primary">Download as PDF</button -->
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <!-- button type="button" class="btn btn-primary">Save changes</button -->
       </div>
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="emailInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" width="1000" style="display:none;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><!-- span class="sr-only">Close</span--></button>
+				<h4 class="modal-title" id="emailInvoiceModalLabel">Email This Invoice</h4>
+			</div>
+			<div class="modal-body" id="emailInvoiceBody">
+				<div style="text-align:center; height:30px;" id="emailResultDiv" style="display:none;">
+				<span class="label label-success" id="emailSuccessSpan" style="display:none;"></span>
+				<span class="label label-danger" id="emailFailureSpan" style="display:none;"></span>
+			</div>
+			<div class="input-group" style="text-align:center;">
+				<span class="input-group-addon">Email Address</span>
+				<input type="text" class="form-control" placeholder="Email Address" id="txtEmailInvoice">
+			</div>
+			<div style="text-align:center;" id="divSendEmailBtn">
+				<span id="sendEmailBtnSpan"><button class="btn btn-primary btn-lg" onclick="Javascript: emailTheInvoice(2, '', '');">Send Email</button></span>
+				<span id="sendEmailProgSpan" style="display:none;"><img src="<?php echo $APPLICATION_PATH;?>images/ajax-loader.gif">&nbsp;Sending now...</span>
+				<input type="hidden" id="txtInvoiceIDToEmail" value="0">
+			</div>
+				<div style="text-align:center; height:10px;">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<!-- button type="button" class="btn btn-primary">Save changes</button -->
+			</div>
+		</div>
+	</div>
+</div>
+
 <?php
 include "footer";
 ?>
