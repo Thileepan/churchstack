@@ -317,8 +317,9 @@ abstract class PayPal_Digital_Goods {
 	 * @uses get_script()
 	 */
 	public function print_buy_button( $args = array() ){
-		echo $this->get_buy_button( $args );
-		echo $this->get_script( $args );
+		$button = $this->get_buy_button( $args );
+		$button .= $this->get_script( $args );
+		return $button;
 	}
 
 

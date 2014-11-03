@@ -587,6 +587,7 @@ function getAlertDiv(alertType, alertMsg, actionToDo, actionTakenMsg, actionCanc
 		alertDiv += '<br><button class="btn btn-danger" type="button" onclick="'+actionTakenCallBack+'">'+actionTakenMsg+'</button>&nbsp;<button class="btn" type="button" onclick="'+actionCancelCallBack+'">'+actionCancelMsg+'</button>';
 	}
 	alertDiv += '</div>';
+	$('html,body').scrollTop(0);
 	return alertDiv;
 }
 

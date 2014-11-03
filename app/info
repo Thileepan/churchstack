@@ -12,6 +12,7 @@ $APPLICATION_PATH = "./";
 include $APPLICATION_PATH."header";
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/info.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $APPLICATION_PATH; ?>plugins/paypal/examples/style.css" />
 
 <div class="page-header">
     <h4 id="pageHeader">My Church</h4>

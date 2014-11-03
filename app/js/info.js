@@ -291,7 +291,7 @@ function getBillingPlans()
 
 function getBillingPlansResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "Plans";
+	document.getElementById('pageHeader').innerHTML = "Choose your new plan";
 	document.getElementById('pageContent').innerHTML = response;
 }
 
@@ -451,4 +451,71 @@ function emailTheInvoiceResponse(response)
 		/**/
 	}
 	return false;
+}
+
+function updatePlanDetails()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var oldPlanID = document.getElementById('hidInputOldPlanID').value;
+	var newPlanInfoIndex = document.getElementById('selPlanList').selectedIndex;
+	var newPlanInfo = document.getElementById('selPlanList').options[newPlanInfoIndex].value;
+	var newPlanInfoArr = newPlanInfo.split('<:|:>');
+	var newPlanID = newPlanInfoArr[0];
+	if(oldPlanID == newPlanID) {
+		var resultToUI = getAlertDiv(2, 'Please choose different plan from the currently using plan and proceed.');
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		return false;
+	}
+	
+	var formPostData = 'req=14&planID=' + newPlanID;
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:updatePlanDetailsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function updatePlanDetailsResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );	
+	if(dataObj.rsno == 1) {
+		getBillingDetails();
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);		
+	} else {
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+	}	
+}
+
+function showNewPlanDetails()
+{
+	var newPlanInfoIndex = document.getElementById('selPlanList').selectedIndex;
+	var newPlanInfo = document.getElementById('selPlanList').options[newPlanInfoIndex].value;
+	var newPlanInfoArr = newPlanInfo.split('<:|:>');
+	var newPlanPricing = newPlanInfoArr[1];
+	var newPlanValidityDays = parseInt(newPlanInfoArr[2]);
+
+	document.getElementById('newPlanPricing').innerHTML = newPlanPricing + ' / ' + ((newPlanValidityDays == 30)?'Monthly':'Yearly');
+}
+
+function getPaymentWorkFlow()
+{
+	var formPostData = 'req=15';
+	$.ajax({
+		type:'POST',
+		url:doInfoFile,
+		data:formPostData,
+		success:getPaymentWorkFlowResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getPaymentWorkFlowResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "Plans";
+	document.getElementById('pageContent').innerHTML = response;
 }

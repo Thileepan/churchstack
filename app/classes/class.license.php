@@ -315,12 +315,17 @@ class License
 		return $toReturn;
 	}
 
-	public function getAllLicensePlanDetails()
+	public function getAllLicensePlanDetails($filter_by_freq = 0)
 	{
 		$toReturn = array(); 
 		$toReturn[0] = 0;
 		$toReturn[1] = "Error encountered while trying to get the license plans";
 		$query = 'select * from LICENSE_PLANS';
+		if($filter_by_freq == 1) {
+			$query .= " where VALIDITY_IN_DAYS = 30";
+		} else if($filter_by_freq == 2) {
+			$query .= " where VALIDITY_IN_DAYS = 365";
+		}
 		$result = $this->db_conn->Execute($query);
 		if($result) {
 			if(!$result->EOF) {

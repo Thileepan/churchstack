@@ -10,6 +10,7 @@ include_once $APPLICATION_PATH . 'classes/class.church.php';
 include_once $APPLICATION_PATH . 'classes/class.utility.php';
 include_once $APPLICATION_PATH . 'classes/class.license.php';
 include_once $APPLICATION_PATH . 'classes/class.users.php';
+include_once $APPLICATION_PATH . 'classes/class.paypal.php';
 include_once $APPLICATION_PATH . 'utils/JSON.php';
 
 //process request
@@ -332,7 +333,7 @@ else if($req == 4)
 							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">License Status</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
-									$to_return .= (($is_trial == 1)?'Trial &nbsp;&nbsp;<span class="label label-info curHand">Buy Now</span>':'Paid');
+									$to_return .= (($is_trial == 1)?'Trial &nbsp;&nbsp;<span class="label label-info curHand" onclick="getPaymentWorkFlow();">Buy Now</span>':'Paid');
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div style="padding-bottom:6px;">';
@@ -434,7 +435,10 @@ else if($req == 8)
 	//get billing plans
 
 	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
 	$license_plans = $license_obj->getAllLicensePlanDetails();
+	$license_details = $license_obj->getLicenseDetails();
+	$options = '<option value="-1">Select Plan</option>';
 	if(is_array($license_plans) && $license_plans[0] == 1)
 	{
 		$total_plans = COUNT($license_plans[1]);
@@ -449,8 +453,29 @@ else if($req == 8)
 			$validity_in_seconds = $license_plans[1][$i]['validity_in_seconds'];
 			$validity_in_days = $license_plans[1][$i]['validity_in_days'];
 
-			$options .= '<option value="'.$plan_id.'">'.$plan_name.'</option>';
+			$plan_info = $plan_id.'<:|:>'.$pricing.'<:|:>'.$validity_in_days;
+			$options .= '<option value="'.$plan_info.'">'.$plan_name.'</option>';
 		}		
+	}
+
+	if(is_array($license_details)) {
+		if($license_details[0] == 1) {
+			$plan_id = $license_details[1][0]['plan_id'];
+			$is_trial = $license_details[1][0]['is_on_trial'];
+			$trial_expiry_date = date('M d, Y', $license_details[1][0]['trial_expiry_timestamp']);
+			$lic_expiry_date = date('M d, Y', $license_details[1][0]['lic_expiry_timestamp']);
+			$plan_details =$license_obj->getLicensePlanDetails($plan_id);
+			if(is_array($plan_details) && $plan_details[0] == 1) {
+				$plan_name = $plan_details[1]['plan_name'];
+				$plan_description = $plan_details[1]['plan_description'];
+				$plan_type = $plan_details[1]['plan_type'];
+				$max_count = $plan_details[1]['max_count'];
+				$pricing = $plan_details[1]['pricing'];
+				$validity_in_seconds = $plan_details[1]['validity_in_seconds'];
+				$validity_in_days = $plan_details[1]['validity_in_days'];
+				$is_yearly = (($validity_in_days == 365)?1:0);
+			}
+		}
 	}
 
 	$to_return = '';
@@ -459,8 +484,8 @@ else if($req == 8)
 			$to_return .= '<div class="widget">';
 				$to_return .= '<div class="widget-header" style="background-color:white">';
 					$to_return .= '<i class="icon-asterisk"></i>';
-					$to_return .= '<h3 style="color:black;">Choose your plan</h3>';
-					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh icon-white curHand" onclick="getDashboardData(2);"></i></span>';
+					$to_return .= '<h3 style="color:black;">Choose your new plan</h3>';
+					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh curHand" onclick="getBillingPlans();"></i></span>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="widget-content">';
 					$to_return .= '<div class="stats">';
@@ -472,12 +497,25 @@ else if($req == 8)
 								$to_return .= '</div>';
 							$to_return .= '</div>';*/
 							$to_return .= '<div style="padding-bottom:6px;">';
-								$to_return .= '<label class="control-label muted">Plans</label>';
+								$to_return .= '<label class="control-label muted">Current Plan</label>';
+								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
+									$to_return .= '<span id="oldPlanName">'.$plan_name.'</span><BR>';
+									$to_return .= '<span id="oldPlanPricing">'.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Choose your new plan</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
-									$to_return .= '<select>';
+									$to_return .= '<select id="selPlanList" onChange="showNewPlanDetails();">';
 										$to_return .= $options;
 									$to_return .= '</select>';
+									$to_return .= '<BR><span class="muted" id="newPlanPricing"></span>';
 								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div class="form-actions">';
+								$to_return .= '<button class="btn btn-primary" onclick="updatePlanDetails();">Change Plan</button>&nbsp;';
+								$to_return .= '<button class="btn" type="reset" onclick="document.getElementById(\'newPlanPricing\').innerHTML = \'\';">Reset</button>';
+								$to_return .= '<input type="hidden" id="hidInputOldPlanID" value="'.$plan_id.'" />';
 							$to_return .= '</div>';
 						$to_return .= '</form>';
 					$to_return .= '</div>';
@@ -620,5 +658,94 @@ else if($req == 13)//Email an Invoice
 	echo $encode_obj;
 	exit;
 }
+else if($req == 14)
+{
+	//update the pricing plans
 
+	$plan_id = trim($_REQUEST['planID']);
+
+	$force_plan_change = 0;
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$to_return = $license_obj->justChangeTheLicensePlanAlone($plan_id, $force_plan_change);
+
+	$ret_array = array("rsno"=>$to_return[0], "msg"=>$to_return[1]);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 15)
+{
+	$license_obj = new License($APPLICATION_PATH);
+	$license_obj->setChurchID($_SESSION["churchID"]);
+	$license_details = $license_obj->getLicenseDetails();
+	
+	if(is_array($license_details)) {
+		if($license_details[0] == 1) {
+			$plan_id = $license_details[1][0]['plan_id'];
+			$is_trial = $license_details[1][0]['is_on_trial'];
+			$trial_expiry_date = date('M d, Y', $license_details[1][0]['trial_expiry_timestamp']);
+			$lic_expiry_date = date('M d, Y', $license_details[1][0]['lic_expiry_timestamp']);
+			$plan_details =$license_obj->getLicensePlanDetails($plan_id);
+			if(is_array($plan_details) && $plan_details[0] == 1) {
+				$plan_name = $plan_details[1]['plan_name'];
+				$plan_description = $plan_details[1]['plan_description'];
+				$plan_type = $plan_details[1]['plan_type'];
+				$max_count = $plan_details[1]['max_count'];
+				$pricing = $plan_details[1]['pricing'];
+				$validity_in_seconds = $plan_details[1]['validity_in_seconds'];
+				$validity_in_days = $plan_details[1]['validity_in_days'];
+				$is_yearly = (($validity_in_days == 365)?1:0);
+			}
+		}
+	}
+
+	$paypal_obj = new PayPal($APPLICATION_PATH);
+	$purchase_obj = $paypal_obj->setPurchaseDetails();
+
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';
+		$to_return .= '<div class="span10">';
+			$to_return .= '<div class="widget">';
+				$to_return .= '<div class="widget-header" style="background-color:white">';
+					$to_return .= '<i class="icon-asterisk"></i>';
+					$to_return .= '<h3 style="color:black;">Payments</h3>';
+					$to_return .= '<span class="pull-right" style="padding-right:10px;"><i class="icon-refresh curHand" onclick="getPaymentWorkFlow();"></i></span>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="widget-content">';
+					$to_return .= '<div class="stats">';
+						$to_return .= '<form class="form-horizontal">';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								$to_return .= '<label class="control-label muted">Billing Plan</label>';
+								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
+									$to_return .= '<span id="oldPlanName">'.$plan_name.'</span><BR>';
+									$to_return .= '<span id="oldPlanPricing">'.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div style="padding-bottom:6px;">';
+								//$to_return .= '<label class="control-label muted">Billing Plan</label>';
+								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
+									$to_return .= ($is_trial)?'Your account is in trial and it will expire on '.$trial_expiry_date:'Your license will be expire on '.$lic_expiry_date;
+								$to_return .= '</div>';
+							$to_return .= '</div>';
+							$to_return .= '<div class="form-actions">';
+								$to_return .= $purchase_obj->print_buy_button();
+							$to_return .= '</div>';
+						$to_return .= '</form>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	//$paypal_obj->get_description();
+	//$paypal_obj->get_purchase_price();
+	//$paypal_obj->print_buy_button();
+
+	echo $to_return;
+	exit;
+}
 ?>

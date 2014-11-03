@@ -105,4 +105,18 @@ define('SHOW_REPORTS_MENU', 1);
 define('IDLE_SECONDS_LOGOUT', 3600);
 define('SESSION_DATA_REFRESH_SECONDS', 300);
 
+//PAYPAL CREDENTIALS
+define('USE_SANDBOX', 1);
+define('PAYPAL_USERNAME', 'sktgthill-facilitator_api1.gmail.com');
+define('PAYPAL_PASSWORD', '1408191544');
+define('PAYPAL_SIGNATURE', 'AFcWxV21C7fd0v3bYYYRCpSSRl31AyiS2qsbPAQ2oNIRwagSiYeILWk2');
+define('PAYPAL_RETURN_URL', 'info?paypal=paid');
+define('PAYPAL_CANCEL_URL', 'info?paypal=cancel');
+define('PAYPAL_NOTIFY_URL', 'info?paypal=notify');
+define("PAYPAL_DEBUG", 1);
+define("IPN_LOG_FILE", "plugins/paypal/ipn/ipn.log");
+define("PAYPAL_USE_SSL", 1);
+define("PAYPAL_SANDBOX_URL" , "www.sandbox.paypal.com");
+define("PAYPAL_LIVE_URL" , "www.paypal.com");
+
 ?>
