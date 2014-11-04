@@ -396,7 +396,7 @@ insert into PROFILE_SETTINGS values (4, 3, 'Deleted');
 insert into SUBSCRIPTION_FIELDS (FIELD_NAME, HIDE) values ('General', 0);
 
 insert into SMS_PROVIDERS (SMS_PROVIDER_ID, SMS_PROVIDER_NAME, SMS_PROVIDER_WEBSITE) values (1,'Twilio', 'http://www.twilio.com/');
-insert into SMS_PROVIDERS (SMS_PROVIDER_ID, SMS_PROVIDER_NAME, SMS_PROVIDER_WEBSITE) values (2,'BhashSMS', 'http://bhashsms.com');
-insert into SMS_PROVIDERS (SMS_PROVIDER_ID, SMS_PROVIDER_NAME, SMS_PROVIDER_WEBSITE) values (3,'Nexmo', 'https://www.nexmo.com/');
+insert into SMS_PROVIDERS (SMS_PROVIDER_ID, SMS_PROVIDER_NAME, SMS_PROVIDER_WEBSITE) values (2,'Nexmo', 'https://www.nexmo.com/');
+insert into SMS_PROVIDERS (SMS_PROVIDER_ID, SMS_PROVIDER_NAME, SMS_PROVIDER_WEBSITE) values (3,'BhashSMS', 'http://bhashsms.com');
 insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values ('SMS','SMS_ENABLED', 0, '');
 insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values ('SMS','SMS_PROVIDER_ID', 0, '');

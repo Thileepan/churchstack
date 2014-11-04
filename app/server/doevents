@@ -580,7 +580,7 @@ else if($req == 5)
 				$rrule = $event_details[$i][8];				
 				if($rrule != '') {
 
-					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $today, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
 				}
 
 				$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $next_event_date, $event_details[$i][3], $event_details[$i][10], $actions);

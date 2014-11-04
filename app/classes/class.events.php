@@ -428,7 +428,17 @@ class Events
 				}
 				else
 				{
-					$event_info[] = array('start'=>$start_date_db, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$event_start_date_alone, "startTimeAlone"=>$start_time);
+					//"2014-11-04 14:00:00" => This should be the format for "start" param
+					if(strlen($start_time) > 3) {
+						$hour = substr($start_time, 0, 2);
+						$min = substr($start_time, 2, 2);
+					} else {
+						$hour = "0".substr($start_time, 0, 1);
+						$min = substr($start_time, 1, 2);
+					}
+					$sec = '00';
+					$start_date_and_time = $start_date_db.' '.$hour.':'.$min.':'.$sec;
+					$event_info[] = array('start'=>$start_date_and_time, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$event_start_date_alone, "startTimeAlone"=>$start_time);
 				}
 			}
 		}
@@ -572,7 +582,7 @@ class Events
 					$notification_period = $event_details[$i][14];
 					
 					if($rrule != '') {
-						$next_event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $this->time_zone, $rrule, $virtualLimit);					
+						$next_event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $today, $end_date, $start_time, $end_time, $this->time_zone, $rrule, $virtualLimit);					
 					} else {
 						$next_event_date = $start_date." ".convertRailwayTimeToFullTime($start_time);
 					}

@@ -80,7 +80,25 @@
 		}
 		$sms_sending_file = $APPLICATION_PATH."notify/sendtwiliosms.php";
 	}
-	else if($sms_provider_id==2)//BhashSMS
+	else if($sms_provider_id==2)//Nexmo
+	{
+		$nexmo_api_key = "";
+		$nexmo_api_secret = "";
+		$nexmo_from_number = "";
+		$nexmo_config_result = $sms_obj->getNexmoConfig(1);//list active alone
+		if($nexmo_config_result[0]==1)
+		{
+			if(COUNT($nexmo_config_result[1]) > 0)
+			{
+				//taking the first config alone
+				$nexmo_api_key = $nexmo_config_result[1][0][1];
+				$nexmo_api_secret = $nexmo_config_result[1][0][2];
+				$nexmo_from_number = $nexmo_config_result[1][0][3];
+			}
+		}
+		$sms_sending_file = $APPLICATION_PATH."notify/sendnexmosms.php";
+	}
+	else if($sms_provider_id==3)//BhashSMS
 	{
 		$bhashsms_username="";
 		$bhashsms_password="";
@@ -99,24 +117,6 @@
 			}
 		}
 		$sms_sending_file = $APPLICATION_PATH."notify/sendbhashsms.php";
-	}
-	else if($sms_provider_id==3)//Nexmo
-	{
-		$nexmo_api_key = "";
-		$nexmo_api_secret = "";
-		$nexmo_from_number = "";
-		$nexmo_config_result = $sms_obj->getNexmoConfig(1);//list active alone
-		if($nexmo_config_result[0]==1)
-		{
-			if(COUNT($nexmo_config_result[1]) > 0)
-			{
-				//taking the first config alone
-				$nexmo_api_key = $nexmo_config_result[1][0][1];
-				$nexmo_api_secret = $nexmo_config_result[1][0][2];
-				$nexmo_from_number = $nexmo_config_result[1][0][3];
-			}
-		}
-		$sms_sending_file = $APPLICATION_PATH."notify/sendnexmosms.php";
 	}
 	//SMS Stuff
 
@@ -205,13 +205,13 @@
 						{
 							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" accountSID='.urlencode($twilio_account_sid).' authToken='.urlencode($twilio_auth_token).' fromNumber='.urlencode($twilio_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
 						}
-						else if($sms_provider_id==2)//BhashSMS
-						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
-						}
-						else if($sms_provider_id==3)//Nexmo
+						else if($sms_provider_id==2)//Nexmo
 						{
 							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" apiKey='.urlencode($nexmo_api_key).' apiSecret='.urlencode($nexmo_api_secret).' fromNumber='.urlencode($nexmo_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
+						}
+						else if($sms_provider_id==3)//BhashSMS
+						{
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
 						}
 					}
 				}
