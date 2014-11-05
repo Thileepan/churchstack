@@ -31,6 +31,25 @@
 	$subject = urldecode($_GET["subject"]);
 	$body = urldecode($_GET["emailBody"]);
 	$from_addr_type = $_GET["fromAddressType"];
+
+	$delim_first_names = urldecode($_GET["delimFirstNames"]);
+	if(trim($delim_first_names) != "")
+	{
+		$first_names_array = explode("/:/", $delim_first_names);
+	}
+
+	$delim_middle_names = urldecode($_GET["delimMiddleNames"]);
+	if(trim($delim_middle_names) != "")
+	{
+		$middle_names_array = explode("/:/", $delim_middle_names);
+	}
+	$delim_last_names = urldecode($_GET["delimLastNames"]);
+	if(trim($delim_last_names) != "")
+	{
+		$last_names_array = explode("/:/", $delim_last_names);
+	}
+
+
 	$from_address = EMAIL_FROM_INFO;
 	if($from_addr_type=="eventreminder") {
 		$from_address = EMAIL_FROM_DONOTREPLY;
@@ -40,6 +59,10 @@
 		$from_address = EMAIL_FROM_SALES;
 	} else if($from_addr_type=="account") {
 		$from_address = EMAIL_FROM_SALES;
+	} else if($from_addr_type=="birthdaygreetings") {
+		$from_address = EMAIL_FROM_DONOTREPLY ;
+	} else if($from_addr_type=="weddinggreetings") {
+		$from_address = EMAIL_FROM_DONOTREPLY ;
 	}
 
 	//Set and Send Email		
@@ -48,6 +71,21 @@
 	$email_obj->setBody($body);
 	for($e=0; $e < COUNT($emails_list_array); $e++)
 	{
+		//$single_organizer_row = str_replace("{{EVENT_ORGANIZER}}", $event_details_arr["event_organizers_array"][$k], $single_organizer_row);
+		if($from_addr_type=="birthdaygreetings" || $from_addr_type=="weddinggreetings")
+		{
+			$modified_subject = $subject;
+			$modified_subject = str_replace("{{FIRST_NAME}}", $first_names_array[$e], $modified_subject);
+			$modified_subject = str_replace("{{MIDDLE_NAME}}", $middle_names_array[$e], $modified_subject);
+			$modified_subject = str_replace("{{LAST_NAME}}", $last_names_array[$e], $modified_subject);
+			$email_obj->setSubject($modified_subject);
+
+			$modified_body = $body;
+			$modified_body = str_replace("{{FIRST_NAME}}", $first_names_array[$e], $modified_body);
+			$modified_body = str_replace("{{MIDDLE_NAME}}", $middle_names_array[$e], $modified_body);
+			$modified_body = str_replace("{{LAST_NAME}}", $last_names_array[$e], $modified_body);
+			$email_obj->setBody($modified_body);
+		}
 		$recipients = array();
 		$recipients['to_address'] = $emails_list_array[$e];
 		$recipients['cc_address'] = $cc_email_list_csv;

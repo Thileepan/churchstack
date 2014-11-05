@@ -17,40 +17,6 @@ class AutoNotifyReports
         }
 	}
 
-	public function insertNotificationReport($notification_type, $subject_internal_id, $for_occurrence)
-	{
-		$to_return = array();
-		$to_return[0] = 0;
-		$to_return[1] = "Unable to insert the report";
-		if($this->db_conn)
-		{
-			$query = 'insert into AUTO_NOTIFICATIONS_REPORT (NOTIFICATION_TYPE, SUBJECT_INTERNAL_ID, FOR_OCCURRENCE, UPDATED_ON) values(?,?,?, NOW())';
-			$result = $this->db_conn->Execute($query, array($notification_type, $subject_internal_id, $for_occurrence));
-			if($result) {
-				$to_return[0] = 1;
-				$to_return[1] = "Report inserted successfully";
-			}			
-		}
-		return $to_return;
-	}
-
-	public function isNotificationSent($notification_type, $subject_internal_id, $for_occurrence)
-	{
-		$toReturn = true;//keep this as default
-		$notification_type = "#EMAIL_TRIAL_EXPIRING_CHURCH#";
-		if($this->db_conn)
-		{
-			$query = 'select FOR_OCCURRENCE from AUTO_NOTIFICATIONS_REPORT where NOTIFICATION_TYPE=? and SUBJECT_INTERNAL_ID=? and FOR_OCCURRENCE=? limit 1';
-			$result = $this->db_conn->Execute($query, array($notification_type, $subject_internal_id, $for_occurrence));
-
-			if($result) {
-				if($result->EOF) {
-					$toReturn = false;
-				}
-			}
-		}
-		return $toReturn;
-	}
 
 	public function insertTrialExpiringNotifyReport($subject_internal_id, $for_occurrence)
 	{

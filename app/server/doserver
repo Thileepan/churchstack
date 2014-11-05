@@ -139,14 +139,18 @@ else if($req == 2)
 		$date_of_birth = $profile_info[4];
 		$marriage_date = $profile_info[8];
 		
-		if($date_of_birth != '') {
+		if($date_of_birth != '' && $date_of_birth != "0000-00-00") {
 			$dob_arr = explode('-', $date_of_birth);
 			$date_of_birth = $dob_arr[2]. '/'. $dob_arr[1]. '/' .$dob_arr[0];
+		} else {
+			$date_of_birth = "";
 		}
 		
-		if($marriage_date != '') {
+		if($marriage_date != ''  && $marriage_date != "0000-00-00") {
 			$marriage_date_arr = explode('-', $profile_info[8]);
 			$marriage_date = $marriage_date_arr[2]. '/'. $marriage_date_arr[1]. '/' .$marriage_date_arr[0];		
+		} else {
+			$marriage_date = "";
 		}
 	}
 

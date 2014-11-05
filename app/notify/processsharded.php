@@ -203,15 +203,15 @@
 
 						if($sms_provider_id==1)//Twilio: Repeat this for other providers
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" accountSID='.urlencode($twilio_account_sid).' authToken='.urlencode($twilio_auth_token).' fromNumber='.urlencode($twilio_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" accountSID='.urlencode($twilio_account_sid).' authToken='.urlencode($twilio_auth_token).' fromNumber='.urlencode($twilio_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
 						}
 						else if($sms_provider_id==2)//Nexmo
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" apiKey='.urlencode($nexmo_api_key).' apiSecret='.urlencode($nexmo_api_secret).' fromNumber='.urlencode($nexmo_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" apiKey='.urlencode($nexmo_api_key).' apiSecret='.urlencode($nexmo_api_secret).' fromNumber='.urlencode($nexmo_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
 						}
 						else if($sms_provider_id==3)//BhashSMS
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list);
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
 						}
 					}
 				}
