@@ -173,5 +173,139 @@ class Notification
         }
 		return $profile_list;
 	}
+
+	public function saveAnniversaryGreetingsSettings($is_birthday_email_greetings_enabled, $birthday_email_template_id, $is_birthday_sms_greetings_enabled, $birthday_sms_template_id, $is_wedding_email_greetings_enabled, $wedding_email_template_id, $is_wedding_sms_greetings_enabled, $wedding_sms_template_id)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to update settings";
+		if($this->db_conn)
+		{
+			$query = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result = $this->db_conn->Execute($query, array("BIRTHDAY_GREETINGS", "EMAIL_GREETINGS_ENABLED", $is_birthday_email_greetings_enabled, ""));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_1 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_1 = $this->db_conn->Execute($query_1, array("BIRTHDAY_GREETINGS", "EMAIL_GREETINGS_TEMPLATE_ID", $birthday_email_template_id, ""));
+			if($result_1) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}			
+
+			$query_2 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_2 = $this->db_conn->Execute($query_2, array("BIRTHDAY_GREETINGS", "SMS_GREETINGS_ENABLED", $is_birthday_sms_greetings_enabled, ""));
+			if($result_2) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_3 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_3 = $this->db_conn->Execute($query_3, array("BIRTHDAY_GREETINGS", "SMS_GREETINGS_TEMPLATE_ID", $birthday_sms_template_id, ""));
+			if($result_3) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_4 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_4 = $this->db_conn->Execute($query_4, array("WEDDING_GREETINGS", "EMAIL_GREETINGS_ENABLED", $is_wedding_email_greetings_enabled, ""));
+			if($result_4) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_5 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_5 = $this->db_conn->Execute($query_5, array("WEDDING_GREETINGS", "EMAIL_GREETINGS_TEMPLATE_ID", $wedding_email_template_id, ""));
+			if($result_5) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_6 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_6 = $this->db_conn->Execute($query_6, array("WEDDING_GREETINGS", "SMS_GREETINGS_ENABLED", $is_wedding_sms_greetings_enabled, ""));
+			if($result_6) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+
+			$query_7 = 'insert into GLOBAL_CONFIGURATION (FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE) values (?,?,?,?) ON DUPLICATE KEY UPDATE FEATURE_INT_VALUE=VALUES(FEATURE_INT_VALUE), FEATURE_STRING_VALUE=VALUES(FEATURE_STRING_VALUE)';//refer http://dev.mysql.com/doc/refman/5.1/en/insert-on-duplicate.html
+			$result_7 = $this->db_conn->Execute($query_7, array("WEDDING_GREETINGS", "SMS_GREETINGS_TEMPLATE_ID", $wedding_sms_template_id, ""));
+			if($result_7) {
+				$to_return[0] = 1;
+				$to_return[1] = "Settings updated successfully";
+			} else {
+				return $to_return;
+			}
+		}
+		return $to_return;
+	}
+
+	public function getAnniversaryGreetingsSettings()
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the anniversary greetings settings";
+		if($this->db_conn)
+		{
+		   $query = 'select FEATURE_NAME, FEATURE_KEY, FEATURE_INT_VALUE, FEATURE_STRING_VALUE from GLOBAL_CONFIGURATION where FEATURE_NAME=? or FEATURE_NAME=?';
+		   $result = $this->db_conn->Execute($query, array("BIRTHDAY_GREETINGS", "WEDDING_GREETINGS"));
+            
+           if($result) {
+			   $greetings_details = array();
+                while(!$result->EOF) {
+					$feature_name = $result->fields[0];
+					$feature_key = $result->fields[1];
+					$feature_int_value = $result->fields[2];
+					$feature_string_value = $result->fields[3];
+					if($feature_name == "BIRTHDAY_GREETINGS") {
+						if($feature_key == "EMAIL_GREETINGS_ENABLED") {
+							$greetings_details["BIRTHDAY_EMAIL_GREETINGS_ENABLED"] = $feature_int_value;
+						} else if ($feature_key == "EMAIL_GREETINGS_TEMPLATE_ID") {
+							$greetings_details["BIRTHDAY_EMAIL_GREETINGS_TEMPLATE_ID"] = $feature_int_value;
+						} else if ($feature_key == "SMS_GREETINGS_ENABLED") {
+							$greetings_details["BIRTHDAY_SMS_GREETINGS_ENABLED"] = $feature_int_value;
+						} else if ($feature_key == "SMS_GREETINGS_TEMPLATE_ID") {
+							$greetings_details["BIRTHDAY_SMS_GREETINGS_TEMPLATE_ID"] = $feature_int_value;
+						}
+					} else if($feature_name == "WEDDING_GREETINGS") {
+						if($feature_key == "EMAIL_GREETINGS_ENABLED") {
+							$greetings_details["WEDDING_EMAIL_GREETINGS_ENABLED"] = $feature_int_value;
+						} else if ($feature_key == "EMAIL_GREETINGS_TEMPLATE_ID") {
+							$greetings_details["WEDDING_EMAIL_GREETINGS_TEMPLATE_ID"] = $feature_int_value;
+						} else if ($feature_key == "SMS_GREETINGS_ENABLED") {
+							$greetings_details["WEDDING_SMS_GREETINGS_ENABLED"] = $feature_int_value;
+						} else if ($feature_key == "SMS_GREETINGS_TEMPLATE_ID") {
+							$greetings_details["WEDDING_SMS_GREETINGS_TEMPLATE_ID"] = $feature_int_value;
+						}
+					}
+					$result->MoveNext();
+				}
+				$toReturn[0] = 1;
+				$toReturn[1] = $greetings_details;
+            }
+        }
+		else
+		{
+			$toReturn[0] = 0;
+			$toReturn[1] = "Unable to connect to the system, please try again later.";
+		}
+		return $toReturn;
+	}
 }
 ?>

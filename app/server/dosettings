@@ -11,6 +11,7 @@ include_once $APPLICATION_PATH . 'classes/class.settings.php';
 include_once $APPLICATION_PATH . 'classes/class.users.php';
 include_once $APPLICATION_PATH . 'classes/class.profiles.php';
 include_once $APPLICATION_PATH . 'classes/class.sms.php';
+include_once $APPLICATION_PATH . 'classes/class.notification.php';
 include_once $APPLICATION_PATH . 'conf/config.php';
 
 //process request
@@ -1021,6 +1022,289 @@ else if($req==17)
 	}
 
 	$ret_array = array("saveType"=>$saveType, "rsno"=>$rsno, "msg"=>$msg);
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($ret_array);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req==18)
+{
+	$is_birthday_email_greetings_enabled = 0;
+	$is_birthday_sms_greetings_enabled = 0;
+	$is_wedding_email_greetings_enabled = 0;
+	$is_wedding_sms_greetings_enabled = 0;
+
+	$birthday_email_template_id = 0;
+	$birthday_email_template_name = "";
+	$birthday_email_template_content = "";
+	$birthday_email_template_subject = "";
+
+	$birthday_sms_template_id = 0;
+	$birthday_sms_template_name = "";
+	$birthday_sms_template_content = "";
+
+	$wedding_email_template_id = 0;
+	$wedding_email_template_name = "";
+	$wedding_email_template_content = "";
+	$wedding_email_template_subject = "";
+
+	$wedding_sms_template_id = 0;
+	$wedding_sms_template_name = "";
+	$wedding_sms_template_content = "";
+
+	$noti_obj = new Notification($APPLICATION_PATH);
+	$greetings_result = $noti_obj->getAnniversaryGreetingsSettings();
+	if($greetings_result[0]==1)
+	{
+		if(COUNT($greetings_result[1]) > 0)
+		{
+			$is_birthday_email_greetings_enabled = $greetings_result[1]["BIRTHDAY_EMAIL_GREETINGS_ENABLED"];
+			$is_birthday_sms_greetings_enabled = $greetings_result[1]["BIRTHDAY_SMS_GREETINGS_ENABLED"];
+			$is_wedding_email_greetings_enabled = $greetings_result[1]["WEDDING_EMAIL_GREETINGS_ENABLED"];
+			$is_wedding_sms_greetings_enabled = $greetings_result[1]["WEDDING_SMS_GREETINGS_ENABLED"];
+
+			$birthday_email_template_id = $greetings_result[1]["BIRTHDAY_EMAIL_GREETINGS_TEMPLATE_ID"];
+			$birthday_sms_template_id = $greetings_result[1]["BIRTHDAY_SMS_GREETINGS_TEMPLATE_ID"];
+			$wedding_email_template_id = $greetings_result[1]["WEDDING_EMAIL_GREETINGS_TEMPLATE_ID"];
+			$wedding_sms_template_id = $greetings_result[1]["WEDDING_SMS_GREETINGS_TEMPLATE_ID"];
+		}
+
+		$disable_sms_stuff = 1;
+		$sms_obj =  new SMS($APPLICATION_PATH);
+		$sms_result = $sms_obj->getSMSConfiguration();
+		if($sms_result[0]==1) {
+			if(is_array($sms_result[1]) && $sms_result[1]["SMS_ENABLED"] == 1 && $sms_result[1]["SMS_PROVIDER_ID"] > 0) {
+				$disable_sms_stuff = 0;
+			}
+		}
+
+		if($disable_sms_stuff == 1)
+		{
+			$is_birthday_sms_greetings_enabled = 0;
+			$is_wedding_sms_greetings_enabled = 0;
+		}
+		$toReturn = '';
+		$toReturn .= '<form id="greetingsForm" class="form-horizontal" method="post" enctype="multipart/form-data" onsubmit="return false;">'; 
+			$toReturn .= '<div class="row-fluid">';
+				$toReturn .= '<div class="span10">';
+					$toReturn .= '<p class="text-left text-info">';
+						$toReturn .= '<b>Automated Birthday Greetings</b>';
+					$toReturn .= '</p>';
+					$toReturn .= '<div style="padding-bottom:6px;">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<input type="checkbox" id="chkBirthdayEmailGreetings"'.(($is_birthday_email_greetings_enabled==1)? ' checked' : '').' onclick="clickBirthdayEmailGreetings(this);">';
+							$toReturn .= '&nbsp;&nbsp;<b>Send Email Greetings</b>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divBirthdayEmailTemplatesList" style="padding-bottom:6px; display:'.(($is_birthday_email_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<label class="control-label" for="selBDayEmailTemplates">Use this email template&nbsp;&nbsp;</label>';
+							$toReturn .= '<select  id="selBDayEmailTemplates" onkeyup="onChangeBirthdayEmailTemplates(this)" onkeydown="onChangeBirthdayEmailTemplates(this)" onchange="onChangeBirthdayEmailTemplates(this)">';
+								$toReturn .= '<option value="-1">Choose a template</option>';
+								//Forlooop
+								$toReturn .= '<option value="1">'.$template_namesocnes_hre.'</option>';
+							$toReturn .= '</select>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divBirthdayEmailTemplatesPreview" style="padding-bottom:6px; display:'.(($is_birthday_email_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<div class="table-responsive">';
+								$toReturn .= '<table class="table table-bordered">';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td style="background:#eee;">Preview of template : <span id="spanBDayEmailTemplateName">'.$birthday_email_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td>Subject : <span id="spanBDayEmailTemplateSubject">'.$birthday_email_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td><span id="spanBDayEmailTemplateContent">'.$birthday_email_template_content.'</span></td>';
+									$toReturn .= '</tr>';
+								$toReturn .= '</table>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div style="padding-bottom:6px;">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<input type="checkbox" id="chkBirthdaySMSGreetings"'.(($is_birthday_sms_greetings_enabled==1)? ' checked' : '').' onclick="clickBirthdaySMSGreetings(this);"'.(($disable_sms_stuff==1)?" disabled" : "").'>';
+							$toReturn .= '&nbsp;&nbsp;<b>Send SMS Greetings</b>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					if($disable_sms_stuff==1)
+					{
+						$toReturn .= '<div style="padding-bottom:6px;">';
+							$toReturn .= '<div class="controls">';
+								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="settings#sms-config" target="_parent" onclick="Javascript:window.location.href = \'settings#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					}
+
+					$toReturn .= '<div id="divBirthdaySMSTemplatesList" style="padding-bottom:6px; display:'.(($is_birthday_sms_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<label class="control-label" for="selBDaySMSTemplates">Use this SMS template&nbsp;&nbsp;</label>';
+							$toReturn .= '<select  id="selBDaySMSTemplates" onkeyup="onChangeBirthdaySMSTemplates(this)" onkeydown="onChangeBirthdaySMSTemplates(this)" onchange="onChangeBirthdaySMSTemplates(this)">';
+								$toReturn .= '<option value="-1">Choose a template</option>';
+								//Forlooop
+								$toReturn .= '<option value="1">'.$template_namesocnes_hre.'</option>';
+							$toReturn .= '</select>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divBirthdaySMSTemplatesPreview" style="padding-bottom:6px; display:'.(($is_birthday_sms_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<div class="table-responsive">';
+								$toReturn .= '<table class="table table-bordered">';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td style="background:#eee;">Preview of template : <span id="spanBDaySMSTemplateName">'.$birthday_sms_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td><span id="spanBDaySMSTemplateContent">'.$birthday_sms_template_content.'</span></td>';
+									$toReturn .= '</tr>';
+								$toReturn .= '</table>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+				$toReturn .= '</div>';
+			$toReturn .= '</div>';
+
+
+			$toReturn .= '<div class="row-fluid">';
+				$toReturn .= '<div class="span10">';
+					$toReturn .= '<p class="text-left text-info">';
+						$toReturn .= '<b>Automated Wedding Greetings</b>';
+					$toReturn .= '</p>';
+					$toReturn .= '<div style="padding-bottom:6px;">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<input type="checkbox" id="chkWeddingEmailGreetings"'.(($is_wedding_email_greetings_enabled==1)? ' checked' : '').' onclick="clickWeddingEmailGreetings(this);">';
+							$toReturn .= '&nbsp;&nbsp;<b>Send Email Greetings</b>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divWeddingEmailTemplatesList" style="padding-bottom:6px; display:'.(($is_wedding_email_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<label class="control-label" for="selWeddingEmailTemplates">Use this email template&nbsp;&nbsp;</label>';
+							$toReturn .= '<select  id="selWeddingEmailTemplates" onkeyup="onChangeWeddingEmailTemplates(this)" onkeydown="onChangeWeddingEmailTemplates(this)" onchange="onChangeWeddingEmailTemplates(this)">';
+								$toReturn .= '<option value="-1">Choose a template</option>';
+								//Forlooop
+								$toReturn .= '<option value="1">'.$template_namesocnes_hre.'</option>';
+							$toReturn .= '</select>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divWeddingEmailTemplatesPreview" style="padding-bottom:6px; display:'.(($is_wedding_email_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<div class="table-responsive">';
+								$toReturn .= '<table class="table table-bordered">';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td style="background:#eee;">Preview of template : <span id="spanWeddingEmailTemplateName">'.$wedding_email_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td>Subject : <span id="spanWeddingEmailTemplateSubject">'.$wedding_email_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td><span id="spanWeddingEmailTemplateContent">'.$wedding_email_template_content.'</span></td>';
+									$toReturn .= '</tr>';
+								$toReturn .= '</table>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div style="padding-bottom:6px;">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<input type="checkbox" id="chkWeddingSMSGreetings"'.(($is_wedding_sms_greetings_enabled==1)? ' checked' : '').' onclick="clickWeddingSMSGreetings(this);"'.(($disable_sms_stuff==1)?" disabled" : "").'>';
+							$toReturn .= '&nbsp;&nbsp;<b>Send SMS Greetings</b>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					if($disable_sms_stuff==1)
+					{
+						$toReturn .= '<div style="padding-bottom:6px;">';
+							$toReturn .= '<div class="controls">';
+								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="settings#sms-config" target="_parent" onclick="Javascript:window.location.href = \'settings#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					}
+
+					$toReturn .= '<div id="divWeddingSMSTemplatesList" style="padding-bottom:6px; display:'.(($is_wedding_sms_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<label class="control-label" for="selWeddingSMSTemplates">Use this SMS template&nbsp;&nbsp;</label>';
+							$toReturn .= '<select  id="selWeddingSMSTemplates" onkeyup="onChangeWeddingSMSTemplates(this)" onkeydown="onChangeWeddingSMSTemplates(this)" onchange="onChangeWeddingSMSTemplates(this)">';
+								$toReturn .= '<option value="-1">Choose a template</option>';
+								//Forlooop
+								$toReturn .= '<option value="1">'.$template_namesocnes_hre.'</option>';
+							$toReturn .= '</select>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+
+					$toReturn .= '<div id="divWeddingSMSTemplatesPreview" style="padding-bottom:6px; display:'.(($is_wedding_sms_greetings_enabled==1)? '' : 'none').';">';
+						$toReturn .= '<div class="controls">';
+							$toReturn .= '<div class="table-responsive">';
+								$toReturn .= '<table class="table table-bordered">';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td style="background:#eee;">Preview of template : <span id="spanWeddingSMSTemplateName">'.$wedding_sms_template_subject.'</span></td>';
+									$toReturn .= '</tr>';
+									$toReturn .= '<tr>';
+										$toReturn .= '<td><span id="spanWeddingSMSTemplateContent">'.$wedding_sms_template_content.'</span></td>';
+									$toReturn .= '</tr>';
+								$toReturn .= '</table>';
+							$toReturn .= '</div>';
+						$toReturn .= '</div>';
+					$toReturn .= '</div>';
+				$toReturn .= '</div>';
+			$toReturn .= '</div>';
+
+			$toReturn .= '<div class="row-fluid">';
+				$toReturn .= '<div class="span10">';
+					$toReturn .= '<div class="form-actions">';
+						$toReturn .= '<button class="btn btn-primary" type="submit" onclick="saveAnniversaryGreetingsConfig();">Save</button>&nbsp;&nbsp;';
+						$toReturn .= '<button class="btn" type="reset">Reset</button>';
+					$toReturn .= '</div>';
+				$toReturn .= '</div>';
+			$toReturn .= '<div>';
+
+		$toReturn .= '</form>';
+	}
+	else
+	{
+		$toReturn .= '<font color="red">'.$greetings_result[1].'</font>';
+	}
+
+	echo $toReturn;
+	exit;
+}
+else if($req==19)
+{
+	$is_birthday_email_greetings_enabled = trim($_POST["isBirthdayEmailGreetingsEnabled"]);
+	$is_birthday_sms_greetings_enabled = trim($_POST["isBirthdaySMSGreetingsEnabled"]);
+	$is_wedding_email_greetings_enabled = trim($_POST["isWeddingEmailGreetingsEnabled"]);
+	$is_wedding_sms_greetings_enabled = trim($_POST["isWeddingSMSGreetingsEnabled"]);
+
+	$birthday_email_template_id = trim($_POST["birthdayGreetingsEmailTemplateId"]);
+	$birthday_sms_template_id = trim($_POST["birthdayGreetingsSMSTemplateId"]);
+	$wedding_email_template_id =  trim($_POST["weddingGreetingsEmailTemplateId"]);
+	$wedding_sms_template_id =  trim($_POST["weddingGreetingsSMSTemplateId"]);
+
+	//$username = trim(stripslashes(rawurldecode($_POST["txtUsername"])));
+	$rsno = 0;
+	$msg = "Unable to save the settings";
+
+	$noti_obj = new Notification($APPLICATION_PATH);
+	$save_result = $noti_obj->saveAnniversaryGreetingsSettings($is_birthday_email_greetings_enabled, $birthday_email_template_id, $is_birthday_sms_greetings_enabled, $birthday_sms_template_id, $is_wedding_email_greetings_enabled, $wedding_email_template_id, $is_wedding_sms_greetings_enabled, $wedding_sms_template_id);
+
+	if($save_result[0]==1) {
+		$rsno = 1;
+		$msg = "Settings saved successfully";
+	} else {
+		$rsno = 0;
+		$msg = $save_result[1];
+	}
+
+	$ret_array = array("rsno"=>$rsno, "msg"=>$msg);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($ret_array);
 	unset($json);

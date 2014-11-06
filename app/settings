@@ -29,8 +29,9 @@ include $APPLICATION_PATH."header";
 		  <li class="nav-header" style="display:none;">User Management</li>
 		  <li id="listUsers" onclick="highlightSelectedMenu(6); listAllUsers();" class="" style="display:none;"><a href="#">List Users</a></li>
 		  <li id="addNewUser" onclick="highlightSelectedMenu(7); GetAddOrEditUserForm(0);" class="" style="display:none;"><a href="#">Add New User</a></li>		  
-		  <li class="nav-header" style="display:;">SMS Notifications</li>
-		  <li id="smsConfig" onclick="highlightSelectedMenu(8); getSMSConfigForm();" class="" style="display:;"><a href="#">SMS Configuration</a></li>
+		  <li class="nav-header" style="display:;">Notifications & Alerts</li>
+		  <li id="smsConfig" onclick="highlightSelectedMenu(8); getSMSConfigForm();" class="" style="display:;"><a href="#sms-config">SMS Configuration</a></li>
+		  <li id="greetingsConfig" onclick="highlightSelectedMenu(9); getGreetingsConfigForm();" class="" style="display:;"><a href="#anniv-greetings-config">Anniversary Greetings</a></li>
         </ul>
     </div>
 	<div class="span10">
@@ -50,6 +51,15 @@ include "footer";
 ?>
 
 <script type='text/javascript'>
-	menuLinkClicked(4);
-	listProfileOptions(1);
+	var url_hash = window.location.hash;
+	if((trim(url_hash))== "#sms-config") {
+		document.getElementById("smsConfig").click();
+	} else if((trim(url_hash))== "#anniv-greetings-config") {
+		document.getElementById("greetingsConfig").click();
+	}
+	else
+	{
+		menuLinkClicked(4);
+		listProfileOptions(1);
+	}
 </script>

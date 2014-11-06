@@ -564,6 +564,7 @@ function highlightSelectedMenu(menu)
 	document.getElementById('listUsers').className = '';
 	document.getElementById('addNewUser').className = '';
 	document.getElementById('smsConfig').className = '';
+	document.getElementById('greetingsConfig').className = '';
 
 	//Now set the active class for the selected menu
 	var classNameToSet = 'active';
@@ -583,6 +584,8 @@ function highlightSelectedMenu(menu)
 		document.getElementById('addNewUser').className = classNameToSet;
 	} else if(menu == 8) {
 		document.getElementById('smsConfig').className = classNameToSet;
+	} else if(menu == 9) {
+		document.getElementById('greetingsConfig').className = classNameToSet;
 	}
 }
 
@@ -1060,4 +1063,172 @@ function cancelChangeSMSGatewayRequest()
 {
 	document.getElementById('alertDiv').innerHTML = '';
 	document.getElementById('alertRow').style.display = 'none';
+}
+
+function getGreetingsConfigForm()
+{
+	document.getElementById('alertRow').style.display = 'none';
+	var formPostData = 'req=18';
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:getGreetingsConfigFormResponse,
+		error:HandleAjaxError
+	});	
+}
+
+function getGreetingsConfigFormResponse(response)
+{
+	document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
+	document.getElementById('pageContent').innerHTML = response;
+
+//	loadSMSConfig(1, 0);
+}
+
+function clickBirthdayEmailGreetings(elem)
+{
+	if(elem.checked)
+	{
+		document.getElementById("divBirthdayEmailTemplatesList").style.display = "";
+		document.getElementById("divBirthdayEmailTemplatesPreview").style.display = "";
+	}
+	else
+	{
+		document.getElementById("divBirthdayEmailTemplatesList").style.display = "none";
+		document.getElementById("divBirthdayEmailTemplatesPreview").style.display = "none";
+	}
+}
+
+function clickBirthdaySMSGreetings(elem)
+{
+	if(elem.checked)
+	{
+		document.getElementById("divBirthdaySMSTemplatesList").style.display = "";
+		document.getElementById("divBirthdaySMSTemplatesPreview").style.display = "";
+	}
+	else
+	{
+		document.getElementById("divBirthdaySMSTemplatesList").style.display = "none";
+		document.getElementById("divBirthdaySMSTemplatesPreview").style.display = "none";
+	}
+}
+
+function clickWeddingEmailGreetings(elem)
+{
+	if(elem.checked)
+	{
+		document.getElementById("divWeddingEmailTemplatesList").style.display = "";
+		document.getElementById("divWeddingEmailTemplatesPreview").style.display = "";
+	}
+	else
+	{
+		document.getElementById("divWeddingEmailTemplatesList").style.display = "none";
+		document.getElementById("divWeddingEmailTemplatesPreview").style.display = "none";
+	}
+}
+
+function clickWeddingSMSGreetings(elem)
+{
+	if(elem.checked)
+	{
+		document.getElementById("divWeddingSMSTemplatesList").style.display = "";
+		document.getElementById("divWeddingSMSTemplatesPreview").style.display = "";
+	}
+	else
+	{
+		document.getElementById("divWeddingSMSTemplatesList").style.display = "none";
+		document.getElementById("divWeddingSMSTemplatesPreview").style.display = "none";
+	}
+}
+
+function saveAnniversaryGreetingsConfig()
+{
+	document.getElementById('alertRow').style.display = 'none';
+
+	var isBirthdayEmailGreetingsEnabled=0;
+	var isBirthdaySMSGreetingsEnabled=0;
+	var isWeddingEmailGreetingsEnabled=0;
+	var isWeddingSMSGreetingsEnabled=0;
+	var birthdayGreetingsEmailTemplateId=0;
+	var birthdayGreetingsSMSTemplateId=0;
+	var weddingGreetingsEmailTemplateId=0;
+	var weddingGreetingsSMSTemplateId=0;
+
+	if(document.getElementById("chkBirthdayEmailGreetings").checked) {
+		isBirthdayEmailGreetingsEnabled = 1;
+		birthdayGreetingsEmailTemplateId = document.getElementById("selBDayEmailTemplates").value;
+		if(document.getElementById("selBDayEmailTemplates").selectedIndex == 0) {
+			var alertMsg = 'Please select an email template for sending birthday greetings. If no templates is available yet, create one and use it. Greetings can be sent only using a template.';
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+
+	if(document.getElementById("chkBirthdaySMSGreetings").checked) {
+		isBirthdaySMSGreetingsEnabled = 1;
+		birthdayGreetingsSMSTemplateId = document.getElementById("selBDaySMSTemplates").value;
+		if(document.getElementById("selBDaySMSTemplates").selectedIndex == 0) {
+			var alertMsg = 'Please select an SMS template for sending birthday greetings. If no templates is available yet, create one and use it. Greetings can be sent only using a template.';
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+
+	if(document.getElementById("chkWeddingEmailGreetings").checked) {
+		isWeddingEmailGreetingsEnabled = 1;
+		weddingGreetingsEmailTemplateId = document.getElementById("selWeddingEmailTemplates").value;
+		if(document.getElementById("selWeddingEmailTemplates").selectedIndex == 0) {
+			var alertMsg = 'Please select an email template for sending wedding anniversary greetings. If no templates is available yet, create one and use it. Greetings can be sent only using a template.';
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+
+	if(document.getElementById("chkWeddingSMSGreetings").checked) {
+		isWeddingSMSGreetingsEnabled = 1;
+		weddingGreetingsSMSTemplateId = document.getElementById("selWeddingSMSTemplates").value;
+		if(document.getElementById("selWeddingSMSTemplates").selectedIndex == 0) {
+			var alertMsg = 'Please select an SMS template for sending wedding anniversary greetings. If no templates is available yet, create one and use it. Greetings can be sent only using a template.';
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
+			return false;
+		}
+	}
+
+	var formPostData = 'req=19';
+	formPostData += '&isBirthdayEmailGreetingsEnabled='+isBirthdayEmailGreetingsEnabled;
+	formPostData += '&isBirthdaySMSGreetingsEnabled='+isBirthdaySMSGreetingsEnabled;
+	formPostData += '&isWeddingEmailGreetingsEnabled='+isWeddingEmailGreetingsEnabled;
+	formPostData += '&isWeddingSMSGreetingsEnabled='+isWeddingSMSGreetingsEnabled;
+	formPostData += '&birthdayGreetingsEmailTemplateId='+birthdayGreetingsEmailTemplateId;
+	formPostData += '&birthdayGreetingsSMSTemplateId='+birthdayGreetingsSMSTemplateId;
+	formPostData += '&weddingGreetingsEmailTemplateId='+weddingGreetingsEmailTemplateId;
+	formPostData += '&weddingGreetingsSMSTemplateId='+weddingGreetingsSMSTemplateId;
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:saveAnniversaryGreetingsConfigResponse,
+		error:HandleAjaxError
+	});
+
+	return false;
+}
+
+function saveAnniversaryGreetingsConfigResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj.rsno == 1) {
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(1, dataObj.msg);
+	} else {
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
+	}
+	return false;
 }
