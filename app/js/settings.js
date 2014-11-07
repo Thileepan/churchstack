@@ -3,7 +3,9 @@ doSettingsFile = 'server/dosettings';
 
 function listProfileOptions(opt)
 {
+	var settingName = "";
 	if(opt == 1) {
+		var settingName = "Salutations";
 		document.getElementById('listSalutationOptions').className = 'active';
 		document.getElementById('listRelationshipOptions').className = '';
 		document.getElementById('listMaritalOptions').className = '';
@@ -12,6 +14,7 @@ function listProfileOptions(opt)
 		document.getElementById('listUsers').className = '';
 		document.getElementById('addNewUser').className = '';
 	} else if(opt == 2) {
+		var settingName = "Relationships";
 		document.getElementById('listSalutationOptions').className = '';
 		document.getElementById('listRelationshipOptions').className = 'active';
 		document.getElementById('listMaritalOptions').className = '';
@@ -20,6 +23,7 @@ function listProfileOptions(opt)
 		document.getElementById('listUsers').className = '';
 		document.getElementById('addNewUser').className = '';
 	} else if(opt == 3) {
+		var settingName = "Marital Statuses";
 		document.getElementById('listSalutationOptions').className = '';
 		document.getElementById('listRelationshipOptions').className = '';
 		document.getElementById('listMaritalOptions').className = 'active';
@@ -28,6 +32,7 @@ function listProfileOptions(opt)
 		document.getElementById('listUsers').className = '';
 		document.getElementById('addNewUser').className = '';
 	} else if(opt == 4) {
+		var settingName = "Profile Statuses";
 		document.getElementById('listSalutationOptions').className = '';
 		document.getElementById('listRelationshipOptions').className = '';
 		document.getElementById('listMaritalOptions').className = '';
@@ -38,7 +43,7 @@ function listProfileOptions(opt)
 	}
 	document.getElementById('alertRow').style.display = 'none';
 
-	var formPostData = 'req=1&opt=' + opt;
+	var formPostData = 'req=1&opt=' + opt+'&settingName='+settingName;
 	$.ajax({
 		type:'POST',
 		url:doSettingsFile,
@@ -161,11 +166,23 @@ function hideAddOptionForm()
 	document.getElementById('divAddOptionForm').style.display='none';
 }
 
-function deleteOption(rowID)
+function deleteOption(rowID, askConfirmation)
 {
 	//var rowID = document.getElementById('hiddenLastEditedRow').value;
 	var optionID = document.getElementById('inputEditOptionID-' + rowID).value;
 	var settingID = document.getElementById('hiddenSettingID').value;
+	var optionName = document.getElementById('inputEditOptionValue-' + rowID).value;
+	var settingName = document.getElementById('hiddenSettingName').value;
+	if(askConfirmation) {
+		var msgToDisplay = 'You are requesting to delete the option "<b>'+ optionName + '</b>" from the field "<b>'+settingName+'</b>". Deleting this option might have impact on the profiles which are assigned with this option for <b>'+settingName+'</b>.<BR>Are you sure you want to delete this option?<BR>';
+		var actionTakenCallBack = "deleteOption(" + rowID+ ", 0)";
+		var actionCanelCallBack = "cancelFieldOptionDeleteRequest()";
+		var resultToUI = getAlertDiv(4, msgToDisplay, 1, "Yes, Delete", "No, Cancel", actionTakenCallBack, actionCanelCallBack);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		$('html,body').scrollTop(0);
+		return false;
+	}
 	setID = settingID;
 
 	var formPostData = 'req=3&settingID=' + settingID + '&optionID=' + optionID;
@@ -387,7 +404,6 @@ function listProfileAllCustomFields()
 
 function listProfileAllCustomFieldsResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = 'List Of Custom Profile Fields';
 	document.getElementById('pageContent').innerHTML = response;
 }
 
@@ -570,22 +586,31 @@ function highlightSelectedMenu(menu)
 	var classNameToSet = 'active';
 	if(menu == 1) {
 		document.getElementById('listSalutationOptions').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Modify Salutations";
 	} else if(menu == 2) {
 		document.getElementById('listRelationshipOptions').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Modify Relationships";
 	} else if(menu == 3) {
 		document.getElementById('listMaritalOptions').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Modify Marital Statuses";
 	} else if(menu == 4) {
 		document.getElementById('listProfileStatusOptions').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Modify Profile Statuses";
 	} else if(menu == 5) {
 		document.getElementById('listProfileCustomFields').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Modify Custom Profile Fields";
 	} else if(menu == 6) {
 		document.getElementById('listUsers').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "List Login Users";
 	} else if(menu == 7) {
 		document.getElementById('addNewUser').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Create New Login User";
 	} else if(menu == 8) {
 		document.getElementById('smsConfig').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Configure SMS Gateway/Provider";
 	} else if(menu == 9) {
 		document.getElementById('greetingsConfig').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
 	}
 }
 
@@ -604,7 +629,6 @@ function getSMSConfigForm()
 
 function getSMSConfigFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "SMS Gateway Settings";
 	document.getElementById('pageContent').innerHTML = response;
 
 	loadSMSConfig(1, 0);
@@ -1080,7 +1104,6 @@ function getGreetingsConfigForm()
 
 function getGreetingsConfigFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
 	document.getElementById('pageContent').innerHTML = response;
 
 //	loadSMSConfig(1, 0);
@@ -1231,4 +1254,10 @@ function saveAnniversaryGreetingsConfigResponse(response)
 		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
 	}
 	return false;
+}
+
+function cancelFieldOptionDeleteRequest()
+{
+	document.getElementById('alertDiv').innerHTML = '';
+	document.getElementById('alertRow').style.display = 'none';
 }

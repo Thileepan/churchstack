@@ -311,7 +311,7 @@ else if($req == 4)
 				$to_return .= '</div>';
 				$to_return .= '<div class="widget-content">';
 					$to_return .= '<div class="stats">';
-						$to_return .= '<form class="form-horizontal">';
+						$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">Plan</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
@@ -489,7 +489,7 @@ else if($req == 8)
 				$to_return .= '</div>';
 				$to_return .= '<div class="widget-content">';
 					$to_return .= '<div class="stats">';
-						$to_return .= '<form class="form-horizontal">';
+						$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 /*							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">Plan</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
@@ -717,7 +717,7 @@ else if($req == 15)
 				$to_return .= '</div>';
 				$to_return .= '<div class="widget-content">';
 					$to_return .= '<div class="stats">';
-						$to_return .= '<form class="form-horizontal">';
+						$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">Billing Plan</label>';
 								$to_return .= '<div class="controls muted" style="padding-top:5px;">';

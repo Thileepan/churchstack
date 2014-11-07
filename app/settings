@@ -20,15 +20,15 @@ include $APPLICATION_PATH."header";
     <div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Profile Settings</li>
-          <li id="listSalutationOptions" onclick="highlightSelectedMenu(1); listProfileOptions(1);" class="active"><a href="#">Salutation</a></li>
-		  <li id="listRelationshipOptions" onclick="highlightSelectedMenu(2); listProfileOptions(2);" class=""><a href="#">Relationship</a></li>
-		  <li id="listMaritalOptions" onclick="highlightSelectedMenu(3); listProfileOptions(3);" class=""><a href="#">Marital Status</a></li>
+		  <li id="listSalutationOptions" onclick="highlightSelectedMenu(1); listProfileOptions(1);" class="active"><a href="#salutations">Salutation</a></li>
+		  <li id="listRelationshipOptions" onclick="highlightSelectedMenu(2); listProfileOptions(2);" class=""><a href="#relationships">Relationship</a></li>
+		  <li id="listMaritalOptions" onclick="highlightSelectedMenu(3); listProfileOptions(3);" class=""><a href="#marital-status">Marital Status</a></li>
 		  <li id="listProfileStatusOptions" onclick="highlightSelectedMenu(4); listProfileOptions(4);" class="" style="display:none;"><a href="#">Profile Status</a></li>
-		  <li id="listProfileCustomFields" onclick="highlightSelectedMenu(5); listProfileAllCustomFields();" class=""><a href="#">Custom Profile Fields</a></li>
+		  <li id="listProfileCustomFields" onclick="highlightSelectedMenu(5); listProfileAllCustomFields();" class=""><a href="#custom-fields">Custom Profile Fields</a></li>
 		  <li class="divider" style="display:none;"></li>
 		  <li class="nav-header" style="display:none;">User Management</li>
-		  <li id="listUsers" onclick="highlightSelectedMenu(6); listAllUsers();" class="" style="display:none;"><a href="#">List Users</a></li>
-		  <li id="addNewUser" onclick="highlightSelectedMenu(7); GetAddOrEditUserForm(0);" class="" style="display:none;"><a href="#">Add New User</a></li>		  
+		  <li id="listUsers" onclick="highlightSelectedMenu(6); listAllUsers();" class="" style="display:none;"><a href="#list-users">List Users</a></li>
+		  <li id="addNewUser" onclick="highlightSelectedMenu(7); GetAddOrEditUserForm(0);" class="" style="display:none;"><a href="#add-new-user">Add New User</a></li>		  
 		  <li class="nav-header" style="display:;">Notifications & Alerts</li>
 		  <li id="smsConfig" onclick="highlightSelectedMenu(8); getSMSConfigForm();" class="" style="display:;"><a href="#sms-config">SMS Configuration</a></li>
 		  <li id="greetingsConfig" onclick="highlightSelectedMenu(9); getGreetingsConfigForm();" class="" style="display:;"><a href="#anniv-greetings-config">Anniversary Greetings</a></li>
@@ -52,13 +52,24 @@ include "footer";
 
 <script type='text/javascript'>
 	var url_hash = window.location.hash;
-	if((trim(url_hash))== "#sms-config") {
+	url_hash = trim(url_hash);
+	if(url_hash== "#sms-config") {
 		document.getElementById("smsConfig").click();
-	} else if((trim(url_hash))== "#anniv-greetings-config") {
+	} else if(url_hash == "#anniv-greetings-config") {
 		document.getElementById("greetingsConfig").click();
-	}
-	else
-	{
+	} else if(url_hash == "#salutations") {
+		document.getElementById("listSalutationOptions").click();
+	} else if(url_hash == "#relationships") {
+		document.getElementById("listRelationshipOptions").click();
+	} else if(url_hash == "#marital-status") {
+		document.getElementById("listMaritalOptions").click();
+	} else if(url_hash == "#custom-fields") {
+		document.getElementById("listProfileCustomFields").click();
+	} else if(url_hash == "#list-users") {
+		document.getElementById("listUsers").click();
+	} else if(url_hash == "#add-new-user") {
+		document.getElementById("addNewUser").click();
+	} else {
 		menuLinkClicked(4);
 		listProfileOptions(1);
 	}

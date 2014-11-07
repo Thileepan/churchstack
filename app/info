@@ -21,12 +21,12 @@ include $APPLICATION_PATH."header";
 	<div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Account Management</li>
-          <li id="myChurch" onclick="infoTabsChangeClass('myChurch'); getChurchInformation();" class="active"><a href="#">My Church</a></li>
+          <li id="myChurch" onclick="infoTabsChangeClass('myChurch'); getChurchInformation();" class="active"><a href="#church">My Church</a></li>
 		  <li id="notifications" style="display:none;" onclick="infoTabsChangeClass('notifications');"><a href="#">Notifications</a></li>
-		  <li id="billing" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#">My Billing & Plan</a></li>
-		  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#">My Login Credentials</a></li>
+		  <li id="billing" onclick="infoTabsChangeClass('billing'); getBillingDetails();"><a href="#billing-plan">My Billing & Plan</a></li>
+		  <li id="logininfo" onclick="infoTabsChangeClass('logininfo'); getLoginCredentialsForm();"><a href="#login-details">My Login Credentials</a></li>
           <li class="nav-header">Reports</li>
-          <li id="myInvoices" onclick="infoTabsChangeClass('myInvoices'); getInvoicesList();"><a href="#">My Invoices</a></li>
+          <li id="myInvoices" onclick="infoTabsChangeClass('myInvoices'); getInvoicesList();"><a href="#payments">My Invoices</a></li>
 	</ul>
     </div>
     <div class="span10">
@@ -105,5 +105,16 @@ include $APPLICATION_PATH."header";
 include "footer";
 ?>
 <script type='text/javascript'>
-	getChurchInformation();
+	var url_hash = window.location.hash;
+	if((trim(url_hash))== "#church") {
+		document.getElementById("myChurch").click();
+	} else if((trim(url_hash))== "#billing-plan") {
+		document.getElementById("billing").click();
+	} else if((trim(url_hash))== "#login-details") {
+		document.getElementById("logininfo").click();
+	} else if((trim(url_hash))== "#payments") {
+		document.getElementById("myInvoices").click();
+	} else {
+		document.getElementById("myChurch").click();
+	}
 </script>

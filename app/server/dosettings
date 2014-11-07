@@ -21,6 +21,7 @@ if($req == 1)
 {
 	//list options
 	$setting_id = $_REQUEST['opt'];
+	$setting_name = $_REQUEST['settingName'];
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$option_list = $settings_obj->getOptions($setting_id);
@@ -65,7 +66,15 @@ if($req == 1)
 						$to_return .= '<span id="spnEditOptionValueInfo-'.$i.'" style="display:none"><input type="hidden" value="'.$option_list[$i][0].'" id="inputEditOptionID-'.$i.'" /><input type="text" value="'.$option_list[$i][1].'" id="inputEditOptionValue-'.$i.'" /></span>';
 					$to_return .= '</td>';
 					$to_return .= '<td>';
-						$to_return .= '<span id="spnActionInfo-'.$i.'"><i class="curHand icon-pencil" onclick="showEditOptionInfoRow('.$i.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteOption('.$i.');"></i></span>';
+						$to_return .= '<span id="spnActionInfo-'.$i.'"><i class="curHand icon-pencil" onclick="showEditOptionInfoRow('.$i.');"></i>&nbsp;&nbsp;';
+						if($setting_id == 3 && ($option_list[$i][0] == 1 || $option_list[$i][0] == 2))
+						{
+							$to_return .= '&nbsp;';
+						}
+						else
+						{
+							$to_return .= '<i class="curHand icon-trash" onclick="deleteOption('.$i.', 1);"></i></span>';
+						}
 						$to_return .= '<span id="spnSaveButton-'.$i.'" style="display:none"><button class="btn btn-small btn-success" onclick="addOrUpdateOption(1);">Save</button>&nbsp;<button class="btn btn-small" onclick="hideEditOptionInfoRow('.$i.');">Cancel</button></span>';
 					$to_return .= '</td>';
 				$to_return .= '</tr>';
@@ -73,13 +82,13 @@ if($req == 1)
 		}
 	}
 
-	if( !$is_options_available )
-	{
-		$to_return .= '<tr>';
-			$to_return .= '<td colspan="3" align="center">'.'No profile settings available'.'</td>';
-		$to_return .= '</tr>';
-	}
-		$to_return .= '<tr style="display:none"><td colspan="3"><input type="hidden" value="" id="hiddenLastEditedRow" /><input type="hidden" value="'.$setting_id.'" id="hiddenSettingID" /></td></tr>';
+		if( !$is_options_available )
+		{
+			$to_return .= '<tr>';
+				$to_return .= '<td colspan="3" align="center">'.'No profile settings available'.'</td>';
+			$to_return .= '</tr>';
+		}
+		$to_return .= '<tr style="display:none"><td colspan="3"><input type="hidden" value="" id="hiddenLastEditedRow" /><input type="hidden" value="'.$setting_id.'" id="hiddenSettingID" /><input type="hidden" value="'.$setting_name.'" id="hiddenSettingName" /></td></tr>';
 		$to_return .= '</tbody>';
 	$to_return .= '</table>';
 

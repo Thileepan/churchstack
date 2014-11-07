@@ -118,6 +118,7 @@ function getBillingDetailsResponse(response)
 {
 	document.getElementById('pageHeader').innerHTML = "Billing";
 	document.getElementById('pageContent').innerHTML = response;
+	return false;
 }
 
 function getLoginCredentialsForm()
@@ -489,6 +490,8 @@ function updatePlanDetailsResponse(response)
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, dataObj.msg);
 	}	
+
+	return false;
 }
 
 function showNewPlanDetails()

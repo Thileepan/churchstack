@@ -43,12 +43,20 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['trialExpiryTimestamp'] < time())
 						{
-							header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+								header('Location:'.$APPLICATION_PATH."info#billing-plan");
+								exit;
+							}
 						}
 					}
 					else
 					{
-						header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+								header('Location:'.$APPLICATION_PATH."info#billing-plan");
+								exit;
+							}
 						//payment page
 					}
 				}
@@ -58,18 +66,30 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['licenseExpiryTimestamp'] < time())
 						{
-							header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+								header('Location:'.$APPLICATION_PATH."info#billing-plan");
+								exit;
+							}
 						}
 					}
 					else
 					{
-						header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+						if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+							header('Location:'.$APPLICATION_PATH."info#billing-plan");
+							exit;
+						}
 					}
 				}
 			}
 			else
 			{
-				header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+					//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
+					if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
+						header('Location:'.$APPLICATION_PATH."info#billing-plan");
+						exit;
+					}
 			}
 		}
 
