@@ -55,12 +55,16 @@ class Groups
 
 	public function deleteGroup($group_id)
 	{
-		$query = 'delete from GROUP_DETAILS where GROUP_ID=?';
+		$query = 'delete from GROUP_MEMBERS where GROUP_ID=?';
 		$result = $this->db_conn->Execute($query, array($group_id));
 		if($result) {
-			return true;
+			$query_1 = 'delete from GROUP_DETAILS where GROUP_ID=?';
+			$result_1 = $this->db_conn->Execute($query_1, array($group_id));
+			if($result_1) {
+				return 1;
+			}
 		}
-		return false;
+		return 0;
 	}
 
 	public function addGroupMembers($group_id, $profile_id_list)

@@ -19,10 +19,10 @@ include $APPLICATION_PATH."header";
 <div class="row-fluid">
     <div class="span2">
         <ul class="nav nav-list">
-          <li class="nav-header">Event Management</li>
-          <li id="calendar" onclick="showMonthlyCalendar(1);" class="active"><a href="#">Calendar</a></li>
-		  <li id="addEvent" onclick="getAddOrEditEventForm(0);"><a href="#">Add New Event</a></li>
-		  <li id="listEvents" onclick="showEventTabs();"><a href="#">List Events</a></li>
+	          <li class="nav-header">Event Management</li>
+	          <li id="calendar" onclick="showMonthlyCalendar(1);" class="active"><a href="#calendar">Calendar</a></li>
+		  <li id="addEvent" onclick="getAddOrEditEventForm(0);"><a href="#add-event">Add New Event</a></li>
+		  <li id="listEvents" onclick="showEventTabs();"><a href="#list-events">List Events</a></li>
         </ul>
     </div>
 	<div class="span10">
@@ -43,6 +43,17 @@ include "footer";
 ?>
 
 <script type='text/javascript'>
+	var url_hash = window.location.hash;
+	url_hash = trim(url_hash);
+	if(url_hash== "#calendar") {
+		document.getElementById("calendar").click();
+	} else if(url_hash == "#add-event") {
+		document.getElementById("addEvent").click();
+	} else if(url_hash == "#list-events") {
+		document.getElementById("listEvents").click();
+	} else {
+		document.getElementById("calendar").click();
+	}
 	menuLinkClicked(3);
-	showMonthlyCalendar(1);
+	//showMonthlyCalendar(1);
 </script>

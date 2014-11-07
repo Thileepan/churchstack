@@ -31,10 +31,11 @@ include $APPLICATION_PATH."header";
 <div class="row-fluid">
     <div class="span2">
         <ul class="nav nav-list">
-          <li class="nav-header">Profile Management</li>
-          <li id="listProfiles" onclick="listAllProfiles(1);" class="active"><a href="#">List Profiles</a></li>
-          <li id="addNewProfile" onclick="getAddOrEditProfileForm(0);"><a href="#">Add New Profile</a></li>
-		  <li style="display:none" id="importProfiles" onclick="getImportProfileForm();"><a href="#">Import Profiles</a></li>
+		<li class="nav-header">Profile Management</li>
+		<li id="listProfiles" onclick="highlightSelectedSubMenu(1); listAllProfiles(1);" class="active"><a href="#list-profiles">List Profiles</a></li>
+		<li id="addNewProfile" onclick="highlightSelectedSubMenu(2); getAddOrEditProfileForm(0);"><a href="#add-profile">Add New Profile</a></li>
+		<li style="display:none" id="importProfiles" onclick="highlightSelectedSubMenu(3); getImportProfileForm();"><a href="#import-profiles">Import Profiles</a></li>
+	 </ul>
 	</div>
 	<div class="span10">
 		<div class="row-fluid" id="loadingDiv" style="display:none">
@@ -92,8 +93,20 @@ include $APPLICATION_PATH."header";
 </div>
 
 <script type="text/javascript">
+	var url_hash = window.location.hash;
+	url_hash = trim(url_hash);
+	if(url_hash== "#list-profiles") {
+		document.getElementById("listProfiles").click();
+	} else if(url_hash == "#add-profile") {
+		document.getElementById("addNewProfile").click();
+	} else if(url_hash == "#import-profiles") {
+		document.getElementById("importProfiles").click();
+	} else {
+		document.getElementById("listProfiles").click();
+	}
+	
 	menuLinkClicked(1);
-	listAllProfiles(1);
+//	listAllProfiles(1);
 	$('.datepicker').datepicker();
 </script>
 

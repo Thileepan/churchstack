@@ -23,9 +23,9 @@ include $APPLICATION_PATH."header";
 <div class="row-fluid">
     <div class="span2">
         <ul class="nav nav-list">
-          <li class="nav-header">Group Management</li>
-		  <li id="addGroup" onclick="getAddOrEditGroupForm(0);"><a href="#">Add New Group</a></li>
-		  <li id="listGroup" onclick="listAllGroups();"><a href="#">List Groups</a></li>		  
+	          <li class="nav-header">Group Management</li>
+		  <li id="listGroup" onclick="listAllGroups();"><a href="#list-groups">List Groups</a></li>		  
+		  <li id="addGroup" onclick="getAddOrEditGroupForm(0);"><a href="#add-group">Add New Group</a></li>
         </ul>
     </div>
 	<div class="span10">
@@ -46,6 +46,15 @@ include "footer";
 ?>
 
 <script type='text/javascript'>
+	var url_hash = window.location.hash;
+	url_hash = trim(url_hash);
+	if(url_hash== "#add-group") {
+		document.getElementById("addGroup").click();
+	} else if(url_hash == "#list-groups") {
+		document.getElementById("listGroup").click();
+	} else {
+		document.getElementById("listGroup").click();
+	}
 	menuLinkClicked(8);
-	getAddOrEditGroupForm(0);
+	//getAddOrEditGroupForm(0);
 </script>

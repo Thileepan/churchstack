@@ -1238,3 +1238,23 @@ function deactivateProfileResponse(response)
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
+
+function highlightSelectedSubMenu(menu)
+{
+	//First set empty class for all the menus
+	document.getElementById('listProfiles').className = '';
+	document.getElementById('addNewProfile').className = '';
+	document.getElementById('importProfiles').className = '';
+	//Now set the active class for the selected menu
+	var classNameToSet = 'active';
+	if(menu == 1) {
+		document.getElementById('listProfiles').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "List Profiles";
+	} else if(menu == 2) {
+		document.getElementById('addNewProfile').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Add New Profile";
+	} else if(menu == 3) {
+		document.getElementById('importProfiles').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Import Profiles From Excel";
+	}
+}

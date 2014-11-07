@@ -22,9 +22,9 @@ include $APPLICATION_PATH."header";
 <div class="row-fluid">
     <div class="span2">
         <ul class="nav nav-list">
-          <li class="nav-header">Contribution Management</li>
-          <li id="listFunds" onclick="listAllFunds();" class="active"><a href="#">Contribution Funds</a></li>
-		  <li id="listBatches" onclick="listAllBatches();" class=""><a href="#">Batches</a></li>
+		  <li class="nav-header">Contribution Management</li>
+		  <li id="listFunds" onclick="listAllFunds();" class="active"><a href="#funds">Contribution Funds</a></li>
+		  <li id="listBatches" onclick="listAllBatches();" class=""><a href="#batches">Batches</a></li>
         <!--  <li class="divider"></li> -->
         </ul>
     </div>
@@ -60,6 +60,15 @@ include "footer";
 ?>
 
 <script type='text/javascript'>
+	var url_hash = window.location.hash;
+	url_hash = trim(url_hash);
+	if(url_hash== "#funds") {
+		document.getElementById("listFunds").click();
+	} else if(url_hash == "#batches") {
+		document.getElementById("listBatches").click();
+	} else {
+		document.getElementById("listFunds").click();
+	}
 	menuLinkClicked(9);
-	listAllFunds();
+//	listAllFunds();
 </script>

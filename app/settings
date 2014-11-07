@@ -70,7 +70,7 @@ include "footer";
 	} else if(url_hash == "#add-new-user") {
 		document.getElementById("addNewUser").click();
 	} else {
-		menuLinkClicked(4);
 		listProfileOptions(1);
 	}
+	menuLinkClicked(4);
 </script>
