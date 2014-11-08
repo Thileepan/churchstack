@@ -1363,6 +1363,7 @@ class License
 		$invoice_report = str_replace("{{TAX_AMOUNT}}", $purchase_details_arr["tax_amount"], $invoice_report);
 		$invoice_report = str_replace("{{PAYMENT_GATEWAY}}", $purchase_details_arr["payment_gateway"], $invoice_report);
 		$invoice_report = str_replace("{{PAYMENT_MODE}}", $purchase_details_arr["payment_mode"], $invoice_report);
+		$invoice_report = str_replace("{{CURRENCY_CODE}}", $purchase_details_arr["currency_code"], $invoice_report);
 
 
 		$subject = "Payment Received - Your Invoice Details";
@@ -1417,6 +1418,7 @@ class License
 			$purchase_details_arr["net_total"] = $inv_rep_result[1][0][24];
 			$purchase_details_arr["payment_gateway"] = $inv_rep_result[1][0][27];
 			$purchase_details_arr["payment_mode"] = $inv_rep_result[1][0][28];
+			$purchase_details_arr["currency_code"] = $inv_rep_result[1][0][13];
 			$purchase_details_arr["invoiced_items_array"] = array();
 
 			$invoiced_items = $this->getInvoicedItemsList($invoice_id);
