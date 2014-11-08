@@ -11,6 +11,7 @@
 	include_once($APPLICATION_PATH."plugins/thread/class.thread.php");
 	include_once($APPLICATION_PATH."classes/class.events.php");
 	include_once($APPLICATION_PATH."classes/class.sms.php");
+	include_once($APPLICATION_PATH."classes/class.notification.php");
 
 	//DO NOT REMOVE THIS LINE WITHOUT UNDERSTANDING
 	parse_str(implode('&', array_slice($argv, 1)), $_GET);
@@ -20,12 +21,22 @@
 
 	$shardedDB = urldecode($_GET["shardedDB"]);//Exclusively for running from command line 
 	$timeZone = urldecode($_GET["timeZone"]);//Exclusively for running from command line 
+
+	/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX* /
+	REMOVE THIS SOON
+	/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX* /
+	 
+	$shardedDB = "cs_cfaaa60bf132e18f76e387f960a81ee1";
+	$timeZone = "Asia/Kolkata";
+	/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX*/
+
 	$events_obj = new Events($APPLICATION_PATH, $shardedDB);
 	$events_obj->setTimeZone($timeZone);
 	
 	//Cleanup the notification reports older than 60 days.
 	$cleanup_result = $events_obj->cleanupOldEmailNotificationReports(60);
 	$cleanup_result = $events_obj->cleanupOldSMSNotificationReports(60);
+	$sms_email_report_cleanup_result = $noti_obj->cleanupOldEmailSMSCountReports(60);
 
 	$events_list = array();
 	$events_list = $events_obj->getEventsToNotifyNow();
@@ -120,6 +131,7 @@
 	}
 	//SMS Stuff
 
+	$noti_obj = new Notification($APPLICATION_PATH, $shardedDB);
 	if(COUNT($events_list))
 	{
 		$commands = array();
@@ -147,6 +159,7 @@
 				$event_body_input_array["event_date_time"] = $human_read_date_time;
 				$event_body_input_array["event_place"] = $events_list[$e]["event_place"];
 				$body = $events_obj->constructEventReminderEmailBody($event_body_input_array);
+				$noti_obj->insertEmailSMSCountReport(1, "Events", $body, $emails_count);
 
 				$subject = "Reminder: ".$events_list[$e]["event_title"]." @ ".$human_read_date_time;
 				$fromAddressType = "eventreminder";
@@ -187,6 +200,7 @@
 
 				if($is_sms_enabled==1 && $sms_provider_id > 0)
 				{
+					$noti_obj->insertEmailSMSCountReport(2, "Events", $sms_body, $sms_count);
 					$comma_separated_numbers_list = "";
 					for($s=0; $s < $sms_count; $s++)
 					{

@@ -307,5 +307,44 @@ class Notification
 		}
 		return $toReturn;
 	}
+
+	public function insertEmailSMSCountReport($email_or_sms, $triggered_for, $raw_content, $count)
+	{
+		//$email_or_sms : 1->Email, 2->SMS
+		//$triggered_for : this is a text like "Events" "Birthday Greetings" etc...
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to insert the report";
+		if($this->db_conn)
+		{
+			$query = 'insert into NOTIFICATIONS_EMAIL_SMS_REPORTS (REPORT_ID, EMAIL_OR_SMS, TRIGGERED_FOR, RAW_CONTENT, SENT_TIME, RECIPIENTS_COUNT) values(?,?,?,?, NOW(),?)';
+			$result = $this->db_conn->Execute($query, array(0, $email_or_sms, $triggered_for, $raw_content, $count));
+			echo $this->db_conn->errorMsg();
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Report inserted successfully";
+			}			
+		}
+		return $to_return;
+	}
+
+	public function cleanupOldEmailSMSCountReports($older_than_days=60)
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to delete the reports";
+		$older_than_days = ((trim($older_than_days) != "" && trim($older_than_days) > 0)? trim($older_than_days) : 60);
+		$updated_on_date_threshold = time()-($older_than_days*24*60*60);
+		if($this->db_conn)
+		{
+			$query = 'delete from NOTIFICATIONS_EMAIL_SMS_REPORTS where SENT_TIME < FROM_UNIXTIME(?)';
+			$result = $this->db_conn->Execute($query, array($updated_on_date_threshold));
+			if($result) {
+				$to_return[0] = 1;
+				$to_return[1] = "Reports deleted successfully";
+			}			
+		}
+		return $to_return;
+	}
 }
 ?>

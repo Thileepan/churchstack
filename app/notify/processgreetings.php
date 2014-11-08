@@ -42,6 +42,7 @@
 	$noti_obj->setTimeZone($timeZone);
 	//Cleanup the notification reports older than 60 days.
 	$cleanup_result = $noti_obj->cleanupOldGreetingsNotificationReports(60);
+	$sms_email_report_cleanup_result = $noti_obj->cleanupOldEmailSMSCountReports(60);
 
 
 	$dates_list = array();
@@ -199,6 +200,7 @@
 				$subject = "Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
 				$fromAddressType = "birthdaygreetings";
 				$body = "Wishing you Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$noti_obj->insertEmailSMSCountReport(1, "Birthday Greetings", $body, COUNT($birthday_email_list));
 				$comma_separated_email_list = "";
 				$delim_separated_first_name = "";
 				$delim_separated_middle_name = "";
@@ -235,6 +237,7 @@
 			{
 				$alertType = "birthdaygreetings";
 				$sms_body = "Wishing you Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$noti_obj->insertEmailSMSCountReport(2, "Birthday Greetings", $sms_body, COUNT($birthday_sms_list));
 				$comma_separated_numbers_list = "";
 				$delim_separated_first_name = "";
 				$delim_separated_middle_name = "";
@@ -308,6 +311,7 @@
 				$subject = "Happy Wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
 				$fromAddressType = "weddinggreetings";
 				$body = "Wishing you Happy wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$noti_obj->insertEmailSMSCountReport(1, "Wedding Anniversary Greetings", $body, COUNT($wedding_email_list));
 				$comma_separated_email_list = "";
 				$delim_separated_first_name = "";
 				$delim_separated_middle_name = "";
@@ -341,6 +345,7 @@
 			{
 				$alertType = "weddinggreetings";
 				$sms_body = "Wishing you Happy wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$noti_obj->insertEmailSMSCountReport(2, "Wedding Anniversary Greetings", $sms_body, COUNT($wedding_sms_list));
 				$comma_separated_numbers_list = "";
 				$delim_separated_first_name = "";
 				$delim_separated_middle_name = "";
