@@ -67,7 +67,11 @@ if($req == 1)
 					$to_return .= '</td>';
 					$to_return .= '<td>';
 						$to_return .= '<span id="spnActionInfo-'.$i.'"><i class="curHand icon-pencil" onclick="showEditOptionInfoRow('.$i.');"></i>&nbsp;&nbsp;';
-						if($setting_id == 3 && ($option_list[$i][0] == 1 || $option_list[$i][0] == 2))
+						if($setting_id == 2 && $option_list[$i][0] <= 17)//Relationship : no predefined relations should be deletable
+						{
+							$to_return .= '&nbsp;';
+						}
+						else if($setting_id == 3 && ($option_list[$i][0] == 1 || $option_list[$i][0] == 2))//Marital Status : Single & Married should not be deletable
 						{
 							$to_return .= '&nbsp;';
 						}
