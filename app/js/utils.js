@@ -10,6 +10,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -23,6 +24,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -36,6 +38,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -49,6 +52,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettingsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -62,6 +66,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('reportsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mreportsText').setAttribute("style", "color:white;font-weight:bold;");
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "";
@@ -72,6 +77,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "active";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "";
 		//document.getElementById('mdashboardText').className = "label label-info";
 		document.getElementById('dashboardLink').setAttribute("style", "background-color:#3a87ad;");
@@ -85,6 +91,7 @@ function menuLinkClicked(menuID)
 		document.getElementById('msettings').className = "";
 		document.getElementById('mreports').className = "";
 		document.getElementById('mdashboard').className = "";
+		document.getElementById('mnotifications').className = '';
 		//document.getElementById('mharvest').className = "active";
 		//document.getElementById('mharvestText').className = "label label-info";
 		//document.getElementById('mharvestText').setAttribute("style", "color:white;font-weight:bold;");
@@ -100,7 +107,8 @@ function menuLinkClicked(menuID)
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "active";
 		document.getElementById('mfunds').className = "";
-		//document.getElementById('mgroupsText').className = "label label-info";
+		document.getElementById('mnotifications').className = '';
+		//document.getElementById('mgroupsText').className = "label label-info";		
 		document.getElementById('groupsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mgroupsText').setAttribute("style", "color:white;font-weight:bold;");
 	} else if(menuID == 9) {
@@ -113,9 +121,24 @@ function menuLinkClicked(menuID)
 		//document.getElementById('mharvest').className = "";
 		document.getElementById('mgroups').className = "";
 		document.getElementById('mfunds').className = "active";
-		//document.getElementById('mfundsText').className = "label label-info";
+		document.getElementById('mnotifications').className = '';
+		//document.getElementById('mfundsText').className = "label label-info";		
 		document.getElementById('fundsLink').setAttribute("style", "background-color:#3a87ad;");
 		document.getElementById('mfundsText').setAttribute("style", "color:white;font-weight:bold;");
+	} else if(menuID == 10) {
+		document.getElementById('mhome').className = "";
+		document.getElementById('msubscription').className = "";
+		document.getElementById('mevents').className = "";
+		document.getElementById('msettings').className = "";
+		document.getElementById('mreports').className = "";
+		document.getElementById('mdashboard').className = "";
+		//document.getElementById('mharvest').className = "";
+		document.getElementById('mgroups').className = "";
+		document.getElementById('mfunds').className = "";
+		document.getElementById('mnotifications').className = 'active';
+		//document.getElementById('mfundsText').className = "label label-info";
+		document.getElementById('notificationsLink').setAttribute("style", "background-color:#3a87ad;");
+		document.getElementById('mnotificationsText').setAttribute("style", "color:white;font-weight:bold;");
 	}
 }
 

@@ -1,0 +1,63 @@
+<?php
+$APPLICATION_PATH = "./";
+include $APPLICATION_PATH."header";
+?>
+<script src="<?php echo $APPLICATION_PATH; ?>js/notifications.js"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>js/events.js"></script>
+<script src="<?php echo $APPLICATION_PATH; ?>plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" media="screen">
+
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+<script src="<?php echo $APPLICATION_PATH; ?>plugins/summernote/summernote.min.js"></script>
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/summernote/summernote.css" rel="stylesheet" media="screen">
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/summernote/summernote-bs2.css" rel="stylesheet" media="screen">
+<link href="<?php echo $APPLICATION_PATH; ?>plugins/summernote/summernote-bs3.css" rel="stylesheet" media="screen">
+
+<!--<script src="<?php echo $APPLICATION_PATH; ?>plugins/bootstrap-tagsinput/bootstrap-tagsinput-angular.min.js"></script>-->
+
+
+<div class="page-header">
+    <h4 id="pageHeader">Email</h4>
+</div>
+<div class="row-fluid">
+    <div class="span2">
+        <ul class="nav nav-list">
+          <li class="nav-header">Notification Center</li>
+		  <li id="composeMessage" onclick="getComposeMessageForm(1, 0);" class="active"><a href="#">Compose New Message</a></li>
+		  <li id="listDrafts" onclick="listAllDrafts();"><a href="#">Drafts</a></li>
+		  <li id="listSentItems" onclick="listAllSentItems();"><a href="#">Sent Items</a></li>
+		  <li class="nav-header">Templates</li>
+		  <li id="createTemplates" onclick="getAddOrEditTemplateForm(1, 0);"><a href="#">Create New Templates</a></li>
+		  <li id="listTemplates" onclick="listAllTemplates();"><a href="#">List All Templates</a></li>
+		</ul>
+		
+		<!--
+		  <li id="listSMS" onclick="getComposeSMSForm();" class=""><a href="#">SMS</a></li>
+			<ul class="nav nav-list">
+				<li id="listEmail" onclick="getComposeEmailForm();"><a href="#">Compose Email</a></li>
+				<li id="listEmail" onclick="getComposeEmailForm();"><a href="#">Drafts</a></li>
+				<li id="listEmail" onclick="getComposeEmailForm();"><a href="#">Sent Items</a></li>
+			</ul>
+		-->
+        </ul>
+    </div>
+	<div class="span10">
+		<div class="row-fluid" id="alertRow" style="display:none">
+			<div id="alertDiv" class="span12">
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div id="pageContent" class="span12">
+			</div>		
+		</div>
+	</div>
+</div>
+
+<?php
+include "footer";
+?>
+
+<script type='text/javascript'>
+	menuLinkClicked(10);
+	getComposeMessageForm(1, 0);
+</script>

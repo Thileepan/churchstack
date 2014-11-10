@@ -98,7 +98,8 @@ function getAddOrEditEventFormResponse(response)
 	});
 
 	//load individual and groups
-	getParticipantsList();
+	var reqFrom = 'event';
+	getParticipantsList(reqFrom);
 }
 
 function onchangeEventRepeats(obj)
@@ -498,8 +499,10 @@ function deleteEventResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function getParticipantsList()
+function getParticipantsList(reqFrom, isReqForSMS)
 {
+	tempReqFrom = reqFrom;
+	tempIsReqForSMS = isReqForSMS;
 	var formPostData = "req=7";
 
 	$.ajax({
@@ -528,11 +531,21 @@ function getParticipantsListResponse(response)
 		{
 			var id = participantType + "<:|:>" + individualParticipants[i][0] + "<:|:>" + individualParticipants[i][1];
 			var name = "";
-			if(trim(individualParticipants[i][1]) != "") {
-				name = individualParticipants[i][2]+" ("+individualParticipants[i][1]+")";
+
+			if(tempIsReqForSMS) {
+				if(trim(individualParticipants[i][3]) != "") {
+					name = individualParticipants[i][2]+" ("+individualParticipants[i][3]+")";
+				} else {
+					name = individualParticipants[i][2];
+				}
 			} else {
-				name = individualParticipants[i][2];
+				if(trim(individualParticipants[i][1]) != "") {
+					name = individualParticipants[i][2]+" ("+individualParticipants[i][1]+")";
+				} else {
+					name = individualParticipants[i][2];
+				}
 			}
+			
 			sourceList.push({"id":id, "name":name});
 		}
 
@@ -544,12 +557,23 @@ function getParticipantsListResponse(response)
 			sourceList.push({"id":id, "name":name});
 		}
 
-		$('#inputAddEventParticipant').typeahead({
-			source: sourceList,
-			display: 'name',
-			val: 'id',
-			itemSelected: addNewParticipant
-		});
+		if(tempReqFrom == 'event') {
+			$('#inputAddEventParticipant').typeahead({
+				source: sourceList,
+				display: 'name',
+				val: 'id',
+				itemSelected: addNewParticipant
+			});
+		} else if(tempReqFrom == 'notifications') {
+			$('#inputTo').typeahead({
+				source: sourceList,
+				display: 'name',
+				val: 'id',
+				itemSelected: onSelectingParticipants
+			});
+
+			$("#inputTo").data('typeahead').source = sourceList;
+		}
 	}	
 }
 
