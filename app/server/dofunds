@@ -691,9 +691,7 @@ else if($req == 16)
 	unset($json);
 
 	echo $encode_obj;
-	exit;
-	echo $status;
-	exit;
+	exit;	
 }
 else if($req == 17)
 {

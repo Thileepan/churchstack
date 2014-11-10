@@ -579,8 +579,12 @@ else if($req == 5)
 				$end_time = $event_details[$i][7];
 				$rrule = $event_details[$i][8];				
 				if($rrule != '') {
-
-					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $today, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+					if($start_date > $today) {
+						$event_start_date = $start_date;
+					} else {
+						$event_start_date = $today;
+					}
+					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $event_start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
 				}
 
 				$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $next_event_date, $event_details[$i][3], $event_details[$i][10], $actions);
@@ -616,7 +620,8 @@ else if($req == 7)
 
 	$participants_list = array();
 	$profiles_obj = new Profiles($APPLICATION_PATH);
-	$email_list = $profiles_obj->getAllProfileNameAndEmailIDs(true);
+	$ignore_email_id = true;
+	$email_list = $profiles_obj->getAllProfileNameAndEmailIDs($ignore_email_id);
 
 	$groups_obj = new Groups($APPLICATION_PATH);
 	$groups = $groups_obj->getAllGroups();

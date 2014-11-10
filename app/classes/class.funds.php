@@ -92,13 +92,12 @@ class Funds
                         $fund_name = $result->fields[1];
 						$fund_description = $result->fields[2];
 						$fund_visibility = $result->fields[3];
-						$fund_details[] = array($fund_id, $fund_name, $fund_description, $fund_visibility);
-
-						$return_data[0] = 1;
-						$return_data[1] = $fund_details;
+						$fund_details[] = array($fund_id, $fund_name, $fund_description, $fund_visibility);						
 
 						$result->MoveNext();						
                     }
+					$return_data[0] = 1;
+					$return_data[1] = $fund_details;
                 }
 				else
 				{
