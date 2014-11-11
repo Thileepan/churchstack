@@ -6,6 +6,8 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
 include $APPLICATION_PATH.'utils/JSON.php';
 include_once $APPLICATION_PATH . 'classes/class.groups.php';
+include_once $APPLICATION_PATH.'utils/utilfunctions.php';
+include_once $APPLICATION_PATH . 'classes/class.settings.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -129,7 +131,7 @@ else if($req == 3)
 					$actions .= '<i class="curHand icon-trash" onclick="deleteGroupConfirmation('.$group_details[$i][0].',\''.$group_details[$i][1].'\')" title="Delete Group"></i>&nbsp;&nbsp;';
 				$actions .= '</div>';
 				
-				$to_return['aaData'][] = array('<a href="#" onclick="listAllGroupMembers('.$group_details[$i][0].');">'.$group_details[$i][1].'</a>', $group_details[$i][2], $actions);
+				$to_return['aaData'][] = array('<a href="#" onclick="listAllGroupMembers('.$group_details[$i][0].',\''.$group_details[$i][1].'\');">'.$group_details[$i][1].'</a>', $group_details[$i][2], $actions);
 			}
 		}
 	}
@@ -179,6 +181,25 @@ else if($req == 6)
 	$group_obj = new Groups($APPLICATION_PATH);
 	$group_members = $group_obj->getListOfGroupMembers($group_id);
 
+	$settings_obj = new ProfileSettings($APPLICATION_PATH);
+	$salutation_values = $settings_obj->getOptions(1);
+	$re_arranged_salutation = array();
+	if(is_array($salutation_values))
+	{
+		foreach($salutation_values as $key => $value)
+		{
+			for($k=0; $k<2; $k++)
+			{
+				if($k == 0)
+					$sal_id = $value[$k];
+				if($k == 1)
+					$sal_value = $value[$k];
+			}
+			$re_arranged_salutation[$sal_id] = $sal_value;
+		}
+	}
+
+	$total_members = 0;
 	$is_results_available = false;
 	if(is_array($group_members))
 	{
@@ -194,7 +215,10 @@ else if($req == 6)
 					$actions .= '<i class="curHand icon-trash" onclick="deleteGroupConfirmation('.$group_members[$i][0].',\''.$group_members[$i][1].'\')" title="Delete Group"></i>&nbsp;&nbsp;';
 				$actions .= '</div>';
 				
-				$to_return['aaData'][] = array(($i+1), $group_members[$i][0], $group_members[$i][1], $group_members[$i][2], $actions);
+				$profile_id = 'CS'.appendZeroInUniqueID($group_members[$i][0]);
+				$salutation_value = $re_arranged_salutation[$group_members[$i][3]];
+				$profile_name = $salutation_value .'. '. $group_members[$i][1];
+				$to_return['aaData'][] = array($profile_id, $profile_name);
 			}
 		}
 	}	
@@ -203,6 +227,7 @@ else if($req == 6)
 		$to_return['aaData'] = array();
 	}
 
+	$to_return['totalMember'] = $total_members;
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);

@@ -237,15 +237,24 @@ function addGroupMembersResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function listAllGroupMembers(groupID)
+function listAllGroupMembers(groupID, groupName)
 {
-	var table = '<table id="groupMemberList" class="table table-condensed"><thead><tr><th>S.No.</th><th>Member ID</th><th>Name</th></tr></thead></table>';
+	var table = '<div class="well pull-right"><table border="0" cellpadding="5" cellspacing="5"><tr><td class="muted">Group Name</td><td>'+ groupName +'</td></tr><tr><td class="muted">Total Members in this Group</td><td><span class="badge badge-success" id="spanGroupCount">0</span></td></tr></table></div><table id="groupMemberList" class="table table-condensed"><thead><tr><th>Profile ID</th><th>Name</th></tr></thead></table>';
 	document.getElementById('pageContent').innerHTML = table;
 
+	var formPostData = "req=6&groupID=" + groupID;
+	$.ajax({
+		type:'POST',
+		url:doGroupFile,
+		data:formPostData,
+		success:listAllGroupMembersResponse,
+		error:HandleAjaxError
+	});
+
+/*
 	oTable = $('#groupMemberList').dataTable( {
 		"aoColumns": [
 			{ "sWidth": "20%" },
-			{ "sWidth": "40%" },
 			{ "sWidth": "40%" },			
 		],
 		"bFilter":false,
@@ -262,5 +271,23 @@ function listAllGroupMembers(groupID)
             } );
 		
         }
+	});
+*/
+}
+
+function listAllGroupMembersResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	document.getElementById('spanGroupCount').innerHTML = dataObj.totalMember;
+
+	$('#groupMemberList').dataTable( {
+		"aoColumns": [
+			{ "sWidth": "20%" },
+			{ "sWidth": "40%" },			
+		],
+		"bFilter":false,
+        "bProcessing": true,
+		"aaData": dataObj.aaData,
+        /*"sAjaxSource": doGroupFile		*/
 	});
 }

@@ -552,11 +552,16 @@ function resetSubscriptionSearchForm()
 	showSubscriptionReportsScreen();
 }
 
-function resetSearchForm()
+function resetSearchForm(reqFrom)
 {
 	//window.location.href = "reports";
-	var reqFrom = 1;
-	showProfileReportsScreen();
+//	var reqFrom = 1;
+	//from group module
+	if(reqFrom == 2) {
+		listAllGroups();
+		return true;
+	}
+	showProfileReportsScreen(reqFrom);
 }
 
 function checkOrUncheckAllSubscriptionFields(isSelectAll)

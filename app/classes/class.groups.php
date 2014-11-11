@@ -154,7 +154,7 @@ class Groups
 		$group_members = array();
 		if($this->db_conn)
 		{
-			$query = 'select a.PROFILE_ID, b.NAME, b.EMAIL from GROUP_MEMBERS as a, PROFILE_DETAILS as b where a.PROFILE_ID=b.PROFILE_ID and a.GROUP_ID=?';
+			$query = 'select a.PROFILE_ID, b.NAME, b.EMAIL, b.MIDDLE_NAME, b.LAST_NAME, b.SALUTATION_ID from GROUP_MEMBERS as a, PROFILE_DETAILS as b where a.PROFILE_ID=b.PROFILE_ID and a.GROUP_ID=?';
 			$result = $this->db_conn->Execute($query, array($group_id));
 			
 			if($result) {
@@ -162,9 +162,13 @@ class Groups
                     while(!$result->EOF)
                     {
                         $profile_id = $result->fields[0];
-                        $profile_name = $result->fields[1];
+                        $first_name = $result->fields[1];
 						$profile_email = $result->fields[2];
-						$group_members[] = array($profile_id, $profile_name, $profile_email);
+						$middle_name = $result->fields[3];
+						$last_name = $result->fields[4];
+						$salutation_id = $result->fields[5];
+						$profile_name = $first_name.' '.$middle_name.' '.$last_name;
+						$group_members[] = array($profile_id, $profile_name, $profile_email, $salutation_id);
                         
 						$result->MoveNext();
                     }

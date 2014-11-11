@@ -105,7 +105,7 @@ if($req == 1)
 			$to_return .= '<div class="row-fluid">';
 				$to_return .= '<div id="divSearchBtn" class="offset5 span7">';
 					$to_return .= '<button class="btn btn-primary" onclick="performSearch();">Search</button>&nbsp;';
-					$to_return .= '<button class="btn" onclick="resetSearchForm();">Cancel</button>';
+					$to_return .= '<button class="btn" onclick="resetSearchForm('.$req_from.');">Cancel</button>';
 					$to_return .= '<input type="hidden" id="hiddenReqFrom" value="'.$req_from.'" />';
 				$to_return .= '</div>';
 				$to_return .= '<div id="divLoadingSearchImg" class="offset5 span7" style="display:none">';

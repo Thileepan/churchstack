@@ -979,7 +979,7 @@ else if($req == 11)
 			$to_return .= '</div>';
 			*/
 			$to_return .= '<div class="row-fluid">';
-				$to_return .= '<div class="span12">';
+				$to_return .= '<div class="span12 well">';
 					$to_return .= '<strong>Profile Information</strong><BR>';
 
 					$age = '-';
@@ -1017,7 +1017,7 @@ else if($req == 11)
 			$to_return .= '</div>';
 			$to_return .= '<BR>';
 			$to_return .= '<div class="row-fluid">';
-				$to_return .= '<div class="span12">';
+				$to_return .= '<div class="span12 well">';
 					$to_return .= '<strong>Custom Fields</strong><BR>';
 
 					$field_details = $settings_obj->getAllCustomProfileFields();
