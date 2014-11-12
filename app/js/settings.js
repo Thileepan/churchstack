@@ -1261,3 +1261,65 @@ function cancelFieldOptionDeleteRequest()
 	document.getElementById('alertDiv').innerHTML = '';
 	document.getElementById('alertRow').style.display = 'none';
 }
+
+function onChangeAnniversaryTemplates(annivType, selectBoxObj, templateType)
+{
+	templateID = -1;
+	if(selectBoxObj.value > 0) {
+		templateID = selectBoxObj.value;
+	} else {
+		return false;
+	}
+	var formPostData = 'req=20';
+	formPostData += '&anniv_type='+annivType;
+	formPostData += '&template_id='+templateID;
+	formPostData += '&template_type='+templateType;
+
+	$.ajax({
+		type:'POST',
+		url:doSettingsFile,
+		data:formPostData,
+		success:onChangeAnniversaryTemplatesResponse,
+		error:HandleAjaxError
+	});
+
+	return false;
+}
+
+function onChangeAnniversaryTemplatesResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+
+	if(dataObj.rsno == 0)
+	{
+		var alertType = 2;
+		var msgToDisplay = dataObj.msg;
+		var resultToUI = getAlertDiv(alertType, msgToDisplay);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+	}
+	else
+	{
+		if(dataObj.anniv_type == 1) {
+			if(dataObj.template_type == 1) {
+				document.getElementById("spanBDayEmailTemplateName").innerHTML = dataObj.name;
+				document.getElementById("spanBDayEmailTemplateSubject").innerHTML = dataObj.subject;
+				document.getElementById("spanBDayEmailTemplateContent").innerHTML = dataObj.content;
+			} else if(dataObj.template_type == 2) {
+				document.getElementById("spanBDaySMSTemplateName").innerHTML = dataObj.name;
+				document.getElementById("spanBDaySMSTemplateContent").innerHTML = dataObj.content;
+			}
+		} else if(dataObj.anniv_type == 2) {
+			if(dataObj.template_type == 1) {
+				document.getElementById("spanWeddingEmailTemplateName").innerHTML = dataObj.name;
+				document.getElementById("spanWeddingEmailTemplateSubject").innerHTML = dataObj.subject;
+				document.getElementById("spanWeddingEmailTemplateContent").innerHTML = dataObj.content;
+			} else if(dataObj.template_type == 2) {
+				document.getElementById("spanWeddingSMSTemplateName").innerHTML = dataObj.name;
+				document.getElementById("spanWeddingSMSTemplateContent").innerHTML = dataObj.content;
+			}
+		}
+	}
+
+	return false;
+}

@@ -45,7 +45,7 @@
 		$last_names_array = explode("/:/", $delim_last_names);
 	}
 
-	if($alert_type=="birthdaygreetings" || $alert_type=="weddinggreetings")
+	if($alert_type=="birthdaygreetings" || $alert_type=="weddinggreetings" || $alert_type=="masscommunication")
 	{
 		$curl = new \Curl\Curl();
 		$url_to_access = "http://bhashsms.com/api/sendmsg.php";

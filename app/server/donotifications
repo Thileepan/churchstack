@@ -80,11 +80,11 @@ else if($req == 2)
 	session_start();
 	$type = trim($_POST['msgType']);
 	$is_draft = trim($_POST['isDraft']);
-	$subject = trim($_POST['subject']);
-	$content = trim($_POST['msg']);
+	$subject = trim(stripslashes(rawurldecode($_POST['subject'])));
+	$content = trim(stripslashes(rawurldecode($_POST['msg'])));
 	$is_edit = trim($_POST['isEdit']);
 	$notification_id = trim($_POST['msgID']);
-	$participant_list = trim($_POST['participantsList']);
+	$participant_list = trim(stripslashes(rawurldecode($_POST['participantsList'])));
 	$notification_status = 0; //processing
 	$created_by = $_SESSION['userID'];
 	$last_update_user = $_SESSION['userID'];
@@ -96,7 +96,7 @@ else if($req == 2)
 	if($participant_list != '')
 	{
 		$participant_list = explode(',', $participant_list);
-		if(is_array($participant_details)) 
+		if(is_array($participant_list)) 
 		{
 			$total_participants = COUNT($participant_list);
 			if($total_participants > 0)
@@ -104,7 +104,7 @@ else if($req == 2)
 				for($i=0; $i<$total_participants; $i++)
 				{
 					$participants = explode("<:|:>", $participant_list[$i]);
-					$participant_details[$participants[0]] = array($participants[1]);
+					$participant_details[$participants[0]][] = array($participants[1]);
 				}
 			}
 		}
@@ -329,20 +329,21 @@ else if($req == 9)
 	$is_results_available = false;
 	if(is_array($templates) && $templates[0] == 1)
 	{
-		$templates = $templates[1];
-		$total_template = COUNT($templates);
+		$templates_list = $templates[1];
+		$total_template = COUNT($templates_list);
 		if($total_template > 0)
 		{
 			$is_results_available = true;
 			for($i=0; $i<$total_template; $i++)
 			{
-				$template_id = $templates[$i][0];
-				$template_type = '<span class="label label-info">'.(($templates[$i][1] == 1)?'Email':'SMS').'</span>';
-				$subject = (($templates[$i][2] == '')?'-':$templates[$i][2]);
-				$content = $templates[$i][3];
+				$template_id = $templates_list[$i][0];
+				$template_type = '<span class="label label-info">'.(($templates_list[$i][1] == 1)?'Email':'SMS').'</span>';
+				$name = (($templates_list[$i][2] == '')?'-':$templates_list[$i][2]);
+				$subject = ((trim($templates_list[$i][3]) == '')?'-':$templates_list[$i][3]);
+				$content = $templates_list[$i][4];
 				
-				$actions = '<i class="curHand icon-pencil" onclick="getAddOrEditTemplateForm('.$templates[$i][1].', 1, '.$template_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteTemplateConfirmation('.$template_id.')"></i>';
-				$to_return['aaData'][] = array($template_type, $subject, $content, $actions);
+				$actions = '<i class="curHand icon-pencil" onclick="getAddOrEditTemplateForm('.$templates_list[$i][1].', 1, '.$template_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteTemplateConfirmation('.$template_id.')"></i>';
+				$to_return['aaData'][] = array($template_type, $name, $subject, $content, $actions);
 			}
 		}
 	}

@@ -146,12 +146,12 @@ function sendMessage(isDraft)
 		document.getElementById('alertDiv').innerHTML = resultToUI;
 		return false;
 	}
-	
+	tempIsDraft = isDraft;
 	var formPostData = 'req=2';
 	formPostData += '&msgType=' + msgType;
-	formPostData += '&subject=' + subject;
-	formPostData += '&msg=' + msg;
-	formPostData += '&participantsList=' + participantsList;
+	formPostData += '&subject=' + escString(subject);
+	formPostData += '&msg=' + escString(msg);
+	formPostData += '&participantsList=' + escString(participantsList);
 	formPostData += '&isDraft=' + isDraft;
 	formPostData += '&isEdit=' + isEdit;
 	if(isEdit) {
@@ -172,9 +172,14 @@ function sendMessageResponse(response)
 	var dataObj = eval("(" + response + ")" );
 	if(dataObj.rsno == 1) {
 		var alertType = 1;
-		var msgType = 1; //Email
-		var isEdit = false;
-		getComposeMessageForm(msgType, isEdit);
+		//var msgType = 1; //Email
+		var isEdit = 0;
+		//getComposeMessageForm(msgType, isEdit);
+		if(tempIsDraft == 1) {
+			listAllDrafts();
+		} else {
+			listAllSentItems();
+		}
 	}
 	else {
 		var alertType = 2;
@@ -558,7 +563,7 @@ function listAllTemplates(type)
 	document.getElementById('pageHeader').innerHTML = 'Templates';
 	document.getElementById('alertRow').style.display = 'none';
 
-	var table = '<table id="templateList" class="table table-condensed"><thead><tr><th>Type</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
+	var table = '<table id="templateList" class="table table-condensed"><thead><tr><th>Type</th><th>Name</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
 	document.getElementById('pageContent').innerHTML = table;
 
 	oTable = $('#templateList').dataTable( {

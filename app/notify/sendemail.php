@@ -63,6 +63,8 @@
 		$from_address = EMAIL_FROM_DONOTREPLY ;
 	} else if($from_addr_type=="weddinggreetings") {
 		$from_address = EMAIL_FROM_DONOTREPLY ;
+	} else if($from_addr_type=="masscommunication") {
+		$from_address = EMAIL_FROM_DONOTREPLY ;
 	}
 
 	//Set and Send Email		
@@ -72,7 +74,7 @@
 	for($e=0; $e < COUNT($emails_list_array); $e++)
 	{
 		//$single_organizer_row = str_replace("{{EVENT_ORGANIZER}}", $event_details_arr["event_organizers_array"][$k], $single_organizer_row);
-		if($from_addr_type=="birthdaygreetings" || $from_addr_type=="weddinggreetings")
+		if($from_addr_type=="birthdaygreetings" || $from_addr_type=="weddinggreetings" || $from_addr_type=="masscommunication")
 		{
 			$modified_subject = $subject;
 			$modified_subject = str_replace("{{FIRST_NAME}}", $first_names_array[$e], $modified_subject);

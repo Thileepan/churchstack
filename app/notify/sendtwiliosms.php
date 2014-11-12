@@ -48,7 +48,7 @@
 	for($e=0; $e < COUNT($numbers_list_array); $e++)
 	{
 		$to_number = $numbers_list_array[$e];
-		if($alert_type=="birthdaygreetings" || $alert_type=="weddinggreetings")
+		if($alert_type=="birthdaygreetings" || $alert_type=="weddinggreetings" || $alert_type=="masscommunication")
 		{
 			$modified_sms_body = $sms_body;
 			$modified_sms_body = str_replace("{{FIRST_NAME}}", $first_names_array[$e], $modified_sms_body);

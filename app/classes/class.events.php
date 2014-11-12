@@ -713,6 +713,17 @@ class Events
 							}
 							/**/
 						}
+						else if($participant_type == 3)//Entire church
+						{
+							for($p=0; $p < COUNT($all_profiles); $p++) {
+								if(in_array($all_profiles[$p][0], $unique_list_profile_ids)) {
+									continue;
+								}
+								$full_name = $all_profiles[$p][2]." ".$all_profiles[$p][26]." ".$all_profiles[$p][27];
+								$recipient_details[] = array($full_name, $all_profiles[$p][18], $all_profiles[$p][31], $all_profiles[$p][16], $all_profiles[$p][32], $all_profiles[$p][2], $all_profiles[$p][26], $all_profiles[$p][27]);
+								$unique_list_profile_ids[] = $all_profiles[$p][0];
+							}
+						}
 											
 						$result->MoveNext();
                     }

@@ -16,13 +16,14 @@
 	parse_str(implode('&', array_slice($argv, 1)), $_GET);
 	//DO NOT REMOVE THIS LINE WITHOUT UNDERSTANDING
 
-	$notification_type = 1;//1->Events; 2->Birthday & Wedding Anniversary Greetings
+	$notification_type = 1;//1->Events; 2->Birthday & Wedding Anniversary Greetings, 3=>Mass Communications
 	if(trim($_GET["notificationType"]) != "") {
 		$notification_type = urldecode($_GET["notificationType"]);//Exclusively for running from command line 
 	}
 
 	$sharded_db_processing_file = $APPLICATION_PATH."notify/processsharded.php";
 	$greetings_processing_file = $APPLICATION_PATH."notify/processgreetings.php";
+	$mass_communications_processing_file = $APPLICATION_PATH."notify/processmasscommunications.php";
 	$church_obj = new Church($APPLICATION_PATH);
 	$churches_result = $church_obj->getAllChurchesList(5);//List On-Trial or Paid+Active Churches alone; For others, we need not send notifications.
 	/** /
@@ -43,6 +44,10 @@
 			else if($notification_type == 2)
 			{
 				$commands[] = PHP_EXE_PATH.' "'.$greetings_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' > /dev/null 2>/dev/null &';
+			}
+			else if($notification_type == 3)
+			{
+				$commands[] = PHP_EXE_PATH.' "'.$mass_communications_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' > /dev/null 2>/dev/null &';
 			}
 		}
 		$threads = new Multithread( $commands );

@@ -248,9 +248,9 @@
 					$comma_separated_numbers_list = "";
 					while($tmp < 25 && $k < COUNT($birthday_sms_list))
 					{
-						$curr_first_name = $birthday_email_list[$k][0];
-						$curr_middle_name = $birthday_email_list[$k][1];
-						$curr_last_name = $birthday_email_list[$k][2];
+						$curr_first_name = $birthday_sms_list[$k][0];
+						$curr_middle_name = $birthday_sms_list[$k][1];
+						$curr_last_name = $birthday_sms_list[$k][2];
 						$delim_separated_first_name .= ((trim($comma_separated_numbers_list)=="")? $curr_first_name : "/:/".$curr_first_name); 
 						$delim_separated_middle_name .= ((trim($comma_separated_numbers_list)=="")? $curr_middle_name : "/:/".$curr_middle_name); 
 						$delim_separated_last_name .= ((trim($comma_separated_numbers_list)=="")? $curr_last_name : "/:/".$curr_last_name); 
@@ -322,9 +322,9 @@
 					$comma_separated_email_list = "";
 					while($tmp < 25 && $k < COUNT($wedding_email_list))
 					{
-						$curr_first_name = $birthday_email_list[$k][0];
-						$curr_middle_name = $birthday_email_list[$k][1];
-						$curr_last_name = $birthday_email_list[$k][2];
+						$curr_first_name = $wedding_email_list[$k][0];
+						$curr_middle_name = $wedding_email_list[$k][1];
+						$curr_last_name = $wedding_email_list[$k][2];
 						$delim_separated_first_name .= ((trim($comma_separated_email_list)=="")? $curr_first_name : "/:/".$curr_first_name); 
 						$delim_separated_middle_name .= ((trim($comma_separated_email_list)=="")? $curr_middle_name : "/:/".$curr_middle_name); 
 						$delim_separated_last_name .= ((trim($comma_separated_email_list)=="")? $curr_last_name : "/:/".$curr_last_name); 
@@ -356,9 +356,9 @@
 					$comma_separated_numbers_list = "";
 					while($tmp < 25 && $k < COUNT($wedding_sms_list))
 					{
-						$curr_first_name = $birthday_email_list[$k][0];
-						$curr_middle_name = $birthday_email_list[$k][1];
-						$curr_last_name = $birthday_email_list[$k][2];
+						$curr_first_name = $wedding_sms_list[$k][0];
+						$curr_middle_name = $wedding_sms_list[$k][1];
+						$curr_last_name = $wedding_sms_list[$k][2];
 						$delim_separated_first_name .= ((trim($comma_separated_numbers_list)=="")? $curr_first_name : "/:/".$curr_first_name); 
 						$delim_separated_middle_name .= ((trim($comma_separated_numbers_list)=="")? $curr_middle_name : "/:/".$curr_middle_name); 
 						$delim_separated_last_name .= ((trim($comma_separated_numbers_list)=="")? $curr_last_name : "/:/".$curr_last_name); 

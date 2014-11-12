@@ -587,9 +587,10 @@ class Profiles
 		$profile_emails = array();
 		if($this->db_conn)
 		{
-		   $query = 'select PROFILE_ID, EMAIL, CONCAT_WS(" ", NAME, MIDDLE_NAME, LAST_NAME), MOBILE1, MOBILE2 from PROFILE_DETAILS';
+		   $query = 'select PROFILE_ID, EMAIL, CONCAT_WS(" ", NAME, MIDDLE_NAME, LAST_NAME), MOBILE1, MOBILE2, NAME, MIDDLE_NAME, LAST_NAME from PROFILE_DETAILS';
+		   $query .= ' where PROFILE_STATUS=1 ';
 		   if(!$ignore_email_id) {
-			   $query .= ' where EMAIL != ""';
+			   $query .= ' and EMAIL != ""';
 		   }
 		   $result = $this->db_conn->Execute($query);
             
@@ -602,7 +603,10 @@ class Profiles
 						$name = trim($result->fields[2]);
 						$mobile1 = $result->fields[3];
 						$mobile2 = $result->fields[4];
-						$profile_emails[] = array($profile_id, $email, $name, $mobile1, $mobile2);
+						$first_name = $result->fields[5];
+						$middle_name = $result->fields[6];
+						$last_name = $result->fields[7];
+						$profile_emails[] = array($profile_id, $email, $name, $mobile1, $mobile2, $first_name, $middle_name, $last_name);
 
 						$result->MoveNext();                        
                     }
