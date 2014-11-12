@@ -152,7 +152,7 @@ else if($req == 3)
 				$subject = (($messages[$i][2] == '')?'-':$messages[$i][2]);
 				$content = $messages[$i][3];
 				$is_draft = $messages[$i][4];
-				$status = '<span class="label label-info">'.(($messages[$i][4] == 0)?'Sending...':'Sent').'</span>';
+				$status = '<span class="label label-info">'.(($messages[$i][8] == 0)?'Sending...':'Sent').'</span>';
 				
 				
 

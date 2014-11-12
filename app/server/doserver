@@ -108,7 +108,6 @@ else if($req == 2)
 	$name_append = 'CS';
 
 	$is_update = trim($_POST['isEdit']);
-	date_default_timezone_set('UTC');
 	
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$salutation_list = $settings_obj->getOptions(1);
@@ -492,12 +491,12 @@ else if($req == 2)
 					$toReturn .= '<p class="text-left text-info"><b>Notifications</b></p>';					
 					$toReturn .= '<div style="padding-bottom:6px;">';
 						$toReturn .= '<div class="controls">';
-							$toReturn .= '<input type="checkbox" id="inputEmailNotification" '.(($profile_info[32] == 1)?'checked':'').'>&nbsp;Receive Email Notifications';
+							$toReturn .= '<input type="checkbox" id="inputEmailNotification" '.(($profile_info[32] == 1 || !$is_update)?'checked':'').'>&nbsp;Receive Email Notifications';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
 					$toReturn .= '<div style="padding-bottom:6px; display:;">';
 						$toReturn .= '<div class="controls">';
-							$toReturn .= '<input type="checkbox" id="inputSMSNotification" '.(($profile_info[31] == 1)?'checked':'').'>&nbsp;Receive SMS Notifications';
+							$toReturn .= '<input type="checkbox" id="inputSMSNotification" '.(($profile_info[31] == 1 || !$is_update)?'checked':'').'>&nbsp;Receive SMS Notifications';
 						$toReturn .= '</div>';
 					$toReturn .= '</div>';
 				$toReturn .= '</div>';

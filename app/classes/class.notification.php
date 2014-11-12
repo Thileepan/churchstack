@@ -782,14 +782,13 @@ class Notification
 
 			$query .= ' IS_NOTIFICATION_SENT!=1';
 			
-			$this->db_conn->SetFetchMode(ADODB_FETCH_ASSOC);
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
                 if(!$result->EOF) {
                     while(!$result->EOF)
                     {
-						$notification_details[] = array($result->fields['NOTIFICATION_ID'], $result->fields['NOTIFICATION_TYPE'], $result->fields['NOTIFICATION_SUBJECT'], $result->fields['NOTIFICATION_CONTENT'], $result->fields['IS_DRAFT'], $result->fields['CREATED_BY'], $result->fields['LAST_UPDATE_USER_ID'], $result->fields['LAST_UPDATE_TIME'], $result->fields['IS_NOTIFICATION_SENT']);
+						$notification_details[] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
 
 						$result->MoveNext();
                     }

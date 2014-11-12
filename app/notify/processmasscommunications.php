@@ -148,7 +148,7 @@
 				$curr_last_name = $comm_recipients[$e][7];
 				$curr_mobile = $comm_recipients[$e][3];
 				$curr_email = $comm_recipients[$e][1];
-				$personal_email_noti_enabled = $comm_recipients[$e]2];
+				$personal_email_noti_enabled = $comm_recipients[$e][2];
 				$personal_sms_noti_enabled = $comm_recipients[$e][4];
 				if($personal_email_noti_enabled == 1 && trim($curr_email) != "")//Check if Personal Email notification is enabled
 				{
@@ -202,7 +202,7 @@
 			if(COUNT($comm_sms_list) > 0 && $comm_type == 2  && $is_sms_enabled==1 && $sms_provider_id > 0)
 			{
 				$alertType = "masscommunication";
-				$sms_body = $communications_list[$cl][2];
+				$sms_body = $communications_list[$cl][3];
 				$noti_obj->insertEmailSMSCountReport(2, "Instant Communications", $sms_body, COUNT($comm_sms_list));
 				$comma_separated_numbers_list = "";
 				$delim_separated_first_name = "";

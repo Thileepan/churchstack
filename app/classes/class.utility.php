@@ -274,7 +274,7 @@ class Utility
 		$zones_array = array();
 		$timestamp = time();
 		foreach(timezone_identifiers_list() as $key => $zone) {
-			date_default_timezone_set($zone);
+			//date_default_timezone_set($zone);
 			$zones_array[$key]['zone'] = $zone;
 			$zones_array[$key]['diff_from_GMT'] = 'GMT ' . date('P', $timestamp);
 		}
