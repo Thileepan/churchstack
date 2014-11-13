@@ -274,9 +274,9 @@ else if($req == 7)
 {
 	session_start();
 	$type = trim($_POST['templateType']);
-	$name = trim($_POST['templateName']);
-	$subject = trim($_POST['subject']);
-	$content = trim($_POST['msg']);
+	$name = trim(stripslashes(rawurldecode($_POST['templateName'])));
+	$subject = trim(stripslashes(rawurldecode($_POST['subject'])));
+	$content = trim(stripslashes(rawurldecode($_POST['msg'])));
 	$is_edit = trim($_POST['isEdit']);
 	$template_id = trim($_POST['templateID']);
 	$created_by = $_SESSION['userID'];

@@ -477,9 +477,9 @@ function createOrUpdateTemplate()
 	var formPostData = 'req=7';
 	formPostData += '&isEdit=' + isEdit;	
 	formPostData += '&templateType=' + templateType;
-	formPostData += '&templateName=' + templateName;
-	formPostData += '&subject=' + subject;
-	formPostData += '&msg=' + msg;
+	formPostData += '&templateName=' + escString(templateName);
+	formPostData += '&subject=' + escString(subject);
+	formPostData += '&msg=' + escString(msg);
 	if(isEdit) {
 		formPostData += '&templateID=' + templateID;
 	}

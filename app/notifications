@@ -23,12 +23,12 @@ include $APPLICATION_PATH."header";
     <div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Notification Center</li>
-		  <li id="composeMessage" onclick="getComposeMessageForm(1, 0);" class="active"><a href="#">Send A Message</a></li>
-		  <li id="listDrafts" onclick="listAllDrafts();"><a href="#">Drafts</a></li>
-		  <li id="listSentItems" onclick="listAllSentItems();"><a href="#">Sent Items</a></li>
+		  <li id="composeMessage" onclick="getComposeMessageForm(1, 0);" class="active"><a href="#send-message">Send A Message</a></li>
+		  <li id="listDrafts" onclick="listAllDrafts();"><a href="#drafts">Drafts</a></li>
+		  <li id="listSentItems" onclick="listAllSentItems();"><a href="#sent-items">Sent Items</a></li>
 		  <li class="nav-header">Templates</li>
-		  <li id="createTemplates" onclick="getAddOrEditTemplateForm(1, 0);"><a href="#">Create New Template</a></li>
-		  <li id="listTemplates" onclick="listAllTemplates();"><a href="#">List Templates</a></li>
+		  <li id="createTemplates" onclick="getAddOrEditTemplateForm(1, 0);"><a href="#create-template">Create New Template</a></li>
+		  <li id="listTemplates" onclick="listAllTemplates();"><a href="#list-templates">List Templates</a></li>
 		</ul>
 		
 		<!--
@@ -58,6 +58,20 @@ include "footer";
 ?>
 
 <script type='text/javascript'>
+	var url_hash = window.location.hash;
+	url_hash = trim(url_hash);
+	if(url_hash== "#send-message") {
+		document.getElementById("composeMessage").click();
+	} else if(url_hash== "#drafts") {
+		document.getElementById("listDrafts").click();
+	} else if(url_hash== "#sent-items") {
+		document.getElementById("listSentItems").click();
+	} else if(url_hash== "#create-template") {
+		document.getElementById("createTemplates").click();
+	} else if(url_hash== "#list-templates") {
+		document.getElementById("listTemplates").click();
+	} else {
+		document.getElementById("composeMessage").click();
+	}
 	menuLinkClicked(10);
-	getComposeMessageForm(1, 0);
 </script>

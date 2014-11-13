@@ -54,10 +54,81 @@
 		$dates_list[1] = $current_time->year."-".$current_time->month."-29";
 	}
 
-	$email_bday_greetings_enabled = 1;
-	$sms_bday_greetings_enabled = 1;
-	$email_wedding_greetings_enabled = 1;
-	$sms_wedding_greetings_enabled = 1;
+	$is_birthday_email_greetings_enabled = 0;
+	$is_birthday_sms_greetings_enabled = 0;
+	$is_wedding_email_greetings_enabled = 0;
+	$is_wedding_sms_greetings_enabled = 0;
+
+	$birthday_email_template_id = 0;
+	$birthday_email_template_name = "";
+	$birthday_email_template_content = "";
+	$birthday_email_template_subject = "";
+
+	$birthday_sms_template_id = 0;
+	$birthday_sms_template_name = "";
+	$birthday_sms_template_content = "";
+
+	$wedding_email_template_id = 0;
+	$wedding_email_template_name = "";
+	$wedding_email_template_content = "";
+	$wedding_email_template_subject = "";
+
+	$wedding_sms_template_id = 0;
+	$wedding_sms_template_name = "";
+	$wedding_sms_template_content = "";
+
+	$greetings_result = $noti_obj->getAnniversaryGreetingsSettings();
+	if($greetings_result[0]==1)
+	{
+		if(COUNT($greetings_result[1]) > 0)
+		{
+			$is_birthday_email_greetings_enabled = $greetings_result[1]["BIRTHDAY_EMAIL_GREETINGS_ENABLED"];
+			$is_birthday_sms_greetings_enabled = $greetings_result[1]["BIRTHDAY_SMS_GREETINGS_ENABLED"];
+			$is_wedding_email_greetings_enabled = $greetings_result[1]["WEDDING_EMAIL_GREETINGS_ENABLED"];
+			$is_wedding_sms_greetings_enabled = $greetings_result[1]["WEDDING_SMS_GREETINGS_ENABLED"];
+
+			$birthday_email_template_id = $greetings_result[1]["BIRTHDAY_EMAIL_GREETINGS_TEMPLATE_ID"];
+			$birthday_sms_template_id = $greetings_result[1]["BIRTHDAY_SMS_GREETINGS_TEMPLATE_ID"];
+			$wedding_email_template_id = $greetings_result[1]["WEDDING_EMAIL_GREETINGS_TEMPLATE_ID"];
+			$wedding_sms_template_id = $greetings_result[1]["WEDDING_SMS_GREETINGS_TEMPLATE_ID"];
+
+			if($is_birthday_email_greetings_enabled == 1 && $birthday_email_template_id > 0) {
+				$birthday_email_result = $noti_obj->getTemplateInformation($birthday_email_template_id);
+				if($birthday_email_result[0] == 1) {
+					$birthday_email_template_name = $birthday_email_result[1][2];
+					$birthday_email_template_subject = $birthday_email_result[1][3];
+					$birthday_email_template_content = $birthday_email_result[1][4];
+				}
+			}
+
+			if($is_birthday_sms_greetings_enabled == 1 && $birthday_sms_template_id > 0) {
+				$birthday_sms_result = $noti_obj->getTemplateInformation($birthday_sms_template_id);
+				if($birthday_sms_result[0] == 1) {
+					$birthday_sms_template_name = $birthday_sms_result[1][2];
+					$birthday_sms_template_subject = $birthday_sms_result[1][3];
+					$birthday_sms_template_content = $birthday_sms_result[1][4];
+				}
+			}
+
+			if($is_wedding_email_greetings_enabled == 1 && $wedding_email_template_id > 0) {
+				$wedding_email_result = $noti_obj->getTemplateInformation($wedding_email_template_id);
+				if($wedding_email_result[0] == 1) {
+					$wedding_email_template_name = $wedding_email_result[1][2];
+					$wedding_email_template_subject = $wedding_email_result[1][3];
+					$wedding_email_template_content = $wedding_email_result[1][4];
+				}
+			}
+
+			if($is_wedding_sms_greetings_enabled == 1 && $wedding_sms_template_id > 0) {
+				$wedding_sms_result = $noti_obj->getTemplateInformation($wedding_sms_template_id);
+				if($wedding_sms_result[0] == 1) {
+					$wedding_sms_template_name = $wedding_sms_result[1][2];
+					$wedding_sms_template_subject = $wedding_sms_result[1][3];
+					$wedding_sms_template_content = $wedding_sms_result[1][4];
+				}
+			}
+		}
+	}
 
 	for($dc=0; $dc < COUNT($dates_list); $dc++)
 	{
@@ -66,7 +137,7 @@
 		$birthday_list = array();
 		$wedding_list = array();
 		//Check if atleast one is enabled, else do not get list
-		if($email_bday_greetings_enabled==1 || $sms_bday_greetings_enabled == 1 || $email_wedding_greetings_enabled==1 || $sms_wedding_greetings_enabled==1)
+		if($is_birthday_email_greetings_enabled==1 || $is_birthday_sms_greetings_enabled == 1 || $is_wedding_email_greetings_enabled==1 || $is_wedding_sms_greetings_enabled==1)
 		{
 			//Just checking one thing is enough because we will insert everything below;
 			$is_noti_sent = $noti_obj->isGreetingsNotificationSent(1, 1, $today);
@@ -184,12 +255,12 @@
 				$curr_email = $birthday_list[$e][5];
 				$personal_email_noti_enabled = $birthday_list[$e][6];
 				$personal_sms_noti_enabled = $birthday_list[$e][7];
-				if($email_bday_greetings_enabled == 1 && $personal_email_noti_enabled == 1 && trim($curr_email) != "")//Check if Global Email Greeting and Personal notification is enabled
+				if($is_birthday_email_greetings_enabled == 1 && $personal_email_noti_enabled == 1 && trim($curr_email) != "")//Check if Global Email Greeting and Personal notification is enabled
 				{
 					$birthday_email_list[] = array($curr_first_name, $curr_middle_name, $curr_last_name, $curr_mobile, $curr_email);
 				}
 
-				if($sms_bday_greetings_enabled == 1 && $personal_sms_noti_enabled == 1 && trim($curr_mobile) != "")//Check if Global SMS Greeting and Personal notification is enabled
+				if($is_birthday_sms_greetings_enabled == 1 && $personal_sms_noti_enabled == 1 && trim($curr_mobile) != "")//Check if Global SMS Greeting and Personal notification is enabled
 				{
 					$birthday_sms_list[] = array($curr_first_name, $curr_middle_name, $curr_last_name, $curr_mobile, $curr_email);
 				}
@@ -197,9 +268,9 @@
 
 			if(COUNT($birthday_email_list) > 0)
 			{
-				$subject = "Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$subject = $birthday_email_template_subject;
 				$fromAddressType = "birthdaygreetings";
-				$body = "Wishing you Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$body = $birthday_email_template_content;
 				$noti_obj->insertEmailSMSCountReport(1, "Birthday Greetings", $body, COUNT($birthday_email_list));
 				$comma_separated_email_list = "";
 				$delim_separated_first_name = "";
@@ -236,7 +307,7 @@
 			if(COUNT($birthday_sms_list) > 0 && $is_sms_enabled==1 && $sms_provider_id > 0)
 			{
 				$alertType = "birthdaygreetings";
-				$sms_body = "Wishing you Happy Birthday {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$sms_body = $birthday_sms_template_content;
 				$noti_obj->insertEmailSMSCountReport(2, "Birthday Greetings", $sms_body, COUNT($birthday_sms_list));
 				$comma_separated_numbers_list = "";
 				$delim_separated_first_name = "";
@@ -295,12 +366,12 @@
 				$curr_email = $wedding_list[$e][5];
 				$personal_email_noti_enabled = $wedding_list[$e][6];
 				$personal_sms_noti_enabled = $wedding_list[$e][7];
-				if($email_bday_greetings_enabled == 1 && $personal_email_noti_enabled == 1 && trim($curr_email) != "")//Check if Global Email Greeting and Personal notification is enabled
+				if($is_wedding_email_greetings_enabled == 1 && $personal_email_noti_enabled == 1 && trim($curr_email) != "")//Check if Global Email Greeting and Personal notification is enabled
 				{
 					$wedding_email_list[] = array($curr_first_name, $curr_middle_name, $curr_last_name, $curr_mobile, $curr_email);
 				}
 
-				if($sms_bday_greetings_enabled == 1 && $personal_sms_noti_enabled == 1 && trim($curr_mobile) != "")//Check if Global SMS Greeting and Personal notification is enabled
+				if($is_wedding_sms_greetings_enabled == 1 && $personal_sms_noti_enabled == 1 && trim($curr_mobile) != "")//Check if Global SMS Greeting and Personal notification is enabled
 				{
 					$wedding_sms_list[] = array($curr_first_name, $curr_middle_name, $curr_last_name, $curr_mobile, $curr_email);
 				}
@@ -308,9 +379,9 @@
 
 			if(COUNT($wedding_email_list) > 0)
 			{
-				$subject = "Happy Wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$subject = $wedding_email_template_subject;
 				$fromAddressType = "weddinggreetings";
-				$body = "Wishing you Happy wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$body = $wedding_email_template_content;
 				$noti_obj->insertEmailSMSCountReport(1, "Wedding Anniversary Greetings", $body, COUNT($wedding_email_list));
 				$comma_separated_email_list = "";
 				$delim_separated_first_name = "";
@@ -344,7 +415,7 @@
 			if(COUNT($wedding_sms_list) > 0 && $is_sms_enabled==1 && $sms_provider_id > 0)
 			{
 				$alertType = "weddinggreetings";
-				$sms_body = "Wishing you Happy wedding {{FIRST_NAME}} {{MIDDLE_NAME}} {{LAST_NAME}}";
+				$sms_body = $wedding_sms_template_content;
 				$noti_obj->insertEmailSMSCountReport(2, "Wedding Anniversary Greetings", $sms_body, COUNT($wedding_sms_list));
 				$comma_separated_numbers_list = "";
 				$delim_separated_first_name = "";
