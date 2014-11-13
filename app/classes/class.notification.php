@@ -469,19 +469,18 @@ class Notification
 			$query2 = 'select a.PARTICIPANT_TYPE, a.PARTICIPANT_ID, b.NAME, b.MIDDLE_NAME, b.LAST_NAME, b.EMAIL, b.MOBILE1 from MASS_NOTIFICATION_PARTICIPANTS as a, PROFILE_DETAILS as b where a.NOTIFICATION_ID=? and a.PARTICIPANT_ID=b.PROFILE_ID and a.PARTICIPANT_TYPE=1';
 			$query3 = 'select a.PARTICIPANT_TYPE, a.PARTICIPANT_ID, b.GROUP_NAME from MASS_NOTIFICATION_PARTICIPANTS as a, GROUP_DETAILS as b where a.NOTIFICATION_ID=? and a.PARTICIPANT_ID=b.GROUP_ID and a.PARTICIPANT_TYPE=2';
 
-			$this->db_conn->SetFetchMode(ADODB_FETCH_ASSOC);
 			$result = $this->db_conn->Execute($query1, array($notification_id));
 			
 			if($result) {
                 if(!$result->EOF) {
-                    $notification_details[0] = array($result->fields['NOTIFICATION_ID'], $result->fields['NOTIFICATION_TYPE'], $result->fields['NOTIFICATION_SUBJECT'], $result->fields['NOTIFICATION_CONTENT'], $result->fields['IS_DRAFT'], $result->fields['CREATED_BY'], $result->fields['LAST_UPDATE_USER_ID'], $result->fields['LAST_UPDATE_TIME'], $result->fields['IS_NOTIFICATION_SENT']);
+                    $notification_details[0] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
 
 					$result2 = $this->db_conn->Execute($query2, array($notification_id));
 					$result3 = $this->db_conn->Execute($query3, array($notification_id));
 					if($result2) {
 						if(!$result2->EOF) {
 							while(!$result2->EOF) {
-								$notification_details[1][] = array($result2->fields['PARTICIPANT_TYPE'], $result2->fields['PARTICIPANT_ID'], $result2->fields['NAME'], $result2->fields['MIDDLE_NAME'], $result2->fields['LAST_NAME'], $result2->fields['EMAIL'], $result2->fields['MOBILE1']);
+								$notification_details[1][] = array($result2->fields[0], $result2->fields[1], $result2->fields[2], $result2->fields[3], $result2->fields[4], $result2->fields[5], $result2->fields[6]);
 								$result2->MoveNext();
 							}
 						}
@@ -490,7 +489,7 @@ class Notification
 					if($result3) {
 						if(!$result3->EOF) {
 							while(!$result3->EOF) {
-								$notification_details[1][] = array($result3->fields['PARTICIPANT_TYPE'], $result3->fields['PARTICIPANT_ID'], $result3->fields['GROUP_NAME']);
+								$notification_details[1][] = array($result3->fields[0], $result3->fields[1], $result3->fields[2]);
 								$result3->MoveNext();
 							}
 						}
@@ -570,14 +569,13 @@ class Notification
 				$query .= ' and NOTIFICATION_TYPE ='.$notification_type;
 			}
 			
-			$this->db_conn->SetFetchMode(ADODB_FETCH_ASSOC);
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
                 if(!$result->EOF) {
                     while(!$result->EOF)
                     {
-						$notification_details[] = array($result->fields['NOTIFICATION_ID'], $result->fields['NOTIFICATION_TYPE'], $result->fields['NOTIFICATION_SUBJECT'], $result->fields['NOTIFICATION_CONTENT'], $result->fields['IS_DRAFT'], $result->fields['CREATED_BY'], $result->fields['LAST_UPDATE_USER_ID'], $result->fields['LAST_UPDATE_TIME'], $result->fields['IS_NOTIFICATION_SENT']);
+						$notification_details[] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
 
 						$result->MoveNext();
                     }

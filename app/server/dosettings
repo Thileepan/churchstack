@@ -597,7 +597,7 @@ else if($req==13)
 									$divHTML .= '<b>Sender ID : </b>'.$bhashSMS_config[1][0][3].'';
 								$divHTML .= '</div>';
 								$divHTML .= '<div>';
-									$divHTML .= '<b>Priority : </b>'.$bhashSMS_config[1][0][4].'';
+									$divHTML .= '<b>SMS Type : </b>'.((trim($bhashSMS_config[1][0][4]) == "dnd")? "Promotional" : "Transactional");
 								$divHTML .= '</div>';
 								$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="loadSMSConfig(2, 0); chooseSMSGateway(3, 1, 0);">Edit Details</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-danger" type="submit" onclick="saveBhashSMSConfig(3);">Delete & Deactivate SMS Notifications</button></div>';
 							$divHTML .= '</div>';
@@ -643,33 +643,72 @@ else if($req==13)
 				}
 			}
 		}
-		$divHTML = '<div class="span11">';
-		$divHTML .= '<div class="span3"><a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a></div>';
-		$divHTML .= '<input type="hidden" id="isAtleastOneGatewayChosen" value="'.$atleast_one_gateway_chosen.'"/>';
-		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.TWILIO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
-		if($is_twilio_chosen==1) {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
-		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(1, 0, 1);" style="width:180px;">Choose This</button></div>';
-		}
-		$divHTML .= '</div>';
-		$divHTML .= '<div class="span11" style="display:;">';
-		$divHTML .= '<div class="span3"><a href="https://www.nexmo.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/nexmo-logo.png"></a></div>';
-		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.NEXMO_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
-		if($is_nexmo_chosen==1) {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
-		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(2, 0, 1);" style="width:180px;">Choose This</button></div>';
-		}
-		$divHTML .= '</div>';
-		$divHTML .= '<div class="span11" style="display:;">';
-		$divHTML .= '<div class="span3"><a href="http://bhashsms.com/" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a></div>';
-		$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span3"><a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
-		if($is_bhashsms_chosen==1) {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button></div>';
-		} else {
-			$divHTML .= '<div style="padding-top:12px;" class="span6"><button class="btn-large btn-primary" type="submit" onclick="chooseSMSGateway(3, 0, 1);" style="width:180px;">Choose This</button></div>';
-		}
+		$divHTML = '<div class="row-fluid">';
+			$divHTML .= '<div class="span10">';
+				$divHTML .= '<div style="padding-bottom:6px;>';
+					$divHTML .= '<input type="hidden" id="isAtleastOneGatewayChosen" value="'.$atleast_one_gateway_chosen.'"/>';
+					$divHTML .= '<div class="controls">';
+						$divHTML .= '<div class="table-responsive">';
+							$divHTML .= '<table class="table">';
+								if($_SESSION["countryISO3Code"] != "IND")
+								{
+									$divHTML .= '<tr>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="https://www.twilio.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/twilio-logo.png"></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="'.TWILIO_HELP_DOC_URL.'" target="_blank"><h4>Help Document</h4></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+										if($is_twilio_chosen==1) {
+											$divHTML .= '<button class="btn btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button>';
+										} else {
+											$divHTML .= '<button class="btn btn-primary" type="submit" onclick="chooseSMSGateway(1, 0, 1);" style="width:180px;">Choose This</button>';
+										}
+										$divHTML .= '</td>';
+									$divHTML .= '</tr>';
+								}
+								if($_SESSION["countryISO3Code"] != "IND")
+								{
+									$divHTML .= '<tr>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="https://www.nexmo.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/nexmo-logo.png"></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="'.NEXMO_HELP_DOC_URL.'" target="_blank"><h4>Help Document</h4></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+										if($is_nexmo_chosen==1) {
+											$divHTML .= '<button class="btn btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button>';
+										} else {
+											$divHTML .= '<button class="btn btn-primary" type="submit" onclick="chooseSMSGateway(2, 0, 1);" style="width:180px;">Choose This</button>';
+										}
+										$divHTML .= '</td>';
+									$divHTML .= '</tr>';
+								}
+								if($_SESSION["countryISO3Code"] == "IND")
+								{
+									$divHTML .= '<tr>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="http://bhashsms.com/" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+											$divHTML .= '<a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h4>Help Document</h4></a>';
+										$divHTML .= '</td>';
+										$divHTML .= '<td>';
+										if($is_bhashsms_chosen==1) {
+											$divHTML .= '<button class="btn btn-success" type="submit" style="width:180px;" onclick="loadSMSConfig(1, 0);">Currently Active</button>';
+										} else {
+											$divHTML .= '<button class="btn btn-primary" type="submit" onclick="chooseSMSGateway(3, 0, 1);" style="width:180px;">Choose This</button>';
+										}
+										$divHTML .= '</td>';
+									$divHTML .= '</tr>';
+								}
+							$divHTML .= '</table>';
+						$divHTML .= '</div>';
+					$divHTML .= '</div>';
+				$divHTML .= '</div>';
+			$divHTML .= '</div>';
 		$divHTML .= '</div>';
 	}
 
@@ -768,24 +807,57 @@ else if($req==14)
 			}
 		}
 
-		$divHTML = '<div class="span12">';
-			$divHTML .= '<div class="span3"><a href="http://www.bhashsms.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a></div>';
-			$divHTML .= '<div style="padding-top:12px;vertial-align:middle;" class="span6"><a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h3>Help Document</h3></a></div>';
+		$divHTML .= '<div class="row-fluid">';
+			$divHTML .= '<div class="span10">';
+				$divHTML .= '<div style="padding-bottom:6px;">';
+					$divHTML .= '<div class="controls">';
+						$divHTML .= '<div class="table-responsive">';
+							$divHTML .= '<table class="table">';
+								$divHTML .= '<tr>';
+									$divHTML .= '<td>';
+										$divHTML .= '<a href="http://www.bhashsms.com" target="_blank"><img src="'.$APPLICATION_PATH.'images/bhashsms-logo.png"></a>';
+									$divHTML .= '</td>';
+									$divHTML .= '<td>';
+										$divHTML .= '<a href="'.BHASHSMS_HELP_DOC_URL.'" target="_blank"><h4>Help Document</h4></a>';
+									$divHTML .= '</td>';
+									$divHTML .= '<td>&nbsp;';
+									$divHTML .= '</td>';
+								$divHTML .= '</tr>';
+							$divHTML .= '</table>';
+						$divHTML .= "</div>";
+					$divHTML .= "</div>";
+				$divHTML .= "</div>";
+			$divHTML .= "</div>";
 		$divHTML .= "</div>";
-		//$divHTML .= '<div style="padding-bottom:6px;" class="text-warning">This is the email address with which you will login to your church account. All notifications and invoices will also be sent to this email address only. Make sure you have access to the new email address you are going to specify now.</div>';
-		$divHTML .= '<div class="span12"><BR/>&nbsp;';
-		$divHTML .= "</div>";
-		$divHTML .= '<div class="span6">';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtUsername">Username</label><div class="controls"><input type="text" id="txtUsername" placeholder="Username" value="'.$username.'"></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtPassword">Password</label><div class="controls"><input type="password" id="txtPassword" placeholder="Password" value="'.$password.'"></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtSenderID">Sender ID</label><div class="controls"><input type="text" id="txtSenderID" placeholder="Sender ID" value="'.$sender_id.'"></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtPriority">Priority</label><div class="controls"><select id="txtPriority">';
-				$divHTML .= '<option value="ndnd" '.(($priority=="ndnd" || $priority=="")? 'selected' : '').'>ndnd</option>';
-				$divHTML .= '<option value="dnd" '.(($priority=="dnd")? 'selected' : '').'>dnd</option>';
-			$divHTML .= '</select></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div></div>';
-			$divHTML .= '<div style="padding-bottom:6px;"><button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(2);">Test Configuration</button></div>';
+		$divHTML .= '<div class="row-fluid">';
+			$divHTML .= '<div class="span10">';
+				$divHTML .= '<form class="form-horizontal" onsubmit="return false;">';
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtUsername">Username</label><div class="controls"><input type="text" id="txtUsername" placeholder="Username" value="'.$username.'"></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtPassword">Password</label><div class="controls"><input type="password" id="txtPassword" placeholder="Password" value="'.$password.'"></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtSenderID">Sender ID</label><div class="controls"><input type="text" id="txtSenderID" placeholder="Sender ID" value="'.$sender_id.'"></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtPriority">SMS Type</label><div class="controls"><select id="txtPriority">';
+						$divHTML .= '<option value="ndnd" '.(($priority=="ndnd" || $priority=="")? 'selected' : '').'>Transactional</option>';
+						$divHTML .= '<option value="dnd" '.(($priority=="dnd")? 'selected' : '').'>Promotional</option>';
+						$divHTML .= '</select></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div>';
+					$divHTML .= "</div>";
+					$divHTML .= '<div class="control-group">';
+						$divHTML .= '<div class="controls"><button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(2);">Test Configuration</button></div>';
+					$divHTML .= "</div>";
+				$divHTML .= '<form>';
+			$divHTML .= "</div>";
 		$divHTML .= "</div>";
 	}
 
