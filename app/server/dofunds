@@ -338,7 +338,8 @@ else if($req == 10)
 		$to_return .= '<ul class="nav nav-tabs" id="batchTab">';
 			$to_return .= '<li id="summaryTab" class="active" onclick="getBatchSummary('.$batch_id.')"><a href="#summaryTab" data-toggle="tab">Summary</a></li>';
 			$to_return .= '<li id="addContributionTab" onclick="getAddOrEditContributionForm('.$is_update.', '.$batch_id.', \''.$batch_name.'\', '.$contribution_id.');"><a href="#addContributionTab" data-toggle="tab">Add Contribution</a></li>';
-			$to_return .= '<li id="listContributionTab" onclick="listAllContributions('.$batch_id.');"><a href="#listContributionTab" data-toggle="tab">List Contributions</a></li>';
+			$to_return .= '<li id="listContributionTab" onclick="listAllContributions('.$batch_id.', 0);"><a href="#listContributionTab" data-toggle="tab">List Contributions</a></li>';
+			$to_return .= '<li id="importContributionTab" onclick="getContributionImportForm();"><a href="#importContributionTab" data-toggle="tab">Import Contributions</a></li>';
 		$to_return .= '</ul>';
 		$to_return .= '<div class="tab-content">';
 			$to_return .= '<div class="tab-pane active" id="summaryDiv">';
@@ -346,6 +347,8 @@ else if($req == 10)
 			$to_return .= '<div class="tab-pane" id="addContributionDiv">';
 			$to_return .= '</div>';
 			$to_return .= '<div class="tab-pane" id="listContributionDiv">';
+			$to_return .= '</div>';
+			$to_return .= '<div class="tab-pane" id="importContributionDiv">';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
 		$to_return .= '<div class="hidden">';
@@ -383,10 +386,15 @@ else if($req == 11)
 
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
-		$to_return .= '<div class="span10">';
+		$to_return .= '<div class="span6">';
 			$to_return .= '<div id="myStat" data-text="'.$_SESSION['currencyCode'].'&nbsp;'.$received_amount.'" data-info="Total Recevied Fund" data-fontsize="15" data-percent="'.$total_percent.'" data-fgcolor="#61a9dc" data-bgcolor="#eee" data-fill="#ddd"></div>';
 			$to_return .= '<p><b>Expected Amount: </b>'.$_SESSION['currencyCode'].'&nbsp;'.$expected_amount.'</p>';
 //			$to_return .= '<p><b>Received Amount: </b>'.$received_amount.'</p>';
+		$to_return .= '</div>';
+		$to_return .= '<div class="span4 well">';
+			$to_return .= '<h5>Import contributions</h5>';
+			$to_return .= '<a href="#" onclick="getContributionImportForm();">Import from previous batches</a><BR>';
+			$to_return .= '<a href="#">Import from *.xls, *.csv</a>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
 
@@ -551,6 +559,7 @@ else if($req == 13)
 	//list contribution details
 
 	$batch_id = trim($_POST['batchID']);
+	$is_import_req = trim($_POST['isImportReq']);
 	$fund_obj = new Funds($APPLICATION_PATH);
 	$contribution_result = $fund_obj->getAllContributions($batch_id);
 	//print_r($contribution_result);
@@ -569,9 +578,12 @@ else if($req == 13)
 				
 				$actions = '<i class="curHand icon-trash" onclick="deleteContributionConfirmation('.$contributions[$i][0].','.$batch_id.')"></i>&nbsp;&nbsp;';
 				
-				$transaction_type = (($contributions[$i][6] == 1)?'Cash Gift':'Non-Cash Gift');
-				
-				$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][0], $contributions[$i][1], $contributions[$i][5], $transaction_type, $contributions[$i][9], $actions);
+				$transaction_type = (($contributions[$i][6] == 1)?'Cash Gift':'Non-Cash Gift');				
+				if($is_import_req == 1) {
+					$to_return['aaData'][] = array('<input type="checkbox" id="chkContribution-'.$i.'" />', '<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][0], $contributions[$i][1], $contributions[$i][5], $transaction_type, $contributions[$i][9], $actions);
+				} else {
+					$to_return['aaData'][] = array('<img src="plugins/datatables/examples/examples_support/details_open.png" />', $contributions[$i][0], $contributions[$i][1], $contributions[$i][5], $transaction_type, $contributions[$i][9], $actions);
+				}
 			}
 		}
 	}
@@ -724,5 +736,75 @@ else if($req == 18)
 
 	echo $encode_obj;
 	exit;
+}
+else if($req == 19)
+{
+	$import_type = trim($_POST['importType']);
+
+	$funds_obj = new Funds($APPLICATION_PATH);
+	$batch_details = $funds_obj->getAllBatches();
+	
+	$to_return = '';
+	$to_return .= '<div class="row-fluid">';		
+		$to_return .= '<div class="span12">';
+			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
+				$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Click proceed button below to list all the contributions from the selected batch or file and pick the contriubtions you would like to import into this batch.</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label">Import Option</label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<input type="radio" id="importTypeFromBatch" name="importType" value="1" checked onclick="onSelectingImportType(this);">&nbsp;Import contributions from Previous Batch<BR>';
+						$to_return .= '<input type="radio" id="importTypeFromFile" name="importType" value="2" onclick="onSelectingImportType(this);">&nbsp;Import contributions from *.xls, *.csv';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group" id="divImportFromBatch">';
+					$to_return .= '<label class="control-label"></label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= 'Choose your batch to import the contributions<BR>';
+						$to_return .= '<select id="selectBatch">';
+							$to_return .= '<option value="-1">Select Batch</option>';
+							if($batch_details[0] == 1)
+							{
+								$total_batch = COUNT($batch_details[1]);
+								if($total_batch > 0)
+								{
+									for($i=0; $i<$total_batch; $i++) {
+										$to_return .= '<option value="'.$batch_details[1][$i][0].'">'.$batch_details[1][$i][1].'</option>';	
+									}
+								}
+							}							
+						$to_return .= '</select>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group" id="divImportFromFile" style="display:none;">';
+					$to_return .= '<label class="control-label"></label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= 'Choose your import file<BR>';
+						$to_return .= '<input type="file" id="importType" value="1">';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group">';
+					$to_return .= '<label class="control-label"></label>';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<button class="btn btn-small btn-info" onclick="listContributionsFromBatch();"><i class="icon-white icon-file" style="margin-top:2px;"></i>&nbsp;Proceed</button>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</form>';
+		$to_return .= '</div>';
+	$to_return .= '</div>';
+
+	echo $to_return;
+	exit;
+}
+else if($req == 20)
+{
+	//import contributions from previous batch
+
+	$batch_id = trim($_POST['batchID']);
+	$contribution_date = trim($_POST['contributionDate']);
+	$contribution_list = trim(stripslashes(rawurldecode($_POST['contributionList'])));
+	$profile_list = trim(stripslashes(rawurldecode($_POST['profileList'])));
+
+	$fund_obj = new Funds($APPLICATION_PATH);
+	$fund_obj->importContributionsFromBatch($batch_id, $contribution_date, $contribution_list, $profile_list);
 }
 ?>

@@ -641,5 +641,89 @@ class Funds
         }
 		return $total_amount;
 	}
+
+	public function importContributionsFromBatch($batch_id, $contribution_date, $contribution_list, $profile_list)
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Problem while import the contributions. Please see the <a href="#">error log</a> for more information.';
+
+		$success = 0;
+		$failure = 0;
+		if(is_array($contribution_list))
+		{
+			$total_contributions = COUNT($contribution_list);
+			if($total_contributions > 0)
+			{
+				session_start();
+				set_time_limit(0);
+				$user_id = $_SESSION['userID'];
+				$user_name = $_SESSION['username'];
+				
+				$dt = Carbon::now($_SESSION['churchTimeZone']);
+				$last_updated_time = $dt->toDateTimeString();
+
+				for($i=0; $i<$total_contributions; $i++)
+				{
+					$contribution_id = $contribution_list[$i];
+					$contribution_details = $this->getContributionInformation($contribution_id);
+					$split_details = $this->getContributionSplitDetails($contribution_id);
+
+					$contribution_split_details[] = array($contribution_split_id, $contribution_id, $fund_id, $fund_name, $amount, $notes);
+
+					if($contribution_details[0] == 1 && $split_details[0] == 1) {
+						//$contribution_id = $contribution_details[1][0];
+						//$contribution_date = $contribution_details[1][0];
+						//$batch_id = $contribution_details[1][0];
+						$profile_id = $contribution_details[1][3];
+						$transaction_type = $contribution_details[1][4];
+						$payment_mode = $contribution_details[1][5];
+						$reference_number = $contribution_details[1][6];
+						$total_amount = $contribution_details[1][7];
+
+						$total_splits = COUNT($split_details[1]);
+						if($total_splits > 0)
+						{
+							$fund_id_list = '';
+							for($j=0; $j<$total_splits; $j++)
+							{
+								if($fund_id_list != '') {
+									$fund_id_list .= '<:|:>';
+								}
+								if($amount_id_list != '') {
+									$amount_id_list .= '<:|:>';
+								}
+								if($notes_id_list != '') {
+									$notes_id_list .= '<:|:>';
+								}
+								$fund_id_list .= $split_details[$j][2];
+								$amount_id_list .= $split_details[$j][4];
+								$notes_id_list .= $split_details[$j][5];
+							}
+						}
+
+						$result = $this->addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_updated_time, $user_id, $user_name, $fund_id_list, $amount_list, $notes_list);
+						if($result[0] == 1) {
+							$success++;
+						} else {
+							$failure++;
+						}
+					} else {
+						//log error
+						$failure++;
+					}					
+				}
+			}
+		}
+
+		if($success == $total_contributions) {
+			$return_data[0] = 1;
+			$return_data[1] = 'Your contributions has been imported successfully.';
+		} else if($failure > 0 && $success > 0) {
+			$return_data[0] = 0;
+			$return_data[1] = 'Your contributions has been imported partially. Few contributions are failed to import and to see the missed contributions list, please <a href="#">Click Here</a>.';
+		}
+		return $return_data;
+	}
 }
 ?>

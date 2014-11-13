@@ -379,6 +379,7 @@ function getBatchSummary(batchID)
 	document.getElementById('summaryDiv').className = 'tab-pane active';
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
+	document.getElementById('importContributionDiv').className = 'tab-pane';
 
 	var formPostData = 'req=11&batchID=' + batchID;
 	$.ajax({
@@ -402,6 +403,7 @@ function getAddOrEditContributionForm(isUpdate, batchID, batchName, contribution
 	document.getElementById('summaryDiv').className = 'tab-pane';
 	document.getElementById('addContributionDiv').className = 'tab-pane active';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
+	document.getElementById('importContributionDiv').className = 'tab-pane';
 
 	var formPostData = 'req=12&isEdit=' + isUpdate + '&batchID=' + batchID + '&batchName=' + escString(batchName) + '&contributionID=' + contributionID;
 
@@ -426,19 +428,20 @@ function getAddOrEditContributionFormResponse(response)
 	getFundList(rowID);
 }
 
-function listAllContributions(batchID)
+function listAllContributions(batchID, isImportReq)
 {
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('summaryDiv').className = 'tab-pane';
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane active';
+	document.getElementById('importContributionDiv').className = 'tab-pane';
 
 	var currencyCode = "USD";
 	if(document.getElementById("txtCurrencyCode")) {
 		currencyCode = document.getElementById("txtCurrencyCode").value;
 	}
 
-	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	var table = '<table id="listContributionTable" class="table table-condensed"><thead><tr><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th><th>Actions</th></tr></thead><tbody></tbody></table>';
 	document.getElementById('listContributionDiv').innerHTML = table;
 	
 	oTable = $('#listContributionTable').dataTable( {
@@ -482,7 +485,7 @@ function listAllContributions(batchID)
                 "dataType": 'json',
                 "type": "POST",
                 "url": sSource,
-                "data": "req=13&batchID=" + batchID,
+                "data": "req=13&batchID=" + batchID +"&isImportReq="+isImportReq,
                 "success": fnCallback
             } );		
         }
@@ -647,11 +650,12 @@ function addOrUpdateContribution(val)
 
 function addOrUpdateContributionResponse(response)
 {
+	var isImportReq = 0;
 	var dataObj = eval("(" + response + ")" );
 	if(dataObj.rsno == 1) {
 		var alertType = 1;
 		$('#batchTab a[href="#listContributionTab"]').tab('show');
-		listAllContributions(dataObj.batchID);
+		listAllContributions(dataObj.batchID, isImportReq);
 	}
 	else {
 		var alertType = 2;
@@ -816,12 +820,13 @@ function deleteContributionRequest(contributionID, batchID)
 
 function deleteContributionResponse(response)
 {
+	var isImportReq = 0;
 	var dataObj = eval("(" + response + ")" );
 	if(dataObj.rsno == 1) {
 		var alertType = 1;
 		var msgToDisplay = dataObj.msg;
 
-		listAllContributions(dataObj.batchID);
+		listAllContributions(dataObj.batchID, isImportReq);
 	}
 	else {
 		var alertType = 2;
@@ -831,4 +836,128 @@ function deleteContributionResponse(response)
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
+}
+
+function getContributionImportForm(type)
+{
+	document.getElementById('alertRow').style.display = 'none';	
+	document.getElementById('summaryDiv').className = 'tab-pane';
+	document.getElementById('addContributionDiv').className = 'tab-pane';
+	document.getElementById('listContributionDiv').className = 'tab-pane';
+	document.getElementById('importContributionDiv').className = 'tab-pane active';
+
+	var formPostData = "req=19";
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:getContributionImportFormResponse,
+		error:HandleAjaxError
+	});
+}
+
+function getContributionImportFormResponse(response)
+{
+	document.getElementById('importContributionDiv').innerHTML = response;
+}
+
+function onSelectingImportType(obj)
+{
+	if(obj.value == 1)
+	{
+		// import contributions from previous batch	
+		document.getElementById('divImportFromBatch').style.display = '';
+		document.getElementById('divImportFromFile').style.display = 'none';
+	}
+	else
+	{
+		// import contributions from *.xls, *.csv
+		document.getElementById('divImportFromBatch').style.display = 'none';
+		document.getElementById('divImportFromFile').style.display = '';
+	}
+}
+
+function listContributionsFromBatch()
+{
+	var importType;
+	var isImportReq = 1;
+	if(document.getElementById('importTypeFromBatch').checked) {
+		importType = 1;
+		var index = document.getElementById('selectBatch').selectedIndex;
+		var batchID = document.getElementById('selectBatch').options[index].value;
+		if(batchID == -1) {
+			var alertType = 2;
+			var msgToDisplay = 'Please select the valid batch';
+			var resultToUI = getAlertDiv(alertType, msgToDisplay);
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = resultToUI;
+		}
+		document.getElementById('alertRow').style.display = 'none';
+		document.getElementById('summaryDiv').className = 'tab-pane';
+		document.getElementById('addContributionDiv').className = 'tab-pane';	
+		document.getElementById('listContributionDiv').className = 'tab-pane';
+		document.getElementById('importContributionDiv').className = 'tab-pane active';
+
+		var currencyCode = "USD";
+		if(document.getElementById("txtCurrencyCode")) {
+			currencyCode = document.getElementById("txtCurrencyCode").value;
+		}
+
+		var table = '<table id="importContributionTable" class="table table-condensed"><thead><tr><th><input type="checkbox" id="chkAllContributions" /></th><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th><th>Actions</th></tr></thead><tbody></tbody></table>';
+		document.getElementById('importContributionDiv').innerHTML = table;
+		
+		oTable = $('#importContributionTable').dataTable( {
+			"aoColumns": [
+				{ "sWidth": "5%" },
+				{ "sWidth": "5%" },
+				{ "sWidth": "2%", "bVisible":false},
+				{ "sWidth": "15%" },
+				{ "sWidth": "15%"  },
+				{ "sWidth": "15%"  },
+				{ "sWidth": "15%"  },
+			],
+			"bFilter":false,
+			"bProcessing": true,
+			"bDestroy": true,
+			"sAjaxSource": doFundsFile,
+			"fnDrawCallback": function () {
+				$('body table tbody td').on( 'click', 'img', function (e) {
+
+			//		alert("SKTG");
+					//console.log($(this));
+					var nTr = $(this).parents('tr')[0];
+					if ( oTable.fnIsOpen(nTr) )
+					{
+						/* This row is already open - close it */
+						this.src = "plugins/datatables/examples/examples_support/details_open.png";
+						oTable.fnClose( nTr );
+					}
+					else
+					{
+						/* Open this row */
+						this.src = "plugins/datatables/examples/examples_support/details_close.png";
+						var aData = oTable.fnGetData( nTr );
+						console.log(aData);
+						oTable.fnOpen( nTr, showContributionSplitDetails(aData[2]), 'details' );
+					}
+				});
+			},
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+				$.ajax( {
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": "req=13&batchID=" + batchID +"&isImportReq="+isImportReq,
+					"success": fnCallback
+				} );		
+			}
+		});
+	} else {
+		importType = 2;
+		var alertType = 2;
+		var msgToDisplay = 'Please select the batch';
+		var resultToUI = getAlertDiv(alertType, msgToDisplay);
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+	}
 }
