@@ -76,9 +76,9 @@ include $APPLICATION_PATH."utils/validateauth.php";
 <!--								<li class="" id="mharvest" onclick="menulinkClicked(7)"><a href="harvest"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
 								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>
 								<li class="" id="mgroups" onclick="menulinkClicked(3)"><a href="groups" id="groupsLink"><span id="mgroupsText" style="color:white">Groups</span></a></li>
-								<li class="" id="mnotifications" onclick="menulinkClicked(10)"><a href="notifications" id="notificationsLink"><span id="mnotificationsText" style="color:white">Notifications</span></a></li>
+								<li class="" id="mnotifications" onclick="menulinkClicked(10)"><a href="notifications" id="notificationsLink"><span id="mnotificationsText" style="color:white">Email & SMS</span></a></li>
 								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>								
-								<li class="" id="mreports" onclick="menulinkClicked(5)"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>								
+								<li class="" id="mreports" onclick="menulinkClicked(5)" style="display:none;"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>								
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">

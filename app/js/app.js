@@ -1246,6 +1246,7 @@ function highlightSelectedSubMenu(menu)
 	document.getElementById('listProfiles').className = '';
 	document.getElementById('addNewProfile').className = '';
 	document.getElementById('importProfiles').className = '';
+	document.getElementById('pullReports').className = '';
 	//Now set the active class for the selected menu
 	var classNameToSet = 'active';
 	if(menu == 1) {
@@ -1257,5 +1258,8 @@ function highlightSelectedSubMenu(menu)
 	} else if(menu == 3) {
 		document.getElementById('importProfiles').className = classNameToSet;
 		document.getElementById('pageHeader').innerHTML = "Import Profiles From Excel";
+	} else if(menu == 4) {
+		document.getElementById('pullReports').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Filter And Pull Profile Reports";
 	}
 }

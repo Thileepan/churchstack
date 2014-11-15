@@ -3,6 +3,9 @@ doReportsFile = 'server/doreports';
 
 function showProfileReportsScreen(reqFrom)
 {
+	document.getElementById('alertRow').style.display = "none";
+	document.getElementById('backBtnDiv').style.display = "none";
+	document.getElementById('listProfilesContent').style.display = "none";
 	req = reqFrom;
 	var formPostData = 'req=1';
 	formPostData += '&reqFrom=' + reqFrom;
@@ -19,6 +22,7 @@ function showProfileReportsScreenResponse(response)
 {
 	document.getElementById('pageHeader').innerHTML = ((req == 1)?'Profile Reports':'Add Group Member');
 	document.getElementById('pageContent').innerHTML = response;
+	document.getElementById('pageContent').style.display = "";
 }
 
 function showSubscriptionReportsScreen()
