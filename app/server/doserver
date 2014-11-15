@@ -584,8 +584,15 @@ else if($req == 2)
 									$toReturn .= '<input type="number" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 3) {
 									$toReturn .= '<input type="password" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
-								} else if($field_type == 4) {
-									$toReturn .= '<input type="text" data-date-format="dd/mm/yyyy" id="'.$field_id.'" placeholder="'.$field_name.'">';
+								} else if($field_type == 4) {//Date
+									$date_to_show = "";
+									if($field_value != '' && $field_value != "0000-00-00") {
+										$date_split_arr = explode('-', $field_value);
+										$date_to_show = $date_split_arr[2]. '/'. $date_split_arr[1]. '/' .$date_split_arr[0];
+									} else {
+										$date_to_show = "";
+									}
+									$toReturn .= '<input type="text" data-date-format="dd/mm/yyyy" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$date_to_show.'">';
 								} else if($field_type == 5) {
 									$toReturn .= '<input type="url" id="'.$field_id.'" placeholder="'.$field_name.'" value="'.$field_value.'">';
 								} else if($field_type == 6) {
@@ -593,6 +600,7 @@ else if($req == 2)
 										for($n=0; $n<COUNT($field_options); $n++)
 										{
 											$toReturn .= '<option value="'.$n.'" '.(($field_value == $n)?"selected":"").'>'.$field_options[$n].'</option>';
+											//$toReturn .= '<option value="'.$field_options[$n].'" '.(($field_value == $field_options[$n])?"selected":"").'>'.$field_options[$n].'</option>';
 										}
 									$toReturn .= '</select>';
 								} else if($field_type == 7) {
@@ -1056,6 +1064,19 @@ else if($req == 11)
 								$to_return .= $field_name.' - <span class="muted">'.$field_value.'</span><BR>';
 							} else if($field_type == 5) {
 								$to_return .= $field_name.' - <span class="muted"><a href="'.$field_value.'">'.$field_value.'</a></span><BR>';
+							} else if($field_type == 6) {
+								$option_to_show = "";
+								$csv_options = $field_details[$m][3];
+								$sel_options_array = explode(",", $csv_options);
+								for($opt=0; $opt < COUNT($sel_options_array); $opt++)
+								{
+									if($field_value == $opt)
+									{
+										$option_to_show = $sel_options_array[$opt];
+										break;
+									}
+								}
+								$to_return .= $field_name.' - <span class="muted">'.$option_to_show.'</span><BR>';
 							} else if($field_type == 7) {
 								$to_return .= $field_name.' - <span class="muted">'.(($field_value == 1)?"Yes":"No").'</span><BR>';
 							}							

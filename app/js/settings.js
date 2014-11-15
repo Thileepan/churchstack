@@ -976,7 +976,7 @@ function saveBhashSMSConfig(saveType)
 	{
 		if(txtUsername == "" || txtPassword == "" || txtSenderID == "")
 		{
-			var alertMsg = "The following fields are required and cannot be left empty : Username, Password, Sender ID, Priority";
+			var alertMsg = "The following fields are required and cannot be left empty : Username, Password, Sender ID, SMS Type";
 			document.getElementById('alertRow').style.display = '';
 			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
 			return false;

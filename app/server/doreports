@@ -5,7 +5,8 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH."utils/validateauth.php";
 
 include $APPLICATION_PATH.'utils/JSON.php';
-include_once $APPLICATION_PATH . '/classes/class.reports.php';
+include_once $APPLICATION_PATH . 'classes/class.reports.php';
+include_once $APPLICATION_PATH . 'classes/class.settings.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -15,6 +16,10 @@ if($req == 1)
 	//list reports
 	$reports_obj = new Reports($APPLICATION_PATH);
 	$report_list = $reports_obj->listAllReports();
+
+	$profile_settings_obj = new ProfileSettings($APPLICATION_PATH);
+	$all_custom_fields = $profile_settings_obj->getAllCustomProfileFields();
+
 //	print_r($report_list);
 
 	/*
@@ -28,45 +33,59 @@ if($req == 1)
 	$to_return .= '<div id="divProfileSearchForm" class="row-fluid">';
 		$to_return .= '<div class="span12">';			
 				$to_return .= '<div class="row-fluid">';
-					$to_return .= '<div class="offset2 span10">';
+					$to_return .= '<div class="span12">';
 						$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Rules &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
 						$to_return .= '<div id="addRuleOuterDiv">';
 							$to_return .= '<div class="row-fluid" id="divAddRule-1">';
 								//$to_return .= '<div class="span1"></div>';
-								$to_return .= '<div class="span4" id="divReportType-1">';
+								$to_return .= '<div class="span3" id="divReportType-1">';
 									$to_return .= '&nbsp;&nbsp;&nbsp;&nbsp;<select onChange="changeRuleSubTypeAndValue(1);" id="selReportType-1" disabled>';
 										$to_return .= '<option value="PROFILES">PROFILES</option>';
 										$to_return .= '<option value="GENDER">GENDER</option>';
 										$to_return .= '<option value="AGE">AGE</option>';
 										$to_return .= '<option value="BIRTH_DATE">BIRTH DATE</option>';
 										$to_return .= '<option value="MARRIAGE_DATE">MARRIAGE DATE</option>';
-										$to_return .= '<option value="BIRTH_MARRIAGE_DATE">BIRTH OR MARRIAGE DATE</option>';
+										//$to_return .= '<option value="BIRTH_MARRIAGE_DATE">BIRTH OR MARRIAGE DATE</option>';
 										$to_return .= '<option value="MARITAL_STATUS">MARITAL STATUS</option>';
 										$to_return .= '<option value="BAPTISM">BAPTISM</option>';
 										$to_return .= '<option value="CONFIRMATION">CONFIRMATION</option>';
+										for($f=0; $f < COUNT($all_custom_fields); $f++)
+										{
+											if($all_custom_fields[$f][2] != 3)//Password
+											{
+												$to_return .= '<option value="'.$all_custom_fields[$f][0].'">'.$all_custom_fields[$f][1].'</option>';
+											}
+										}
 									$to_return .= '</select>';
 								$to_return .= '</div>';+
-								$to_return .= '<div class="span3" id="divReportSubType-1" style="display:none">';
-									//$to_return .= '<select><option value="-1">All</option><option value="1">Family Head</option><option value="2">Individual</option></select>';
-								$to_return .= '</div>';
-								$to_return .= '<div class="span3" id="divReportValue-1">';
+								$to_return .= '<div class="span9" id="divReportValue-1">';
 									$to_return .= '<select id="selRuleValueItem-1"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
 								$to_return .= '</div>';
+								//$to_return .= '<div class="span1" id="divReportSubType-1" style="display:none">';
+									//$to_return .= '<select><option value="-1">All</option><option value="1">Family Head</option><option value="2">Individual</option></select>';
+								//$to_return .= '</div>';
 							$to_return .= '</div>'; //end of rule1
 						$to_return .= '</div>';
 						$to_return .= '<input type="hidden" id="maxReportRuleRowID" value="1" />';
 						$to_return .= '<input type="hidden" id="reportRuleRowIDList" value="1" />';					
+						for($f=0; $f < COUNT($all_custom_fields); $f++)
+						{
+							$to_return .= '<input type="hidden" id="customFieldNameWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][1].'" />';
+							$to_return .= '<input type="hidden" id="customFieldTypeWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][2].'" />';
+							$to_return .= '<input type="hidden" id="customFieldCSVOptionsWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][3].'" />';
+						}
 				$to_return .= '</div>';
 			$to_return .= '</div>';
 			
-			$to_return .= '<div class="row-fluid"><div class="offset2 span10">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
+			//$to_return .= '<div class="row-fluid"><div class="offset2 span10">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
+			$to_return .= '<div class="row-fluid"><div class="span12">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
 
 			
 			if($req_from == 1)
 			{
 				$to_return .= '<div id="addColumnOuterDiv">';
 					$to_return .= '<div class="row-fluid" id="divAddColumn-1">';
-						$to_return .= '<div class="offset2 span10">';
+						$to_return .= '<div class="offset1 span10">';
 							$to_return .= '<hr>';
 							$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Columns &nbsp;</p>';
 							$to_return .= '<div class="span4">';
@@ -87,7 +106,7 @@ if($req == 1)
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column11">Occupation</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column12">Is Another Church Member</label>';
 							$to_return .= '</div>';
-							$to_return .= '<div class="span3">';
+							$to_return .= '<div class="span2">';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column13">Address</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column14">Contact Numbers</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column15">Email</label>';
@@ -95,7 +114,7 @@ if($req == 1)
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column17">Notes</label>';
 							$to_return .= '</div>';						
 						$to_return .= '</div>';
-						$to_return .= '<div class="span3"></div>';
+						//$to_return .= '<div class="span3"></div>';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
 			}
@@ -103,12 +122,12 @@ if($req == 1)
 			
 			$to_return .= '<HR>';
 			$to_return .= '<div class="row-fluid">';
-				$to_return .= '<div id="divSearchBtn" class="offset5 span7">';
-					$to_return .= '<button class="btn btn-primary" onclick="performSearch();">Search</button>&nbsp;';
+				$to_return .= '<div id="divSearchBtn" class="offset2 span8">';
+					$to_return .= '<button class="btn btn-primary" onclick="performSearch();">Search</button>&nbsp;&nbsp;&nbsp;';
 					$to_return .= '<button class="btn" onclick="resetSearchForm('.$req_from.');">Cancel</button>';
 					$to_return .= '<input type="hidden" id="hiddenReqFrom" value="'.$req_from.'" />';
 				$to_return .= '</div>';
-				$to_return .= '<div id="divLoadingSearchImg" class="offset5 span7" style="display:none">';
+				$to_return .= '<div id="divLoadingSearchImg" class="offset2 span8" style="display:none">';
 					$to_return .= '<span><img src="images/ajax-loader.gif" />&nbsp;Please wait...</span>';
 				$to_return .= '</div>';
 			$to_return .= '</div>';
@@ -173,6 +192,67 @@ else if($req == 2 || $req == 3)
 		$rule_value = explode(',', trim(stripslashes(rawurldecode($_POST['ruleValue']))));
 		$report_columns = explode(',', trim(stripslashes(rawurldecode($_POST['columnData']))));
 		$include_inactive_profile = trim($_POST['includeInactiveProfile']);
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldIDs']))) != "") {
+			$arrayCustomFieldIDs = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldIDs']))));
+		} else {
+			$arrayCustomFieldIDs = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldTypes']))) != "") {
+			$arrayCustomFieldTypes = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldTypes']))));
+		} else {
+			$arrayCustomFieldTypes = array();
+		}
+
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldTextboxContains']))) != "") {
+			$arrayCustomFieldTextboxContains = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldTextboxContains']))));
+		} else {
+			$arrayCustomFieldTextboxContains = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldNumberSelFilterValue']))) != "") {
+			$arrayCustomFieldNumberSelFilterValue = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldNumberSelFilterValue']))));
+		} else {
+			$arrayCustomFieldNumberSelFilterValue = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldNumberValue']))) != "") {
+			$arrayCustomFieldNumberValue = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldNumberValue']))));
+		} else {
+			$arrayCustomFieldNumberValue = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateFrom']))) != "") {
+			$arrayCustomFieldDateFrom = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateFrom']))));
+		} else {
+			$arrayCustomFieldDateFrom = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateTo']))) != "") {
+			$arrayCustomFieldDateTo = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateTo']))));
+		} else {
+			$arrayCustomFieldDateTo = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateIgnoreYear']))) != "") {
+			$arrayCustomFieldDateIgnoreYear = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldDateIgnoreYear']))));
+		} else {
+			$arrayCustomFieldDateIgnoreYear = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldURLContains']))) != "") {
+			$arrayCustomFieldURLContains = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldURLContains']))));
+		} else {
+			$arrayCustomFieldURLContains = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldDropboxValue']))) != "") {
+			$arrayCustomFieldDropboxValue = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldDropboxValue']))));
+		} else {
+			$arrayCustomFieldDropboxValue = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldTickboxValue']))) != "") {
+			$arrayCustomFieldTickboxValue = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldTickboxValue']))));
+		} else {
+			$arrayCustomFieldTickboxValue = array();
+		}
+		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldTextAreaContains']))) != "") {
+			$arrayCustomFieldTextAreaContains = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldTextAreaContains']))));
+		} else {
+			$arrayCustomFieldTextAreaContains = array();
+		}
 
 		if(COUNT($rule_type) > 0)
 		{
@@ -191,7 +271,7 @@ else if($req == 2 || $req == 3)
 	}
 	//print_r($report_rules);
 	//print_r($report_columns);
-	$reports = $reports_obj->generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from);
+	$reports = $reports_obj->generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains);
 	//print_r($reports);exit;
 
 	$is_results_available = false;

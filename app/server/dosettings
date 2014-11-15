@@ -71,7 +71,7 @@ if($req == 1)
 						{
 							$to_return .= '&nbsp;';
 						}
-						else if($setting_id == 3 && ($option_list[$i][0] == 1 || $option_list[$i][0] == 2))//Marital Status : Single & Married should not be deletable
+						else if($setting_id == 3 && ($option_list[$i][0] == 1 || $option_list[$i][0] == 2 || $option_list[$i][0] == 3 || $option_list[$i][0] == 4))//Marital Status : Single, Married, Widow, Widower should not be deletable
 						{
 							$to_return .= '&nbsp;';
 						}
@@ -833,25 +833,25 @@ else if($req==14)
 			$divHTML .= '<div class="span10">';
 				$divHTML .= '<form class="form-horizontal" onsubmit="return false;">';
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtUsername">Username</label><div class="controls"><input type="text" id="txtUsername" placeholder="Username" value="'.$username.'"></div>';
+						$divHTML .= '<label class="control-label" for="txtUsername"><span class="text-danger">*</span>Username</label><div class="controls"><input type="text" id="txtUsername" placeholder="Username" value="'.$username.'"></div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtPassword">Password</label><div class="controls"><input type="password" id="txtPassword" placeholder="Password" value="'.$password.'"></div>';
+						$divHTML .= '<label class="control-label" for="txtPassword"><span class="text-danger">*</span>Password</label><div class="controls"><input type="password" id="txtPassword" placeholder="Password" value="'.$password.'"></div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtSenderID">Sender ID</label><div class="controls"><input type="text" id="txtSenderID" placeholder="Sender ID" value="'.$sender_id.'"></div>';
+						$divHTML .= '<label class="control-label" for="txtSenderID"><span class="text-danger">*</span>Sender ID</label><div class="controls"><input type="text" id="txtSenderID" placeholder="Sender ID" value="'.$sender_id.'"></div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtPriority">SMS Type</label><div class="controls"><select id="txtPriority">';
+						$divHTML .= '<label class="control-label" for="txtPriority"><span class="text-danger">*</span>SMS Type</label><div class="controls"><select id="txtPriority">';
 						$divHTML .= '<option value="ndnd" '.(($priority=="ndnd" || $priority=="")? 'selected' : '').'>Transactional</option>';
 						$divHTML .= '<option value="dnd" '.(($priority=="dnd")? 'selected' : '').'>Promotional</option>';
 						$divHTML .= '</select></div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""></div>';
+						$divHTML .= '<label class="control-label" for="txtTestToNumber">Recipient Number</label><div class="controls"><input type="text" id="txtTestToNumber" placeholder="Recipient Mobile Num (To Test)" value=""> (Required only for testing configuration)</div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
-						$divHTML .= '<label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""></div>';
+						$divHTML .= '<label class="control-label" for="txtMessage">SMS Message</label><div class="controls"><input type="text" id="txtMessage" placeholder="SMS Message Body" value=""> (Required only for testing configuration)</div>';
 					$divHTML .= "</div>";
 					$divHTML .= '<div class="control-group">';
 						$divHTML .= '<div class="controls"><button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(1);">Save & Activate</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="submit" onclick="saveBhashSMSConfig(2);">Test Configuration</button></div>';

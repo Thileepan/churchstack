@@ -42,7 +42,7 @@ class Reports
 		}
 	}
 
-	public function generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from)
+	public function generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains)
 	{
 		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 		//print_r($report_rules);
@@ -95,7 +95,7 @@ class Reports
 		
 		//values
 		$gender_values = array('Not Sure', 'Male', 'Female');
-		$marital_values = array('Not sure', 'Single', 'Married', 'Widow');
+		$marital_values = array('Not sure', 'Single', 'Married', 'Widow', 'Widower');
 		$baptised_values = array('Not sure', 'Yes', 'No');
 		$confirmation_values = array('Not sure', 'Yes', 'No');
 		$is_another_church_values = array('Not sure', 'Yes', 'No');
@@ -264,6 +264,8 @@ class Reports
 						$query_where .= ' MARITAL_STATUS = 2';
 					} else if($report_rules[$i][2] == 'WIDOW') {
 						$query_where .= ' MARITAL_STATUS = 3';
+					} else if($report_rules[$i][2] == 'WIDOWER') {
+						$query_where .= ' MARITAL_STATUS = 4';
 					} else {
 						$query_where .= ' MARITAL_STATUS = -1';
 					}
@@ -323,6 +325,218 @@ class Reports
 	//	echo 'SKTGR:::'.$query_to_execute;
 	//	exit;
 
+		/******************************************************************************************************************************* /
+		Filtering done using the custom fieldvalues
+
+		$arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains
+		/*********************************************************************************************************************************/
+
+		$is_custom_filters_enabled = 0;
+		$final_unique_prof_id_array = array();
+		if(COUNT($arrayCustomFieldIDs) > 0)
+		{
+			$is_custom_filters_enabled = 1;
+			$total_custom_field_filters = COUNT($arrayCustomFieldIDs);
+			$complete_cus_fld_filt_prof_id_list = array();
+			for($f=0; $f < COUNT($arrayCustomFieldIDs); $f++)
+			{
+				$curr_custom_field_id = $arrayCustomFieldIDs[$f];
+				$curr_prof_id_list = array();
+				$custom_field_filter_query = "";
+				$custom_filter_result = null;
+				if($arrayCustomFieldTypes[$f] == 1)//textbox
+				{
+					$curr_prof_id_list = array();
+					$curr_textbox_contains = trim($arrayCustomFieldTextboxContains[$f]);
+					$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and b.FIELD_VALUE like ? COLLATE LATIN1_GENERAL_CI';
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query, array("%".$curr_textbox_contains."%"));
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 2)//Numbers
+				{
+					$curr_prof_id_list = array();
+					$curr_numbers_filter = trim($arrayCustomFieldNumberSelFilterValue[$f]);
+					$curr_numbers_value = trim($arrayCustomFieldNumberValue[$f]);
+					if($curr_numbers_filter == "lessorequalto") {
+						$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and CAST(b.FIELD_VALUE AS SIGNED INTEGER) <=".$curr_numbers_value;
+						$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query);
+					} else if($curr_numbers_filter == "equalto") {
+						$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and CAST(b.FIELD_VALUE AS SIGNED INTEGER) =".$curr_numbers_value;
+						$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query);
+					} else if($curr_numbers_filter == "greaterorequalto") {
+						$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and CAST(b.FIELD_VALUE AS SIGNED INTEGER) >=".$curr_numbers_value;
+						$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query);
+					}
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 3)//Password
+				{
+				}
+				else if($arrayCustomFieldTypes[$f] == 4)//Date
+				{
+					//$arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear
+					$curr_prof_id_list = array();
+					$curr_date_from = trim($arrayCustomFieldDateFrom[$f]);
+					$curr_date_to = trim($arrayCustomFieldDateTo[$f]);
+					$curr_ignore_year = trim($arrayCustomFieldDateIgnoreYear[$f]);
+
+					$formated_from_date = "";
+					$curr_date_from = trim($curr_date_from);
+					if(trim($curr_date_from) != "") {
+						$formated_from_date_arr = explode("/", $curr_date_from);
+						$formated_from_date = $formated_from_date_arr[2] . "-" .$formated_from_date_arr[1]. "-" .$formated_from_date_arr[0];
+					}
+
+					$formated_to_date = "";
+					$curr_date_to = trim($curr_date_to);
+					if(trim($curr_date_to) != "") {
+						$formated_to_date_arr = explode("/", $curr_date_to);
+						$formated_to_date = $formated_to_date_arr[2] . "-" .$formated_to_date_arr[1]. "-" .$formated_to_date_arr[0];
+					}
+
+					if($curr_ignore_year == 1)
+					{
+						if(trim($formated_from_date) != "" && trim($formated_to_date) != "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) BETWEEN DAYOFYEAR("'.$formated_from_date.'") AND DAYOFYEAR("'.$formated_to_date.'"))';
+						}
+						else if(trim($formated_from_date) != "" && trim($formated_to_date) == "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) >= DAYOFYEAR("'.$formated_from_date.'"))';
+						}
+						else if(trim($formated_from_date) == "" && trim($formated_to_date) != "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+						}
+					}
+					else
+					{
+						if(trim($formated_from_date) != "" && trim($formated_to_date) != "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and CAST(b.FIELD_VALUE AS DATE) BETWEEN "'.$formated_from_date.'" and "'.$formated_to_date.'"';
+						}
+						else if(trim($formated_from_date) != "" && trim($formated_to_date) == "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and CAST(b.FIELD_VALUE AS DATE) >= "'.$formated_from_date.'"';
+						}
+						else if(trim($formated_from_date) == "" && trim($formated_to_date) != "")
+						{
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and CAST(b.FIELD_VALUE AS DATE) <= "'.$formated_to_date.'"';
+						}
+					}
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query);
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 5)//Link/URl
+				{
+					$curr_prof_id_list = array();
+					$curr_linkurl_contains = trim($arrayCustomFieldURLContains[$f]);
+					$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and b.FIELD_VALUE like ? COLLATE LATIN1_GENERAL_CI';
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query, array("%".$curr_linkurl_contains."%"));
+
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 6)//Dropdown
+				{
+					//$arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains
+					$curr_prof_id_list = array();
+					$curr_dropbox_value = trim($arrayCustomFieldDropboxValue[$f]);
+					$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and b.FIELD_VALUE=? COLLATE LATIN1_GENERAL_CI";
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query, array($curr_dropbox_value));
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 7)//Tickbox
+				{
+					$curr_prof_id_list = array();
+					$curr_tickbox_value = trim($arrayCustomFieldTickboxValue[$f]);
+					$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and CAST(b.FIELD_VALUE AS SIGNED INTEGER)=".$curr_tickbox_value;
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query);
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+				else if($arrayCustomFieldTypes[$f] == 8)//Textarea
+				{
+					$curr_prof_id_list = array();
+					$curr_textarea_contains = trim($arrayCustomFieldTextAreaContains[$f]);
+					$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and b.FIELD_VALUE like ? COLLATE LATIN1_GENERAL_CI';
+					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query, array("%".$curr_textarea_contains."%"));
+					if($custom_filter_result) {
+						if(!$custom_filter_result->EOF) {
+							while(!$custom_filter_result->EOF)
+							{
+								$curr_prof_id_list[] = $custom_filter_result->fields[0];
+								$custom_filter_result->MoveNext();
+							}
+						}
+					}
+					$complete_cus_fld_filt_prof_id_list[] = $curr_prof_id_list;
+				}
+			}
+
+			//Following is done to pass at least 2 arrays as arguments for array_intersect
+			if(COUNT($complete_cus_fld_filt_prof_id_list) > 0)
+			{
+				if(COUNT($complete_cus_fld_filt_prof_id_list) == 1) {
+					$complete_cus_fld_filt_prof_id_list[] = $complete_cus_fld_filt_prof_id_list[0];
+				}
+				$final_unique_prof_id_array = call_user_func_array('array_intersect', $complete_cus_fld_filt_prof_id_list);
+			}
+		}
+		/*********************************************************************************************************************************/
+
 		if(strlen($query_to_execute) > 0)
 		{
 			//$j = 0;
@@ -337,6 +551,15 @@ class Reports
 					{
 						$value = array();
 						$profile_id = $result->fields[0];
+
+						if($is_custom_filters_enabled == 1)
+						{
+							if(!in_array($profile_id, $final_unique_prof_id_array)) {
+								$result->MoveNext();
+								continue;
+							}
+						}
+
 						$parent_profile_id = $result->fields[1];
 						$salutation_id = $result->fields[2];
 						//echo "SaluationID:::".$salutation_id;
@@ -496,6 +719,7 @@ class Reports
             }
 
 			//print_r($column_values);
+			/** /
 			if($birth_marriage_rules)
 			{
 				if(is_array($column_values))
@@ -549,6 +773,7 @@ class Reports
 				$column_values = $report_results;
 				//print_r($column_values);exit;
 			}
+			/**/
 			
 			if($req_from == 2)
 			{

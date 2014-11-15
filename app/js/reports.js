@@ -157,7 +157,7 @@ function showReportTableDiv(reportType, reqFrom)
 		document.getElementById('divReportsBy').style.display = 'none';
 	}
 
-	var btnHTML;
+	var btnHTML = "";
 	if(reqFrom == 2) {
 		btnHTML = '<button class="btn btn-small btn-primary" type="button" id="divAddMemberBtn" onclick="addGroupMembers();">Add Members</button>&nbsp;';
 	}
@@ -188,33 +188,53 @@ function addReportRuleRow()
 	var reportTypeDivID = 'divReportType-'+newRowID;
 	var reportTypeDiv = document.createElement('div');
 	reportTypeDiv.setAttribute('id', reportTypeDivID);
-	reportTypeDiv.setAttribute('class', 'span4');
+	reportTypeDiv.setAttribute('class', 'span3');
 	rowDiv.appendChild(reportTypeDiv);
-
-	var reportSubTypeDivID = 'divReportSubType-'+newRowID;
-	var reportSubTypeDiv = document.createElement('div');
-	reportSubTypeDiv.setAttribute('id', reportSubTypeDivID);
-	reportSubTypeDiv.setAttribute('class', 'span3');
-	reportSubTypeDiv.setAttribute('style', 'display:none');
-	rowDiv.appendChild(reportSubTypeDiv);
 
 	var reportValueDivID = 'divReportValue-'+newRowID;
 	var reportValueDiv = document.createElement('div');
 	reportValueDiv.setAttribute('id', reportValueDivID);
-	reportValueDiv.setAttribute('class', 'span3');
+	reportValueDiv.setAttribute('class', 'span9');
 	//reportValueDiv.setAttribute('style', 'display:none');
 	rowDiv.appendChild(reportValueDiv);	
 
+	/** /
+	var reportSubTypeDivID = 'divReportSubType-'+newRowID;
+	var reportSubTypeDiv = document.createElement('div');
+	reportSubTypeDiv.setAttribute('id', reportSubTypeDivID);
+	reportSubTypeDiv.setAttribute('class', 'span1');
+	reportSubTypeDiv.setAttribute('style', 'display:none');
+	rowDiv.appendChild(reportSubTypeDiv);
+	/**/
+
 	//removed: <option value="PROFILES">PROFILES</option>
 	//removed: <option value="BIRTH_MARRIAGE_DATE">BIRTH OR MARRIAGE DATE</option>
-	var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"><option value="GENDER">GENDER</option><option value="AGE">AGE</option><option value="BIRTH_DATE">BIRTH DATE</option><option value="MARRIAGE_DATE">MARRIAGE DATE</option><option value="MARITAL_STATUS">MARITAL STATUS</option><option value="BAPTISM">BAPTISM</option><option value="CONFIRMATION">CONFIRMATION</option></select>';
+	var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"></select>';
+	//var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"><option value="GENDER">GENDER</option><option value="AGE">AGE</option><option value="BIRTH_DATE">BIRTH DATE</option><option value="MARRIAGE_DATE">MARRIAGE DATE</option><option value="MARITAL_STATUS">MARITAL STATUS</option><option value="BAPTISM">BAPTISM</option><option value="CONFIRMATION">CONFIRMATION</option></select>';
 	//var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
 	var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="MALE">Male</option><option value="FEMALE">Female</option></select>';
 	document.getElementById(reportTypeDivID).innerHTML = ruleType;
-	document.getElementById(reportSubTypeDivID).innerHTML = '';
+//	document.getElementById(reportSubTypeDivID).innerHTML = '';
 	document.getElementById(reportValueDivID).innerHTML = ruleValue;
 	document.getElementById('maxReportRuleRowID').value = newRowID;
 	document.getElementById('reportRuleRowIDList').value += ","+newRowID;
+
+	//Inserting custom field options
+	initialReportFiltersSelectBox = document.getElementById("selReportType-1");
+	initialReportFiltersSelectBoxLenth = document.getElementById("selReportType-1").length;
+	newReportFiltersSelectBox = document.getElementById("selReportType-"+newRowID);
+	var oldOptCount = 0;
+	var newOptCount = 0;
+	while(oldOptCount < initialReportFiltersSelectBoxLenth)
+	{
+		if(initialReportFiltersSelectBox[oldOptCount].value != "PROFILES")
+		{
+			newReportFiltersSelectBox.options[newOptCount] = new Option(initialReportFiltersSelectBox[oldOptCount].text, initialReportFiltersSelectBox[oldOptCount].value);
+			newOptCount++;
+		}
+		oldOptCount++;
+	}
+	return false;
 }
 
 function deleteReportRuleRow(rowID)
@@ -237,6 +257,8 @@ function changeRuleSubTypeAndValue(rowID)
 	var ruleType = document.getElementById('selReportType-' + rowID).options[selRuleTypeIndex].value;
 	//alert(ruleType);
 
+	var idsToSetDatePicker = new Array();
+
 	if(ruleType == 'PROFILES') {
 		ruleValue = '<select id="selRuleValueItem-'+ rowID +'">';
 			ruleValue += '<option value="ALL">All</option>';
@@ -249,26 +271,35 @@ function changeRuleSubTypeAndValue(rowID)
 			ruleValue += '<option value="FEMALE">Female</option>';
 		ruleValue += '</select>';
 	} else if(ruleType == 'AGE') {
+		/** /
 		ruleSubType = '<select id="selRuleSubType-'+ rowID +'">';
 			ruleSubType += '<option value="IS_LESS_THAN">Is Less Than</option>';
 			ruleSubType += '<option value="IS">Is</option>';
 			ruleSubType += '<option value="IS_GREATER_THAN">Is Greater Than</option>';
 		ruleSubType += '</select>'
 		ruleValue = '<input type="text" id="inputAge-'+ rowID +'" value="" placeholder="Age" />';
+		/**/
+		ruleValue = '<select id="selRuleSubType-'+ rowID +'">';
+			ruleValue += '<option value="IS_LESS_THAN">Is Less Than</option>';
+			ruleValue += '<option value="IS">Is</option>';
+			ruleValue += '<option value="IS_GREATER_THAN">Is Greater Than</option>';
+		ruleValue += '</select>'
+		ruleValue += '&nbsp;&nbsp;<input type="text" id="inputAge-'+ rowID +'" value="" placeholder="Age" />';
 	} else if(ruleType == 'BIRTH_DATE') {
-			ruleValue = '<input type="text" id="inputFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;';
+			ruleValue = '<input type="text" id="inputFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
 	} else if(ruleType == 'MARRIAGE_DATE') {
-			ruleValue = '<input type="text" id="inputMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;';
+			ruleValue = '<input type="text" id="inputMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
 	} else if(ruleType == 'BIRTH_MARRIAGE_DATE') {
-			ruleValue = '<input type="text" id="inputBMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;';
+			ruleValue = '<input type="text" id="inputBMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputBMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
 	} else if(ruleType == 'MARITAL_STATUS') {
 		ruleValue = '<select id="selRuleValueItem-'+ rowID +'">';
 			ruleValue += '<option value="SINGLE">Single</option>';
 			ruleValue += '<option value="MARRIED">Married</option>';
 			ruleValue += '<option value="WIDOW">Widow</option>';
+			ruleValue += '<option value="WIDOWER">Widower</option>';
 		ruleValue += '</select>';
 	} else if(ruleType == 'BAPTISM') {
 		ruleValue = '<select id="selRuleValueItem-'+ rowID +'">';
@@ -280,9 +311,64 @@ function changeRuleSubTypeAndValue(rowID)
 			ruleValue += '<option value="YES">Yes</option>';
 			ruleValue += '<option value="NO">No</option>';
 		ruleValue += '</select>';
+	} else {//CUSTOM PROFILE FIELDS
+		var fieldType = document.getElementById('customFieldTypeWithFieldID-'+ ruleType).value;
+		var fieldCSVOptions = document.getElementById('customFieldCSVOptionsWithFieldID-'+ ruleType).value;
+		if(fieldType == 1)//textbox
+		{
+			ruleValue = '<input type="text" id="customFieldTextboxValue-'+ rowID +'" placeholder="contains the text...">';
+		}
+		else if(fieldType == 2)//numbers
+		{
+			ruleValue = '<select id="customFieldNumbersFilterSelBox-'+ rowID +'">';
+				ruleValue += '<option value="lessorequalto">is less than or equal to</option>';
+				ruleValue += '<option value="equalto">is equal to</option>';
+				ruleValue += '<option value="greaterorequalto">is greater than or equal to</option>';
+			ruleValue += '</select>&nbsp;&nbsp;';
+			ruleValue += '<input type="number" id="customFieldNumbersValue-'+ rowID +'" placeholder="enter the number">';
+		}
+		else if(fieldType == 3)//password
+		{
+			ruleValue = '<input type="password" id="customFieldPasswordValue-'+ rowID +'" placeholder="contains the string...">';
+		}
+		else if(fieldType == 4)//date
+		{
+			ruleValue = '<input type="text" id="customFieldDateFromValue-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
+			ruleValue += '<input type="text" id="customFieldDateToValue-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
+			ruleValue += '<input type="checkbox" id="customFieldDateIgnoreYear-'+ rowID +'" value="1"/>&nbsp;Ignore year';
+			idsToSetDatePicker.push('customFieldDateFromValue-'+ rowID);
+			idsToSetDatePicker.push('customFieldDateToValue-'+ rowID);
+		}
+		else if(fieldType == 5)//Link/Url
+		{
+			ruleValue = '<input type="text" id="customFieldURLValue-'+ rowID +'" placeholder="contains the string...">';
+		}
+		else if(fieldType == 6)//dropdown
+		{
+			var cusFieldOptionsArray = fieldCSVOptions.split(",");
+			ruleValue = '<select id="customFieldDropboxSelBox-'+ rowID +'">';
+				for(var db=0; db < cusFieldOptionsArray.length; db++)
+				{
+					ruleValue += '<option value="'+db+'">'+cusFieldOptionsArray[db]+'</option>';
+				}
+			ruleValue += '</select>';
+		}
+		else if(fieldType == 7)//tickbox
+		{
+			ruleValue = '<select id="customFieldTickboxSelBox-'+ rowID +'">';
+				ruleValue += '<option value="1">Yes</option>';
+				ruleValue += '<option value="0">No</option>';
+			ruleValue += '</select>';
+		}
+		else if(fieldType == 8)//textarea
+		{
+			ruleValue = '<input type="text" id="customFieldTextAreaValue-'+ rowID +'" placeholder="contains the text...">';
+		}
 	}
 	document.getElementById('divReportValue-'+ rowID).innerHTML = ruleValue;
 
+
+	/** /
 	if(ruleType == 'AGE') {
 		document.getElementById('divReportSubType-'+ rowID).innerHTML = ruleSubType;
 		document.getElementById('divReportSubType-'+ rowID).style.display = '';
@@ -290,6 +376,7 @@ function changeRuleSubTypeAndValue(rowID)
 		document.getElementById('divReportSubType-'+ rowID).innerHTML = '';
 		document.getElementById('divReportSubType-'+ rowID).style.display = 'none';
 	}
+	/**/
 
 	if(ruleType == 'BIRTH_DATE') {
 		$('#inputFromDate-'+ rowID).datepicker({
@@ -317,6 +404,14 @@ function changeRuleSubTypeAndValue(rowID)
 			autoclose: true
 		});
 	}
+
+	for(var d=0; d < idsToSetDatePicker.length; d++)
+	{
+		var curr_id = idsToSetDatePicker[d];
+		$('#'+curr_id).datepicker({
+			autoclose: true
+		});
+	}
 }
 
 function performSearch()
@@ -330,6 +425,20 @@ function performSearch()
 	var tempRuleType = '';
 	var ruleRowIDList = document.getElementById('reportRuleRowIDList').value;
 	var ruleRowIDArr = ruleRowIDList.split(",");
+	var delimCustomFieldIDs = "";
+	var delimCustomFieldTypes = "";
+	var delimCustomFieldTextboxContains = "";
+	var delimCustomFieldNumberSelFilterValue = "";
+	var delimCustomFieldNumberValue = "";
+	var delimCustomFieldDateFrom = "";
+	var delimCustomFieldDateTo = "";
+	var delimCustomFieldDateIgnoreYear = "";
+	var delimCustomFieldURLContains = "";
+	var delimCustomFieldDropboxValue = "";
+	var delimCustomFieldTickboxValue = "";
+	var delimCustomFieldTextAreaContains = "";
+
+	var customFieldsFilterCount = 0;
 	if(ruleRowIDArr.length > 0)
 	{
 		for(i=0; i<ruleRowIDArr.length; i++)
@@ -388,6 +497,56 @@ function performSearch()
 			} else if(ruleType == 'CONFIRMATION') {
 				var index = document.getElementById('selRuleValueItem-' + j).selectedIndex;
 				ruleValue += document.getElementById('selRuleValueItem-' + j).options[index].value;
+			} else {
+
+				//Custom fields
+				var currCustomFieldID = ruleType;
+				var currCustomFieldType = document.getElementById('customFieldTypeWithFieldID-'+ ruleType).value;
+				var currCustomFieldTextboxContains = "";
+				var currCustomFieldNumberSelFilterValue = "";
+				var currCustomFieldNumberValue = "";
+				var currCustomFieldDateFrom = "";
+				var currCustomFieldDateTo = "";
+				var currCustomFieldDateIgnoreYear = "";
+				var currCustomFieldURLContains = "";
+				var currCustomFieldDropboxValue = "";
+				var currCustomFieldTickboxValue = "";
+				var currCustomFieldTextAreaContains = "";
+				if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 1) {//Textbox
+					currCustomFieldTextboxContains = document.getElementById("customFieldTextboxValue-"+j).value;
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 2) {//Numbers
+					currCustomFieldNumberSelFilterValue = document.getElementById("customFieldNumbersFilterSelBox-"+j).value;
+					currCustomFieldNumberValue = document.getElementById("customFieldNumbersValue-"+j).value;
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 3) {//Password
+					//
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 4) {//Date
+					currCustomFieldDateFrom = document.getElementById("customFieldDateFromValue-"+j).value;
+					currCustomFieldDateTo = document.getElementById("customFieldDateToValue-"+j).value;
+					currCustomFieldDateIgnoreYear = ((document.getElementById("customFieldDateIgnoreYear-"+j).checked)? 1 : 0);
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 5) {//Link/URL
+					currCustomFieldURLContains = document.getElementById("customFieldURLValue-"+j).value;
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 6) {//Dropdown
+					currCustomFieldDropboxValue = document.getElementById("customFieldDropboxSelBox-"+j).value;
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 7) {//Tickbox
+					currCustomFieldTickboxValue = document.getElementById("customFieldTickboxSelBox-"+j).value;
+				} else if(document.getElementById("customFieldTypeWithFieldID-"+ruleType).value == 8) {//Textarea
+					currCustomFieldTextAreaContains = document.getElementById("customFieldTextAreaValue-"+j).value;
+				}
+
+				delimCustomFieldIDs = ((customFieldsFilterCount == 0)? currCustomFieldID : delimCustomFieldIDs+"/:/"+currCustomFieldID);
+				delimCustomFieldTypes = ((customFieldsFilterCount == 0)? currCustomFieldType : delimCustomFieldTypes+"/:/"+currCustomFieldType);
+				delimCustomFieldTextboxContains = ((customFieldsFilterCount == 0)? currCustomFieldTextboxContains : delimCustomFieldTextboxContains+"/:/"+currCustomFieldTextboxContains);
+				delimCustomFieldNumberSelFilterValue = ((customFieldsFilterCount == 0)? currCustomFieldNumberSelFilterValue : delimCustomFieldNumberSelFilterValue+"/:/"+currCustomFieldNumberSelFilterValue);
+				delimCustomFieldNumberValue = ((customFieldsFilterCount == 0)? currCustomFieldNumberValue : delimCustomFieldNumberValue+"/:/"+currCustomFieldNumberValue);
+				delimCustomFieldDateFrom = ((customFieldsFilterCount == 0)? currCustomFieldDateFrom : delimCustomFieldDateFrom+"/:/"+currCustomFieldDateFrom);
+				delimCustomFieldDateTo = ((customFieldsFilterCount == 0)? currCustomFieldDateTo : delimCustomFieldDateTo+"/:/"+currCustomFieldDateTo);
+				delimCustomFieldDateIgnoreYear = ((customFieldsFilterCount == 0)? currCustomFieldDateIgnoreYear : delimCustomFieldDateIgnoreYear+"/:/"+currCustomFieldDateIgnoreYear);
+				delimCustomFieldURLContains = ((customFieldsFilterCount == 0)? currCustomFieldURLContains : delimCustomFieldURLContains+"/:/"+currCustomFieldURLContains);
+				delimCustomFieldDropboxValue = ((customFieldsFilterCount == 0)? currCustomFieldDropboxValue : delimCustomFieldDropboxValue+"/:/"+currCustomFieldDropboxValue);
+				delimCustomFieldTickboxValue = ((customFieldsFilterCount == 0)? currCustomFieldTickboxValue : delimCustomFieldTickboxValue+"/:/"+currCustomFieldTickboxValue);
+				delimCustomFieldTextAreaContains = ((customFieldsFilterCount == 0)? currCustomFieldTextAreaContains : delimCustomFieldTextAreaContains+"/:/"+currCustomFieldTextAreaContains);
+
+				customFieldsFilterCount++;
 			}
 		}
 
@@ -429,6 +588,18 @@ function performSearch()
 		formPostData += '&ruleValue=' + escString(ruleValue);
 		formPostData += '&columnData=' + escString(columnData);
 		formPostData += '&includeInactiveProfile=' + includeInactiveProfile;
+		formPostData += '&delimCustomFieldIDs=' + escString(delimCustomFieldIDs);
+		formPostData += '&delimCustomFieldTypes=' + escString(delimCustomFieldTypes);
+		formPostData += '&delimCustomFieldTextboxContains=' + escString(delimCustomFieldTextboxContains);
+		formPostData += '&delimCustomFieldNumberSelFilterValue=' + escString(delimCustomFieldNumberSelFilterValue);
+		formPostData += '&delimCustomFieldNumberValue=' + escString(delimCustomFieldNumberValue);
+		formPostData += '&delimCustomFieldDateFrom=' + escString(delimCustomFieldDateFrom);
+		formPostData += '&delimCustomFieldDateTo=' + escString(delimCustomFieldDateTo);
+		formPostData += '&delimCustomFieldDateIgnoreYear=' + escString(delimCustomFieldDateIgnoreYear);
+		formPostData += '&delimCustomFieldURLContains=' + escString(delimCustomFieldURLContains);
+		formPostData += '&delimCustomFieldDropboxValue=' + escString(delimCustomFieldDropboxValue);
+		formPostData += '&delimCustomFieldTickboxValue=' + escString(delimCustomFieldTickboxValue);
+		formPostData += '&delimCustomFieldTextAreaContains=' + escString(delimCustomFieldTextAreaContains);
 
 		$.ajax({
 			type:'POST',

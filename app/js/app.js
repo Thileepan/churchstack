@@ -447,7 +447,7 @@ function addOrUpdateProfile(val)
 					var fieldType = fieldArr[1];
 					var fieldName = fieldArr[2];
 					var isRequired = parseInt(fieldArr[3]);
-					var fieldValue;
+					var fieldValue = "";
 					if(fieldType == 7) {
 						fieldValue = ((document.getElementById(fieldID).checked)?1:0);
 					} else {
@@ -463,7 +463,7 @@ function addOrUpdateProfile(val)
 
 					if(fieldValue != '')
 					{
-						if(fieldID == 2) {
+						if(fieldType == 2) {
 							if(isNaN(fieldValue))
 							{
 								alertMsg = fieldName + ' is not a valid number';
@@ -475,7 +475,8 @@ function addOrUpdateProfile(val)
 					if(fieldType == 4) {
 						fieldValue = convertDateToDBFormat(fieldValue);
 					}
-					if(fieldValue != '' || fieldValue == 0) {
+					//if(fieldValue != '' || fieldValue == 0)
+					{
 						if(customFields != '') {
 							customFields += '<:|:>';
 						}
