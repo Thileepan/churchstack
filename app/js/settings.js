@@ -449,6 +449,51 @@ function showOrHideFieldOptions(obj)
 	} else {
 		document.getElementById('divIsFieldRequired').style.display = '';
 	}
+
+	//For manipulating default value...
+	document.getElementById('txtDefaultCusValue').value = "";
+	document.getElementById('txtDefaultCusValue').style.display = "none";
+	while(document.getElementById('selDefaultCusValue').length > 0)
+	{
+		document.getElementById('selDefaultCusValue').remove(0);
+	}
+	document.getElementById('selDefaultCusValue').style.display = "none";
+	document.getElementById('dateDefaultCusValue').value = "";
+	document.getElementById('dateDefaultCusValue').style.display = "none";
+	document.getElementById('chkDefaultCusValue').checked = false;
+	document.getElementById('chkDefaultCusValue').style.display = "none";
+	$('#dateDefaultCusValue').datepicker({
+		autoclose: true
+	});
+	if(selectedFieldID == 1 || selectedFieldID == 2 || selectedFieldID == 3 || selectedFieldID == 5 || selectedFieldID == 8) {
+		document.getElementById('txtDefaultCusValue').style.display = "";
+	} else if(selectedFieldID == 4) {
+		document.getElementById('dateDefaultCusValue').style.display = "";
+	} else if(selectedFieldID == 6) {
+		document.getElementById('selDefaultCusValue').style.display = "";
+	} else if(selectedFieldID == 7) {
+		document.getElementById('chkDefaultCusValue').style.display = "";
+	}
+}
+
+function cusFieldCSVOptionsOnBlur()
+{
+	var selectedFieldID = document.getElementById("inputFieldType").value;
+	if(selectedFieldID == 6)//Select box
+	{
+		var csvOptions = document.getElementById("inputFieldOptions").value;
+		var optionsArray = csvOptions.split(",");
+		var targetSelBox = document.getElementById('selDefaultCusValue');
+		while(targetSelBox.length > 0)
+		{
+			targetSelBox.remove(0);
+		}
+		for(var opt=0; opt < optionsArray.length; opt++)
+		{
+			targetSelBox.options[targetSelBox.length] = new Option(optionsArray[opt], opt);
+		}
+	}
+	return false;
 }
 
 function addOrUpdateCustomFields(isEdit)
@@ -488,6 +533,17 @@ function addOrUpdateCustomFields(isEdit)
 		return false;
 	}
 
+	var fieldDefaultValue = "";
+	if(fieldType == 1 || fieldType == 2 || fieldType == 3 || fieldType == 5 || fieldType == 8) {
+		fieldDefaultValue = document.getElementById('txtDefaultCusValue').value;
+	} else if(fieldType == 4) {
+		fieldDefaultValue = document.getElementById('dateDefaultCusValue').value;
+	} else if(fieldType == 6) {
+		fieldDefaultValue = document.getElementById('selDefaultCusValue').value;
+	} else if(fieldType == 7) {
+		fieldDefaultValue = ((document.getElementById('chkDefaultCusValue').checked)?1:0);
+	}
+
 	var formPostData = 'req=10';
 	formPostData += '&isUpdate=' + isUpdate;
 	formPostData += '&fieldName=' + escString(fieldName);
@@ -497,6 +553,7 @@ function addOrUpdateCustomFields(isEdit)
 	formPostData += '&validationString=' + escString(validationString);
 	formPostData += '&displayOrder=' + escString(displayOrder);
 	formPostData += '&fieldHelpMsg=' + escString(fieldHelpMsg);
+	formPostData += '&fieldDefaultValue=' + escString(fieldDefaultValue);
 	if(isUpdate) {
 		formPostData += '&fieldID=' + escString(fieldID);
 	}

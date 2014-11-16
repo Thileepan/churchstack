@@ -203,16 +203,27 @@ class ProfileSettings
 
 	public function addNewCustomField($field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order)
 	{
+		$to_ret = array();
+		$to_ret[0] = 0;
+		$to_ret[1] = "Unable to save custom field";
 		if($this->db_conn)
 		{
 			$query = 'insert into PROFILE_CUSTOM_FIELDS (FIELD_NAME, FIELD_TYPE, FIELD_OPTIONS, FIELD_HELP_MESSAGE, IS_REQUIRED, VALIDATION, DISPLAY_ORDER) values (?, ?, ?, ?, ?, ?, ?)';
 			$result = $this->db_conn->Execute($query, array($field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order));
 			//echo $this->db_conn->ErrorMsg();
 			if($result) {
-				return true;
+				$to_ret[0] = 1;
+				$to_ret[1] = "Custom field saved successfully";
+				$result_2 = $this->db_conn->Execute('select MAX(FIELD_ID) from PROFILE_CUSTOM_FIELDS where FIELD_NAME=?', array($field_name));
+				if($result_2) {
+					if(!$result_2->EOF) {
+						$field_id = $result_2->fields[0];
+						$to_ret[2] = $field_id;
+					}
+				}
 			}
 		}
-		return false;
+		return $to_ret;
 	}
 
 	public function updateCustomField($field_id, $field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order)
@@ -241,6 +252,45 @@ class ProfileSettings
 			}
 		}
 		return false;
+	}
+
+	public function insertDefCusFldValExistProfiles($new_field_id, $field_default_value)
+	{
+		include_once($this->APPLICATION_PATH."classes/class.profiles.php");
+		$prof_obj = new Profiles($this->APPLICATION_PATH);
+		$active_profiles = $prof_obj->getAllProfiles(1);
+
+		for($p=0; $p < COUNT($active_profiles); $p++)
+		{
+			$curr_profile_id = $active_profiles[0];
+			$query = 'insert into PROFILE_CUSTOM_FIELD_VALUES (PROFILE_ID, FIELD_ID, FIELD_VALUE) values (?,?,?) ON DUPLICATE KEY UPDATE FIELD_VALUE=VALUES(FIELD_VALUE) where PROFILE_ID=? and FIELD_ID=?';
+			$result = $this->db_conn->Execute($query, array($curr_profile_id, $new_field_id, $field_default_value, $curr_profile_id, $new_field_id));
+		}
+	}
+
+	public function asyncInsertDefCusFldValExistProfiles($new_field_id, $field_default_value)
+	{
+		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
+		/************************************************************************************** /
+		Insert asynchronously
+		/**************************************************************************************/
+		$inserting_file = __DIR__."/../notify/profCusFieldDefValInsert.php";//Take care of this part
+		$inserting_file = str_replace("\\", "/", $inserting_file);
+		$commands = array();
+
+		$commands[] = '"'.PHP_EXE_PATH.'" '.$inserting_file.' fieldID='.urlencode($new_field_id).' fieldValue='.urlencode($field_default_value).' > /dev/null 2>/dev/null &';
+
+		$threads = new Multithread( $commands );
+		$threads->run();
+
+		/** /
+		foreach ( $threads->commands as $key=>$command )
+		{
+			//echo "Command: ".$command."\n";
+			//echo "\nOutput: ".$threads->output[$key]."\n";
+			//echo "Error: ".$threads->error[$key]."\n\n";
+		}
+		/**/
 	}
 }
 

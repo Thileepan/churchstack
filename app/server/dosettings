@@ -414,7 +414,7 @@ else if($req == 9)
 		  $toReturn .= '<div id="divFieldOptions" class="control-group" style="display:'.(($field_type_value == 6)?"":"none").'">';
 				$toReturn .= '<label class="control-label" for="inputFieldOptions">Field Options</label>';
 				$toReturn .= '<div class="controls">';
-					$toReturn .= '<input type="text" id="inputFieldOptions" placeholder="Field Options" value="'.$field_options.'"><BR>';
+					$toReturn .= '<input type="text" id="inputFieldOptions" placeholder="Field Options" value="'.$field_options.'" onblur="cusFieldCSVOptionsOnBlur();"><BR>';
 					$toReturn .= '<span class="muted">For Dropdowns Only - Comma Seperated List</span>';
 				$toReturn .= '</div>';
 		  $toReturn .= '</div>';
@@ -428,6 +428,17 @@ else if($req == 9)
 				$toReturn .= '<label class="control-label" for="inputIsRequired">Is Required</label>';
 				$toReturn .= '<div class="controls">';
 					$toReturn .= '<input type="checkbox" id="inputIsRequired" '.(($is_required)?"checked":"").'>';
+				$toReturn .= '</div>';
+		  $toReturn .= '</div>';
+		  $toReturn .= '<div class="control-group" style="display:'.(($is_update)?"none":"").';">';
+				$toReturn .= '<label class="control-label">Default Value</label>';
+				$toReturn .= '<div class="controls">';
+					$toReturn .= '<span id="divDefaultValue"><input type="text" placeholder="default text" id="txtDefaultCusValue">';
+						$toReturn .= '<select id="selDefaultCusValue" style="display:none;">';
+						$toReturn .= '</select>';
+						$toReturn .= '<input type="checkbox" id="chkDefaultCusValue" style="display:none;">';
+						$toReturn .= '<input type="text" id="dateDefaultCusValue" style="display:none;" value="" placeholder="default date (dd/mm/yyyy)" data-date-format="dd/mm/yyyy">';
+					$toReturn .= '</span><span class="muted">&nbsp;&nbsp;This will be applied only for the existing profiles</span>';
 				$toReturn .= '</div>';
 		  $toReturn .= '</div>';
 		  $toReturn .= '<div class="form-actions">';
@@ -454,12 +465,24 @@ else if($req == 10)
 	$is_required = trim($_POST['isRequired']);
 	$validation_string = trim(stripslashes(rawurldecode($_POST['validationString'])));
 	$display_order = trim(stripslashes(rawurldecode($_POST['displayOrder'])));	
+	$field_default_value = trim(stripslashes(rawurldecode($_POST['fieldDefaultValue'])));
 
+	$new_field_id = 0;
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	if($is_update) {
 		$is_updated = $settings_obj->updateCustomField($field_id, $field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order);
 	} else {
-		$is_updated = $settings_obj->addNewCustomField($field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order);
+		$add_result = $settings_obj->addNewCustomField($field_name, $field_type, $field_options, $field_help_message, $is_required, $validation_string, $display_order);
+		if($add_result[0]==1) {
+			$is_updated = 1;
+			$new_field_id = $add_result[2];
+		} else {
+			$is_updated = 0;
+		}
+	}
+
+	if(!$is_update && $is_updated) {
+		$insert_result  = $settings_obj->asyncInsertDefCusFldValExistProfiles($new_field_id, $field_default_value);
 	}
 
 	echo $is_updated;
