@@ -3,11 +3,13 @@ doNotificationsFile = 'server/donotifications';
 
 function getComposeMessageForm(msgType, isEdit, msgID)
 {
+	/** /
 	document.getElementById('composeMessage').className = 'active';
 	document.getElementById('listDrafts').className = '';
 	document.getElementById('listSentItems').className = '';
 	document.getElementById('createTemplates').className = '';
 	document.getElementById('listTemplates').className = '';
+	/**/
 	document.getElementById('alertRow').style.display = 'none';
 
 	tempMsgID = msgID;
@@ -32,7 +34,7 @@ function getComposeMessageForm(msgType, isEdit, msgID)
 
 function getComposeMessageFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = ((tempMsgType == 1)?'Email':'SMS');
+//	document.getElementById('pageHeader').innerHTML = ((tempMsgType == 1)?'Email':'SMS');
 	document.getElementById('pageContent').innerHTML = response;
 
 	$(document).ready(function() {
@@ -210,7 +212,7 @@ function cancelDiscardMessageRequest()
 
 function listAllMessages(type, filterByDrafts, filterBySentItems)
 {
-	document.getElementById('pageHeader').innerHTML = 'Drafts';
+//	document.getElementById('pageHeader').innerHTML = 'Drafts';
 	document.getElementById('alertRow').style.display = 'none';
 
 	if(filterByDrafts) {
@@ -244,11 +246,13 @@ function listAllDrafts()
 	var filterByDrafts = 1;
 	var filterBySentItems = 0;
 
+	/** /
 	document.getElementById('composeMessage').className = '';
 	document.getElementById('listDrafts').className = 'active';
 	document.getElementById('listSentItems').className = '';
 	document.getElementById('createTemplates').className = '';
 	document.getElementById('listTemplates').className = '';
+	/**/
 	document.getElementById('alertRow').style.display = 'none';
 	listAllMessages(type, filterByDrafts, filterBySentItems);
 }
@@ -259,11 +263,13 @@ function listAllSentItems()
 	var filterByDrafts = 0;
 	var filterBySentItems = 1;
 
+	/** /
 	document.getElementById('composeMessage').className = '';
 	document.getElementById('listDrafts').className = '';
 	document.getElementById('listSentItems').className = 'active';
 	document.getElementById('createTemplates').className = '';
 	document.getElementById('listTemplates').className = '';
+	/**/
 	document.getElementById('alertRow').style.display = 'none';
 	listAllMessages(type, filterByDrafts, filterBySentItems);
 }
@@ -385,11 +391,13 @@ function getAddOrEditTemplateForm(templateType, isEdit, templateID)
 {
 	tempIsEdit = isEdit;
 	tempTemplateID = templateID;
+	/** /
 	document.getElementById('composeMessage').className = '';
 	document.getElementById('listDrafts').className = '';
 	document.getElementById('listSentItems').className = '';
 	document.getElementById('createTemplates').className = 'active';
 	document.getElementById('listTemplates').className = '';
+	/**/
 	document.getElementById('alertRow').style.display = 'none';
 
 	var formPostData = 'req=6';
@@ -409,7 +417,7 @@ function getAddOrEditTemplateForm(templateType, isEdit, templateID)
 
 function getAddOrEditTemplateFormResponse(response)
 {
-	document.getElementById('pageHeader').innerHTML = "Create New Template";
+//	document.getElementById('pageHeader').innerHTML = "Create New Template";
 	document.getElementById('pageContent').innerHTML = response;
 
 	$(document).ready(function() {
@@ -554,13 +562,15 @@ function getTemplateInformationResponse(response)
 
 function listAllTemplates(type)
 {
+	/** /
 	document.getElementById('composeMessage').className = '';
 	document.getElementById('listDrafts').className = '';
 	document.getElementById('listSentItems').className = '';
 	document.getElementById('createTemplates').className = '';
 	document.getElementById('listTemplates').className = 'active';
+	/**/
 
-	document.getElementById('pageHeader').innerHTML = 'Templates';
+//	document.getElementById('pageHeader').innerHTML = 'Templates';
 	document.getElementById('alertRow').style.display = 'none';
 
 	var table = '<table id="templateList" class="table table-condensed"><thead><tr><th>Type</th><th>Name</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
@@ -625,4 +635,41 @@ function deleteTemplateResponse(response)
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
+}
+
+function notiHighlightSelectedSubMenu(menu)
+{
+	//First set empty class for all the menus
+	document.getElementById('composeMessage').className = '';
+	document.getElementById('listDrafts').className = '';
+	document.getElementById('listSentItems').className = '';
+	document.getElementById('createTemplates').className = '';
+	document.getElementById('listTemplates').className = '';
+	document.getElementById('greetingsConfig').className = '';
+	document.getElementById('smsConfig').className = '';
+
+	//Now set the active class for the selected menu
+	var classNameToSet = 'active';
+	if(menu == 1) {
+		document.getElementById('composeMessage').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Send an email/SMS";
+	} else if(menu == 2) {
+		document.getElementById('listDrafts').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "List saved drafts";
+	} else if(menu == 3) {
+		document.getElementById('listSentItems').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "List sent emails & SMS";
+	} else if(menu == 4) {
+		document.getElementById('createTemplates').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Create an email/SMS template";
+	} else if(menu == 5) {
+		document.getElementById('listTemplates').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "List all stored templates";
+	} else if(menu == 6) {
+		document.getElementById('greetingsConfig').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
+	} else if(menu == 7) {
+		document.getElementById('smsConfig').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "Configure SMS Gateway/Provider";
+	}
 }

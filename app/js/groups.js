@@ -3,6 +3,7 @@ doGroupFile = 'server/dogroups';
 
 function getAddOrEditGroupForm(isEdit, groupID)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	document.getElementById('pageHeader').innerHTML = ((!isEdit)?'Add New Group':'Update Group');
 	document.getElementById('addGroup').className = 'active';
 	document.getElementById('listGroup').className = '';
@@ -29,6 +30,7 @@ function getAddOrEditGroupFormResponse(response)
 
 function addOrUpdateGroup(val)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	isUpdate = val;
 
 	if(isUpdate) {
@@ -86,6 +88,7 @@ function addOrUpdateGroupResponse(response)
 
 function listAllGroups()
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	document.getElementById('pageHeader').innerHTML = 'List Groups';
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('addGroup').className = '';
@@ -120,6 +123,7 @@ function listAllGroups()
 
 function deleteGroupConfirmation(groupID, groupName)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	var msgToDisplay = 'Please confirm to delete the group \'' + groupName + '\'';
 	var actionTakenCallBack = "deleteGroupRequest(" + groupID + ")";
 	var actionCancelCallBack = "cancelGroupDeleteRequest()";
@@ -137,6 +141,7 @@ function cancelGroupDeleteRequest()
 
 function deleteGroupRequest(groupID)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	var formPostData = 'req=4&groupID=' + groupID;
 	
 	$.ajax({
@@ -166,6 +171,7 @@ function deleteGroupResponse(response)
 function showAddGroupMemberScreen(groupID)
 {
 	var reqFrom = 2;
+	document.getElementById('alertRow').style.display = 'none';	
 	document.getElementById('hiddenGroupID').value = groupID;
 	showProfileReportsScreen(reqFrom);
 }
@@ -190,6 +196,7 @@ function selectAllGroupMembers(obj)
 
 function addGroupMembers()
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	var groupID = document.getElementById('hiddenGroupID').value;
 	var profileID = '';
 	var totalMembers = document.getElementById('hiddenTotalMembers').value;
@@ -239,6 +246,7 @@ function addGroupMembersResponse(response)
 
 function listAllGroupMembers(groupID, groupName)
 {
+	document.getElementById('alertRow').style.display = 'none';	
 	var table = '<div class="well pull-right"><table border="0" cellpadding="5" cellspacing="5"><tr><td class="muted">Group Name</td><td>'+ groupName +'</td></tr><tr><td class="muted">Total Members in this Group</td><td><span class="badge badge-success" id="spanGroupCount">0</span></td></tr></table></div><table id="groupMemberList" class="table table-condensed"><thead><tr><th>Profile ID</th><th>Name</th></tr></thead></table>';
 	document.getElementById('pageContent').innerHTML = table;
 

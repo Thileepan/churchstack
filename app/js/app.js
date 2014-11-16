@@ -140,6 +140,7 @@ function listAllProfiles(profileStatus)
 	document.getElementById('addNewProfile').className = '';
 	document.getElementById('importProfiles').className = '';
 	document.getElementById('backBtnDiv').style.display = 'none';
+	document.getElementById('divOptionBtn').style.display = 'none';
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('pageContent').innerHTML = '';
 	document.getElementById('pageContent').style.display = 'none';
@@ -197,6 +198,7 @@ function getAddOrEditProfileForm(val, profileID)
 	document.getElementById('addNewProfile').className = ((isEdit)?'':'active');
 	document.getElementById('importProfiles').className = '';
 	document.getElementById('backBtnDiv').style.display = 'none';
+	document.getElementById('divOptionBtn').style.display = 'none';
 	document.getElementById('loadingDiv').style.display = '';
 	document.getElementById('alertRow').style.display = 'none';	
 

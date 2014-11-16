@@ -34,7 +34,7 @@ if($req == 1)
 		$to_return .= '<div class="span12">';			
 				$to_return .= '<div class="row-fluid">';
 					$to_return .= '<div class="span12">';
-						$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Rules &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
+						$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
 						$to_return .= '<div id="addRuleOuterDiv">';
 							$to_return .= '<div class="row-fluid" id="divAddRule-1">';
 								//$to_return .= '<div class="span1"></div>';

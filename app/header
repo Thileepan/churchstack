@@ -77,8 +77,9 @@ include $APPLICATION_PATH."utils/validateauth.php";
 								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>
 								<li class="" id="mgroups" onclick="menulinkClicked(3)"><a href="groups" id="groupsLink"><span id="mgroupsText" style="color:white">Groups</span></a></li>
 								<li class="" id="mnotifications" onclick="menulinkClicked(10)"><a href="notifications" id="notificationsLink"><span id="mnotificationsText" style="color:white">Email & SMS</span></a></li>
-								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>								
-								<li class="" id="mreports" onclick="menulinkClicked(5)" style="display:none;"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>								
+								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>
+								<li class="" id="mreports" onclick="menulinkClicked(5)" style="display:none;"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>
+								<li class="" id="menuMyAccount" onclick="menulinkClicked(11)" style="display:;"><a href="info" id="menuMyAccountLink"><span id="menuMyAccountText" style="color:white">My Account</span></a></li>
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">
@@ -88,9 +89,9 @@ include $APPLICATION_PATH."utils/validateauth.php";
 										<li><a href="#"><i class="icon-fire"></i>&nbsp;Version</a></li>
 										<li><a href="#"><i class="icon-wrench"></i>&nbsp;Settings</a></li>
 										-->
-										<li><a href="info"><i class="icon-wrench"></i>&nbsp;My Account</a></li>
+										<!-- li><a href="info"><i class="icon-wrench"></i>&nbsp;My Account</a></li -->
 										<!-- li><a href="info"><i class="icon-question-sign"></i>&nbsp;Contact Support</a></li -->
-										<li class="divider"></li>
+										<!--li class="divider"></li -->
 										<li><a href="index" style="color:red;"><i class="icon-off" ></i>&nbsp;Logout</a></li>
 										<!-- li><a href="#">Email: help@churchstack.com</a></li>
 										<li><a href="#">Version: <?php echo APP_VERSION; ?> (Beta)</a></li>

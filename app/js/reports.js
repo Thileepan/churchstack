@@ -4,8 +4,12 @@ doReportsFile = 'server/doreports';
 function showProfileReportsScreen(reqFrom)
 {
 	document.getElementById('alertRow').style.display = "none";
-	document.getElementById('backBtnDiv').style.display = "none";
-	document.getElementById('listProfilesContent').style.display = "none";
+	if(document.getElementById('backBtnDiv')) {
+		document.getElementById('backBtnDiv').style.display = "none";
+	}
+	if(document.getElementById('listProfilesContent')) {
+		document.getElementById('listProfilesContent').style.display = "none";
+	}
 	req = reqFrom;
 	var formPostData = 'req=1';
 	formPostData += '&reqFrom=' + reqFrom;

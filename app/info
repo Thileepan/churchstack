@@ -117,4 +117,5 @@ include "footer";
 	} else {
 		document.getElementById("myChurch").click();
 	}
+	menuLinkClicked(11);
 </script>

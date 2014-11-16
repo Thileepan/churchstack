@@ -1,144 +1,62 @@
 function menuLinkClicked(menuID)
 {
+	document.getElementById('mhome').className = "";
+	document.getElementById('msubscription').className = "";
+	document.getElementById('mevents').className = "";
+	document.getElementById('msettings').className = "";
+	document.getElementById('mreports').className = "";
+	document.getElementById('mdashboard').className = "";
+	document.getElementById('mnotifications').className = '';
+	//document.getElementById('mharvest').className = "";
+	document.getElementById('mgroups').className = "";
+	document.getElementById('mfunds').className = "";
+	document.getElementById('menuMyAccount').className = "";
+
+	var activeClassName = "active";
+	var styleMenuLink = "background-color:#3a87ad;";
+	var styleMenuText = "color:white;font-weight:bold;";
+
 	if(menuID == 1) {
-		document.getElementById('mhome').className = "active";
-		//document.getElementById('mhomeText').className = "label label-info";
-		document.getElementById('homeLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mhomeText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('mhome').className = activeClassName;
+		document.getElementById('homeLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mhomeText').setAttribute("style", styleMenuText);
 	} else if(menuID == 2) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "active";
-		//document.getElementById('msubscriptionText').className = "label label-info";
-		document.getElementById('subscriptionLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('msubscriptionText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('msubscription').className = activeClassName;
+		document.getElementById('subscriptionLink').setAttribute("style", styleMenuLink);
+		document.getElementById('msubscriptionText').setAttribute("style", styleMenuText);
 	} else if(menuID == 3) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "active";
-		//document.getElementById('meventsText').className = "label label-info";
-		document.getElementById('eventsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('meventsText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('mevents').className = activeClassName;
+		document.getElementById('eventsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('meventsText').setAttribute("style", styleMenuText);
 	} else if(menuID == 4) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "active";
-		//document.getElementById('msettingsText').className = "label label-info";
-		document.getElementById('settingsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('msettingsText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('msettings').className = activeClassName;
+		document.getElementById('settingsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('msettingsText').setAttribute("style", styleMenuText);
 	} else if(menuID == 5) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "active";
-		//document.getElementById('mreportsText').className = "label label-info";
-		document.getElementById('reportsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mreportsText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('mreports').className = activeClassName;
+		document.getElementById('reportsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mreportsText').setAttribute("style", styleMenuText);
 	} else if(menuID == 6) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "active";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "";
-		//document.getElementById('mdashboardText').className = "label label-info";
-		document.getElementById('dashboardLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mdashboardText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
+		document.getElementById('mdashboard').className = activeClassName;
+		document.getElementById('dashboardLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mdashboardText').setAttribute("style", styleMenuText);
 	} else if(menuID == 7) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mharvest').className = "active";
-		//document.getElementById('mharvestText').className = "label label-info";
-		//document.getElementById('mharvestText').setAttribute("style", "color:white;font-weight:bold;");
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
 	} else if(menuID == 8) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "active";
-		document.getElementById('mfunds').className = "";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mgroupsText').className = "label label-info";		
-		document.getElementById('groupsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mgroupsText').setAttribute("style", "color:white;font-weight:bold;");
+		document.getElementById('mgroups').className = activeClassName;
+		document.getElementById('groupsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mgroupsText').setAttribute("style", styleMenuText);
 	} else if(menuID == 9) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "active";
-		document.getElementById('mnotifications').className = '';
-		//document.getElementById('mfundsText').className = "label label-info";		
-		document.getElementById('fundsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mfundsText').setAttribute("style", "color:white;font-weight:bold;");
+		document.getElementById('mfunds').className = activeClassName;
+		document.getElementById('fundsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mfundsText').setAttribute("style", styleMenuText);
 	} else if(menuID == 10) {
-		document.getElementById('mhome').className = "";
-		document.getElementById('msubscription').className = "";
-		document.getElementById('mevents').className = "";
-		document.getElementById('msettings').className = "";
-		document.getElementById('mreports').className = "";
-		document.getElementById('mdashboard').className = "";
-		//document.getElementById('mharvest').className = "";
-		document.getElementById('mgroups').className = "";
-		document.getElementById('mfunds').className = "";
-		document.getElementById('mnotifications').className = 'active';
-		//document.getElementById('mfundsText').className = "label label-info";
-		document.getElementById('notificationsLink').setAttribute("style", "background-color:#3a87ad;");
-		document.getElementById('mnotificationsText').setAttribute("style", "color:white;font-weight:bold;");
+		document.getElementById('mnotifications').className = activeClassName;
+		document.getElementById('notificationsLink').setAttribute("style", styleMenuLink);
+		document.getElementById('mnotificationsText').setAttribute("style", styleMenuText);
+	} else if(menuID == 11) {
+		document.getElementById('menuMyAccount').className = activeClassName;
+		document.getElementById('menuMyAccountLink').setAttribute("style", styleMenuLink);
+		document.getElementById('menuMyAccountText').setAttribute("style", styleMenuText);
 	}
 }
 
