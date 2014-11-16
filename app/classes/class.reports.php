@@ -163,6 +163,7 @@ class Reports
 
 		/***** CONSTRUCTING WHERE CONDITION *****/
 
+		/** /
 		$query_profile_cond = '';
 		$query_profile_cond .= ' where (PROFILE_STATUS=1';
 		if($include_inactive_profile)
@@ -170,6 +171,7 @@ class Reports
 			$query_profile_cond .= ' or PROFILE_STATUS=2';
 		}
 		$query_profile_cond .= ') ';
+		/**/
 		
 		//print_r($report_rules);
 		$birth_date_query = "";
@@ -183,11 +185,29 @@ class Reports
 			{
 				if((strlen($query_where) > 0) && $report_rules[$i][0] != 'BIRTH_DATE' && $report_rules[$i][0] != 'MARRIAGE_DATE') {
 				//if(strlen($query_where) > 0) {
-					$query_where .= ' and ';
+//					$query_where .= ' and ';
+				//AND has been used in all the if conditions to fix some issues that happened here. Do not use 'and' here.
+				}
+
+				if($report_rules[$i][0] == 'PROFILE_STATUS')
+				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
+					if($report_rules[$i][2] == 'ACTIVE') {
+						$query_where .= ' PROFILE_STATUS = 1';
+					} else if($report_rules[$i][2] == 'INACTIVE'){
+						$query_where .= ' PROFILE_STATUS = 2';
+					} else if($report_rules[$i][2] == 'ALL'){
+						$query_where .= ' (PROFILE_STATUS=1 or PROFILE_STATUS=2)';
+					} 
 				}
 
 				if($report_rules[$i][0] == 'PROFILES')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][2] == 'FAMILY_HEAD') {
 						$query_where .= ' PARENT_PROFILE_ID = -1';
 					} else if($report_rules[$i][2] == 'INDIVIDUAL'){
@@ -197,6 +217,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'GENDER')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][2] == 'MALE') {
 						$query_where .= ' GENDER = 1';
 					} else if($report_rules[$i][2] == 'FEMALE') {
@@ -206,6 +229,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'AGE')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][1] == 'IS_LESS_THAN')
 					{
 						$query_where .= ' YEAR(CURDATE()) - YEAR(DOB) < '. $report_rules[$i][2];
@@ -222,6 +248,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'BIRTH_DATE')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					//$date_in_report_rules = true;
 					$dates = explode(":", $report_rules[$i][2]);
 					$from_date_arr = explode("/", $dates[0]);
@@ -235,6 +264,9 @@ class Reports
 				
 				if($report_rules[$i][0] == 'MARRIAGE_DATE')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					$dates = explode(":", $report_rules[$i][2]);
 					$from_date_arr = explode("/", $dates[0]);
 					$to_date_arr = explode("/", $dates[1]);
@@ -246,6 +278,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'BIRTH_MARRIAGE_DATE')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					$dates = explode(":", $report_rules[$i][2]);
 					$from_date_arr = explode("/", $dates[0]);
 					$to_date_arr = explode("/", $dates[1]);
@@ -258,6 +293,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'MARITAL_STATUS')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][2] == 'SINGLE') {
 						$query_where .= ' MARITAL_STATUS = 1';
 					} else if($report_rules[$i][2] == 'MARRIED') {
@@ -273,6 +311,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'BAPTISM')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][2] == 'YES') {
 						$query_where .= ' BABTISED = 1';
 					} else if($report_rules[$i][2] == 'NO') {
@@ -284,6 +325,9 @@ class Reports
 
 				if($report_rules[$i][0] == 'CONFIRMATION')
 				{
+					if(strlen($query_where) > 0) {
+						$query_where .= ' and ';
+					}
 					if($report_rules[$i][2] == 'YES') {
 						$query_where .= ' CONFIRMATION = 1';
 					} else if($report_rules[$i][2] == 'NO') {
@@ -296,29 +340,37 @@ class Reports
 
 			if($birth_date_query != "")
 			{
+				/** /
 				if(strlen($query_where) > 0) {
 					$query_where .= ' and ';
 				}
+				/**/
 				$query_where .= $birth_date_query;
 			}
 			if($marriage_date_query != "")
 			{
+				/** /
 				if(strlen($query_where) > 0) {
 					$query_where .= ' and ';
 				}
+				/**/
 				$query_where .= $marriage_date_query;
 			}
 		}
 
 		/****************************************/
 
-		$query_to_execute = $query_to_execute . $query_col . $query_table . $query_profile_cond;
+		//$query_to_execute = $query_to_execute . $query_col . $query_table . $query_profile_cond;
+		$query_to_execute = $query_to_execute . $query_col . $query_table;
 		if(strlen($query_where) > 0) {
+			/** /
 			if($include_inactive_profile) {
 				$query_to_execute .= ' where ';
 			} else {
 				$query_to_execute .= ' and';
 			}
+			/**/
+			$query_to_execute .= ' where ';
 			$query_to_execute .= $query_where;
 		}
 
@@ -477,7 +529,7 @@ class Reports
 					//$arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains
 					$curr_prof_id_list = array();
 					$curr_dropbox_value = trim($arrayCustomFieldDropboxValue[$f]);
-					$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and b.FIELD_VALUE=? COLLATE LATIN1_GENERAL_CI";
+					$custom_field_filter_query = "select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID=".$curr_custom_field_id." and b.FIELD_VALUE=?";
 					$custom_filter_result = $this->db_conn->Execute($custom_field_filter_query, array($curr_dropbox_value));
 					if($custom_filter_result) {
 						if(!$custom_filter_result->EOF) {
@@ -831,7 +883,6 @@ class Reports
 		if($this->db_conn)
 		{
 		   $result = $this->db_conn->Execute('select * from REPORT_COLUMNS where REPORT_ID=?', array($report_id));
-		   echo $this->db_conn->ErrorMsg();
             
            if($result) {
                 if(!$result->EOF) {
@@ -857,7 +908,6 @@ class Reports
 		if($this->db_conn)
 		{
 		   $result = $this->db_conn->Execute('select * from REPORTS');
-		   echo $this->db_conn->ErrorMsg();
             
            if($result) {
                 if(!$result->EOF) {

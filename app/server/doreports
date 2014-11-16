@@ -34,20 +34,21 @@ if($req == 1)
 		$to_return .= '<div class="span12">';			
 				$to_return .= '<div class="row-fluid">';
 					$to_return .= '<div class="span12">';
-						$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
+						//$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
 						$to_return .= '<div id="addRuleOuterDiv">';
 							$to_return .= '<div class="row-fluid" id="divAddRule-1">';
 								//$to_return .= '<div class="span1"></div>';
 								$to_return .= '<div class="span3" id="divReportType-1">';
 									$to_return .= '&nbsp;&nbsp;&nbsp;&nbsp;<select onChange="changeRuleSubTypeAndValue(1);" id="selReportType-1" disabled>';
-										$to_return .= '<option value="PROFILES">PROFILES</option>';
+										$to_return .= '<option value="PROFILE_STATUS" selected>PROFILE STATUS</option>';
+										$to_return .= '<option value="PROFILES">PROFILE POSITION</option>';
 										$to_return .= '<option value="GENDER">GENDER</option>';
 										$to_return .= '<option value="AGE">AGE</option>';
-										$to_return .= '<option value="BIRTH_DATE">BIRTH DATE</option>';
+										$to_return .= '<option value="BIRTH_DATE">BIRTHDAY DATE</option>';
 										$to_return .= '<option value="MARRIAGE_DATE">MARRIAGE DATE</option>';
 										//$to_return .= '<option value="BIRTH_MARRIAGE_DATE">BIRTH OR MARRIAGE DATE</option>';
 										$to_return .= '<option value="MARITAL_STATUS">MARITAL STATUS</option>';
-										$to_return .= '<option value="BAPTISM">BAPTISM</option>';
+										$to_return .= '<option value="BAPTISM">BAPTISED</option>';
 										$to_return .= '<option value="CONFIRMATION">CONFIRMATION</option>';
 										for($f=0; $f < COUNT($all_custom_fields); $f++)
 										{
@@ -59,12 +60,16 @@ if($req == 1)
 									$to_return .= '</select>';
 								$to_return .= '</div>';+
 								$to_return .= '<div class="span9" id="divReportValue-1">';
-									$to_return .= '<select id="selRuleValueItem-1"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
+									$to_return .= '<select id="selRuleValueItem-1"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="ALL">Both Active & Inactive</option></select>';
+									//$to_return .= '<select id="selRuleValueItem-1"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
 								$to_return .= '</div>';
 								//$to_return .= '<div class="span1" id="divReportSubType-1" style="display:none">';
 									//$to_return .= '<select><option value="-1">All</option><option value="1">Family Head</option><option value="2">Individual</option></select>';
 								//$to_return .= '</div>';
 							$to_return .= '</div>'; //end of rule1
+						$to_return .= '</div>';
+						$to_return .= '<div class="pull-left">';
+							$to_return .= '<p class="muted curHand" onclick="addReportRuleRow()">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign"></i></p>';						
 						$to_return .= '</div>';
 						$to_return .= '<input type="hidden" id="maxReportRuleRowID" value="1" />';
 						$to_return .= '<input type="hidden" id="reportRuleRowIDList" value="1" />';					
@@ -78,7 +83,7 @@ if($req == 1)
 			$to_return .= '</div>';
 			
 			//$to_return .= '<div class="row-fluid"><div class="offset2 span10">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
-			$to_return .= '<div class="row-fluid"><div class="span12">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
+			//$to_return .= '<div class="row-fluid"><div class="span12">&nbsp;<label class="checkboxs">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="includeInactiveProfile">&nbsp;Include inactive profiles in the reports</label></div></div>';
 
 			
 			if($req_from == 1)

@@ -220,7 +220,8 @@ function addReportRuleRow()
 	var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"></select>';
 	//var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"><option value="GENDER">GENDER</option><option value="AGE">AGE</option><option value="BIRTH_DATE">BIRTH DATE</option><option value="MARRIAGE_DATE">MARRIAGE DATE</option><option value="MARITAL_STATUS">MARITAL STATUS</option><option value="BAPTISM">BAPTISM</option><option value="CONFIRMATION">CONFIRMATION</option></select>';
 	//var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
-	var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="MALE">Male</option><option value="FEMALE">Female</option></select>';
+	//var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="MALE">Male</option><option value="FEMALE">Female</option></select>';
+	var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Dependent</option></select>';
 	document.getElementById(reportTypeDivID).innerHTML = ruleType;
 //	document.getElementById(reportSubTypeDivID).innerHTML = '';
 	document.getElementById(reportValueDivID).innerHTML = ruleValue;
@@ -235,7 +236,7 @@ function addReportRuleRow()
 	var newOptCount = 0;
 	while(oldOptCount < initialReportFiltersSelectBoxLenth)
 	{
-		if(initialReportFiltersSelectBox[oldOptCount].value != "PROFILES")
+		if(initialReportFiltersSelectBox[oldOptCount].value != "PROFILE_STATUS")
 		{
 			newReportFiltersSelectBox.options[newOptCount] = new Option(initialReportFiltersSelectBox[oldOptCount].text, initialReportFiltersSelectBox[oldOptCount].value);
 			newOptCount++;
@@ -474,7 +475,10 @@ function performSearch()
 			{
 				ruleSubType += '0';
 			}
-			if(ruleType == 'PROFILES') {
+			if(ruleType == 'PROFILE_STATUS') {
+				var index = document.getElementById('selRuleValueItem-' + j).selectedIndex;
+				ruleValue += document.getElementById('selRuleValueItem-' + j).options[index].value;
+			} else if(ruleType == 'PROFILES') {
 				var index = document.getElementById('selRuleValueItem-' + j).selectedIndex;
 				ruleValue += document.getElementById('selRuleValueItem-' + j).options[index].value;
 			} else if(ruleType == 'GENDER') {
@@ -584,7 +588,10 @@ function performSearch()
 			document.getElementById('alertDiv').innerHTML = getAlertDiv(2, alertMsg);
 			return false;
 		}
-		var includeInactiveProfile = ((document.getElementById('includeInactiveProfile').checked)?1:0);
+		var includeInactiveProfile = 0;
+		if(document.getElementById('includeInactiveProfile')) {
+			includeInactiveProfile = ((document.getElementById('includeInactiveProfile').checked)?1:0);
+		}
 
 		document.getElementById('divSearchBtn').style.display = 'none';
 		document.getElementById('divLoadingSearchImg').style.display = '';
