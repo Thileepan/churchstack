@@ -1145,9 +1145,9 @@ else if($req == 12)
 {
 	//import profiles form
 
-	$to_return .= '<div class="row-fluid" style="height:100px;">';
+	$to_return .= '<div class="row-fluid">';
 		$to_return .= '<div class="span12">';
-			$to_return .= '<form id="myForm" action="import" method="post" enctype="multipart/form-data" onsubmit="return false">';
+			$to_return .= '<form id="myForm" action="import" method="post" enctype="multipart/form-data" onsubmit="return true">';
 //				$to_return .= '<fieldset>';
 //					$to_return .= '<legend>Import Your Profiles</legend>';
 					$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Please make sure you have added the profiles related <a href="settings"><u>settings</u></a> before you import the profiles from here. Also, please note that Profilestack currently supports only *.xlxs format and more formats will be supported in future releases.</div>';
@@ -1158,7 +1158,7 @@ else if($req == 12)
 						$to_return .= '</div>';
 					$to_return .= '</div>';
 					$to_return .= '<div>';
-						$to_return .= '<span id="spanImportBtn"><button class="btn btn-success" type="submit">Import</button></span>';
+						$to_return .= '<span id="spanImportBtn"><input type="hidden" name="hiddenReqType" id="hiddenReqType" value="1" /><button class="btn btn-success" type="submit">Next</button></span>';
 						$to_return .= '<span style="display:none" id="spanImportProg" class="muted">Upload is in progress. Don\'t refresh the page. Please wait...</span>';
 					$to_return .= '</div>';
 					$to_return .= '<div class="progress" id="progress" style="display:none">';

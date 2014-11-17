@@ -64,4 +64,16 @@ function convertRailwayTimeToFullTime($time)
 
 	return $hour.":".$min.":00";
 }
+
+function isImportFieldMatched($text1, $text2)
+{
+	$text1_arr = explode(' ', strtolower($text1));
+	$text2_arr = explode(' ', strtolower($text2));
+	$result = array_intersect($text1_arr, $text2_arr);
+	if(COUNT($result) > 0) {
+		return true;
+	}
+	return false;
+	
+}
 ?>

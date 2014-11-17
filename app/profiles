@@ -38,7 +38,7 @@ include $APPLICATION_PATH."header";
 		<li class="nav-header">Profile Management</li>
 		<li id="listProfiles" onclick="highlightSelectedSubMenu(1); listAllProfiles(1);" class="active"><a href="#list-profiles">List Profiles</a></li>
 		<li id="addNewProfile" onclick="highlightSelectedSubMenu(2); getAddOrEditProfileForm(0);"><a href="#add-profile">Add New Profile</a></li>
-		<li style="display:none" id="importProfiles" onclick="highlightSelectedSubMenu(3); getImportProfileForm();"><a href="#import-profiles">Import Profiles</a></li>
+		<li id="importProfiles" onclick="highlightSelectedSubMenu(3); getImportProfileForm();"><a href="#import-profiles">Import Profiles</a></li>
 		<li class="divider" style="display:none;"></li>
 		<li class="nav-header" style="display:;">Pull Filtered Reports</li>
 		<li id="pullReports" onclick="highlightSelectedSubMenu(4); showProfileReportsScreen(1);"><a href="#pull-reports">Filtered Profile Reports</a></li>
@@ -89,6 +89,8 @@ include $APPLICATION_PATH."header";
                     </tbody>
                 </table>
             </div>
+		</div>
+		<div class="row-fluid">
 			<div id="pageContent" class="span12" style="display:none">
 			</div>
 

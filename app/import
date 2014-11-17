@@ -1,228 +1,434 @@
 <?php
 
 $APPLICATION_PATH = '';
-//Usage: To Import profiles from xls/xlsx.
-
-/*************** upload starts ***************/
-//uploading file to uploads/ folder before start importing
-$upload_dir = "uploads/";
-if(isset($_FILES["filePath"]))
-{
-	//Filter the file types , if you want.
-	if ($_FILES["filePath"]["error"] > 0)
-	{
-	  echo "Error: " . $_FILES["file"]["error"] . "<br>";
-	}
-	else
-	{
-		//move the uploaded file to uploads folder;
-		//$file_path = $upload_dir. $_FILES["filePath"]["name"];
-		$file_path = $upload_dir. "profilelist.xlsx";
-    	move_uploaded_file($_FILES["filePath"]["tmp_name"], $file_path);
-		echo "Uploaded File :".$_FILES["filePath"]["name"];
-	}
-}
-/*************** upload completes ***************/
+$req = trim($_REQUEST['hiddenReqType']);
 
 /** Error reporting */
 //error_reporting(E_ALL);
 //ini_set('display_errors', TRUE);
 //ini_set('display_startup_errors', TRUE);
+
 set_time_limit(0);
 define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
-
 date_default_timezone_set($_SESSION['churchTimeZone']);
 
 /** PHPExcel_IOFactory */
 require_once 'plugins/PHPExcel/Classes/PHPExcel/IOFactory.php';
 require_once 'plugins/PHPExcel/Classes/PHPExcel/Cell/AdvancedValueBinder.php';
+include_once 'utils/utilfunctions.php';
+include_once 'classes/class.settings.php';
 
-if (!file_exists($file_path)) {
-	exit("Uploaded file doesn't exists." . EOL);
-}
+//construct import folder/file path
+session_start();
+$church_id = $_SESSION['churchID'];
+$upload_dir = 'uploads/import/'.$church_id.'/';
+$file_path = $upload_dir. "importfile.xlsx";
 
-//initialize the profile class
-include_once $APPLICATION_PATH . 'classes/class.profiles.php';
-$profiles_obj = new Profiles($APPLICATION_PATH);
-
-//initialize the settings class
-include_once $APPLICATION_PATH . 'classes/class.settings.php';
-$settings_obj = new ProfileSettings($APPLICATION_PATH);
-
-//salution list
-$salution_list = $settings_obj->getOptions(1);
-//print_r($salution_list);
-
-//relationship list
-$relationship_list = $settings_obj->getOptions(2);
-
-//marital list
-$marital_list = $settings_obj->getOptions(3);
-
-//profile status list
-$profile_status_list = $settings_obj->getOptions(4);
-
-if(is_array($salution_list) && COUNT($salution_list) > 0 || is_array($relationship_list) && COUNT($relationship_list) > 0 || is_array($marital_list) && COUNT($marital_list) > 0 || is_array($profile_status_list) && COUNT($profile_status_list) > 0)
+if($req == 1)
 {
-	$objReader = PHPExcel_IOFactory::createReader('Excel2007');
-	$objPHPExcel = $objReader->load("uploads/profilelist.xlsx");
-	foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) 
+	//match the ChurchStack field with import field
+	/*************** upload starts ***************/
+	//uploading file to uploads/ folder before start importing
+	if(isset($_FILES["filePath"]))
 	{
-		$total_profiles = 0;
-		$success_profiles = 0;
-		$failure_profiles = 0;
-		$failed_row_index = '';
-		foreach ($worksheet->getRowIterator() as $row)
+		//Filter the file types , if you want.
+		if ($_FILES["filePath"]["error"] > 0)
 		{
-			$proceed = true;
-			//echo '    Row number - ' , $row->getRowIndex() , EOL;
-			if($row->getRowIndex() == 1) {// || $row->getRowIndex() == 2) {
-				continue;
+		  echo "Error: " . $_FILES["file"]["error"] . "<br>";
+		}
+		else
+		{
+			if(!file_exists($upload_dir)) {
+				mkdir($upload_dir, 0777, true);
 			}
-			$total_profiles++;
+			//move the uploaded file to uploads folder;
+			move_uploaded_file($_FILES["filePath"]["tmp_name"], $file_path);
+			//echo "Uploaded File :".$_FILES["filePath"]["name"];
+		}
+	}
+	/*************** upload completes ***************/
+	if (!file_exists($file_path)) {
+		exit("Uploaded file doesn't exists." . EOL);
+	}
 
+	$import_fields = array();
+	$import_fields[-1] = 'Select';
+	$objReader = PHPExcel_IOFactory::createReader('Excel2007');
+	$objPHPExcel = $objReader->load($file_path);
+	$sheet = $objPHPExcel->getSheet(0);
+	foreach ($sheet->getRowIterator() as $row)
+	{
+		if($row->getRowIndex() == 1) {
 			$cellIterator = $row->getCellIterator();
 			$cellIterator->setIterateOnlyExistingCells(false); // Loop all cells, even if it is not set
-			
-			$profile_info = array();
-			foreach ($cellIterator as $cell)
+			foreach ($cellIterator as $key => $cell)
 			{
 				if (!is_null($cell)) {
 					//echo '        Cell - ' , $cell->getCoordinate() , ' - ' , $cell->getCalculatedValue() , EOL;
-
-					$profile_info[] = $cell->getCalculatedValue();
+					$import_fields[$key] = strtolower($cell->getFormattedValue());
 				}
 			}
+			break;
+		}
+	}
+	
 
-			$unique_id = $profile_info[0];
-			foreach($salution_list as $item_row => $item_value)
-			{
-				if(strtolower($profile_info[1]) == strtolower($item_value[1]))
-				{
-					$salutation_id = $item_value[0];
-					break;
-				}
-			}
-			$name = $profile_info[3];
-
-			/* converting date of birth to readable format */
-			$date_of_birth = '0000-00-00';
-			$excel_date = $profile_info[14];
-			if($excel_date != '')
-			{
-				$unix_date = ($excel_date - 25569) * 86400;
-				$excel_date = 25569 + ($unix_date / 86400);
-				$unix_date = ($excel_date - 25569) * 86400;
-				$date_of_birth = gmdate("Y-m-d", $unix_date);
-			}
-			/**/
-
-			$gender_id = ((strtolower($profile_info[12]) == 'male')?1:((strtolower($profile_info[12]) == 'female')?2:-1));
-			$relation_ship_id = -1;
-			$is_parent = false;
-			foreach($relationship_list as $item_row => $item_value)
-			{
-				if(strtolower($profile_info[13]) == strtolower($item_value[1]))
-				{
-					if(strtolower($profile_info[13]) == 'self')
+	$settings_obj = new ProfileSettings($APPLICATION_PATH);
+	$custom_field_details = $settings_obj->getAllCustomProfileFields();
+	$default_column_names = array('Salutation', 'First Name', 'Middle Name', 'Last Name', 'Family ID *', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address 1', 'Address 2', 'Address 3', 'Area', 'Pincode', 'Mobile', 'Home', 'Work', 'Email', 'Profile Status', 'Notes');
+	$total_fields = COUNT($import_fields);
+	$total_default_columns = COUNT($default_column_names);
+	if($total_fields > 0)
+	{
+		$to_return = '';
+		$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
+			$to_return .= '<div class="row-fluid">';
+				$to_return .= '<div class="span6">';
+					$to_return .= '<h5>Profile Fields</h5>';
+					for($i=0; $i<$total_default_columns; $i++)
 					{
-						$is_parent = true;
+						$to_return .= '<div class="control-group">';
+							$to_return .= '<label class="control-label" for="inputDefaultColumnName-'.$i.'">'.$default_column_names[$i].'</label>';
+								$to_return .= '<div class="controls">';
+									$to_return .= '<select id="inputDefaultColumnName-'.$i.'">';
+										foreach($import_fields as $key => $value) {
+											$is_selected = ((isImportFieldMatched($default_column_names[$i], $value))?"selected":"");
+											$to_return .= '<option value="'.$key.'" '.$is_selected.'>'.$value.'</option>';
+										}
+									$to_return .= '</select>';
+								$to_return .= '</div>';
+						$to_return .= '</div>';
 					}
-					$relation_ship_id = $item_value[0];
-					break;
-				}
-			}
-			$marital_status_id = -1;
-			foreach($marital_list as $item_row => $item_value)
-			{
-				if(strtolower($profile_info[19]) == strtolower($item_value[1]))
-				{
-					$marital_status_id = $item_value[0];
-					break;
-				}
-			}
-			
-			/* converting marriage date to readable format */
-			$marriage_date = '0000-00-00';
-			$excel_date = $profile_info[20];
-			if($excel_date != '')
-			{
-				$unix_date = ($excel_date - 25569) * 86400;
-				$excel_date = 25569 + ($unix_date / 86400);
-				$unix_date = ($excel_date - 25569) * 86400;
-				$marriage_date = gmdate("Y-m-d", $unix_date);
-			}
-			/**/
+					$to_return .= '</div>';
 
-			$address1 = (($profile_info[4] != '')?$profile_info[4]:'');
-			$address2 = (($profile_info[5] != '')?$profile_info[5]:'');
-			$address3 = (($profile_info[6] != '')?$profile_info[6]:'');
-			$area = (($profile_info[7] != '')?$profile_info[7]:'');
-			$pincode = (($profile_info[8] != '')?$profile_info[8]:'');
-			$landline = (($profile_info[9] != '')?$profile_info[9]:'');
-			$mobile1 = (($profile_info[10] != '')?$profile_info[10]:'');
-			$mobile2 = '';
-			$notes = (($profile_info[25] != '')?$profile_info[25]:'');
-			$profile_status_id = 1;
-			if(!$is_parent) {
-				$parent_profile_id = $profiles_obj->getParentProfileID($unique_id);
-				if($parent_profile_id == 0) {
-					$proceed = false;
-				}
-			} else {
-				$parent_profile_id = -1;
-			}
-			$email = (($profile_info[11] != '')?$profile_info[11]:'');
-			$is_babtised = ((strtolower($profile_info[16]) == 'yes')?1:((strtolower($profile_info[16]) == 'no')?0:-1));
-			$is_confirmed = ((strtolower($profile_info[17]) == 'yes')?1:((strtolower($profile_info[17]) == 'no')?0:-1));
-			$marriage_place = (($profile_info[22] != '')?$profile_info[22]:'');
-			$occupation = (($profile_info[23] != '')?$profile_info[23]:'');
-			$is_another_church_member = ((strtolower($profile_info[24]) == 'yes')?1:((strtolower($profile_info[24]) == 'no')?0:-1));
-			
-			$is_failed = false;
-			if($proceed)
+					$to_return .= '<div class="span6">';
+					$to_return .= '<h5>Custom Fields</h5>';
+					if(COUNT($custom_field_details) > 0)
+					{
+						for($i=0; $i<COUNT($custom_field_details); $i++)
+						{
+							$to_return .= '<div class="control-group">';
+								$to_return .= '<label class="control-label" for="inputCustomColumnName-'.$i.'">'.$custom_field_details[$i][1].'</label>';
+									$to_return .= '<div class="controls">';
+										$to_return .= '<select id="inputCustomColumnName-'.$i.'">';
+											foreach($import_fields as $key => $value) {
+												$is_selected = ((isImportFieldMatched($custom_field_details[$i][1], $value))?"selected":"");
+												$to_return .= '<option value="'.$key.'" '.$is_selected.'>'.$value.'</option>';
+											}
+										$to_return .= '</select>';
+										$to_return .= '<input type="hidden" id="hiddenCustomFieldID-'.$i.'" value="'.$custom_field_details[$i][0].'" />';
+									$to_return .= '</div>';
+							$to_return .= '</div>';
+						}
+					}
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+			$to_return .= '<div class="row-fluid">';
+				$to_return.= '<div class="span12">';
+					$to_return .= '<div class="form-actions">';
+						$to_return .= '<span id="spanImportBtn">';
+							$to_return .= '<button class="btn btn-primary" type="submit" onclick="importProfiles();">Import</button>&nbsp;';
+							$to_return .= '<button class="btn btn-primary" type="submit" onclick="getImportProfileForm();">Cancel</button>';
+						$to_return .= '</span>';
+						$to_return .= '<span style="display:none" id="spanImportProg" class="muted">Import is in progress. Don\'t refresh the page. Please wait...</span>';
+						$to_return .= '<input type="hidden" id="hiddenTotalDefaultColumns" value="'.$total_default_columns.'" />';
+						$to_return .= '<input type="hidden" id="hiddenTotalCustomColumns" value="'.COUNT($custom_field_details).'" />';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+			$to_return .= '</div>';
+		$to_return .= '</form>';
+		
+		echo $to_return;
+		exit;
+	}
+}
+else if($req == 2)
+{
+	//Usage: To Import profiles from xls/xlsx.
+	if (!file_exists($file_path)) {
+		exit("Uploaded file doesn't exists." . EOL);
+	}
+
+	$default_columns = array();
+	$custom_columns = array();
+	$default_column_values = trim(stripslashes(rawurldecode($_POST['defaultColumns'])));
+	$custom_column_values = trim(stripslashes(rawurldecode($_POST['customColumns'])));
+	$default_column_arr = explode('<:|:>', $default_column_values);
+	$custom_column_arr = explode('<:|:>', $custom_column_values);
+	foreach($default_column_arr as $key => $value)
+	{
+		$value_arr = explode(',', $value);
+		$default_columns[$value_arr[0]] = $value_arr[1];
+	}
+	foreach($custom_column_arr as $key => $value)
+	{
+		$value_arr = explode(',', $value);
+		$custom_columns[$value_arr[0]] = $value_arr[1];
+	}
+	
+	//initialize the profile class
+	include_once $APPLICATION_PATH . 'classes/class.profiles.php';
+	$profiles_obj = new Profiles($APPLICATION_PATH);
+
+	//initialize the settings class
+	include_once $APPLICATION_PATH . 'classes/class.settings.php';
+	$settings_obj = new ProfileSettings($APPLICATION_PATH);
+
+	//salution list
+	$salution_list = $settings_obj->getOptions(1);
+	//print_r($salution_list);
+
+	//relationship list
+	$relationship_list = $settings_obj->getOptions(2);
+
+	//marital list
+	$marital_list = $settings_obj->getOptions(3);
+
+	//profile status list
+	$profile_status_list = $settings_obj->getOptions(4);
+
+	$is_custom_field_exits = false;
+	$custom_field_details = $settings_obj->getAllCustomProfileFields();
+	if(COUNT($custom_field_details) > 0) {
+		$is_custom_field_exits = true;
+	}
+
+	$total_profiles = 0;
+	$success_profiles = 0;
+	$failure_profiles = 0;
+	$failed_row_index = '';
+	if(is_array($salution_list) && COUNT($salution_list) > 0 || is_array($relationship_list) && COUNT($relationship_list) > 0 || is_array($marital_list) && COUNT($marital_list) > 0 || is_array($profile_status_list) && COUNT($profile_status_list) > 0)
+	{
+		$objReader = PHPExcel_IOFactory::createReader('Excel2007');
+		$objPHPExcel = $objReader->load($file_path);
+		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) 
+		{
+			foreach ($worksheet->getRowIterator() as $row)
 			{
-				$add_status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member);
-				if($add_status[0]==1) {
-					$success_profiles++;
+				$proceed = true;
+				//echo '    Row number - ' , $row->getRowIndex() , EOL;
+				if($row->getRowIndex() == 1) {// || $row->getRowIndex() == 2) {
+					continue;
+				}
+				$total_profiles++;
+				$cellIterator = $row->getCellIterator();
+				$cellIterator->setIterateOnlyExistingCells(false); // Loop all cells, even if it is not set
+				
+				$profile_info = array();
+				foreach ($cellIterator as $key => $cell)
+				{
+					if (!is_null($cell)) {
+						//echo '        Cell - ' , $cell->getCoordinate() , ' - ' , $cell->getCalculatedValue() , EOL;
+
+						$profile_info[$key] = $cell->getCalculatedValue();
+					}
+				}
+
+				/* PROCESSING DEFAULT COLUMNS STARTS HERE */
+				$salutation_text = (($default_columns[0] != -1)?$profile_info[$default_columns[0]]:'');
+				foreach($salution_list as $item_row => $item_value)
+				{
+					if(strtolower($salutation_text) == strtolower($item_value[1]))
+					{
+						$salutation_id = $item_value[0];
+						break;
+					}
+				}
+				$name = (($default_columns[1] != -1)?$profile_info[$default_columns[1]]:'');
+				$middle_name = (($default_columns[2] != -1)?$profile_info[$default_columns[2]]:'');
+				$last_name = (($default_columns[3] != -1)?$profile_info[$default_columns[3]]:'');
+				$unique_id = (($default_columns[4] != -1)?$profile_info[$default_columns[4]]:'');
+				/* converting date of birth to readable format */
+				$date_of_birth = '0000-00-00';
+				$excel_date = (($default_columns[5] != -1)?$profile_info[$default_columns[5]]:'');
+				if($excel_date != '')
+				{
+					$unix_date = ($excel_date - 25569) * 86400;
+					$excel_date = 25569 + ($unix_date / 86400);
+					$unix_date = ($excel_date - 25569) * 86400;
+					$date_of_birth = gmdate("Y-m-d", $unix_date);
+				}
+				/**/
+				$gender_text = (($default_columns[6] != -1)?$profile_info[$default_columns[6]]:'');
+				$gender_id = ((strtolower($gender_text) == 'male')?1:((strtolower($gender_text) == 'female')?2:-1));
+				$relation_ship_text = (($default_columns[7] != -1)?$profile_info[$default_columns[7]]:'');
+				$relation_ship_id = -1;
+				$is_parent = false;
+				foreach($relationship_list as $item_row => $item_value)
+				{
+					if(strtolower($relation_ship_text) == strtolower($item_value[1]))
+					{
+						if(strtolower($relation_ship_text) == 'self')
+						{
+							$is_parent = true;
+						}
+						$relation_ship_id = $item_value[0];
+						break;
+					}
+				}
+				$marital_status_text = (($default_columns[8] != -1)?$profile_info[$default_columns[8]]:'');
+				$marital_status_id = -1;
+				foreach($marital_list as $item_row => $item_value)
+				{
+					if(strtolower() == strtolower($item_value[1]))
+					{
+						$marital_status_id = $item_value[0];
+						break;
+					}
+				}				
+				/* converting marriage date to readable format */
+				$marriage_date = '0000-00-00';
+				$excel_date = (($default_columns[9] != -1)?$profile_info[$default_columns[9]]:'');
+				if($excel_date != '')
+				{
+					$unix_date = ($excel_date - 25569) * 86400;
+					$excel_date = 25569 + ($unix_date / 86400);
+					$unix_date = ($excel_date - 25569) * 86400;
+					$marriage_date = gmdate("Y-m-d", $unix_date);
+				}
+				/**/
+				$marriage_place = (($default_columns[10] != -1)?$profile_info[$default_columns[10]]:'');
+				$is_babtised_text = (($default_columns[11] != -1)?$profile_info[$default_columns[11]]:'');
+				$is_babtised = ((strtolower($is_babtised_text) == 'yes')?1:((strtolower($is_babtised_text) == 'no')?0:-1));
+				$is_confirmed_text = (($default_columns[12] != -1)?$profile_info[$default_columns[12]]:'');
+				$is_confirmed = ((strtolower($is_confirmed_text) == 'yes')?1:((strtolower($is_confirmed_text) == 'no')?0:-1));
+				$occupation = (($default_columns[13] != -1)?$profile_info[$default_columns[13]]:'');
+				$is_another_church_member_text = (($default_columns[14] != -1)?$profile_info[$default_columns[14]]:'');
+				$is_another_church_member = ((strtolower($is_another_church_member_text) == 'yes')?1:((strtolower($is_another_church_member_text) == 'no')?0:-1));
+				$address1 = (($default_columns[15] != -1)?$profile_info[$default_columns[15]]:'');
+				$address2 = (($default_columns[16] != -1)?$profile_info[$default_columns[16]]:'');
+				$address3 = (($default_columns[17] != -1)?$profile_info[$default_columns[17]]:'');
+				$area = (($default_columns[18] != -1)?$profile_info[$default_columns[18]]:'');
+				$pincode = (($default_columns[19] != -1)?$profile_info[$default_columns[19]]:'');
+				$mobile1 = (($default_columns[20] != -1)?$profile_info[$default_columns[20]]:'');
+				$landline = (($default_columns[21] != -1)?$profile_info[$default_columns[21]]:'');
+				$work_phone = (($default_columns[22] != -1)?$profile_info[$default_columns[22]]:'');
+				$mobile2 = '';
+				$email = (($default_columns[23] != -1)?$profile_info[$default_columns[23]]:'');
+				$profile_status_id = 1; //CHECK HERE LATER
+				$notes = (($default_columns[25] != -1)?$profile_info[$default_columns[25]]:'');
+				if(!$is_parent) {
+					$parent_profile_id = $profiles_obj->getParentProfileID($unique_id);
+					if($parent_profile_id == 0) {
+						$proceed = false;
+					}
 				} else {
+					$parent_profile_id = -1;
+				}
+				$family_photo_location = '';
+				$profile_photo_location = '';
+				$sms_notification = 0;
+				$email_notification = 0;
+				/* PROCESSING DEFAULT COLUMNS ENDS HERE */
+
+				/* PROCESSING CUSTOM COLUMNS STARTS HERE */
+
+				/* PROCESSING CUSTOM COLUMNS ENDS HERE */
+				
+				$is_failed = false;
+				if($proceed)
+				{
+					$add_status = $profiles_obj->addNewProfile($salutation_id, $name, $parent_profile_id, $unique_id, $date_of_birth, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $sms_notification, $email_notification);
+					if($add_status[0]==1) {
+						$profile_id = $profiles_obj->profile_id;
+						if(COUNT($custom_columns) > 0)
+						{
+							foreach($custom_columns as $key => $value)
+							{
+								if($custom_columns[$key] != -1) {
+									$field_id = $key;
+									foreach($custom_field_details as $key1 => $custom_field)
+									{
+										if($custom_field[0] == $field_id) {
+											$field_type = $custom_field[2];
+											$field_options = $custom_field[3];
+											break;
+										}
+									}
+									$field_value = (($custom_columns[$field_id] != -1)?$profile_info[$custom_columns[$field_id]]:'');
+									if($field_type == 4) {
+										//date
+										$date = '0000-00-00';
+										$excel_date = $field_value;
+										if($excel_date != '')
+										{
+											$unix_date = ($excel_date - 25569) * 86400;
+											$excel_date = 25569 + ($unix_date / 86400);
+											$unix_date = ($excel_date - 25569) * 86400;
+											$date = gmdate("Y-m-d", $unix_date);
+										}
+										$field_value = $date;
+									} else if($field_type == 6) {
+										//dropdown
+										$field_value = '';
+										$field_option_arr = explode(',', $field_options);
+										foreach($field_option_arr as $key2 => $field_option)
+										{
+											if($field_option == $field_value) {
+												$field_value = $key2;
+											}
+										}										
+									} else if($field_type == 7) {
+										//tickbox
+										$field_value = (($field_value == 'yes')?1:0);
+									}
+									
+									$profiles_obj->addCustomProfileFields($profile_id, $field_id, $field_value);
+								}
+							}
+						}						
+						$success_profiles++;
+					} else {
+						$is_failed = true;
+						$failure_profiles++;
+					}
+				}
+				else
+				{
 					$is_failed = true;
 					$failure_profiles++;
 				}
-			}
-			else
-			{
-				$is_failed = true;
-				$failure_profiles++;
-			}
-			
-			if($is_failed)
-			{
-				if(strlen($failed_row_index) > 0)
+				
+				if($is_failed)
 				{
-					$failed_row_index .= PHP_EOL;
+					if(strlen($failed_row_index) > 0)
+					{
+						$failed_row_index .= PHP_EOL;
+					}
+					$failed_row_index .= $row->getRowIndex();
 				}
-				$failed_row_index .= $row->getRowIndex();
 			}
 		}
-	}
-	// Echo memory peak usage
-	echo date('H:i:s') , " Peak memory usage: " , (memory_get_peak_usage(true) / 1024 / 1024) , " MB" , EOL;
-	echo "Total Profiles :".$total_profiles. " Success Profiles :".$success_profiles. " Failed Profiles :". $failure_profiles."<BR>";
-	if($failure_profiles > 0)
-	{
-		echo "Log file is available in log/log.txt";
-	}
+		// Echo memory peak usage
+		echo date('H:i:s') , " Peak memory usage: " , (memory_get_peak_usage(true) / 1024 / 1024) , " MB" , EOL;
+		echo "Total Profiles :".$total_profiles. " Success Profiles :".$success_profiles. " Failed Profiles :". $failure_profiles."<BR>";
+		if($failure_profiles > 0)
+		{
+			echo "Log file is available in log/log.txt";
+		}
 
-	if($failure_profiles > 0)
+		if($failure_profiles > 0)
+		{
+			//log the failure profiles
+			$log_file = $upload_dir.'log.txt';
+			file_put_contents($log_file, $failed_row_index, FILE_APPEND | LOCK_EX);
+		}
+	}
+	else
 	{
-		//log the failure profiles
-		$file = $APPLICATION_PATH.'log/log.txt';
-		file_put_contents($file, $failed_row_index, FILE_APPEND | LOCK_EX);
+		echo 'Something is missing';
+		exit;
 	}
 }
-else
-{
-	echo 'Something is missing';
-	exit;
-}
+
+
+
+
+
+
+
+
+
+
+

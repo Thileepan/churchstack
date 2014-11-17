@@ -836,6 +836,7 @@ function getImportProfileFormResponse(response)
 		$('#inputImportFilePath').val($(this).val());
 	});
 
+	var reqType = document.getElementById('hiddenReqType').value;
 	var options = { 
 		beforeSend: function() 
 		{
@@ -863,8 +864,13 @@ function getImportProfileFormResponse(response)
 		},
 		complete: function(response) 
 		{
-			$("#message").html("<font color='green'>"+response.responseText+"</font>");
-			document.getElementById('spanImportProg').innerHTML =  (response.responseText);
+			if(reqType == 1) {
+				document.getElementById('pageContent').innerHTML = response.responseText;
+			} else if(reqType == 2) {
+				$("#message").html("<font color='green'>"+response.responseText+"</font>");
+				document.getElementById('spanImportProg').innerHTML =  (response.responseText);
+			}
+			
 		},
 		error: function()
 		{
@@ -1264,4 +1270,57 @@ function highlightSelectedSubMenu(menu)
 		document.getElementById('pullReports').className = classNameToSet;
 		document.getElementById('pageHeader').innerHTML = "Filter And Pull Profile Reports";
 	}
+}
+
+function importProfiles()
+{
+	document.getElementById('spanImportBtn').style.display = 'none';
+	document.getElementById('spanImportProg').style.display = '';
+
+	var defaultColumnValues = '';
+	var customColumnValues = '';
+	var totalDefaultColumns = document.getElementById('hiddenTotalDefaultColumns').value;
+	var totalCustomColumns = document.getElementById('hiddenTotalCustomColumns').value;
+	if(totalDefaultColumns > 0)
+	{
+		for(var i=0; i<totalDefaultColumns; i++)
+		{
+			var index = document.getElementById('inputDefaultColumnName-' + i).selectedIndex;
+			var value = document.getElementById('inputDefaultColumnName-' + i).options[index].value;
+
+			if(defaultColumnValues != '') {
+				defaultColumnValues += '<:|:>';
+			}
+			defaultColumnValues += i + ',' + value;
+		}
+	}
+
+	if(totalCustomColumns > 0)
+	{
+		for(var i=0; i<totalCustomColumns; i++)
+		{
+			var index = document.getElementById('inputCustomColumnName-' + i).selectedIndex;
+			var value = document.getElementById('inputCustomColumnName-' + i).options[index].value;
+
+			if(customColumnValues != '') {
+				customColumnValues += '<:|:>';
+			}
+			customColumnValues += document.getElementById('hiddenCustomFieldID-' + i).value + ',' + value;
+		}
+	}
+
+	var formPostData = 'hiddenReqType=2&defaultColumns=' + defaultColumnValues + '&customColumns=' + customColumnValues;
+	$.ajax({
+		type:'POST',
+		url:'import',
+		data:formPostData,
+		success:importProfilesResponse,
+		error:HandleAjaxError
+	});
+}
+
+function importProfilesResponse(response)
+{
+	document.getElementById('pageContent').style.display = '';
+	document.getElementById('pageContent').innerHTML = response;
 }
