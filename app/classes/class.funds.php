@@ -417,8 +417,8 @@ class Funds
 		if($this->db_conn)
 		{
 			$contribution_details = array();
-			$query = 'select a.CONTRIBUTION_ID, a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID=c.BATCH_ID and a.BATCH_ID=?';
-			$result = $this->db_conn->Execute($query, array($batch_id));
+			$query = 'select a.CONTRIBUTION_ID, a.CONTRIBUTION_DATE, a.BATCH_ID, c.BATCH_NAME, a.PROFILE_ID, b.NAME, a.TRANSACTION_TYPE, a.PAYMENT_MODE, a.REFERENCE_NUMBER, a.TOTAL_AMOUNT, a.LAST_UPDATE_TIME, a.LAST_UPDATE_USER_ID, a.LAST_UPDATE_USER_NAME from CONTRIBUTION_DETAILS as a, PROFILE_DETAILS as b, BATCH_DETAILS as c where a.PROFILE_ID=b.PROFILE_ID and a.BATCH_ID=c.BATCH_ID and a.BATCH_ID=? ORDER BY a.CONTRIBUTION_ID desc';
+			$result = $this->db_conn->Execute($query, array($batch_id));			
 			
 			if($result) {
                 if(!$result->EOF) {
@@ -443,6 +443,9 @@ class Funds
 					}
 					$return_data[0] = 1;
 					$return_data[1] = $contribution_details;
+				} else {
+					$return_data[0] = 0;
+					$return_data[1] = 'No contribution is available.';
 				}
             } else {
 				$return_data[0] = 0;
@@ -479,7 +482,7 @@ class Funds
 					$contribution_details = array($contribution_id, $contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_update_time, $last_update_user_id, $last_update_user_name);
 
 					$return_data[0] = 1;
-					$return_data[1] = $contribution_split_details;
+					$return_data[1] = $contribution_details;
 				}
             }
 		}
@@ -642,7 +645,7 @@ class Funds
 		return $total_amount;
 	}
 
-	public function importContributionsFromBatch($batch_id, $contribution_date, $contribution_list, $profile_list)
+	public function importContributionsFromBatch($batch_id, $contribution_date, $contribution_list)
 	{
 		$return_data = array();
 		$return_data[0] = 0;
@@ -650,9 +653,10 @@ class Funds
 
 		$success = 0;
 		$failure = 0;
-		if(is_array($contribution_list))
+		$contribution_array = explode(',', $contribution_list);
+		if(is_array($contribution_array))
 		{
-			$total_contributions = COUNT($contribution_list);
+			$total_contributions = COUNT($contribution_array);
 			if($total_contributions > 0)
 			{
 				session_start();
@@ -665,11 +669,12 @@ class Funds
 
 				for($i=0; $i<$total_contributions; $i++)
 				{
-					$contribution_id = $contribution_list[$i];
+					$contribution_id = $contribution_array[$i];
 					$contribution_details = $this->getContributionInformation($contribution_id);
 					$split_details = $this->getContributionSplitDetails($contribution_id);
+					//print_r($split_details);exit;
 
-					$contribution_split_details[] = array($contribution_split_id, $contribution_id, $fund_id, $fund_name, $amount, $notes);
+					//$contribution_split_details[] = array($contribution_split_id, $contribution_id, $fund_id, $fund_name, $amount, $notes);
 
 					if($contribution_details[0] == 1 && $split_details[0] == 1) {
 						//$contribution_id = $contribution_details[1][0];
@@ -685,23 +690,25 @@ class Funds
 						if($total_splits > 0)
 						{
 							$fund_id_list = '';
+							$amount_list = '';
+							$notes_list = '';
 							for($j=0; $j<$total_splits; $j++)
 							{
 								if($fund_id_list != '') {
 									$fund_id_list .= '<:|:>';
 								}
-								if($amount_id_list != '') {
-									$amount_id_list .= '<:|:>';
+								if($amount_list != '') {
+									$amount_list .= '<:|:>';
 								}
-								if($notes_id_list != '') {
-									$notes_id_list .= '<:|:>';
+								if($notes_list != '') {
+									$notes_list .= '<:|:>';
 								}
-								$fund_id_list .= $split_details[$j][2];
-								$amount_id_list .= $split_details[$j][4];
-								$notes_id_list .= $split_details[$j][5];
+								$fund_id_list .= $split_details[1][$j][2];
+								$amount_list .= $split_details[1][$j][4];
+								$notes_list .= $split_details[1][$j][5];
 							}
 						}
-
+						
 						$result = $this->addContribution($contribution_date, $batch_id, $profile_id, $transaction_type, $payment_mode, $reference_number, $total_amount, $last_updated_time, $user_id, $user_name, $fund_id_list, $amount_list, $notes_list);
 						if($result[0] == 1) {
 							$success++;

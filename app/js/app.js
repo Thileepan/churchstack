@@ -230,10 +230,12 @@ function getAddOrEditProfileFormResponse(response)
 	document.getElementById('pageContent').innerHTML = response;
 	document.getElementById('inputSalutation').focus();
 	$('#inputDOB').datepicker({
-		autoclose: true
+		autoclose: true,
+		startView:"decade"
 	});
 	$('#inputMarriageDate').datepicker({
-		autoclose: true
+		autoclose: true,
+		startView:"decade"
 	});
 	
 	/*

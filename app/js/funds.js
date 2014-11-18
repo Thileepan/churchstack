@@ -572,8 +572,7 @@ function addOrUpdateContribution(val)
 	isUpdate = val;
 	var batchID	= document.getElementById('inputHiddenBatchID').value; 
 	var profileID = document.getElementById('inputHiddenProfileID').value;
-	var contributionDate = document.getElementById('inputContributionDate').value;
-	contributionDate = convertDateToDBFormat(contributionDate);
+	var contributionDate = document.getElementById('inputContributionDate').value;	
 	var transactionTypeIndex = document.getElementById('inputTransactionType').selectedIndex;
 	var transactionType = document.getElementById('inputTransactionType').options[transactionTypeIndex].value;
 	var paymentMode = 0;
@@ -591,6 +590,7 @@ function addOrUpdateContribution(val)
 	} else if(contributionDate == '') {
 		alertMsg = 'Please enter a valid contribution date';
 	}
+	contributionDate = convertDateToDBFormat(contributionDate);
 
 	if(alertMsg != '') {
 		document.getElementById('alertRow').style.display = '';
@@ -605,6 +605,11 @@ function addOrUpdateContribution(val)
 	if(transactionRowIDArr.length > 0) {
 		for(var i=0; i<transactionRowIDArr.length; i++)
 		{
+			var amount = document.getElementById('amount-' + transactionRowIDArr[i]).value;
+			if(amount == '') {
+				continue;
+			}
+
 			if(fundIDList != '') {
 				fundIDList += '<:|:>';
 			}
@@ -614,11 +619,30 @@ function addOrUpdateContribution(val)
 			if(notesList != '') {
 				notesList += '<:|:>';
 			}
+			
 			var index = document.getElementById('fundName-' + transactionRowIDArr[i]).selectedIndex;
 			fundIDList += document.getElementById('fundName-' + transactionRowIDArr[i]).options[index].value;
+			if(index == 0) {
+				document.getElementById('fundName-' + transactionRowIDArr[i]).focus();
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = getAlertDiv(2, 'Please select the fund');
+				return false;
+			}
+			if(isNaN(amount)) {
+				document.getElementById('amount-' + transactionRowIDArr[i]).focus();
+				document.getElementById('alertRow').style.display = '';
+				document.getElementById('alertDiv').innerHTML = getAlertDiv(2, 'Please enter a valid amount');
+				return false;
+			}
 			amountList += document.getElementById('amount-' + transactionRowIDArr[i]).value;
 			notesList += document.getElementById('notes-' + transactionRowIDArr[i]).value;
 		}
+	}
+
+	if(fundIDList == '') {
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = getAlertDiv(2, 'Please contribute atleast to one fund.');
+		return false;
 	}
 
 	totalAmount = calReceivedAmount();
@@ -732,6 +756,10 @@ function getFundList(rowID)
 		if(optionList !== '') {
 			var id = '#fundName-' + rowID;
 			$(id).append(optionList);
+			var totalFunds = document.getElementById('inputHiddenTotalFunds').value;
+			if(totalFunds >= rowID) {
+				document.getElementById('fundName-' + rowID).selectedIndex = rowID;
+			}
 			return true;
 		}
 	}
@@ -761,9 +789,16 @@ function getFundListResponse(response)
 			var fundName = funds[1][i][1];
 			optionList += '<option value="'+ fundID +'">'+ fundName +'</option>';
 		}
+		document.getElementById('inputHiddenTotalFunds').value = totalFunds;
 		document.getElementById('inputHiddenIsFundLoadedAlready').value = 1;
 		document.getElementById('inputHiddenOptionList').value = optionList;
 		$('#fundName-1').append(optionList);
+		document.getElementById('fundName-1').selectedIndex = 1;
+
+		//Show as many number of transaction row same as fund counts
+		for(var i=0; i<totalFunds-1; i++) {
+			addTransactionRow();
+		}
 	}	
 }
 
@@ -838,15 +873,16 @@ function deleteContributionResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function getContributionImportForm(type)
+function getContributionImportForm(batchID)
 {
 	document.getElementById('alertRow').style.display = 'none';	
 	document.getElementById('summaryDiv').className = 'tab-pane';
 	document.getElementById('addContributionDiv').className = 'tab-pane';
 	document.getElementById('listContributionDiv').className = 'tab-pane';
 	document.getElementById('importContributionDiv').className = 'tab-pane active';
+	$('#batchTab a[href="#importContributionTab"]').tab('show');
 
-	var formPostData = "req=19";
+	var formPostData = "req=19&toBatchID=" + batchID;
 	$.ajax({
 		type:'POST',
 		url:doFundsFile,
@@ -859,6 +895,9 @@ function getContributionImportForm(type)
 function getContributionImportFormResponse(response)
 {
 	document.getElementById('importContributionDiv').innerHTML = response;
+	$('#inputImportContributionDate').datepicker({
+		autoclose: true
+	});
 }
 
 function onSelectingImportType(obj)
@@ -881,6 +920,7 @@ function listContributionsFromBatch()
 {
 	var importType;
 	var isImportReq = 1;
+	var toBatchID = document.getElementById('hiddenToBatchID').value;
 	if(document.getElementById('importTypeFromBatch').checked) {
 		importType = 1;
 		var index = document.getElementById('selectBatch').selectedIndex;
@@ -891,7 +931,16 @@ function listContributionsFromBatch()
 			var resultToUI = getAlertDiv(alertType, msgToDisplay);
 			document.getElementById('alertRow').style.display = '';
 			document.getElementById('alertDiv').innerHTML = resultToUI;
+			return false;
 		}
+		var contributionDate = document.getElementById('inputImportContributionDate').value;
+		if(contributionDate == '') {
+			var resultToUI = getAlertDiv(2, 'Please choose the contribution date');
+			document.getElementById('alertRow').style.display = '';
+			document.getElementById('alertDiv').innerHTML = resultToUI;
+			return false;
+		}
+		contributionDate = convertDateToDBFormat(contributionDate);
 		document.getElementById('alertRow').style.display = 'none';
 		document.getElementById('summaryDiv').className = 'tab-pane';
 		document.getElementById('addContributionDiv').className = 'tab-pane';	
@@ -903,18 +952,24 @@ function listContributionsFromBatch()
 			currencyCode = document.getElementById("txtCurrencyCode").value;
 		}
 
-		var table = '<table id="importContributionTable" class="table table-condensed"><thead><tr><th><input type="checkbox" id="chkAllContributions" /></th><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th><th>Actions</th></tr></thead><tbody></tbody></table>';
+		var table = '<table id="importContributionTable" class="table table-condensed"><thead><tr><th><input type="checkbox" id="chkAllContributions" onclick="selectOrUnselectAllContributions(this);" /></th><th></th><th>Contribution ID</th><th>Date</th><th>Name</th><th>Transaction Type</th><th>Total Amount ('+currencyCode+')</th></tr></thead><tbody></tbody></table><BR><BR>';
+		table += '<span id="spanImportContributionBtn">';
+			table += '<button id="btnImportContributions" class="btn btn-primary" onclick="importContributions();">Import</button>';
+			table += '<input type="hidden" id="hiddenToBatchID" value="'+toBatchID+'" />';
+			table += '<input type="hidden" id="hiddenContributionDate" value="'+contributionDate+'" />';
+		table += '</span>';
+		table += '<span id="spanImportContributionProg" style="display:none"></span>';
 		document.getElementById('importContributionDiv').innerHTML = table;
 		
 		oTable = $('#importContributionTable').dataTable( {
 			"aoColumns": [
-				{ "sWidth": "5%" },
-				{ "sWidth": "5%" },
+				{ "sWidth": "9%" },
+				{ "sWidth": "9%" },
 				{ "sWidth": "2%", "bVisible":false},
-				{ "sWidth": "15%" },
-				{ "sWidth": "15%"  },
-				{ "sWidth": "15%"  },
-				{ "sWidth": "15%"  },
+				{ "sWidth": "20%" },
+				{ "sWidth": "20%"  },
+				{ "sWidth": "20%"  },
+				{ "sWidth": "20%"  },
 			],
 			"bFilter":false,
 			"bProcessing": true,
@@ -923,7 +978,7 @@ function listContributionsFromBatch()
 			"fnDrawCallback": function () {
 				$('body table tbody td').on( 'click', 'img', function (e) {
 
-			//		alert("SKTG");
+			//		alert("SKTGR");
 					//console.log($(this));
 					var nTr = $(this).parents('tr')[0];
 					if ( oTable.fnIsOpen(nTr) )
@@ -937,10 +992,10 @@ function listContributionsFromBatch()
 						/* Open this row */
 						this.src = "plugins/datatables/examples/examples_support/details_close.png";
 						var aData = oTable.fnGetData( nTr );
-						console.log(aData);
+						//console.log(aData);
 						oTable.fnOpen( nTr, showContributionSplitDetails(aData[2]), 'details' );
 					}
-				});
+				});				
 			},
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
 				$.ajax( {
@@ -960,4 +1015,69 @@ function listContributionsFromBatch()
 		document.getElementById('alertRow').style.display = '';
 		document.getElementById('alertDiv').innerHTML = resultToUI;
 	}
+}
+
+function importContributions()
+{
+	var contributionID = new Array();
+	var dataTable = $('#importContributionTable').dataTable();
+	$(dataTable.fnGetNodes()).each(function(){
+		var dataObj = $(dataTable.fnGetData(this));
+		var isSelected = $(this).find('input[type=checkbox]').is(":checked");
+		if(isSelected) {
+			contributionID.push($(this).find('input[type=checkbox]').val());
+		}
+	});
+	batchID = document.getElementById('hiddenToBatchID').value;
+	var contributionDate = document.getElementById('hiddenContributionDate').value;
+	var contributionList = contributionID.toString();	
+	if(contributionList == '') {
+		var resultToUI = getAlertDiv(2, 'Please select atleast one contribution to proceed the import.');
+		document.getElementById('alertRow').style.display = '';
+		document.getElementById('alertDiv').innerHTML = resultToUI;
+		return false;
+	}
+
+	document.getElementById('spanImportContributionBtn').style.display = 'none';
+	document.getElementById('spanImportContributionProg').style.display = '';
+	document.getElementById('spanImportContributionProg').innerHTML = 'Importing the contributions. Please wait...';
+	var formPostData = "req=20&batchID=" + batchID + "&contributionDate=" + contributionDate + "&contributionList=" + contributionList;
+	$.ajax({
+		type:'POST',
+		url:doFundsFile,
+		data:formPostData,
+		success:importContributionsResponse,
+		error:HandleAjaxError
+	});
+}
+
+function importContributionsResponse(response)
+{
+	var alertType;
+	var dataObj = eval("(" + response + ")" );
+	if(dataObj[0] == 1) {
+		alertType = 1;
+	} else {
+		alertType = 2;
+	}
+	$('#batchTab a[href="#listContributionTab"]').tab('show');
+	listAllContributions(batchID, 0);
+
+	var msgToDisplay = dataObj[1];
+	var resultToUI = getAlertDiv(alertType, msgToDisplay);
+	document.getElementById('alertRow').style.display = '';
+	document.getElementById('alertDiv').innerHTML = resultToUI;	
+}
+
+function selectOrUnselectAllContributions(obj)
+{
+	var dataTable = $('#importContributionTable').dataTable();
+	$(dataTable.fnGetNodes()).each(function(){
+		var dataObj = $(dataTable.fnGetData(this));
+		if(obj.checked) {
+			$(this).find('input[type=checkbox]').prop('checked', true);
+		} else {
+			$(this).find('input[type=checkbox]').prop('checked', false);
+		}
+	});
 }
