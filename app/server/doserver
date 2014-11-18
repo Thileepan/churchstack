@@ -1150,7 +1150,7 @@ else if($req == 12)
 			$to_return .= '<form id="myForm" action="import" method="post" enctype="multipart/form-data" onsubmit="return true">';
 //				$to_return .= '<fieldset>';
 //					$to_return .= '<legend>Import Your Profiles</legend>';
-					$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Please make sure you have added the profiles related <a href="settings"><u>settings</u></a> before you import the profiles from here. Also, please note that Profilestack currently supports only *.xlsx format and more formats will be supported in future releases.</div>';
+					$to_return .= '<div class="alert alert-info"><b>Heads up!</b> Please make sure you have added the profiles related <a href="settings"><u>settings</u></a> before you import the profiles from here. Also, please note that ChurchStack currently supports only *.xlsx format and more formats will be supported in our future releases.</div>';
 					$to_return .= '<div>';						
 						$to_return .= '<div class="input-append span12">';
 							$to_return .= '<input type="text" id="inputImportFilePath" placeholder="Browse your *.xlsx file" class="span4"/>';
