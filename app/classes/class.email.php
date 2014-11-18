@@ -55,6 +55,10 @@ class Email
 			$this->host = INFO_SMTP_SERVER;
 			$this->username = INFO_SMTP_USERNAME;
 			$this->password = INFO_SMTP_PASSWORD;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_NOTIFICATIONS) {
+			$this->host = NOTIFICATIONS_SMTP_SERVER;
+			$this->username = NOTIFICATIONS_SMTP_USERNAME;
+			$this->password = NOTIFICATIONS_SMTP_PASSWORD;
 		} else {
 			$this->host = SMTP_SERVER;
 			$this->username = SMTP_USERNAME;
@@ -76,6 +80,9 @@ class Email
 		} else if($FROM_ADDRESS_ID==EMAIL_FROM_INFO) {
 			$this->from_address = FROM_INFO_ADDRESS;
 			$this->from_name = FROM_INFO_NAME;
+		} else if($FROM_ADDRESS_ID==EMAIL_FROM_NOTIFICATIONS) {
+			$this->from_address = FROM_NOTIFICATIONS_ADDRESS;
+			$this->from_name = FROM_NOTIFICATIONS_NAME;
 		} else {
 			$this->from_address = FROM_INFO_ADDRESS;
 			$this->from_name = FROM_INFO_NAME;

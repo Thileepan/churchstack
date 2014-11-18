@@ -7,8 +7,8 @@ if($_SERVER['REQUEST_URI'] == "/app/conf/config.php" || $_SERVER['REQUEST_URI'] 
 	exit;
 }
 //app configurations
-define('APP_VERSION', '1.0');
-define('APP_BUILD_NUMBER', '20140118');
+define('APP_VERSION', '1.2');
+define('APP_BUILD_NUMBER', '20141118');
 define('PRODUCT_NAME', 'ChurchStack');
 define('PRODUCT_WEBSITE', 'http://www.ChurchStack.com');
 define('CS_LOGIN_WEBSITE', 'https://account.churchstack.com');
@@ -36,7 +36,7 @@ define('COMPANY_CONTACT_US', 'http://www.rapydcloud.com/contact-us.html');
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
 define('DB_DSN', 'churchstack');
 define('DB_USER_NAME', 'root');
-define('DB_PASSWORD', 'admin');
+define('DB_PASSWORD', 'Rapydcloud123$');
 define('DB_NAME', 'churchstack');
 
 //email configurations
@@ -47,39 +47,43 @@ define('EMAIL_FROM_INFO', 4);
 define('EMAIL_FROM_NOTIFICATIONS', 5);
 
 //SMTP stuff
-define('SMTP_SERVER', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'support@churchstack.com');
-define('SMTP_PASSWORD', 'churchstack123$');
+define('SMTP_SERVER', 'email-smtp.us-west-2.amazonaws.com');
+define('SMTP_USERNAME', 'AKIAJNVL2WHRTLOP7HVA');
+define('SMTP_PASSWORD', 'AqJ57BW8cmXKiMqaey1Hu7gGiUhCeXYbpJFtmnU2TOXA');
 
 define('SALES_SMTP_SERVER', 'smtp.gmail.com');
 define('SALES_SMTP_USERNAME', 'support@churchstack.com');
 define('SALES_SMTP_PASSWORD', 'churchstack123$');
 
-define('SUPPORT_SMTP_SERVER', 'smtp.gmail.com');
-define('SUPPORT_SMTP_USERNAME', 'support@churchstack.com');
-define('SUPPORT_SMTP_PASSWORD', 'churchstack123$');
+define('SUPPORT_SMTP_SERVER', 'email-smtp.us-west-2.amazonaws.com');
+define('SUPPORT_SMTP_USERNAME', 'AKIAJNVL2WHRTLOP7HVA');
+define('SUPPORT_SMTP_PASSWORD', 'AqJ57BW8cmXKiMqaey1Hu7gGiUhCeXYbpJFtmnU2TOXA');
 
-define('DONOTREPLY_SMTP_SERVER', 'smtp.gmail.com');
-define('DONOTREPLY_SMTP_USERNAME', 'support@churchstack.com');
-define('DONOTREPLY_SMTP_PASSWORD', 'churchstack123$');
+define('DONOTREPLY_SMTP_SERVER', 'email-smtp.us-west-2.amazonaws.com');
+define('DONOTREPLY_SMTP_USERNAME', 'AKIAJNVL2WHRTLOP7HVA');
+define('DONOTREPLY_SMTP_PASSWORD', 'AqJ57BW8cmXKiMqaey1Hu7gGiUhCeXYbpJFtmnU2TOXA');
 
 define('INFO_SMTP_SERVER', 'smtp.gmail.com');
 define('INFO_SMTP_USERNAME', 'support@churchstack.com');
 define('INFO_SMTP_PASSWORD', 'churchstack123$');
 
+define('NOTIFICATIONS_SMTP_SERVER', 'email-smtp.us-west-2.amazonaws.com');
+define('NOTIFICATIONS_SMTP_USERNAME', 'AKIAJNVL2WHRTLOP7HVA');
+define('NOTIFICATIONS_SMTP_PASSWORD', 'AqJ57BW8cmXKiMqaey1Hu7gGiUhCeXYbpJFtmnU2TOXA');
+
 //Email addresses
 define('FROM_ADDRESS', 'support@churchstack.com');
 define('FROM_NAME', 'ChurchStack');
 define('FROM_SALES_ADDRESS', 'support@churchstack.com');
-define('FROM_SALES_NAME', 'ChurchStack');
+define('FROM_SALES_NAME', 'ChurchStack Sales');
 define('FROM_SUPPORT_ADDRESS', 'support@churchstack.com');
-define('FROM_SUPPORT_NAME', 'ChurchStack');
+define('FROM_SUPPORT_NAME', 'ChurchStack Support');
 define('FROM_DONOTREPLY_ADDRESS', 'do-not-reply@churchstack.com');
-define('FROM_DONOTREPLY_NAME', 'ChurchStack');
+define('FROM_DONOTREPLY_NAME', 'ChurchStack - Do Not Reply');
 define('FROM_INFO_ADDRESS', 'support@churchstack.com');
 define('FROM_INFO_NAME', 'ChurchStack');
-define('FROM_NOTIFICATIONS_ADDRESS', 'support@churchstack.com');
-define('FROM_NOTIFICATIONS_NAME', 'ChurchStack Notification');
+define('FROM_NOTIFICATIONS_ADDRESS', 'notifications@churchstack.com');
+define('FROM_NOTIFICATIONS_NAME', 'ChurchStack - Notifications');
 define('SUPPORT_EMAIL', 'support@churchstack.com');
 define('SALES_EMAIL', 'support@churchstack.com');
 define('DONOTREPLY_EMAIL', 'do-not-reply@churchstack.com');

@@ -52,7 +52,7 @@
 
 	$from_address = EMAIL_FROM_INFO;
 	if($from_addr_type=="eventreminder") {
-		$from_address = EMAIL_FROM_DONOTREPLY;
+		$from_address = EMAIL_FROM_NOTIFICATIONS;
 	} else if($from_addr_type=="info") {
 		$from_address = EMAIL_FROM_INFO;
 	} else if($from_addr_type=="sales") {
@@ -60,11 +60,11 @@
 	} else if($from_addr_type=="account") {
 		$from_address = EMAIL_FROM_SALES;
 	} else if($from_addr_type=="birthdaygreetings") {
-		$from_address = EMAIL_FROM_DONOTREPLY ;
+		$from_address = EMAIL_FROM_NOTIFICATIONS ;
 	} else if($from_addr_type=="weddinggreetings") {
-		$from_address = EMAIL_FROM_DONOTREPLY ;
+		$from_address = EMAIL_FROM_NOTIFICATIONS ;
 	} else if($from_addr_type=="masscommunication") {
-		$from_address = EMAIL_FROM_DONOTREPLY ;
+		$from_address = EMAIL_FROM_NOTIFICATIONS ;
 	}
 
 	//Set and Send Email		

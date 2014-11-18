@@ -3,6 +3,7 @@ doUsers = '../server/dousers';
 
 function forgotPassword(type)
 {
+	$.noty.closeAll()
 	/** /
 	document.getElementById("errorDiv").innerHTML = "";
 	document.getElementById("successDiv").innerHTML = "";

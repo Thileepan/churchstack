@@ -645,6 +645,7 @@ function deleteProfileResponse(response)
 
 function authenticateUser()
 {
+	$.noty.closeAll()
 	/* Example to get timezone : can be removed later* /
 	var tz = jstz.determine();
 	alert(tz.name());
@@ -991,6 +992,7 @@ function previewProfileImage(input, previewImgID) {
 
 function signUpNewAccount()
 {
+	$.noty.closeAll()
 	//document.getElementById('alertRow').style.display = 'none';
 
 
