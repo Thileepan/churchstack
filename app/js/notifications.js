@@ -80,16 +80,40 @@ function onChangeNotificationType()
 	var reqForSMS;
 	var index = document.getElementById('inputNotificationType').selectedIndex;
 	var notificationType = document.getElementById('inputNotificationType').options[index].value;
+
+	/********************************************************************************************** /
+	First reset & hide everything and then show fields as per the neeed
+	/***********************************************************************************************/
+	document.getElementById('divSubject').style.display = 'none';
+	document.getElementById('divEmailMessage').style.display = 'none';
+	document.getElementById('divSMSMessage').style.display = 'none';
+	document.getElementById("divSMSDisabledMsg").style.display = "none";
+	document.getElementById("divAllButtons").style.display = "none";
+	document.getElementById("divToPeople").style.display = "none";
+	/************************************************************************************************/
 	if(notificationType == 1) {
 		reqForSMS = false;
 		document.getElementById('divSubject').style.display = '';
 		document.getElementById('divEmailMessage').style.display = '';
-		document.getElementById('divSMSMessage').style.display = 'none';
+//		document.getElementById('divSMSMessage').style.display = 'none';
+		document.getElementById("divToPeople").style.display = "";
+		document.getElementById("divAllButtons").style.display = "";
 	} else {
 		reqForSMS = true;
-		document.getElementById('divSubject').style.display = 'none';
-		document.getElementById('divEmailMessage').style.display = 'none';
-		document.getElementById('divSMSMessage').style.display = '';
+//		document.getElementById('divSubject').style.display = 'none';
+//		document.getElementById('divEmailMessage').style.display = 'none';
+
+		if(document.getElementById("isSMSConfigEnabled").value == 1)
+		{
+			document.getElementById("divToPeople").style.display = "";
+			document.getElementById('divSMSMessage').style.display = '';
+			document.getElementById("divAllButtons").style.display = "";
+		}
+		else
+		{
+			document.getElementById("divSMSDisabledMsg").style.display = "";
+			return false;
+		}
 	}
 	//$('#selectedPariticipants').tagsinput('removeAll');
 	//$('#selectedPariticipants').tagsinput();
@@ -667,9 +691,10 @@ function notiHighlightSelectedSubMenu(menu)
 		document.getElementById('pageHeader').innerHTML = "List all stored templates";
 	} else if(menu == 6) {
 		document.getElementById('greetingsConfig').className = classNameToSet;
-		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
+		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Wedding Anniversary Greetings";
 	} else if(menu == 7) {
 		document.getElementById('smsConfig').className = classNameToSet;
 		document.getElementById('pageHeader').innerHTML = "Configure SMS Gateway/Provider";
 	}
 }
+

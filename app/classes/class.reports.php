@@ -212,6 +212,8 @@ class Reports
 						$query_where .= ' PARENT_PROFILE_ID = -1';
 					} else if($report_rules[$i][2] == 'INDIVIDUAL'){
 						$query_where .= ' PARENT_PROFILE_ID != -1';
+					} else if($report_rules[$i][2] == 'ALL'){
+						$query_where .= ' PARENT_PROFILE_ID != -1';
 					}
 				}
 

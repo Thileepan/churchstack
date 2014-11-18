@@ -221,7 +221,7 @@ function addReportRuleRow()
 	//var ruleType = '<i class="icon-remove curHand" onclick="deleteReportRuleRow('+ newRowID +')"></i>&nbsp;<select onChange="changeRuleSubTypeAndValue('+ newRowID +');" id="selReportType-'+newRowID+'"><option value="GENDER">GENDER</option><option value="AGE">AGE</option><option value="BIRTH_DATE">BIRTH DATE</option><option value="MARRIAGE_DATE">MARRIAGE DATE</option><option value="MARITAL_STATUS">MARITAL STATUS</option><option value="BAPTISM">BAPTISM</option><option value="CONFIRMATION">CONFIRMATION</option></select>';
 	//var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
 	//var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="MALE">Male</option><option value="FEMALE">Female</option></select>';
-	var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Dependent</option></select>';
+	var ruleValue = '<select id="selRuleValueItem-' + newRowID + '"><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Dependent</option></select>';
 	document.getElementById(reportTypeDivID).innerHTML = ruleType;
 //	document.getElementById(reportSubTypeDivID).innerHTML = '';
 	document.getElementById(reportValueDivID).innerHTML = ruleValue;
@@ -270,7 +270,7 @@ function changeRuleSubTypeAndValue(rowID)
 
 	if(ruleType == 'PROFILES') {
 		ruleValue = '<select id="selRuleValueItem-'+ rowID +'">';
-			ruleValue += '<option value="ALL">All</option>';
+			//ruleValue += '<option value="ALL">All</option>';
 			ruleValue += '<option value="FAMILY_HEAD">Family Head</option>';
 			ruleValue += '<option value="INDIVIDUAL">Individual</option>';
 		ruleValue += '</select>';

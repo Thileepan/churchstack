@@ -5,8 +5,9 @@ $APPLICATION_PATH = "../";
 include $APPLICATION_PATH."utils/validateauth.php";
 
 include $APPLICATION_PATH.'utils/JSON.php';
-include_once $APPLICATION_PATH . '/classes/class.notification.php';
-include_once $APPLICATION_PATH . '/plugins/carbon/src/Carbon/Carbon.php';
+include_once $APPLICATION_PATH . 'classes/class.notification.php';
+include_once $APPLICATION_PATH . 'classes/class.sms.php';
+include_once $APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 
 //process request
 $req = $_REQUEST['req'];
@@ -16,6 +17,17 @@ if($req == 1)
 	$is_edit = trim($_POST['isEdit']);
 	$notification_id = trim($_POST['msgID']);
 	$notification_type = trim($_POST['msgType']);
+
+	$is_sms_config_enabled = 0;
+	$sms_obj = new SMS($APPLICATION_PATH);
+	$sms_result = $sms_obj->getSMSConfiguration();
+	if($sms_result[0]==1)
+	{
+		if(is_array($sms_result[1]) && $sms_result[1]["SMS_ENABLED"] == 1 && $sms_result[1]["SMS_PROVIDER_ID"] > 0)
+		{
+			$is_sms_config_enabled = 1;
+		}
+	}
 	
 	$to_return = '';
 	$to_return .= '<div class="row-fluid">';
@@ -28,7 +40,12 @@ if($req == 1)
 						$to_return .= '<div class="pull-right muted">Status: <span class="label label-info">'.(($is_edit)?"Draft":"New").'</span></div>';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group">';
+				$to_return .= '<div class="control-group" id="divSMSDisabledMsg" style="display:none;">';
+					$to_return .= '<div class="controls">';
+						$to_return .= '<div class="alert alert-warning">SMS cannot be sent because you have not yet set your SMS Gateway/Provider. <a href="notifications#sms-config" target="_parent" onclick="Javascript:window.location.href = \'settings#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS.</div>';
+					$to_return .= '</div>';
+				$to_return .= '</div>';
+				$to_return .= '<div class="control-group" id="divToPeople">';
 				$to_return .= '<label class="control-label" for="inputTo">To</label>';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<input type="text" class="span12" id="inputTo" value="" data-provide="typeahead" autocomplete="off" placeholder="Receipient Address">';
@@ -53,7 +70,7 @@ if($req == 1)
 						$to_return .= '<textarea id="inputSMSMessage" placeholder="Your Message (160 characters)" rows="5" class="span12" onkeyup="calculateSMSRemainingChars();" onkeydown="calculateSMSRemainingChars();">'.$notification_msg.'</textarea> &nbsp<span id="spanAllowedCharText" class="pull-right muted">160</span>';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group">';
+				$to_return .= '<div class="control-group" id="divAllButtons">';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<div class="pull-left">';
 							$to_return .= '<button class="btn btn-small btn-info" onclick="sendMessage(1);"><i class="icon-white icon-file" style="margin-top:2px;"></i>&nbsp;Save as Draft</button>&nbsp;';
@@ -61,6 +78,7 @@ if($req == 1)
 							$to_return .= '<input type="hidden" id="smsAllowedCharLength" value="160" />';
 							$to_return .= '<input type="hidden" id="notificationID" value="'.$notification_id.'" />';
 							$to_return .= '<input type="hidden" id="hiddenIsEdit" value="'.$is_edit.'" />';
+							$to_return .= '<input type="hidden" id="isSMSConfigEnabled" value="'.$is_sms_config_enabled.'" />';
 						$to_return .= '</div>';
 						$to_return .= '<div class="pull-right">';
 							$to_return .= '<button class="btn btn-small btn-danger" onclick="discardMessageConfirmation();"><i class="icon-white icon-trash" style="margin-top:2px;"></i>&nbsp;Discard</button>&nbsp;';

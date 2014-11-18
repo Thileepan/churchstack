@@ -36,7 +36,7 @@ define('COMPANY_CONTACT_US', 'http://www.rapydcloud.com/contact-us.html');
 define('APPLICATION_PATH', dirname(dirname(_FILE_)));
 define('DB_DSN', 'churchstack');
 define('DB_USER_NAME', 'root');
-define('DB_PASSWORD', 'Rapydcloud123$');
+define('DB_PASSWORD', 'admin');
 define('DB_NAME', 'churchstack');
 
 //email configurations

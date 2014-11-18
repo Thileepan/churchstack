@@ -393,8 +393,8 @@ else if($req == 11)
 		$to_return .= '</div>';
 		$to_return .= '<div class="span4 well">';
 			$to_return .= '<h5>Import contributions</h5>';
-			$to_return .= '<a href="#" onclick="getContributionImportForm('.$batch_id.');">Import from previous batches</a><BR>';
-			$to_return .= '<a href="#">Import from *.xls, *.csv</a>&nbsp;- Coming Soon';
+			$to_return .= '<a href="#" onclick="getContributionImportForm('.$batch_id.');">Import contributions from an existing batch</a><BR>';
+			$to_return .= '<a href="#">Import from *.xls, *.csv</a>&nbsp;- (Coming Soon)';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
 
@@ -755,14 +755,14 @@ else if($req == 19)
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label">Import Option</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="radio" id="importTypeFromBatch" name="importType" value="1" checked onclick="onSelectingImportType(this);">&nbsp;Import contributions from Previous Batch<BR>';
-						$to_return .= '<input type="radio" id="importTypeFromFile" name="importType" value="2" onclick="onSelectingImportType(this);" disabled>&nbsp;Import contributions from *.xls, *.csv - Coming Soon';
+						$to_return .= '<input type="radio" id="importTypeFromBatch" name="importType" value="1" checked onclick="onSelectingImportType(this);">&nbsp;Import contributions from an existing batch<BR>';
+						$to_return .= '<input type="radio" id="importTypeFromFile" name="importType" value="2" onclick="onSelectingImportType(this);" disabled>&nbsp;Import contributions from *.xls, *.csv - (Coming Soon)';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group" id="divImportFromBatch">';
 					$to_return .= '<label class="control-label"></label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= 'Choose your batch to import the contributions<BR>';
+						$to_return .= 'Choose the batch from which contributions have to be imported<BR>';
 						$to_return .= '<select id="selectBatch">';
 							$to_return .= '<option value="-1">Select Batch</option>';
 							if($batch_details[0] == 1)

@@ -667,7 +667,7 @@ function highlightSelectedMenu(menu)
 		document.getElementById('pageHeader').innerHTML = "Configure SMS Gateway/Provider";
 	} else if(menu == 9) {
 		document.getElementById('greetingsConfig').className = classNameToSet;
-		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Anniversary Greetings";
+		document.getElementById('pageHeader').innerHTML = "Configure Birthday & Wedding Anniversary Greetings";
 	}
 }
 
