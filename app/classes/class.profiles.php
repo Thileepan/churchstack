@@ -25,7 +25,7 @@ class Profiles
 		$profile_details = array();
 		if($this->db_conn)
 		{
-		   $result = $this->db_conn->Execute('select PROFILE_ID, NAME, UNIQUE_ID, ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE, LANDLINE, MARRIAGE_DATE, MARRIAGE_PLACE, SALUTATION_ID from PROFILE_DETAILS where PARENT_PROFILE_ID=-1 ORDER BY NAME asc');
+		   $result = $this->db_conn->Execute('select PROFILE_ID, NAME, UNIQUE_ID, ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE, LANDLINE, MARRIAGE_DATE, MARRIAGE_PLACE, SALUTATION_ID, MIDDLE_NAME, LAST_NAME from PROFILE_DETAILS where PARENT_PROFILE_ID=-1 ORDER BY NAME asc');
             
            if($result) {
                 if(!$result->EOF) {
@@ -43,8 +43,10 @@ class Profiles
 						$marriage_date = $result->fields[9];
 						$marriage_place = $result->fields[10];
 						$salutation_id = $result->fields[11];
+						$middle_name = $result->fields[12];
+						$last_name = $result->fields[13];
 						
-						$profile_details[] = array($profile_id, $name, $unique_id, $address1, $address2, $address3, $area, $pincode, $landline, $marriage_date, $marriage_place, $salutation_id);
+						$profile_details[] = array($profile_id, $name, $unique_id, $address1, $address2, $address3, $area, $pincode, $landline, $marriage_date, $marriage_place, $salutation_id, $middle_name, $last_name);
                         $result->MoveNext();                        
                     }
                 }
@@ -624,6 +626,37 @@ class Profiles
 	public function activateProfile($profile_id)
 	{
 		return $this->updateProfileStatus($profile_id, 1);//Activate
+	}
+	
+	public function getAllProfileCustomFieldValues()
+	{
+		$toReturn = array();
+		$toReturn[0] = 0;
+		$toReturn[1] = "Unable to get the custom field values";
+		$all_field_values = array();
+		if($this->db_conn)
+		{
+		   $query = 'select PROFILE_ID, FIELD_ID, FIELD_VALUE from PROFILE_CUSTOM_FIELD_VALUES order by PROFILE_ID';
+		   $result = $this->db_conn->Execute($query);
+
+           if($result) {
+			   if(!$result->EOF)
+			   {
+					while(!$result->EOF) {
+						$curr_cus_field_details = array();
+						$profile_id = $result->fields[0];
+						$field_id = $result->fields[1];
+						$field_value = $result->fields[2];
+						$all_field_values[] = array($profile_id, $field_id, $field_value);
+
+						$result->MoveNext();
+					}
+					$toReturn[0] = 1;
+					$toReturn[1] = $all_field_values;
+			   }
+            }
+        }
+		return $toReturn;
 	}
 }
 ?>

@@ -582,6 +582,22 @@ function performSearch()
 			columnData = '0,1,2';
 		}
 
+		var cusFieldColumns = 0
+		var delimSelectedCusFieldColumnIDs = "";
+		var delimSelectedCusFieldColumnNames = "";
+		while(document.getElementById("chkCusColumn-"+cusFieldColumns)) {
+			if(document.getElementById("chkCusColumn-"+cusFieldColumns).checked) {
+				if(trim(delimSelectedCusFieldColumnIDs) != "") {
+					delimSelectedCusFieldColumnIDs = delimSelectedCusFieldColumnIDs+"/:/"+document.getElementById("chkCusColumn-"+cusFieldColumns).value;
+					delimSelectedCusFieldColumnNames = delimSelectedCusFieldColumnNames+"/:/"+document.getElementById("hidCusColumnName-"+cusFieldColumns).value;
+				} else {
+					delimSelectedCusFieldColumnIDs = document.getElementById("chkCusColumn-"+cusFieldColumns).value;
+					delimSelectedCusFieldColumnNames = document.getElementById("hidCusColumnName-"+cusFieldColumns).value;
+				}
+			}
+			cusFieldColumns++;
+		}
+
 		if(columnData.length ==  0) {
 			var alertMsg = 'Please select atleast one of the column field.';
 			document.getElementById('alertRow').style.display = '';
@@ -615,6 +631,8 @@ function performSearch()
 		formPostData += '&delimCustomFieldDropboxValue=' + escString(delimCustomFieldDropboxValue);
 		formPostData += '&delimCustomFieldTickboxValue=' + escString(delimCustomFieldTickboxValue);
 		formPostData += '&delimCustomFieldTextAreaContains=' + escString(delimCustomFieldTextAreaContains);
+		formPostData += '&delimSelectedCusFieldColumnIDs=' + escString(delimSelectedCusFieldColumnIDs);
+		formPostData += '&delimSelectedCusFieldColumnNames=' + escString(delimSelectedCusFieldColumnNames);
 
 		$.ajax({
 			type:'POST',

@@ -42,14 +42,18 @@ class Reports
 		}
 	}
 
-	public function generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains)
+	public function generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains, $arraySelectedCusFieldColumnIDs, $arraySelectedCusFieldColumnNames)
 	{
 		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 		//print_r($report_rules);
 		//print_r($report_columns);
-		$query_to_execute = 'select';
+		$query_to_execute = 'select ';
 		$query_table = ' from PROFILE_DETAILS';
-		$query_col = ' PROFILE_ID, PARENT_PROFILE_ID, SALUTATION_ID';
+
+		$query_col = ' PROFILE_ID, SALUTATION_ID, NAME, UNIQUE_ID, DOB, GENDER, RELATION_SHIP, MARITAL_STATUS, MARRIAGE_DATE, MARRIAGE_PLACE, ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE, LANDLINE, MOBILE1, MOBILE2, EMAIL, PROFILE_STATUS, NOTES, BABTISED, CONFIRMATION, OCCUPATION, IS_ANOTHER_CHURCH_MEMBER, PARENT_PROFILE_ID, MIDDLE_NAME, LAST_NAME, WORK_PHONE, FAMILY_PHOTO_LOCATION, PROFILE_PHOTO_LOCATION, EMAIL_NOTIFICATION, SMS_NOTIFICATION';
+
+
+//		$query_col = ' PROFILE_ID, PARENT_PROFILE_ID, SALUTATION_ID';
 		$extra_column_count = 0;
 		$birth_marriage_rules = false;
 		foreach($report_rules as $key => $value)
@@ -58,21 +62,21 @@ class Reports
 			{
 				$extra_column_count = $extra_column_count + 2;
 				$birth_marriage_rules = true;
-				$query_col .= ', DOB, MARRIAGE_DATE';
+//				$query_col .= ', DOB, MARRIAGE_DATE';
 				break;
 			}
 			else if($value[0] == 'BIRTH_DATE')
 			{
 				$extra_column_count = $extra_column_count + 1;
 				$birth_day_rule = true;
-				$query_col .= ', DOB';
+//				$query_col .= ', DOB';
 				break;
 			}
 			else if($value[0] == 'MARRIAGE_DATE')
 			{
 				$extra_column_count = $extra_column_count + 1;
 				$marriage_date_rule = true;
-				$query_col .= ', MARRIAGE_DATE';
+//				$query_col .= ', MARRIAGE_DATE';
 				break;
 			}
 		}
@@ -81,7 +85,7 @@ class Reports
 		//print_r($report_columns);
 		//echo "<BR>";
 		/***** CONSTRUCTING COLUMNS ************/
-		$column_names = array('Profile ID', 'Family Head', 'Name', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address', 'Contacts', 'Email', 'Status', 'Notes', 'Age');
+		$column_names = array('Profile ID', 'Family Head Name', 'Profile Full Name', 'Date Of Birth', 'Gender', 'Related To Family Head As', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Full Address', 'Mobile Number', 'Home Number', 'Work Number', 'Email', 'Age', 'Profile Status', 'Notes');
 		$column_names_in_db = array('UNIQUE_ID', 'NAME', 'NAME', 'DOB', 'GENDER', 'RELATION_SHIP', 'MARITAL_STATUS', 'MARRIAGE_DATE', 'MARRIAGE_PLACE', 'BABTISED', 'CONFIRMATION', 'OCCUPATION', 'IS_ANOTHER_CHURCH_MEMBER', 'ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE', 'LANDLINE, MOBILE1, MOBILE2', 'EMAIL', 'PROFILE_STATUS', 'NOTES', 'DOB');
 
 		$profiles_obj = new Profiles($APPLICATION_PATH);
@@ -99,7 +103,7 @@ class Reports
 		$baptised_values = array('Not sure', 'Yes', 'No');
 		$confirmation_values = array('Not sure', 'Yes', 'No');
 		$is_another_church_values = array('Not sure', 'Yes', 'No');
-		$profile_status_values = array('Active', 'InActive', 'Expired');
+		$profile_status_values = array('Active', 'InActive', 'Deleted');
 		$settings_obj = new ProfileSettings($this->APPLICATION_PATH);
 		$salutation_values = $settings_obj->getOptions(1);
 		$relation_ship_values = $settings_obj->getOptions(4);
@@ -118,13 +122,19 @@ class Reports
 				$re_arranged_salutation[$sal_id] = $sal_value;
 			}
 		}
-		$relation_ship_values = $settings_obj->getOptions(2);
+		$relation_ship_results = $settings_obj->getOptions(2);
+		$relation_ship_values = array();
+		foreach($relation_ship_results as $rel_key=>$rel_details)
+		{
+			$relation_ship_values[$rel_details[$rel_key][0]] = $rel_details[$rel_key][1];
+		}
 		//print_r($re_arranged_salutation);
 
 		$column_names_to_display = array();
 		$total_columns = COUNT($report_columns);
 		if($total_columns > 0)
 		{
+			/** /
 			foreach($report_rules as $key => $value)
 			{
 				if($value[0] == 'BIRTH_MARRIAGE_DATE' || $value[0] == 'BIRTH_DATE' || $value[0] == 'MARRIAGE_DATE')
@@ -133,14 +143,15 @@ class Reports
 					break;
 				}
 			}
+			/**/
 			for($i=0; $i<$total_columns; $i++)
 			{
 				$column_name = $column_names[$report_columns[$i]];
 //				if($column_name == "Family Head" || 
 				$column_names_to_display[] = $column_name;
 				
-				$query_col .= ',';
-				$query_col .= $column_names_in_db[$report_columns[$i]];
+//				$query_col .= ',';
+//				$query_col .= $column_names_in_db[$report_columns[$i]];
 
 				//if($column_names_in_db[$report_columns[$i]] == 'DOB')
 				//{
@@ -148,6 +159,7 @@ class Reports
 				//	$date_in_report_columns = true;
 				//}
 			}
+			/** /
 			foreach($report_rules as $key => $value)
 			{
 				if($value[0] == 'BIRTH_MARRIAGE_DATE')
@@ -157,6 +169,12 @@ class Reports
 					break;
 				}
 			}
+			/**/
+		}
+
+		for($cfn=0; $cfn < COUNT($arraySelectedCusFieldColumnNames); $cfn++)
+		{
+			$column_names_to_display[] = $arraySelectedCusFieldColumnNames[$cfn];
 		}
 		//echo $query_col;
 		/****************************************/
@@ -591,6 +609,21 @@ class Reports
 		}
 		/*********************************************************************************************************************************/
 
+		$all_custom_field_values = array();
+		$settings_custom_field_details = array();
+		if(COUNT($arraySelectedCusFieldColumnIDs) > 0) {
+			$cus_valued_result = $profiles_obj->getAllProfileCustomFieldValues();
+			if($cus_valued_result[0] == 1) {
+				$all_custom_field_values = $cus_valued_result[1];
+			}
+			$general_custom_field_details = $settings_obj->getAllCustomProfileFields();
+			//$field_id, $field_name, $field_type, $field_options
+			foreach($general_custom_field_details as $cus_field_key=>$cus_field_value)
+			{
+				$settings_custom_field_details[] = array($cus_field_value[0], $cus_field_value[2], $cus_field_value[3]);
+			}
+		}
+
 		if(strlen($query_to_execute) > 0)
 		{
 			//$j = 0;
@@ -614,31 +647,225 @@ class Reports
 							}
 						}
 
-						$parent_profile_id = $result->fields[1];
-						$salutation_id = $result->fields[2];
-						//echo "SaluationID:::".$salutation_id;
-
 						if($req_from == 2)
 						{
 							//$extra_column_count++;
 							$value[] = '<input type="checkbox" id="inputSelectMemberID-'.$q.'" value="'.$profile_id.'" />';
 						}
 
+						//////////////////////////////////////////////////////////////////////////////////////
+						//////////////////////////////////////////////////////////////////////////////////////
+
+						$salutation_id = $result->fields[1];
+                        $name = $result->fields[2];
+                        $unique_id = $result->fields[3];
+						$date_of_birth = $result->fields[4];
+						$gender_id = $result->fields[5];
+						$relation_ship_id = $result->fields[6];
+						$marital_status_id = $result->fields[7];
+						$marriage_date = $result->fields[8];
+						$marriage_place = $result->fields[9];
+                        $address1 = $result->fields[10];
+						$address2 = $result->fields[11];
+						$address3 = $result->fields[12];
+						$area = $result->fields[13];
+						$pincode = $result->fields[14];
+						$landline = $result->fields[15];
+						$mobile1 = $result->fields[16];
+						$mobile2 = $result->fields[17];
+                        $email = $result->fields[18];
+                        $profile_status_id = $result->fields[19];
+						$notes = $result->fields[20];
+						$is_babtised = $result->fields[21];
+						$is_confirmed = $result->fields[22];
+						$occupation = $result->fields[23];
+						$is_another_chruch_member = $result->fields[24];
+						$parent_profile_id = $result->fields[25];
+						$middle_name = $result->fields[26];
+						$last_name = $result->fields[27];
+						$work_phone = $result->fields[28];
+						$family_photo_location = $result->fields[29];
+						$profile_photo_location = $result->fields[30];
+						$email_subscription = $result->fields[31];
+						$sms_subscription = $result->fields[32];
+
+
+						$current_profile_full_name = $re_arranged_salutation[$salutation_id] .". ". $name.((trim($middle_name) != "")? " ".trim($middle_name) : "").((trim($last_name) != "")? " ".trim($last_name) : "");
+
+						for($i=0; $i<$total_columns; $i++)
+						{
+							if($i == 0) {
+								$j = $i + $extra_column_count;
+							}
+							$temp_value = "";
+							if($report_columns[$i] == 0) {
+								$temp_value = 'CS' . appendZeroInUniqueID($profile_id);
+							} else if($report_columns[$i] == 1) {
+								if($parent_profile_id != -1) {
+									if($parent_list_available)
+									{
+										$temp_value = 'FAMILY HEAD NAME';
+										foreach($parent_list as $item_row => $item_value)
+										{
+											if($parent_profile_id == $item_value[0])
+											{
+												$parent_salutation_id = $parent_list[$item_row][11];
+												$parent_prof_full_name = $re_arranged_salutation[$parent_salutation_id] .". ".$item_value[1].((trim($item_value[12]) != "")? " ".trim($item_value[12]) : "").((trim($item_value[13]) != "")? " ".trim($item_value[13]) : "");
+												$temp_value = $parent_prof_full_name;
+												break;
+											}
+										}
+									}
+									else
+									{
+										$temp_value = 'FAMILY HEAD NAME';
+									}
+								}
+								else
+								{
+									//profile name itself is family head
+									$temp_value = $current_profile_full_name;
+								}
+							} else if($report_columns[$i] == 2) {
+								$temp_value = $re_arranged_salutation[$salutation_id] .". ". $name.((trim($middle_name) != "")? " ".trim($middle_name) : "").((trim($last_name) != "")? " ".trim($last_name) : "");
+							} else if($report_columns[$i] == 3) {
+								$temp_value = formatDateOfBirth($date_of_birth);
+							} else if($report_columns[$i] == 4) {
+								if($gender_id == -1) {
+									$temp_value = $gender_values[0];
+								} else {
+									$temp_value = $gender_values[$gender_id];
+								}
+							} else if($report_columns[$i] == 5) {
+								if($relation_ship_id == -1) {
+									$temp_value = 'Not sure';
+								} else {
+									$temp_value = $relation_ship_values[$relation_ship_id];
+								}								
+							} else if($report_columns[$i] == 6) {
+								if($marital_status_id == -1) {
+									$temp_value = $marital_values[0];
+								} else {
+									$temp_value = $marital_values[$marital_status_id];
+								}
+							} else if($report_columns[$i] == 7) {
+								$temp_value = formatDateOfBirth($marriage_date);
+							} else if($report_columns[$i] == 8) {
+								$temp_value = $marriage_place;
+							} else if($report_columns[$i] == 9) {
+								if($is_babtised == -1) {
+									$temp_value = $baptised_values[0];
+								} else {
+									$temp_value = $baptised_values[$is_babtised];
+								}								
+							} else if($report_columns[$i] == 10) {
+								if($is_confirmed == -1) {
+									$temp_value = $confirmation_values[0];
+								} else {
+									$temp_value = $confirmation_values[$is_confirmed];
+								}
+							} else if($report_columns[$i] == 11) {
+								$temp_value = $occupation;
+							} else if($report_columns[$i] == 12) {
+								if($is_another_chruch_member == -1) {
+									$temp_value = $is_another_church_values[0];
+								} else {
+									$temp_value = $is_another_church_values[$is_another_chruch_member];
+								}
+							} else if($report_columns[$i] == 13) {
+
+								$full_address = $address1;
+								if(trim($address2) != "") {
+									$full_address .= ',<BR>' . $address2;
+								}
+								if(trim($address3) != "") {
+									$full_address .= ',<BR>' . $address3;
+								}
+								if(trim($area) != "") {
+									$full_address .= ',<BR>' . $area;
+								}
+								if(trim($pincode) != "") {
+									$full_address .= ' - ' . $pincode;
+								}
+								$temp_value = $full_address;
+
+							} else if($report_columns[$i] == 14) {
+								$temp_value = $mobile1;
+							} else if($report_columns[$i] == 15) {
+								$temp_value = $landline;
+							} else if($report_columns[$i] == 16) {
+								$temp_value = $work_phone;
+							} else if($report_columns[$i] == 17) {
+								$temp_value = $email;
+							} else if($report_columns[$i] == 18) {
+								$age = '-';
+								if(trim($date_of_birth) != "" && trim($date_of_birth) != '0000-00-00') {
+									$dob_arr = explode('-', $date_of_birth);
+									$age = Carbon::createFromDate($dob_arr[0], $dob_arr[1], $dob_arr[2])->age;
+								}
+								$temp_value = $age;
+							} else if($report_columns[$i] == 19) {
+								if($profile_status_id == -1) {
+									$temp_value = $profile_status_values[0];
+								} else {
+									$temp_value = $profile_status_values[$profile_status_id];
+								}
+							} else if($report_columns[$i] == 20) {
+								$temp_value = $notes;
+							}
+							$value[] = $temp_value;
+							$j++;							
+						}
+
+						for($cpf=0; $cpf < COUNT($arraySelectedCusFieldColumnIDs); $cpf++)
+						{
+							$cus_prof_field_value = "";
+							$cus_field_id = $arraySelectedCusFieldColumnIDs[$cpf];
+							foreach($all_custom_field_values as $cus_details_key=>$cus_details_value)
+							{
+								if($cus_details_value[0] == $profile_id && $cus_details_value[1] == $cus_field_id) {
+									$cus_prof_field_value = $cus_details_value[2];
+									foreach($settings_custom_field_details as $key_1=>$value_1)
+									{
+										if($value_1[0] == $cus_field_id && $value_1[1] == 6) {
+											$sel_box_array = explode(",", $value_1[2]);
+											if(COUNT($sel_box_array) >= $cus_details_value[2])
+											{
+												$cus_prof_field_value = $sel_box_array[$cus_details_value[2]];
+											}
+											break;
+										} else if($value_1[0] == $cus_field_id && $value_1[1] == 7) {
+											if($cus_details_value[2] == 1) {
+												$cus_prof_field_value = "Yes";
+											} else {
+												$cus_prof_field_value = "No";
+											}
+										}
+									}
+									break;
+								}
+							}
+							$value[] = $cus_prof_field_value;
+							$j++;							
+						}
+						//////////////////////////////////////////////////////////////////////////////////////
+						//////////////////////////////////////////////////////////////////////////////////////
+						/** /
 						if($birth_marriage_rules)
 						{
-							$date_of_birth = formatDateOfBirth($result->fields[3]); //date of birth
-							$marriage_date = formatDateOfBirth($result->fields[4]); //marriage date
+							$date_of_birth = formatDateOfBirth($result->fields[4]); //date of birth
+							$marriage_date = formatDateOfBirth($result->fields[8]); //marriage date
 							$value[] = $date_of_birth;
 							$value[] = $marriage_date;
 						}
 						else if($birth_day_rule)
 						{
-							$date_of_birth = formatDateOfBirth($result->fields[3], true); //date of birth							
+							$date_of_birth = formatDateOfBirth($result->fields[4], true); //date of birth							
 							$value[] = $date_of_birth;
 						}
 						else if($marriage_date_rule)
 						{
-							$marriage_date = formatDateOfBirth($result->fields[3], true); //marriage date
+							$marriage_date = formatDateOfBirth($result->fields[8], true); //marriage date
 							$value[] = $marriage_date;
 						}
 						
@@ -764,6 +991,7 @@ class Reports
 							$value[] = $temp_value;
 							$j++;							
 						}
+						/**/
 						
 						$q++;
 						$column_values[] = $value;
