@@ -297,9 +297,11 @@ function changeRuleSubTypeAndValue(rowID)
 	} else if(ruleType == 'BIRTH_DATE') {
 			ruleValue = '<input type="text" id="inputFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
+			ruleValue += '&nbsp;&nbsp;<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkBirthdayIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
 	} else if(ruleType == 'MARRIAGE_DATE') {
 			ruleValue = '<input type="text" id="inputMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
+			ruleValue += '&nbsp;&nbsp;<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkMarriageIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
 	} else if(ruleType == 'BIRTH_MARRIAGE_DATE') {
 			ruleValue = '<input type="text" id="inputBMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputBMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
@@ -344,7 +346,7 @@ function changeRuleSubTypeAndValue(rowID)
 		{
 			ruleValue = '<input type="text" id="customFieldDateFromValue-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="customFieldDateToValue-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
-			ruleValue += '<input type="checkbox" id="customFieldDateIgnoreYear-'+ rowID +'" value="1"/>&nbsp;Ignore year';
+			ruleValue += '<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="customFieldDateIgnoreYear-'+ rowID +'" value="1"/>&nbsp;Ignore year</span>';
 			idsToSetDatePicker.push('customFieldDateFromValue-'+ rowID);
 			idsToSetDatePicker.push('customFieldDateToValue-'+ rowID);
 		}
@@ -431,6 +433,7 @@ function performSearch()
 	var ruleType = '';
 	var ruleSubType = '';
 	var ruleValue = '';
+	var dateIgnoreYearValues = '';
 	var tempRuleType = '';
 	var ruleRowIDList = document.getElementById('reportRuleRowIDList').value;
 	var ruleRowIDArr = ruleRowIDList.split(",");
@@ -464,6 +467,7 @@ function performSearch()
 			if(ruleValue != '')
 			{
 				ruleValue += ',';
+				dateIgnoreYearValues += ',';//This is correct to place here...
 			}
 
 			var selRuleTypeIndex = document.getElementById('selReportType-' + j).selectedIndex;
@@ -491,10 +495,14 @@ function performSearch()
 			} else if(ruleType == 'BIRTH_DATE') {
 				var fromDate = document.getElementById('inputFromDate-' + j).value;
 				var toDate = document.getElementById('inputToDate-' + j).value;
+				var isIgnoreTheYear = ((document.getElementById('chkBirthdayIgnoreYear-' + j) && document.getElementById('chkBirthdayIgnoreYear-' + j).checked)? 1 : 0);
+				dateIgnoreYearValues += isIgnoreTheYear;
 				ruleValue += fromDate + ':' + toDate;
 			} else if(ruleType == 'MARRIAGE_DATE') {
 				var fromDate = document.getElementById('inputMFromDate-' + j).value;
 				var toDate = document.getElementById('inputMToDate-' + j).value;
+				var isIgnoreTheYear = ((document.getElementById('chkMarriageIgnoreYear-' + j) && document.getElementById('chkMarriageIgnoreYear-' + j).checked)? 1 : 0);
+				dateIgnoreYearValues += isIgnoreTheYear;
 				ruleValue += fromDate + ':' + toDate;
 			} else if(ruleType == 'BIRTH_MARRIAGE_DATE') {
 				var fromDate = document.getElementById('inputBMFromDate-' + j).value;
@@ -618,6 +626,7 @@ function performSearch()
 		formPostData += '&ruleSubType=' + escString(ruleSubType);
 		formPostData += '&ruleValue=' + escString(ruleValue);
 		formPostData += '&columnData=' + escString(columnData);
+		formPostData += '&dateIgnoreYearValues=' + escString(dateIgnoreYearValues);
 		formPostData += '&includeInactiveProfile=' + includeInactiveProfile;
 		formPostData += '&delimCustomFieldIDs=' + escString(delimCustomFieldIDs);
 		formPostData += '&delimCustomFieldTypes=' + escString(delimCustomFieldTypes);

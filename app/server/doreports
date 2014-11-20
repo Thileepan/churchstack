@@ -257,6 +257,7 @@ else if($req == 2 || $req == 3)
 		$rule_sub_type = explode(',', trim(stripslashes(rawurldecode($_POST['ruleSubType']))));
 		$rule_value = explode(',', trim(stripslashes(rawurldecode($_POST['ruleValue']))));
 		$report_columns = explode(',', trim(stripslashes(rawurldecode($_POST['columnData']))));
+		$dateIgnoreYearValues = explode(',', trim(stripslashes(rawurldecode($_POST['dateIgnoreYearValues']))));
 		$include_inactive_profile = trim($_POST['includeInactiveProfile']);
 		if(trim(stripslashes(rawurldecode($_POST['delimCustomFieldIDs']))) != "") {
 			$arrayCustomFieldIDs = explode('/:/', trim(stripslashes(rawurldecode($_POST['delimCustomFieldIDs']))));
@@ -348,7 +349,7 @@ else if($req == 2 || $req == 3)
 	}
 	//print_r($report_rules);
 	//print_r($report_columns);
-	$reports = $reports_obj->generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains, $arraySelectedCusFieldColumnIDs, $arraySelectedCusFieldColumnNames);
+	$reports = $reports_obj->generateReports($report_rules, $report_columns, $dateIgnoreYearValues, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains, $arraySelectedCusFieldColumnIDs, $arraySelectedCusFieldColumnNames);
 	//print_r($reports);exit;
 
 	$is_results_available = false;

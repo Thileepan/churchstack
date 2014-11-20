@@ -42,7 +42,7 @@ class Reports
 		}
 	}
 
-	public function generateReports($report_rules, $report_columns, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains, $arraySelectedCusFieldColumnIDs, $arraySelectedCusFieldColumnNames)
+	public function generateReports($report_rules, $report_columns, $dateIgnoreYearValues, $include_inactive_profile, $req_from, $arrayCustomFieldIDs, $arrayCustomFieldTypes, $arrayCustomFieldTextboxContains, $arrayCustomFieldNumberSelFilterValue, $arrayCustomFieldNumberValue, $arrayCustomFieldDateFrom, $arrayCustomFieldDateTo, $arrayCustomFieldDateIgnoreYear, $arrayCustomFieldURLContains, $arrayCustomFieldDropboxValue, $arrayCustomFieldTickboxValue, $arrayCustomFieldTextAreaContains, $arraySelectedCusFieldColumnIDs, $arraySelectedCusFieldColumnNames)
 	{
 		include_once $this->APPLICATION_PATH . 'plugins/carbon/src/Carbon/Carbon.php';
 		//print_r($report_rules);
@@ -279,7 +279,26 @@ class Reports
 					$to_date = $to_date_arr[2] . "-" .$to_date_arr[1]. "-" .$to_date_arr[0];
 
 					//$query_where .= ' DATE_FORMAT(DOB, "%c-%d") BETWEEN DATE_FORMAT("'.$from_date.'", "%c-%d") and DATE_FORMAT("'.$to_date.'", "%c-%d") ORDER BY EXTRACT(MONTH_DAY FROM DOB) asc';
-					$birth_date_query = ' DATE_FORMAT(DOB, "%c-%d") BETWEEN DATE_FORMAT("'.$from_date.'", "%c-%d") and DATE_FORMAT("'.$to_date.'", "%c-%d") ORDER BY EXTRACT(MONTH FROM DOB) asc, EXTRACT(DAY FROM DOB) asc';
+					if(trim($dateIgnoreYearValues[$i]) != "" &&  trim($dateIgnoreYearValues[$i]) == 1)
+					{
+						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$to_date.'") - YEAR(DOB)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") ';
+						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$to_date.'") - YEAR(DOB)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+						}
+					}
+					else
+					{
+						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
+							$query_where .= ' DOB BETWEEN DATE("'.$from_date.'") and DATE("'.$to_date.'")';
+						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
+							$query_where .= ' DOB >= DATE("'.$from_date.'") ';
+						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
+							$query_where .= ' DOB <= DATE("'.$to_date.'") ';
+						}
+					}
 				}
 				
 				if($report_rules[$i][0] == 'MARRIAGE_DATE')
@@ -293,7 +312,27 @@ class Reports
 					$from_date = $from_date_arr[2] . "-" .$from_date_arr[1]. "-" .$from_date_arr[0];
 					$to_date = $to_date_arr[2] . "-" .$to_date_arr[1]. "-" .$to_date_arr[0];
 
-					$marriage_date_query = ' DATE_FORMAT(MARRIAGE_DATE, "%c-%d") BETWEEN DATE_FORMAT("'.$from_date.'", "%c-%d") and DATE_FORMAT("'.$to_date.'", "%c-%d") ORDER BY EXTRACT(MONTH FROM MARRIAGE_DATE) asc, EXTRACT(DAY FROM MARRIAGE_DATE) asc, UNIQUE_ID';
+					//$marriage_date_query = ' DATE_FORMAT(MARRIAGE_DATE, "%c-%d") BETWEEN DATE_FORMAT("'.$from_date.'", "%c-%d") and DATE_FORMAT("'.$to_date.'", "%c-%d") ORDER BY EXTRACT(MONTH FROM MARRIAGE_DATE) asc, EXTRACT(DAY FROM MARRIAGE_DATE) asc, UNIQUE_ID';
+					if(trim($dateIgnoreYearValues[$i]) != "" &&  trim($dateIgnoreYearValues[$i]) == 1)
+					{
+						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$to_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") ';
+						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
+							$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$to_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+						}
+					}
+					else
+					{
+						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
+							$query_where .= ' MARRIAGE_DATE BETWEEN DATE("'.$from_date.'") and DATE("'.$to_date.'")';
+						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
+							$query_where .= ' MARRIAGE_DATE >= DATE("'.$from_date.'") ';
+						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
+							$query_where .= ' MARRIAGE_DATE <= DATE("'.$to_date.'") ';
+						}
+					}
 				}
 
 				if($report_rules[$i][0] == 'BIRTH_MARRIAGE_DATE')
@@ -358,24 +397,24 @@ class Reports
 				}				
 			}
 
+			/** /
 			if($birth_date_query != "")
 			{
-				/** /
 				if(strlen($query_where) > 0) {
 					$query_where .= ' and ';
 				}
-				/**/
 				$query_where .= $birth_date_query;
 			}
+			/**/
+			/** /
 			if($marriage_date_query != "")
 			{
-				/** /
 				if(strlen($query_where) > 0) {
 					$query_where .= ' and ';
 				}
-				/**/
 				$query_where .= $marriage_date_query;
 			}
+			/**/
 		}
 
 		/****************************************/
@@ -488,15 +527,16 @@ class Reports
 					{
 						if(trim($formated_from_date) != "" && trim($formated_to_date) != "")
 						{
-							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) BETWEEN DAYOFYEAR("'.$formated_from_date.'") AND DAYOFYEAR("'.$formated_to_date.'"))';
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_from_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) >= DAYOFYEAR("'.$formated_from_date.'") and DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_to_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+							
 						}
 						else if(trim($formated_from_date) != "" && trim($formated_to_date) == "")
 						{
-							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) >= DAYOFYEAR("'.$formated_from_date.'"))';
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_from_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) >= DAYOFYEAR("'.$formated_from_date.'"))';
 						}
 						else if(trim($formated_from_date) == "" && trim($formated_to_date) != "")
 						{
-							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(CAST(b.FIELD_VALUE AS DATE)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_to_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) <= DAYOFYEAR("'.$formated_to_date.'"))';
 						}
 					}
 					else
@@ -827,7 +867,10 @@ class Reports
 									$cus_prof_field_value = $cus_details_value[2];
 									foreach($settings_custom_field_details as $key_1=>$value_1)
 									{
-										if($value_1[0] == $cus_field_id && $value_1[1] == 6) {
+										if($value_1[0] == $cus_field_id && $value_1[1] == 4 && trim($cus_prof_field_value) != "") {
+											$cus_prof_field_value = formatDateOfBirth($cus_prof_field_value);
+											break;
+										} else if($value_1[0] == $cus_field_id && $value_1[1] == 6 && trim($cus_prof_field_value) != "") {
 											$sel_box_array = explode(",", $value_1[2]);
 											if(COUNT($sel_box_array) >= $cus_details_value[2])
 											{
@@ -840,6 +883,7 @@ class Reports
 											} else {
 												$cus_prof_field_value = "No";
 											}
+											break;
 										}
 									}
 									break;
