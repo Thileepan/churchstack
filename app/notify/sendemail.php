@@ -31,6 +31,7 @@
 	$subject = urldecode($_GET["subject"]);
 	$body = urldecode($_GET["emailBody"]);
 	$from_addr_type = $_GET["fromAddressType"];
+	$churchName = urldecode($_GET["churchName"]);
 
 	$delim_first_names = urldecode($_GET["delimFirstNames"]);
 	if(trim($delim_first_names) != "")
@@ -69,6 +70,12 @@
 
 	//Set and Send Email		
 	$email_obj = new Email($APPLICATION_PATH, $from_address);
+	if($from_addr_type=="eventreminder" || $from_addr_type=="birthdaygreetings" || $from_addr_type=="weddinggreetings" || $from_addr_type=="masscommunication")
+	{
+		if(trim($churchName) != "") {
+			$email_obj->setAndOverrideFromName(trim($churchName));
+		}
+	}
 	$email_obj->setSubject($subject);
 	$email_obj->setBody($body);
 	for($e=0; $e < COUNT($emails_list_array); $e++)

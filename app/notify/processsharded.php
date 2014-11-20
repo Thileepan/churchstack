@@ -21,6 +21,7 @@
 
 	$shardedDB = urldecode($_GET["shardedDB"]);//Exclusively for running from command line 
 	$timeZone = urldecode($_GET["timeZone"]);//Exclusively for running from command line 
+	$churchName = urldecode($_GET["churchName"]);//Exclusively for running from command line 
 
 	/*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX* /
 	REMOVE THIS SOON
@@ -177,7 +178,7 @@
 					}
 					$k--;//To adjust the above extra increment...
 
-					$commands[] = PHP_EXE_PATH.' "'.$email_sending_file.'" csvToEmails='.urlencode($comma_separated_email_list).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType.' replyToEmail='.urlencode(DONOTREPLY_EMAIL).' > /dev/null 2>/dev/null &';
+					$commands[] = PHP_EXE_PATH.' "'.$email_sending_file.'" csvToEmails='.urlencode($comma_separated_email_list).' subject='.urlencode($subject).' emailBody='.urlencode($body).' fromAddressType='.$fromAddressType.' replyToEmail='.urlencode(DONOTREPLY_EMAIL).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 				}
 			}
 			else if($events_list[$e]["notification_type"] == 2)//SMS
@@ -217,15 +218,15 @@
 
 						if($sms_provider_id==1)//Twilio: Repeat this for other providers
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" accountSID='.urlencode($twilio_account_sid).' authToken='.urlencode($twilio_auth_token).' fromNumber='.urlencode($twilio_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" accountSID='.urlencode($twilio_account_sid).' authToken='.urlencode($twilio_auth_token).' fromNumber='.urlencode($twilio_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 						}
 						else if($sms_provider_id==2)//Nexmo
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" apiKey='.urlencode($nexmo_api_key).' apiSecret='.urlencode($nexmo_api_secret).' fromNumber='.urlencode($nexmo_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" apiKey='.urlencode($nexmo_api_key).' apiSecret='.urlencode($nexmo_api_secret).' fromNumber='.urlencode($nexmo_from_number).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 						}
 						else if($sms_provider_id==3)//BhashSMS
 						{
-							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' > /dev/null 2>/dev/null &';
+							$commands[] = PHP_EXE_PATH.' "'.$sms_sending_file.'" username='.urlencode($bhashsms_username).' password='.urlencode($bhashsms_password).' senderid='.urlencode($bhashsms_senderid).' priority='.urlencode($bhashsms_priority).' smsBody='.urlencode($sms_body).' csvToNumbers='.urlencode($comma_separated_numbers_list).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 						}
 					}
 				}

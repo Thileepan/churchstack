@@ -35,19 +35,20 @@
 		$commands = array();
 		for($i=0; $i < COUNT($churches_result[1]); $i++)
 		{
+			$churchName = $churches_result[1][$i][1];
 			$shardedDB = $churches_result[1][$i][10];
 			$timeZone = $churches_result[1][$i][24];
 			if($notification_type == 1)
 			{
-				$commands[] = PHP_EXE_PATH.' "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' > /dev/null 2>/dev/null &';
+				$commands[] = PHP_EXE_PATH.' "'.$sharded_db_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 			}
 			else if($notification_type == 2)
 			{
-				$commands[] = PHP_EXE_PATH.' "'.$greetings_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' > /dev/null 2>/dev/null &';
+				$commands[] = PHP_EXE_PATH.' "'.$greetings_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 			}
 			else if($notification_type == 3)
 			{
-				$commands[] = PHP_EXE_PATH.' "'.$mass_communications_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' > /dev/null 2>/dev/null &';
+				$commands[] = PHP_EXE_PATH.' "'.$mass_communications_processing_file.'" shardedDB='.urlencode($shardedDB).' timeZone='.urlencode($timeZone).' notificationType='.urlencode($notification_type).' churchName='.urlencode($churchName).' > /dev/null 2>/dev/null &';
 			}
 		}
 		$threads = new Multithread( $commands );

@@ -206,6 +206,13 @@ class Email
 
 		return $to_return;
 	}
+
+	public function setAndOverrideFromName($from_name_to_set)
+	{
+		if(trim($from_name_to_set) != "") {
+			$this->from_name = $from_name_to_set;
+		}
+	}
 }
 
 ?>
