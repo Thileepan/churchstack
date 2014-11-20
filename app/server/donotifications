@@ -150,15 +150,15 @@ else if($req == 3)
 	$filter_by_drafts = trim($_POST['filterByDraft']);
 	$filter_by_sent_items = trim($_POST['filterBySentItems']);
 	$filter_by_notification_type = trim($_POST['filterByNotificationType']);
-	$isReqFromDraft = (($filter_by_drafts)?true:false);
+	$isReqFromDraft = (($filter_by_drafts)?1:0);
 
 	$notification_obj = new Notification($APPLICATION_PATH);
-	$messages = $notification_obj->getAllMassNotification($filter_by_drafts, $filter_by_sent_items, $filter_by_notification_type);
+	$all_messages = $notification_obj->getAllMassNotification($filter_by_drafts, $filter_by_sent_items, $filter_by_notification_type);
 	
 	$is_results_available = false;
-	if(is_array($messages) && $messages[0] == 1)
+	if(is_array($all_messages) && $all_messages[0] == 1)
 	{
-		$messages = $messages[1];
+		$messages = $all_messages[1];
 		$total_message = COUNT($messages);
 		if($total_message > 0)
 		{
@@ -170,18 +170,46 @@ else if($req == 3)
 				$subject = (($messages[$i][2] == '')?'-':$messages[$i][2]);
 				$content = $messages[$i][3];
 				$is_draft = $messages[$i][4];
-				$status = '<span class="label label-info">'.(($messages[$i][8] == 0)?'Sending...':'Sent').'</span>';
+				if($messages[$i][8] == 0) {
+					$status = '<span class="label label-warning">Sending...</span>';
+				} else if($messages[$i][8] == 1) {
+					$status = '<span class="label label-success">Sent</span>';
+				} else {
+					$status = '<span class="label label-warning">Sending...</span>';
+				}
 				
 				
 
 				if($filter_by_drafts) {
-					$actions = '<i class="curHand icon-pencil" onclick="getComposeMessageForm('.$messages[$i][1].', 1, '.$notification_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteMessageConfirmation('.$notification_id.', '.$isReqFromDraft.')"></i>';
-					$to_return['aaData'][] = array($notification_type, $subject, $content, $actions);
-				} else if($filter_by_sent_items) {
-					if($messages[$i][4] == 1) {
-						$actions = '<i class="curHand icon-trash" onclick="deleteMessageConfirmation('.$notification_id.','.$isReqFromDraft.', \''.$subject.'\')"></i>';
+					$actions = '&nbsp;&nbsp;<i class="curHand icon-pencil" onclick="getComposeMessageForm('.$messages[$i][1].', 1, '.$notification_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteMessageConfirmation('.$notification_id.', '.$isReqFromDraft.')"></i>';
+					$trimmed_subject = strip_tags(html_entity_decode($subject));
+					if(strlen($trimmed_subject) > 45) {
+						$trimmed_subject = substr($trimmed_subject, 0, 42);
+						$trimmed_subject .= "...";
 					}
-					$to_return['aaData'][] = array($notification_type, $subject, $content, $status, $actions);
+					$trimmed_content = strip_tags(html_entity_decode($content));
+					if(strlen($trimmed_content) > 55) {
+						$trimmed_content = substr($trimmed_content, 0, 53);
+						$trimmed_content .= "...";
+					}
+					$to_return['aaData'][] = array($notification_type, $trimmed_subject, $trimmed_content, $actions);
+				} else if($filter_by_sent_items) {
+					if($messages[$i][8] == 1) {
+						$actions = '<i class="curHand icon-trash" onclick="deleteMessageConfirmation('.$notification_id.','.$isReqFromDraft.', \''.$subject.'\')"></i>';
+					} else {
+						$actions = "&nbsp;";
+					}
+					$trimmed_subject = strip_tags(html_entity_decode($subject));
+					if(strlen($trimmed_subject) > 45) {
+						$trimmed_subject = substr($trimmed_subject, 0, 42);
+						$trimmed_subject .= "...";
+					}
+					$trimmed_content = strip_tags(html_entity_decode($content));
+					if(strlen($trimmed_content) > 55) {
+						$trimmed_content = substr($trimmed_content, 0, 53);
+						$trimmed_content .= "...";
+					}
+					$to_return['aaData'][] = array($notification_type, $trimmed_subject, $trimmed_content, $status, $actions);
 				}
 			}
 		}
@@ -359,9 +387,24 @@ else if($req == 9)
 				$name = (($templates_list[$i][2] == '')?'-':$templates_list[$i][2]);
 				$subject = ((trim($templates_list[$i][3]) == '')?'-':$templates_list[$i][3]);
 				$content = $templates_list[$i][4];
+				$trimmed_name = strip_tags(html_entity_decode($name));
+				if(strlen($trimmed_name) > 28) {
+					$trimmed_name = substr($trimmed_name, 0, 25);
+					$trimmed_name .= "...";
+				}
+				$trimmed_subject = strip_tags(html_entity_decode($subject));
+				if(strlen($trimmed_subject) > 28) {
+					$trimmed_subject = substr($trimmed_subject, 0, 25);
+					$trimmed_subject .= "...";
+				}
+				$trimmed_content = strip_tags(html_entity_decode($content));
+				if(strlen($trimmed_content) > 28) {
+					$trimmed_content = substr($trimmed_content, 0, 25);
+					$trimmed_content .= "...";
+				}
 				
-				$actions = '<i class="curHand icon-pencil" onclick="getAddOrEditTemplateForm('.$templates_list[$i][1].', 1, '.$template_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteTemplateConfirmation('.$template_id.')"></i>';
-				$to_return['aaData'][] = array($template_type, $name, $subject, $content, $actions);
+				$actions = '&nbsp;&nbsp;<i class="curHand icon-pencil" onclick="getAddOrEditTemplateForm('.$templates_list[$i][1].', 1, '.$template_id.');"></i>&nbsp;&nbsp;<i class="curHand icon-trash" onclick="deleteTemplateConfirmation('.$template_id.')"></i>';
+				$to_return['aaData'][] = array($template_type, $trimmed_name, $trimmed_subject, $trimmed_content, $actions);
 			}
 		}
 	}

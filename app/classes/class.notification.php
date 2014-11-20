@@ -474,6 +474,7 @@ class Notification
 			if($result) {
                 if(!$result->EOF) {
                     $notification_details[0] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
+					$notification_details[1] = array();
 
 					$result2 = $this->db_conn->Execute($query2, array($notification_id));
 					$result3 = $this->db_conn->Execute($query3, array($notification_id));
@@ -919,6 +920,33 @@ class Notification
 		}
 		//$recipient_details[] format is : array(fullname, email, emailNotiEnabled, mobile, smsNotiEnabled, firstname, middlename, lastname)
 		return $recipient_details;
+	}
+
+	public function getMassNotificationContentOnly($notification_id)
+	{
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Unable to get the notification details.';
+
+		if($this->db_conn)
+		{
+			$notification_details = array();
+			$query1 = 'select NOTIFICATION_ID, NOTIFICATION_TYPE, NOTIFICATION_SUBJECT, NOTIFICATION_CONTENT, IS_DRAFT, CREATED_BY, LAST_UPDATE_USER_ID, LAST_UPDATE_TIME, IS_NOTIFICATION_SENT from MASS_NOTIFICATION_DETAILS where NOTIFICATION_ID=? limit 1';
+
+			$result = $this->db_conn->Execute($query1, array($notification_id));
+			
+			if($result) {
+                if(!$result->EOF) {
+					$return_data[0] = 1;
+					$return_data[1] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
+				}
+				else {
+					$return_data[0] = 0;
+					$return_data[1] = 'No notification is available.';
+				}
+            }
+		}
+		return $return_data;
 	}
 }
 ?>
