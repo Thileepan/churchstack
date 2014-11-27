@@ -25,7 +25,7 @@ class PayPal
 
 		PayPal_Digital_Goods_Configuration::notify_url( $this->getScriptURI( PAYPAL_NOTIFY_URL ) );
 
-		if(PAYPAL_LIVE) {
+		if(!USE_SANDBOX) {
 			PayPal_Digital_Goods_Configuration::environment( 'live' );
 		}		
 

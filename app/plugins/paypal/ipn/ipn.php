@@ -16,8 +16,7 @@
  *  @copyright  (c) 2011 - Micah Carrick
  *  @license    http://opensource.org/licenses/gpl-3.0.html
  */
- 
- 
+
 /*
 Since this script is executed on the back end between the PayPal server and this
 script, you will want to log errors to a file or email. Do not try to use echo
@@ -28,8 +27,9 @@ sure your web server has permissions to write to that file. In a production
 environment it is better to have that log file outside of the web root.
 */
 ini_set('log_errors', true);
-ini_set('error_log', dirname(__FILE__).'/ipn_errors.log');
+ini_set('error_log', 'ipn_errors.log');
 
+$APPLICATION_PATH = '../../../';
 
 // instantiate the IpnListener class
 include_once $APPLICATION_PATH .'classes/class.ipnlistener.php';
@@ -51,7 +51,7 @@ try {
     $listener->requirePostMethod();
     $verified = $listener->processIpn();
 } catch (Exception $e) {
-    error_log($e->getMessage());
+	error_log($e->getMessage());
     exit(0);
 }
 
