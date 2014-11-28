@@ -4,17 +4,21 @@
 class ProfileSettings
 {
 	protected $db_conn;
+	protected $sharded_db = "";
 	private $APPLICATION_PATH;
 
-	public function __construct($APPLICATION_PATH)
+	public function __construct($APPLICATION_PATH, $shardedDBName="")
 	{
 		$this->APPLICATION_PATH = $APPLICATION_PATH; 
 
 		//intialize database connection
         include_once($this->APPLICATION_PATH . 'db/dbutil.php');
-		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, true);
+		$conn_obj = getDatabaseConnection($this->APPLICATION_PATH, true, $shardedDBName);
 		if($conn_obj[0] == 0) {
             $this->db_conn = $conn_obj[1];
+		}
+		if(trim($shardedDBName) != "") {
+			$this->sharded_db = $shardedDBName;
 		}
 	}
 
@@ -257,28 +261,31 @@ class ProfileSettings
 	public function insertDefCusFldValExistProfiles($new_field_id, $field_default_value)
 	{
 		include_once($this->APPLICATION_PATH."classes/class.profiles.php");
-		$prof_obj = new Profiles($this->APPLICATION_PATH);
+		$prof_obj = new Profiles($this->APPLICATION_PATH, $this->sharded_db);
 		$active_profiles = $prof_obj->getAllProfiles(1);
 
 		for($p=0; $p < COUNT($active_profiles); $p++)
 		{
 			$curr_profile_id = $active_profiles[0];
-			$query = 'insert into PROFILE_CUSTOM_FIELD_VALUES (PROFILE_ID, FIELD_ID, FIELD_VALUE) values (?,?,?) ON DUPLICATE KEY UPDATE FIELD_VALUE=VALUES(FIELD_VALUE) where PROFILE_ID=? and FIELD_ID=?';
-			$result = $this->db_conn->Execute($query, array($curr_profile_id, $new_field_id, $field_default_value, $curr_profile_id, $new_field_id));
+			//$query = 'insert into PROFILE_CUSTOM_FIELD_VALUES (PROFILE_ID, FIELD_ID, FIELD_VALUE) values (?,?,?) ON DUPLICATE KEY UPDATE FIELD_VALUE=VALUES(FIELD_VALUE) where PROFILE_ID=? and FIELD_ID=?';
+			$query = 'insert into PROFILE_CUSTOM_FIELD_VALUES (PROFILE_ID, FIELD_ID, FIELD_VALUE) values (?,?,?) ON DUPLICATE KEY UPDATE FIELD_VALUE=VALUES(FIELD_VALUE)';
+			$result = $this->db_conn->Execute($query, array($curr_profile_id, $new_field_id, $field_default_value));
 		}
 	}
 
 	public function asyncInsertDefCusFldValExistProfiles($new_field_id, $field_default_value)
 	{
+		@include_once($this->APPLICATION_PATH . 'conf/config.php');
 		@include_once($this->APPLICATION_PATH . 'plugins/thread/class.thread.php');
 		/************************************************************************************** /
 		Insert asynchronously
 		/**************************************************************************************/
+		$shardedDB = trim($_SESSION["shardedDB"]);
 		$inserting_file = __DIR__."/../notify/profCusFieldDefValInsert.php";//Take care of this part
 		$inserting_file = str_replace("\\", "/", $inserting_file);
 		$commands = array();
 
-		$commands[] = '"'.PHP_EXE_PATH.'" '.$inserting_file.' fieldID='.urlencode($new_field_id).' fieldValue='.urlencode($field_default_value).' > /dev/null 2>/dev/null &';
+		$commands[] = '"'.PHP_EXE_PATH.'" '.$inserting_file.' fieldID='.urlencode($new_field_id).' fieldValue='.urlencode($field_default_value).' shardedDB='.urlencode($shardedDB).' > /dev/null 2>/dev/null &';
 
 		$threads = new Multithread( $commands );
 		$threads->run();

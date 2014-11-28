@@ -69,17 +69,17 @@ include $APPLICATION_PATH."utils/validateauth.php";
 
 						<div class="nav-collapse collapse">
 							<ul class="nav pull-left">
-								<li class="" id="mdashboard" onclick="menulinkClicked(6)"><a href="dashboard" id="dashboardLink"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
-								<li class="" id="mhome" onclick="menulinkClicked(1)"><a href="profiles" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
-								<li class="" id="msubscription" onclick="menulinkClicked(2)"style="display:<?php echo ((SHOW_SUBSCRIPTION_MENU)?'':'none'); ?>"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>			
-								<li class="" id="mfunds" onclick="menulinkClicked(9)"><a href="funds" id="fundsLink"><span id="mfundsText" style="color:white">Funds</span></a></li>
-<!--								<li class="" id="mharvest" onclick="menulinkClicked(7)"><a href="harvest"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
-								<li class="" id="mevents" onclick="menulinkClicked(3)"><a href="events" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>
-								<li class="" id="mgroups" onclick="menulinkClicked(3)"><a href="groups" id="groupsLink"><span id="mgroupsText" style="color:white">Groups</span></a></li>
-								<li class="" id="mnotifications" onclick="menulinkClicked(10)"><a href="notifications" id="notificationsLink"><span id="mnotificationsText" style="color:white">Email & SMS</span></a></li>
-								<li class="" id="msettings" onclick="menulinkClicked(4)"><a href="settings" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>
-								<li class="" id="mreports" onclick="menulinkClicked(5)" style="display:none;"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>
-								<li class="" id="menuMyAccount" onclick="menulinkClicked(11)" style="display:;"><a href="info" id="menuMyAccountLink"><span id="menuMyAccountText" style="color:white">My Account</span></a></li>
+								<li class="" id="mdashboard" onclick="menuLinkClicked(6)"><a href="dashboard" id="dashboardLink"><span id="mdashboardText" style="color:white">Dashboard</span></a></li>
+								<li class="" id="mhome" onclick="menuLinkClicked(1)"><a href="profiles" id="homeLink"><span id="mhomeText" style="color:white">Profiles</span></a></li>
+								<li class="" id="msubscription" onclick="menuLinkClicked(2)"style="display:<?php echo ((SHOW_SUBSCRIPTION_MENU)?'':'none'); ?>"><a href="subscription.php" id="subscriptionLink"><span id="msubscriptionText" style="color:white">Subscription</span></a></li>			
+								<li class="" id="mfunds" onclick="menuLinkClicked(9)"><a href="funds" id="fundsLink"><span id="mfundsText" style="color:white">Funds</span></a></li>
+<!--								<li class="" id="mharvest" onclick="menuLinkClicked(7)"><a href="harvest"><span id="mharvestText" style="color:white">Harvest</span></a></li> -->
+								<li class="" id="mevents" onclick="menuLinkClicked(3)"><a href="events" id="eventsLink"><span id="meventsText" style="color:white">Events</span></a></li>
+								<li class="" id="mgroups" onclick="menuLinkClicked(3)"><a href="groups" id="groupsLink"><span id="mgroupsText" style="color:white">Groups</span></a></li>
+								<li class="" id="mnotifications" onclick="menuLinkClicked(10)"><a href="notifications" id="notificationsLink"><span id="mnotificationsText" style="color:white">Email & SMS</span></a></li>
+								<li class="" id="msettings" onclick="menuLinkClicked(4)"><a href="settings" id="settingsLink"><span id="msettingsText" style="color:white;">Settings</span></a></li>
+								<li class="" id="mreports" onclick="menuLinkClicked(5)" style="display:none;"><a href="reports" id="reportsLink"><span id="mreportsText" style="color:white">Reports</span></a></li>
+								<li class="" id="menuMyAccount" onclick="menuLinkClicked(11)" style="display:;"><a href="info" id="menuMyAccountLink"><span id="menuMyAccountText" style="color:white">My Account</span></a></li>
 							</ul>
 							<ul class="nav pull-right">
 								<li class="dropdown">

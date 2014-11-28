@@ -18,7 +18,8 @@
 
 	$field_id = urldecode($_GET["fieldID"]);
 	$field_value = urldecode($_GET["fieldValue"]);
+	$sharded_db = urldecode($_GET["shardedDB"]);
 
-	$prof_settings_obj = new ProfileSettings($APPLICATION_PATH);
+	$prof_settings_obj = new ProfileSettings($APPLICATION_PATH, $sharded_db);
 	$prof_settings_obj->insertDefCusFldValExistProfiles($field_id, $field_value);
 ?>
