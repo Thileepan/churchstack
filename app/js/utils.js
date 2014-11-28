@@ -1,16 +1,35 @@
 function menuLinkClicked(menuID)
 {
 	document.getElementById('mhome').className = "";
+	document.getElementById('homeLink').setAttribute("style", "");
+
 	document.getElementById('msubscription').className = "";
+	document.getElementById('subscriptionLink').setAttribute("style", "");
+
 	document.getElementById('mevents').className = "";
+	document.getElementById('eventsLink').setAttribute("style", "");
+
 	document.getElementById('msettings').className = "";
+	document.getElementById('settingsLink').setAttribute("style", "");
+
 	document.getElementById('mreports').className = "";
+	document.getElementById('reportsLink').setAttribute("style", "");
+
 	document.getElementById('mdashboard').className = "";
+	document.getElementById('dashboardLink').setAttribute("style", "");
+
 	document.getElementById('mnotifications').className = '';
+	document.getElementById('notificationsLink').setAttribute("style", "");
+
 	//document.getElementById('mharvest').className = "";
 	document.getElementById('mgroups').className = "";
+	document.getElementById('groupsLink').setAttribute("style", "");
+
 	document.getElementById('mfunds').className = "";
+	document.getElementById('fundsLink').setAttribute("style", "");
+
 	document.getElementById('menuMyAccount').className = "";
+	document.getElementById('menuMyAccountLink').setAttribute("style", "");
 
 	var activeClassName = "active";
 	var styleMenuLink = "background-color:#3a87ad;";

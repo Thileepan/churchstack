@@ -75,7 +75,7 @@ if($req == 1)
 
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$custom_field_details = $settings_obj->getAllCustomProfileFields();
-	$default_column_names = array('Salutation', 'First Name', 'Middle Name', 'Last Name', 'Family ID *', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address 1', 'Address 2', 'Address 3', 'Area', 'Pincode', 'Mobile', 'Home', 'Work', 'Email', 'Profile Status', 'Notes');
+	$default_column_names = array('Salutation', 'First Name', 'Middle Name', 'Last Name', 'Family ID *', 'Date Of Birth', 'Gender', 'Relationship', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Address Line 1', 'Address Line 2', 'Area', 'Town/City', 'Postal/Zip Code', 'Mobile', 'Home', 'Work', 'Email', 'Profile Status', 'Notes');
 	$total_fields = COUNT($import_fields);
 	$total_default_columns = COUNT($default_column_names);
 	if($total_fields > 0)
