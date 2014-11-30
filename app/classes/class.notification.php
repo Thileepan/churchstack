@@ -948,5 +948,39 @@ class Notification
 		}
 		return $return_data;
 	}
+	
+	public function getAllEmailSMSSentCount()
+	{
+		$to_return = array();
+		$to_return[0] = 0;
+		$to_return[1] = "Unable to fetch the reports";
+		$all_reports = array();
+		if($this->db_conn)
+		{
+			$query = 'select REPORT_ID, EMAIL_OR_SMS, TRIGGERED_FOR, RAW_CONTENT, SENT_TIME, RECIPIENTS_COUNT from NOTIFICATIONS_EMAIL_SMS_REPORTS order by REPORT_ID DESC';
+		   $result = $this->db_conn->Execute($query);
+            
+           if($result) {
+                if(!$result->EOF) {
+                    while(!$result->EOF)
+                    {
+						$report_id = $result->fields[0];
+                        $email_or_sms = $result->fields[1];
+                        $triggered_for = $result->fields[2];
+                        $raw_content = $result->fields[3];
+                        $sent_time = $result->fields[4];
+                        $recipients_count = $result->fields[5];
+						$all_reports[] = array($report_id, $email_or_sms, $triggered_for, $raw_content, $sent_time, $recipients_count);
+
+						$result->MoveNext();                        
+                    }
+
+					$to_return[0] = 1;
+					$to_return[1] = $all_reports;
+                }
+            }
+        }
+		return $to_return;
+	}
 }
 ?>

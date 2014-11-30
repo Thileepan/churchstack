@@ -166,7 +166,12 @@ else if($req == 3)
 			for($i=0; $i<$total_message; $i++)
 			{
 				$notification_id = $messages[$i][0];
-				$notification_type = '<span class="label label-info">'.(($messages[$i][1] == 1)?'Email':'SMS').'</span>';
+				if($messages[$i][1] == 1) {
+					$notification_type = '<span class="label label-info"><i class="fa fa-envelope fa-1g"></i>&nbsp;&nbsp;Email</span>';
+				} else {
+					$notification_type = '<span class="label label-info"><i class="fa fa-mobile fa-1g"></i>&nbsp;&nbsp;SMS</span>';
+				}
+
 				$subject = (($messages[$i][2] == '')?'-':$messages[$i][2]);
 				$content = $messages[$i][3];
 				$is_draft = $messages[$i][4];
@@ -383,7 +388,11 @@ else if($req == 9)
 			for($i=0; $i<$total_template; $i++)
 			{
 				$template_id = $templates_list[$i][0];
-				$template_type = '<span class="label label-info">'.(($templates_list[$i][1] == 1)?'Email':'SMS').'</span>';
+				if($templates_list[$i][1] == 1) {
+					$template_type = '<span class="label label-info"><i class="fa fa-envelope fa-1g"></i>&nbsp;Email</span>';
+				} else {
+					$template_type = '<span class="label label-info"><i class="fa fa-mobile fa-1g"></i>&nbsp;SMS</span>';
+				}
 				$name = (($templates_list[$i][2] == '')?'-':$templates_list[$i][2]);
 				$subject = ((trim($templates_list[$i][3]) == '')?'-':$templates_list[$i][3]);
 				$content = $templates_list[$i][4];
@@ -430,6 +439,47 @@ else if($req == 10)
 	$notification_obj = new Notification($APPLICATION_PATH);
 	$to_return = $notification_obj->deleteTemplate($template_id);
 	
+	$json = new Services_JSON();
+	$encode_obj = $json->encode($to_return);
+	unset($json);
+
+	echo $encode_obj;
+	exit;
+}
+else if($req == 11)
+{
+	$to_return = array();
+	$to_return['aaData'] = array();
+	$notification_obj = new Notification($APPLICATION_PATH);
+
+	$result = $notification_obj->getAllEmailSMSSentCount();
+	if($result[0] == 1)
+	{
+		for($i=0; $i < COUNT($result[1]); $i++)
+		{
+			$all_reports[] = array($report_id, $email_or_sms, $triggered_for, $raw_content, $sent_time, $recipients_count);
+			$report_id = $result[1][$i][0];
+			$email_or_sms = $result[1][$i][1];
+			$triggered_for = $result[1][$i][2];
+			$raw_content = $result[1][$i][3];
+			$sent_time = $result[1][$i][4];
+			$recipients_count = $result[1][$i][5];
+			if($email_or_sms == 1) {
+				$comm_type = '<i class="fa fa-envelope fa-1g"></i>';
+			} else {
+				$comm_type = '<i class="fa fa-mobile fa-2x"></i>';
+			}
+			$trimmed_content = strip_tags(html_entity_decode($raw_content));
+			if(strlen($trimmed_content) > 55) {
+				$trimmed_content = substr($trimmed_content, 0, 53);
+				$trimmed_content .= "...";
+			}
+			$sent_time_timestamp = strtotime($sent_time);
+			$time_to_show = '<span style="display:none;">'.$sent_time_timestamp.'</span>'.$sent_time;
+			$to_return['aaData'][] = array($comm_type, $triggered_for, $trimmed_content, $time_to_show, $recipients_count);
+		}
+	}
+
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($to_return);
 	unset($json);

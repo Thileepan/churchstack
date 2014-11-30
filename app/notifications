@@ -34,6 +34,8 @@ include $APPLICATION_PATH."header";
 		  <li id="greetingsConfig" onclick="notiHighlightSelectedSubMenu(6); getGreetingsConfigForm();" class="" style="display:;"><a href="#anniv-greetings-config">Anniversary Greetings</a></li>
 		  <li class="nav-header" style="display:;">SMS Configuration</li>
 		  <li id="smsConfig" onclick="notiHighlightSelectedSubMenu(7);getSMSConfigForm();" class="" style="display:;"><a href="#sms-config">Set SMS Gateway</a></li>
+		  <li class="nav-header" style="display:;">Reports</li>
+		  <li id="reportSummary" onclick="notiHighlightSelectedSubMenu(8);listAllEMailSMSCountSummary();" class="" style="display:;"><a href="#report-summary">Summarized Reports</a></li>
 		</ul>
 		
 		<!--
@@ -81,6 +83,8 @@ include "footer";
 		document.getElementById("smsConfig").click();
 	} else if(url_hash == "#anniv-greetings-config") {
 		document.getElementById("greetingsConfig").click();
+	} else if(url_hash == "#report-summary") {
+		document.getElementById("reportSummary").click();
 	} else {
 		document.getElementById("composeMessage").click();
 	}

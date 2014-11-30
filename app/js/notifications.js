@@ -671,6 +671,7 @@ function notiHighlightSelectedSubMenu(menu)
 	document.getElementById('listTemplates').className = '';
 	document.getElementById('greetingsConfig').className = '';
 	document.getElementById('smsConfig').className = '';
+	document.getElementById('reportSummary').className = '';
 
 	//Now set the active class for the selected menu
 	var classNameToSet = 'active';
@@ -695,6 +696,43 @@ function notiHighlightSelectedSubMenu(menu)
 	} else if(menu == 7) {
 		document.getElementById('smsConfig').className = classNameToSet;
 		document.getElementById('pageHeader').innerHTML = "Configure SMS Gateway/Provider";
+	} else if(menu == 8) {
+		document.getElementById('reportSummary').className = classNameToSet;
+		document.getElementById('pageHeader').innerHTML = "All Emails & SMS Sent Summary";
 	}
 }
 
+function listAllEMailSMSCountSummary()
+{
+	document.getElementById('alertRow').style.display = 'none';
+
+	var table = '<table id="repSummary" class="table table-condensed table-striped"><thead><tr><th>Email Or SMS</th><th>Triggered For</th><th>Raw Content</th><th>Sent On</th><th>Recipients Count</th></tr></thead></table>';
+	document.getElementById('pageContent').innerHTML = table;
+
+	oTable = $('#repSummary').dataTable( {
+		"bFilter":false,
+        "bProcessing": true,
+		"bDestroy": true,
+		"bAutoWidth":false,
+		"iDisplayLength":100,
+        "sAjaxSource": doNotificationsFile,
+		"aaSorting": [],
+		"aoColumns": [
+			{ "sWidth": "10%" },
+			{ "sWidth": "20%"  },
+			{ "sWidth": "40%" },
+			{ "sWidth": "15%"  },
+			{ "sWidth": "15%"  },
+		],
+		"fnServerData": function ( sSource, aoData, fnCallback ) {
+            $.ajax( {
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": "req=11",
+                "success": fnCallback
+            } );
+		
+        }
+	});
+}
