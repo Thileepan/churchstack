@@ -600,10 +600,12 @@ function deleteProfileConfirmation(profileID, uniqueID, profileName, isHead)
 {
 	var msgToDisplay = 'You are requesting to delete the profile of <a href="#" onclick="showProfileDetails('+profileID+');">' + profileName + ' (' + uniqueID + ')</a>.';
 	if(isHead) {
-		msgToDisplay += '<BR/><b>This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile.</b>';
+		msgToDisplay += '<BR/><b>- This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile(s).</b>';
 	}
-	msgToDisplay += '<BR/><b>Note that once a profile is deleted, there is no way to retrieve the profile data and it will never be shown or listed in any pages of the application.</b>';
-
+	msgToDisplay += '<BR/><b>- Note that once a profile is deleted, there is no way to retrieve the profile data and it will never be shown or listed in any pages of the application.</b>';
+	msgToDisplay += '<BR/><b>- The member/profile ID & family ID will also be NOT released and hence CANNOT be (and WILL NOT be) assigned to another profile</b>';
+	msgToDisplay += '<BR/><b>- Hope you know the differences between "Deactivating" a profile and "Deleting" a profile</b>';
+	msgToDisplay += '<BR/><BR/><b>CAUTION : THIS ACTION CANNOT BE UNDONE</b>';
 	msgToDisplay += '<BR/><BR/>Are you sure you want to delete this profile?<BR/>';
 	var actionTakenCallBack = "deleteProfile(" + profileID + "," + isHead + ")";
 	var actionCanelCallBack = "cancelProfileDeleteRequest()";
@@ -1184,7 +1186,9 @@ function deactivateProfileConfirmation(actOrDeact, profileID, uniqueID, profileN
 	//	if(isHead) {
 	//		msgToDisplay += '<BR/><b>This profile is the head of a family and deleting this profile will also delete his/her dependants\' profile.</b>';
 	//	}
-		msgToDisplay += '<BR/><b>Note that once a profile is deactivated, by default, it will not be shown or listed in any pages of the application. However, you will have options to list them in the profiles and reports related pages.</b>';
+		msgToDisplay += '<BR/><b>- Note that once a profile is deactivated, by default, it will not be shown or listed in any pages of the application. However, you will have options to manually select and list them in the profiles and reports related pages.</b>';
+		msgToDisplay += '<BR/><b>- Email & SMS notifications (for events, greetings, instant communications etc) will not be sent to this person</b>';
+		msgToDisplay += '<BR/><b>- This action is revertible and you can re-activate this profile anytime</b>';
 		msgToDisplay += '<BR/><BR/>Are you sure you want to deactivate this profile?<BR/>';
 		var actionTakenCallBack = "deactivateProfile(1, " + profileID + "," + isHead + ")";
 		var actionCanelCallBack = "cancelProfileDeactivateRequest()";

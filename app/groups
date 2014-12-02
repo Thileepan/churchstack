@@ -24,7 +24,7 @@ include $APPLICATION_PATH."header";
     <div class="span2">
         <ul class="nav nav-list">
 	          <li class="nav-header">Group Management</li>
-		  <li id="listGroup" onclick="listAllGroups();"><a href="#list-groups">List Groups</a></li>		  
+		  <li id="listGroup" onclick="listAllGroups(0);"><a href="#list-groups">List Groups</a></li>		  
 		  <li id="addGroup" onclick="getAddOrEditGroupForm(0);"><a href="#add-group">Add New Group</a></li>
         </ul>
     </div>

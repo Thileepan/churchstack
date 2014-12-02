@@ -10,6 +10,12 @@ if(!isset($_SESSION['username']) || $_SESSION['username'] == '' || !isset($_SESS
 /**/
 $APPLICATION_PATH = "./";
 include $APPLICATION_PATH."header";
+$is_license_expired = ((isset($_GET["licexp"])&& trim($_GET["licexp"]) == 1)? 1 : 0);
+$show_alert_div_on_load = 0;
+if($is_license_expired == 1) {
+	$show_alert_div_on_load = 1;
+}
+
 ?>
 <script src="<?php echo $APPLICATION_PATH; ?>js/info.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo $APPLICATION_PATH; ?>plugins/paypal/examples/style.css" />
@@ -30,8 +36,19 @@ include $APPLICATION_PATH."header";
 	</ul>
     </div>
     <div class="span10">
-		<div class="row-fluid" id="alertRow" style="display:none">
+		<div class="row-fluid" id="alertRow" style="display:<?php echo (($show_alert_div_on_load==1)? '' : 'none'); ?>">
 			<div id="alertDiv" class="span12">
+				<?php
+					if($is_license_expired==1) {
+						echo '<div class="alert alert-error">Dear user, your license has expired and is due for renewal. Kindly choose a plan that best suits your church and make the payment to continue using the services. ';
+						if($_SESSION['countryISOCode'] == "IN") {
+							echo ' If you wish to pay through Cheque or Demand Draft or Cash, please contact our support at <a href="mailto:'.SUPPORT_EMAIL.'" target="_blank">'.SUPPORT_EMAIL.'</a> immediately. Our support team will be more than happy to help you get the most out of the product.';
+						} else {
+							echo ' Feel free to contact our support at <a href="mailto:'.SUPPORT_EMAIL.'" target="_blank">'.SUPPORT_EMAIL.'</a> if you need any assistance. We will be more than happy to help!';
+						}
+						echo '</div>';
+					}
+				?>
 			</div>
 		</div>
 		<div class="row-fluid">
@@ -118,4 +135,11 @@ include "footer";
 		document.getElementById("myChurch").click();
 	}
 	menuLinkClicked(11);
+	<?php
+		if($show_alert_div_on_load == 1) {
+	?>
+		document.getElementById("alertRow").style.display = "";
+	<?php
+		}
+	?>
 </script>

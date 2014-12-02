@@ -771,7 +771,7 @@ function resetSearchForm(reqFrom)
 //	var reqFrom = 1;
 	//from group module
 	if(reqFrom == 2) {
-		listAllGroups();
+		listAllGroups(0);
 		return true;
 	}
 	showProfileReportsScreen(reqFrom);

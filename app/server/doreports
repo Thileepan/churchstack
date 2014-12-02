@@ -44,7 +44,7 @@ if($req == 1)
 										$to_return .= '<option value="PROFILES">PROFILE POSITION</option>';
 										$to_return .= '<option value="GENDER">GENDER</option>';
 										$to_return .= '<option value="AGE">AGE</option>';
-										$to_return .= '<option value="BIRTH_DATE">BIRTHDAY DATE</option>';
+										$to_return .= '<option value="BIRTH_DATE">DATE OF BIRTH</option>';
 										$to_return .= '<option value="MARRIAGE_DATE">MARRIAGE DATE</option>';
 										//$to_return .= '<option value="BIRTH_MARRIAGE_DATE">BIRTH OR MARRIAGE DATE</option>';
 										$to_return .= '<option value="MARITAL_STATUS">MARITAL STATUS</option>';

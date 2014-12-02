@@ -510,8 +510,8 @@ else if($req == 4)
 	$to_return = '';
 	$to_return .= '<div class="tabbable">';
 		$to_return .= '<ul class="nav nav-tabs">';
-			$to_return .= '<li id="upcomingEventsTab" class="active" onclick="listAllEvents(1);"><a href="#upcomingEventsTab" data-toggle="tab">Upcoming Events</a></li>';
-			$to_return .= '<li id="pastEventsTab" onclick="listAllEvents(2);"><a href="#pastEventsTab" data-toggle="tab">Past Events</a></li>';
+			$to_return .= '<li id="upcomingEventsTab" class="active" onclick="listAllEvents(1, 0);"><a href="#upcomingEventsTab" data-toggle="tab">Upcoming Events</a></li>';
+			$to_return .= '<li id="pastEventsTab" onclick="listAllEvents(2, 0);"><a href="#pastEventsTab" data-toggle="tab">Past Events</a></li>';
 		$to_return .= '</ul>';
 		$to_return .= '<div class="tab-content">';
 			$to_return .= '<div class="tab-pane active" id="upcomingEventsDiv">';

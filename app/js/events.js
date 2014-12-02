@@ -381,14 +381,20 @@ function addOrUpdateEventsResponse(response)
 	var resultToUI = getAlertDiv(alertType, msgToDisplay);
 	document.getElementById('alertRow').style.display = '';
 	document.getElementById('alertDiv').innerHTML = resultToUI;
+	if(result) {
+		showEventTabs(1);
+	}
 }
 
-function showEventTabs()
+function showEventTabs(doNotHideAlertDiv)
 {
 	document.getElementById('calendar').className = '';
 	document.getElementById('addEvent').className = '';
 	document.getElementById('listEvents').className = 'active';
-	document.getElementById('alertRow').style.display = 'none';
+	dontHideMsgDiv = doNotHideAlertDiv;
+	if(doNotHideAlertDiv != 1) {
+		document.getElementById('alertRow').style.display = 'none';
+	}
 
 	var formPostData = 'req=4';
 	
@@ -406,12 +412,14 @@ function showEventTabsResponse(response)
 	document.getElementById('pageHeader').innerHTML = 'Upcoming Events';
 	document.getElementById('pageContent').innerHTML = response;
 	//upcoming events
-	listAllEvents(1);
+	listAllEvents(1, dontHideMsgDiv);
 }
 
-function listAllEvents(eventStatus)
+function listAllEvents(eventStatus, doNotHideAlertDiv)
 {
-	document.getElementById('alertRow').style.display = 'none';
+	if(doNotHideAlertDiv != 1) {
+		document.getElementById('alertRow').style.display = 'none';
+	}
 	document.getElementById('hiddenEventTabID').value = eventStatus;
 	
 	var table = '<table id="eventList" class="table table-condensed"><thead><tr><th>Event</th><th>Description</th><th>Start Date</th><th>End Date</th><th>Next Event Date</th><th>Location</th><th>Organiser</th><th>Actions</th></tr></thead></table>';
@@ -489,7 +497,7 @@ function deleteEventResponse(response)
 		var alertType = 1;
 		var msgToDisplay = 'Event has been deleted successfully';
 		var eventStatus = document.getElementById('hiddenEventTabID').value;
-		listAllEvents(eventStatus);
+		listAllEvents(eventStatus, 0);
 	} else {
 		var alertType = 2;
 		var msgToDisplay = 'Failed to delete the event';

@@ -240,9 +240,9 @@ function listAllMessages(type, filterByDrafts, filterBySentItems)
 	document.getElementById('alertRow').style.display = 'none';
 
 	if(filterByDrafts) {
-		var table = '<table id="messageList" class="table table-condensed"><thead><tr><th>Type</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
+		var table = '<table id="messageList" class="table table-condensed table-striped"><thead><tr><th>Type</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
 	} else if(filterBySentItems) {
-		var table = '<table id="messageList" class="table table-condensed"><thead><tr><th>Type</th><th>Subject</th><th>Content</th><th>Status</th><th>Actions</th></tr></thead></table>';
+		var table = '<table id="messageList" class="table table-condensed table-striped"><thead><tr><th>Type</th><th>Subject</th><th>Content</th><th>Status</th><th>Actions</th></tr></thead></table>';
 	}
 	document.getElementById('pageContent').innerHTML = table;
 
@@ -251,6 +251,7 @@ function listAllMessages(type, filterByDrafts, filterBySentItems)
         "bProcessing": true,
 		"bDestroy": true,
         "sAjaxSource": doNotificationsFile,
+		"aaSorting": [],
 		"fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {
                 "dataType": 'json',
@@ -597,13 +598,14 @@ function listAllTemplates(type)
 //	document.getElementById('pageHeader').innerHTML = 'Templates';
 	document.getElementById('alertRow').style.display = 'none';
 
-	var table = '<table id="templateList" class="table table-condensed"><thead><tr><th>Type</th><th>Name</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
+	var table = '<table id="templateList" class="table table-condensed table-striped"><thead><tr><th>Type</th><th>Name</th><th>Subject</th><th>Content</th><th>Actions</th></tr></thead></table>';
 	document.getElementById('pageContent').innerHTML = table;
 
 	oTable = $('#templateList').dataTable( {
 		"bFilter":false,
         "bProcessing": true,
 		"bDestroy": true,
+		"aaSorting": [],
         "sAjaxSource": doNotificationsFile,
 		"fnServerData": function ( sSource, aoData, fnCallback ) {
             $.ajax( {

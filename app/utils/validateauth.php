@@ -5,6 +5,7 @@ if(!function_exists('validateSession'))
 	function validateSession($APPLICATION_PATH)
 	{
 		include_once($APPLICATION_PATH."conf/config.php");
+		include_once($APPLICATION_PATH."utils/utilfunctions.php");
 		session_start();
 		//Invalid session redirector
 		if(!isset($_SESSION['session_token_1']) || $_SESSION['session_token_1'] != md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']) || !isset($_SESSION['session_token_2']) || $_SESSION['session_token_2'] != md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']))
@@ -43,20 +44,18 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['trialExpiryTimestamp'] < time())
 						{
-							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
-							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
-								header('Location:'.$APPLICATION_PATH."info#billing-plan");
+							if(!startsWith($_SERVER['REQUEST_URI'], "/info") && !startsWith($_SERVER['REQUEST_URI'], "/server/doinfo") && !startsWith($_SERVER['REQUEST_URI'], "/app/info") && !startsWith($_SERVER['REQUEST_URI'], "/app/server/doinfo")) {//Only if accessed from somewhere else. because it will go into loop if called from info file. This is because this file is included in info file also.
+								header('Location:'.$APPLICATION_PATH."info?licexp=1#billing-plan");
 								exit;
 							}
 						}
 					}
 					else
 					{
-							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
-							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
-								header('Location:'.$APPLICATION_PATH."info#billing-plan");
-								exit;
-							}
+						if(!startsWith($_SERVER['REQUEST_URI'], "/info") && !startsWith($_SERVER['REQUEST_URI'], "/server/doinfo") && !startsWith($_SERVER['REQUEST_URI'], "/app/info") && !startsWith($_SERVER['REQUEST_URI'], "/app/server/doinfo")) {//Only if accessed from somewhere else. because it will go into loop if called from info file. This is because this file is included in info file also.
+							header('Location:'.$APPLICATION_PATH."info?licexp=1#billing-plan");
+							exit;
+						}
 						//payment page
 					}
 				}
@@ -66,18 +65,16 @@ if(!function_exists('validateSession'))
 					{
 						if($_SESSION['licenseExpiryTimestamp'] < time())
 						{
-							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
-							if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
-								header('Location:'.$APPLICATION_PATH."info#billing-plan");
+							if(!startsWith($_SERVER['REQUEST_URI'], "/info") && !startsWith($_SERVER['REQUEST_URI'], "/server/doinfo") && !startsWith($_SERVER['REQUEST_URI'], "/app/info") && !startsWith($_SERVER['REQUEST_URI'], "/app/server/doinfo")) {//Only if accessed from somewhere else. because it will go into loop if called from info file. This is because this file is included in info file also.
+								header('Location:'.$APPLICATION_PATH."info?licexp=1#billing-plan");
 								exit;
 							}
 						}
 					}
 					else
 					{
-							//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
-						if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
-							header('Location:'.$APPLICATION_PATH."info#billing-plan");
+						if(!startsWith($_SERVER['REQUEST_URI'], "/info") && !startsWith($_SERVER['REQUEST_URI'], "/server/doinfo") && !startsWith($_SERVER['REQUEST_URI'], "/app/info") && !startsWith($_SERVER['REQUEST_URI'], "/app/server/doinfo")) {//Only if accessed from somewhere else. because it will go into loop if called from info file. This is because this file is included in info file also.
+							header('Location:'.$APPLICATION_PATH."info?licexp=1#billing-plan");
 							exit;
 						}
 					}
@@ -85,11 +82,10 @@ if(!function_exists('validateSession'))
 			}
 			else
 			{
-					//header('Location:'.$APPLICATION_PATH."purchase/subscribe");
-					if($_SERVER['REQUEST_URI'] != "/info" && $_SERVER['REQUEST_URI'] != "/server/doinfo" && $_SERVER['REQUEST_URI'] != "/app/info" && $_SERVER['REQUEST_URI'] != "/app/server/doinfo") {//Only if accessed from somewhere else. because it will go into loop if called from moredata file. This is because this file is included in moredata file also.
-						header('Location:'.$APPLICATION_PATH."info#billing-plan");
-						exit;
-					}
+				if(!startsWith($_SERVER['REQUEST_URI'], "/info") && !startsWith($_SERVER['REQUEST_URI'], "/server/doinfo") && !startsWith($_SERVER['REQUEST_URI'], "/app/info") && !startsWith($_SERVER['REQUEST_URI'], "/app/server/doinfo")) {//Only if accessed from somewhere else. because it will go into loop if called from info file. This is because this file is included in info file also.
+					header('Location:'.$APPLICATION_PATH."info?licexp=1#billing-plan");
+					exit;
+				}
 			}
 		}
 

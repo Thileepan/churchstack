@@ -74,9 +74,12 @@ function addOrUpdateGroupResponse(response)
 	if(response) {
 		var alertType = 1;
 		var msgToDisplay = (isUpdate)?'Group has been updated successfully!':'Group has been created successfully';
+		/** /
 		if(!isUpdate) {
 			getAddOrEditGroupForm(0);
 		}
+		/**/
+		listAllGroups(1);
 	} else {
 		var alertType = 2;
 		var msgToDisplay = (isUpdate)?'Group failed to update.':'Group failed to create.';		
@@ -86,11 +89,12 @@ function addOrUpdateGroupResponse(response)
 	document.getElementById('alertDiv').innerHTML = resultToUI;
 }
 
-function listAllGroups()
+function listAllGroups(doNotHideAlertDiv)
 {
-	document.getElementById('alertRow').style.display = 'none';	
+	if(doNotHideAlertDiv != 1) {
+		document.getElementById('alertRow').style.display = 'none';	
+	}
 	document.getElementById('pageHeader').innerHTML = 'List Groups';
-	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('addGroup').className = '';
 	document.getElementById('listGroup').className = 'active';
 	document.getElementById('divOptionBtn').style.display = 'none';	
@@ -158,7 +162,7 @@ function deleteGroupResponse(response)
 	if(response == 1) {
 		var alertType = 1;
 		var msgToDisplay = 'Group has been deleted successfully';		
-		listAllGroups();
+		listAllGroups(0);
 	} else {
 		var alertType = 2;
 		var msgToDisplay = 'Failed to delete the group';
@@ -234,7 +238,7 @@ function addGroupMembersResponse(response)
 	if(response) {
 		var alertType = 1;
 		var msgToDisplay = 'Members has been added to group successfully';
-		listAllGroups();
+		listAllGroups(1);
 	} else {
 		var alertType = 2;
 		var msgToDisplay = 'Failed to add members into group. Please try again!';

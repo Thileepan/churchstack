@@ -22,7 +22,7 @@ include $APPLICATION_PATH."header";
 	          <li class="nav-header">Event Management</li>
 	          <li id="calendar" onclick="showMonthlyCalendar(1);" class="active"><a href="#calendar">Calendar</a></li>
 		  <li id="addEvent" onclick="getAddOrEditEventForm(0);"><a href="#add-event">Add New Event</a></li>
-		  <li id="listEvents" onclick="showEventTabs();"><a href="#list-events">List Events</a></li>
+		  <li id="listEvents" onclick="showEventTabs(0);"><a href="#list-events">List Events</a></li>
         </ul>
     </div>
 	<div class="span10">

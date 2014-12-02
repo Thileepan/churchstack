@@ -569,6 +569,8 @@ class Notification
 			if($filter_by_notification_type > 0) {
 				$query .= ' and NOTIFICATION_TYPE ='.$notification_type;
 			}
+
+			$query .= " order by LAST_UPDATE_TIME desc";
 			
 			$result = $this->db_conn->Execute($query);
 			
@@ -686,6 +688,7 @@ class Notification
 			if($filter_by_template_type > 0) {
 				$query .= ' where TEMPLATE_TYPE='.$filter_by_template_type;
 			}
+			$query .= " order by LAST_UPDATE_TIME desc";
 			$result = $this->db_conn->Execute($query);
 			
 			if($result) {
