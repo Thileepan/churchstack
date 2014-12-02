@@ -1,0 +1,64 @@
+<?php
+	$APPLICATION_PATH = "../";
+	include_once($APPLICATION_PATH."conf/config.php");
+	@include_once($APPLICATION_PATH."utils/utilfunctions.php");
+	clearSession($APPLICATION_PATH);
+	$page_title_for_header = PRODUCT_NAME." - System Upgrade & Maintenance";
+?>
+<?php
+	include($APPLICATION_PATH."webheader");
+?>
+
+    <!-- div class="navbar navbar-inverse navbar-fixed-top" role="navigation" -->
+	<div>
+		  <a href="<?php echo PRODUCT_WEBSITE; ?>" target="_blank"><img src="<?php echo $APPLICATION_PATH; ?>images/cs-web-logo.png" align="middle"></a>
+	</div>
+    <!--/div -->
+
+    <!-- Body -->
+	<div class="wrapper body-inverse" style="padding-top:60px !important;"> <!-- wrapper -->
+		<div class="container">
+			<div class="row">
+			<!-- Sign In form -->
+				<div class="col-sm-8 col-sm-offset-2">
+					<h2>We are upgrading our system, to serve you better and faster! We will be back online in a few minutes.</h2>
+				</div>
+				<div id="successResultDiv" style="display:none;" class="col-sm-8 col-sm-offset-2" align="center">
+					<div class="form-white">
+						<h3 class="text-color" id="successResultMsg"></h3>
+					</div>
+				</div>
+				<div id="emailDiv">
+					<div class="col-sm-8 col-sm-offset-2" align="center">
+								<img src="<?php echo $APPLICATION_PATH."images/maintenance-1.jpg";  ?>" width="100%">
+						<!-- h4>Enter your email address and we will send you the instructions to reset the password</h4 -->
+					</div>
+					<!-- div class="col-sm-4 col-sm-offset-4">
+						<div class="form-white">
+							<form role="form" onsubmit="return false">
+								<div class="form-group">
+									<img src="<?php echo $APPLICATION_PATH."images/maintenance-1.jpg";  ?>">
+								</div>
+							</form>
+						</div>
+					</div-->
+				</div>
+				<div id="errorResultDiv" style="display:none;" class="col-sm-8 col-sm-offset-2" align="center">
+					<div class="form-white">
+						<h3 style="color:#e74c3c;" id="errorResultMsg"></h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- / wrapper -->
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="<?php echo $APPLICATION_PATH; ?>js/app.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/utils.js"></script>
+	<script src="<?php echo $APPLICATION_PATH; ?>js/users.js"></script>
+	<script type="text/javascript">
+		document.getElementById('txtEmail').focus();
+	</script>
+<?php
+	include($APPLICATION_PATH."webfooter");
+?>

@@ -6,6 +6,17 @@ if(!function_exists('validateSession'))
 	{
 		include_once($APPLICATION_PATH."conf/config.php");
 		include_once($APPLICATION_PATH."utils/utilfunctions.php");
+
+		/******************************************************************************************************* /
+		THE FOLLOWING REDIRECTION WILL BE MADE WHEN WORKING ON SYSTEM UPGRADE AND MAINTENANCE.
+		see config.php file for the following variable
+		/*******************************************************************************************************/
+		if(SYSTEM_UNDER_MAINTENANCE == 1) {
+			header('Location:'.$APPLICATION_PATH."user/maintenance");
+			exit;
+		}
+		/*******************************************************************************************************/
+
 		session_start();
 		//Invalid session redirector
 		if(!isset($_SESSION['session_token_1']) || $_SESSION['session_token_1'] != md5($_SESSION['userID'].$_SESSION['username'].$_SESSION['email'].$_SESSION['loginTime']) || !isset($_SESSION['session_token_2']) || $_SESSION['session_token_2'] != md5($_SESSION['userID'].$_SESSION['churchID'].$_SESSION['email'].$_SESSION['loginTime']))

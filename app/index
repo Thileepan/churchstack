@@ -5,6 +5,16 @@
 	clearSession($APPLICATION_PATH);
 	session_start();
 	$page_title_for_header = PRODUCT_NAME." - Signup & Login";
+
+	/******************************************************************************************************* /
+	THE FOLLOWING REDIRECTION WILL BE MADE WHEN WORKING ON SYSTEM UPGRADE AND MAINTENANCE.
+	see config.php file for the following variable
+	/*******************************************************************************************************/
+	if(SYSTEM_UNDER_MAINTENANCE == 1) {
+		header('Location:'.$APPLICATION_PATH."user/maintenance");
+		exit;
+	}
+	/*******************************************************************************************************/
 ?>
 <?php
 	include($APPLICATION_PATH."webheader");

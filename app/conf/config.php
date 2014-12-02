@@ -123,4 +123,7 @@ define("PAYPAL_USE_SSL", 1);
 define("PAYPAL_SANDBOX_URL" , "www.sandbox.paypal.com");
 define("PAYPAL_LIVE_URL" , "www.paypal.com");
 
+//SYSTEM MAINTENANCE
+define('SYSTEM_UNDER_MAINTENANCE', 0);
+
 ?>
