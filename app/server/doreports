@@ -112,7 +112,7 @@ if($req == 1)
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column12">Is Another Church Member</label>';
 							$to_return .= '</div>';
 							$to_return .= '<div class="span2">';
-								$to_return .= '<label class="checkbox"><input type="checkbox" id="column13">Address</label>';
+								$to_return .= '<label class="checkbox"><input type="checkbox" id="column13">Full Address</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column14">Mobile Number</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column15">Home Phone</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column16">Work Phone</label>';

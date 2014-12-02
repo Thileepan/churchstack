@@ -604,8 +604,8 @@ function deleteProfileConfirmation(profileID, uniqueID, profileName, isHead)
 	}
 	msgToDisplay += '<BR/><b>- Note that once a profile is deleted, there is no way to retrieve the profile data and it will never be shown or listed in any pages of the application.</b>';
 	msgToDisplay += '<BR/><b>- The member/profile ID & family ID will also be NOT released and hence CANNOT be (and WILL NOT be) assigned to another profile</b>';
-	msgToDisplay += '<BR/><b>- Hope you know the differences between "Deactivating" a profile and "Deleting" a profile</b>';
-	msgToDisplay += '<BR/><BR/><b>CAUTION : THIS ACTION CANNOT BE UNDONE</b>';
+	msgToDisplay += '<BR/><b>- Hope you understand the differences between "Deactivating" a profile and "Deleting" a profile!</b>';
+	msgToDisplay += '<BR/><BR/><b>CAUTION : THIS ACTION IS NOT REVERTIBLE AND CANNOT BE UNDONE</b>';
 	msgToDisplay += '<BR/><BR/>Are you sure you want to delete this profile?<BR/>';
 	var actionTakenCallBack = "deleteProfile(" + profileID + "," + isHead + ")";
 	var actionCanelCallBack = "cancelProfileDeleteRequest()";

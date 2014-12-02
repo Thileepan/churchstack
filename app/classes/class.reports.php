@@ -287,7 +287,13 @@ class Reports
 					{
 						$dob_ignore_year = 1;
 						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
-							$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$to_date.'") - YEAR(DOB)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							$day_of_year_from_date = date('z', strtotime($from_date));
+							$day_of_year_to_date = date('z', strtotime($to_date));
+							if($day_of_year_from_date <= $day_of_year_to_date) {
+								$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$to_date.'") - YEAR(DOB)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							} else {
+								$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") or DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$to_date.'") - YEAR(DOB)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							}
 						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
 							$query_where .= ' DAYOFYEAR(DATE_ADD(DOB, INTERVAL (YEAR("'.$from_date.'") - YEAR(DOB)) YEAR)) >= DAYOFYEAR("'.$from_date.'") ';
 						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
@@ -323,7 +329,13 @@ class Reports
 					{
 						$marriage_date_ignore_year = 1;
 						if(trim($from_date) != "" && strlen(trim($from_date) > 4) &&  trim($to_date) != "" && strlen(trim($to_date) > 4)) {
-							$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$to_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							$day_of_year_from_date = date('z', strtotime($from_date));
+							$day_of_year_to_date = date('z', strtotime($to_date));
+							if($day_of_year_from_date <= $day_of_year_to_date) {
+								$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") and DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$to_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							} else {
+								$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") or DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$to_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) <= DAYOFYEAR("'.$to_date.'") ';
+							}
 						} else if((trim($from_date) != "" && strlen(trim($from_date) > 4)) && (trim($to_date) == "" || strlen(trim($to_date) <= 4))) {
 							$query_where .= ' DAYOFYEAR(DATE_ADD(MARRIAGE_DATE, INTERVAL (YEAR("'.$from_date.'") - YEAR(MARRIAGE_DATE)) YEAR)) >= DAYOFYEAR("'.$from_date.'") ';
 						} else if((trim($from_date) == "" || strlen(trim($from_date) <= 4)) && (trim($to_date) != "" && strlen(trim($to_date) > 4))) {
@@ -549,7 +561,13 @@ class Reports
 					{
 						if(trim($formated_from_date) != "" && trim($formated_to_date) != "")
 						{
-							$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_from_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) >= DAYOFYEAR("'.$formated_from_date.'") and DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_to_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+							$day_of_year_from_date = date('z', strtotime($formated_from_date));
+							$day_of_year_to_date = date('z', strtotime($formated_to_date));
+							if($day_of_year_from_date <= $day_of_year_to_date) {
+								$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_from_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) >= DAYOFYEAR("'.$formated_from_date.'") and DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_to_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+							} else {
+								$custom_field_filter_query = 'select distinct b.PROFILE_ID from PROFILE_DETAILS as a, PROFILE_CUSTOM_FIELD_VALUES as b where a.PROFILE_ID=b.PROFILE_ID and b.FIELD_ID='.$curr_custom_field_id.' and (DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_from_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) >= DAYOFYEAR("'.$formated_from_date.'") or DAYOFYEAR(DATE_ADD(CAST(b.FIELD_VALUE AS DATE), INTERVAL (YEAR("'.$formated_to_date.'") - YEAR(CAST(b.FIELD_VALUE AS DATE))) YEAR)) <= DAYOFYEAR("'.$formated_to_date.'"))';
+							}
 							
 						}
 						else if(trim($formated_from_date) != "" && trim($formated_to_date) == "")
