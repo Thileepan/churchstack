@@ -87,4 +87,14 @@ function endsWith($haystack, $needle) {
     return $needle === "" || strpos($haystack, $needle, strlen($haystack) - strlen($needle)) !== FALSE;
 }
 
+function prependZeroForUniformLength($input, $total_expected_length)
+{
+	$input = $input.'';
+	while(strlen($input) < $total_expected_length)
+	{
+		$input = '0'.$input;
+	}
+	return $input;
+}
+
 ?>

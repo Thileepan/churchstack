@@ -809,10 +809,17 @@ class Reports
 							} else if($report_columns[$i] == 2) {
 								$temp_value = $re_arranged_salutation[$salutation_id] .". ". $name.((trim($middle_name) != "")? " ".trim($middle_name) : "").((trim($last_name) != "")? " ".trim($last_name) : "");
 							} else if($report_columns[$i] == 3) {
-								$readable_dob = formatDateOfBirth($date_of_birth);
-								$this_date_time_stamp = strtotime($date_of_birth);
-								$this_date_time_stamp = $this_date_time_stamp+100000000000;
-								$temp_value = '<span style="display:none;">'.strtotime($this_date_time_stamp).'</span>'.$readable_dob;
+								if(trim($date_of_birth) != "" && trim($date_of_birth) != "0000-00-00") {
+									$readable_dob = formatDateOfBirth($date_of_birth);
+									$dob_time_stamp = strtotime($date_of_birth);
+									$dob_time_stamp = $dob_time_stamp+10000000000;//to make it positive
+									$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+								} else {
+									$readable_dob = "-";
+									$dob_time_stamp = 0;
+									$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+								}
+								$temp_value = '<span style="display:none;">'.$dob_time_stamp.'</span>'.$readable_dob;
 							} else if($report_columns[$i] == 4) {
 								if($gender_id == -1) {
 									$temp_value = $gender_values[0];
@@ -832,10 +839,17 @@ class Reports
 									$temp_value = $marital_values[$marital_status_id];
 								}
 							} else if($report_columns[$i] == 7) {
-								$readable_dom = formatDateOfBirth($marriage_date);
-								$this_date_time_stamp = strtotime($marriage_date);
-								$this_date_time_stamp = $this_date_time_stamp+100000000000;
-								$temp_value = '<span style="display:none;">'.strtotime($this_date_time_stamp).'</span>'.$readable_dom;
+								if(trim($marriage_date) != "" && trim($marriage_date) != "0000-00-00") {
+									$readable_dom = formatDateOfBirth($marriage_date);
+									$dom_time_stamp = strtotime($marriage_date);
+									$dom_time_stamp = $dom_time_stamp+10000000000;//to make it positive
+									$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+								} else {
+									$readable_dom = "-";
+									$dom_time_stamp = 0;
+									$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+								}
+								$temp_value = '<span style="display:none;">'.$dom_time_stamp.'</span>'.$readable_dom;
 							} else if($report_columns[$i] == 8) {
 								$temp_value = $marriage_place;
 							} else if($report_columns[$i] == 9) {
@@ -914,10 +928,17 @@ class Reports
 									foreach($settings_custom_field_details as $key_1=>$value_1)
 									{
 										if($value_1[0] == $cus_field_id && $value_1[1] == 4 && trim($cus_prof_field_value) != "") {
-											$readable_cus_field_date = formatDateOfBirth($cus_prof_field_value);
-											$this_date_time_stamp = strtotime($cus_prof_field_value);
-											$this_date_time_stamp = $this_date_time_stamp+100000000000;
-											$cus_prof_field_value = '<span style="display:none;">'.strtotime($this_date_time_stamp).'</span>'.$readable_cus_field_date;
+											if(trim($cus_prof_field_value) != "" && trim($cus_prof_field_value) != "0000-00-00") {
+												$readable_cus_field_date = formatDateOfBirth($cus_prof_field_value);
+												$this_date_time_stamp = strtotime($cus_prof_field_value);
+												$this_date_time_stamp = $this_date_time_stamp+10000000000;//to make it positive
+												$this_date_time_stamp = prependZeroForUniformLength($this_date_time_stamp, 13);
+											} else {
+												$readable_cus_field_date = "-";
+												$this_date_time_stamp = 0;
+												$this_date_time_stamp = prependZeroForUniformLength($this_date_time_stamp, 13);
+											}
+											$cus_prof_field_value = '<span style="display:none;">'.$this_date_time_stamp.'</span>'.$readable_cus_field_date;
 											break;
 										} else if($value_1[0] == $cus_field_id && $value_1[1] == 6 && trim($cus_prof_field_value) != "") {
 											$sel_box_array = explode(",", $value_1[2]);

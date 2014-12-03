@@ -161,7 +161,7 @@ function listAllProfiles(profileStatus)
 			table += '<option value="3"'+ ((profileStatus == 3)?'selected':'') +'>All</option>';
 		table += '</select>';
 	table += '</div>';
-	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Landline</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Marriage Date</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('listProfilesContent').innerHTML = table;
 	
 	oTable = $('#listProfilesTable').dataTable( {

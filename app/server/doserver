@@ -81,7 +81,32 @@ if($req == 1)
 					$append_status = '&nbsp;<span class="label label-important">Inactive</span>';
 				}
 
-				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>'.$append_status, formatDateOfBirth($profiles[$i][4]), $age, $profiles[$i][15], $profiles[$i][16], $actions);
+				if(trim($profiles[$i][4]) != "" && trim($profiles[$i][4]) != "0000-00-00") {
+					$readable_dob = formatDateOfBirth($profiles[$i][4]);
+					$dob_time_stamp = strtotime($profiles[$i][4]);
+					$dob_time_stamp = $dob_time_stamp+10000000000;//to make it positive
+					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+				} else {
+					$readable_dob = "-";
+					$dob_time_stamp = '0';
+					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+				}
+				$date_of_birth_to_show = '<span style="display:none;">'.$dob_time_stamp.'</span>'.$readable_dob;
+
+				if(trim($profiles[$i][8]) != "" && trim($profiles[$i][8]) != "0000-00-00") {
+					$readable_dom = formatDateOfBirth($profiles[$i][8]);
+					$dom_time_stamp = strtotime($profiles[$i][8]);
+					$dom_time_stamp = $dom_time_stamp+10000000000;//to make it positive
+					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+				} else {
+					$readable_dom = "-";
+					$dom_time_stamp = 0;
+					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+				}
+				$date_of_mrg_to_show = '<span style="display:none;">'.$dom_time_stamp.'</span>'.$readable_dom;
+
+
+				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>'.$append_status, $date_of_birth_to_show, $age, $date_of_mrg_to_show, $profiles[$i][16], $actions);
 			}
 		}
 	}
