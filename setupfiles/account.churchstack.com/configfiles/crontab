@@ -1,3 +1,5 @@
-*/30 * * * * php /var/www/html/app/notify/processmain.php >/dev/null 2>&1
+*/25 * * * * php /var/www/html/app/notify/processmain.php notificationType=1 >/dev/null 2>&1
+*/20 * * * * php /var/www/html/app/notify/processmain.php notificationType=2 >/dev/null 2>&1
+*/1 * * * * php /var/www/html/app/notify/processmain.php notificationType=3 >/dev/null 2>&1
 @daily php /var/www/html/app/notify/notifylicenseexpiring.php >/dev/null 2>&1
 @daily php /var/www/html/app/notify/notifylicenseexpired.php >/dev/null 2>&1

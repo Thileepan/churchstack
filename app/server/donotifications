@@ -273,7 +273,7 @@ else if($req == 6)
 		$to_return .= '<div class="span10">';
 			$to_return .= '<form class="form-horizontal" onsubmit="return false;">';
 				$to_return .= '<div class="control-group">';
-				$to_return .= '<label class="control-label" for="inputTemplateType">Create Template For</label>';
+				$to_return .= '<label class="control-label" for="inputTemplateType">Template Type : </label>';
 					$to_return .= '<div class="controls">';
 						$to_return .= '<select id="inputTemplateType" onchange="onChangeTemplateType();"><option value="1">Email</option><option value="2" '.(($template_type == 2)?"selected":"").'>SMS</option></select>';			
 					$to_return .= '</div>';
