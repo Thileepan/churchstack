@@ -572,19 +572,19 @@ function getAlertDiv(alertType, alertMsg, actionToDo, actionTakenMsg, actionCanc
 	if(typeof(actionCancelMsg) === 'undefined') actionCancelMsg = '';
 
 	var className;
-	var title;
+	var title = "";
 	if(alertType == 1) {
 		className = 'alert-success';
-		title = 'Well done!';
+//		title = 'Well done!';
 	} else if(alertType == 2) {
 		className = 'alert-error';
-		title = 'Oh snap!'
+//		title = 'Oh snap!'
 	} else if(alertType == 3) {
 		className = 'alert-info';
-		title = 'Heads up!';
+//		title = 'Heads up!';
 	} else if(alertType == 4) {
 		className = '';
-		title = 'Warning!';
+//		title = 'Warning!';
 	} 
 
 	var alertDiv = '<div class="alert ' + className + '"><button type="button" class="close" data-dismiss="alert">&times;</button><strong>' + title + '</strong>&nbsp;'+ alertMsg;
@@ -794,7 +794,7 @@ function getProfileSummaryResponse(response)
 		complete: function(response) 
 		{
 			$("#message").html("<font color='green'>"+response.responseText+"</font>");
-			document.getElementById('spanImportProg').innerHTML =  (response.responseText);
+//			document.getElementById('spanImportProg').innerHTML =  (response.responseText);
 		},
 		error: function()
 		{

@@ -321,7 +321,7 @@ else if($req == 4)
 							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">Pricing</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
-									$to_return .= $pricing.(($validity_in_days == 30)?'/ month':'/ year');
+									$to_return .= "USD ". $pricing.(($validity_in_days == 30)?'/ month':'/ year');
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div style="padding-bottom:6px;">';
@@ -500,7 +500,7 @@ else if($req == 8)
 								$to_return .= '<label class="control-label muted">Current Plan</label>';
 								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
 									$to_return .= '<span id="oldPlanName">'.$plan_name.'</span><BR>';
-									$to_return .= '<span id="oldPlanPricing">'.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
+									$to_return .= '<span id="oldPlanPricing">USD '.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div style="padding-bottom:6px;">';
@@ -664,12 +664,30 @@ else if($req == 14)
 
 	$plan_id = trim($_REQUEST['planID']);
 
+	$rsno = 1;
+	$msg = "Plan has been changed successfully";
+
 	$force_plan_change = 0;
 	$license_obj = new License($APPLICATION_PATH);
 	$license_obj->setChurchID($_SESSION["churchID"]);
-	$to_return = $license_obj->justChangeTheLicensePlanAlone($plan_id, $force_plan_change);
+	if($_SESSION["isOnTrial"] == 1) {
+		$to_return = $license_obj->justChangeTheLicensePlanAlone($plan_id, $force_plan_change);
+		$rsno = $to_return[0];
+		$msg = $to_return[1];
+	} else {
+		//Paid customer
+		$valid_result = $license_obj->validateLicensePlanChange($plan_id);
+		if($valid_result[0] == 0) {
+			$rsno = 0;
+			$msg = $valid_result[1];
+		} else {
+			//Sucess, but tell him to contact support though he is eligible for a change in the plan.
+			$rsno = 0;//important
+			$msg = "Plan change is possible, but inorder to execute the license plan change, kindly contact our support through email or phone to go for a new plan";
+		}
+	}
 
-	$ret_array = array("rsno"=>$to_return[0], "msg"=>$to_return[1]);
+	$ret_array = array("rsno"=>$rsno, "msg"=>$msg);
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($ret_array);
 	unset($json);

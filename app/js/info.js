@@ -502,7 +502,7 @@ function showNewPlanDetails()
 	var newPlanPricing = newPlanInfoArr[1];
 	var newPlanValidityDays = parseInt(newPlanInfoArr[2]);
 
-	document.getElementById('newPlanPricing').innerHTML = newPlanPricing + ' / ' + ((newPlanValidityDays == 30)?'Monthly':'Yearly');
+	document.getElementById('newPlanPricing').innerHTML = "USD "+ newPlanPricing + ' / ' + ((newPlanValidityDays == 30)?'Monthly':'Yearly');
 }
 
 function getPaymentWorkFlow()

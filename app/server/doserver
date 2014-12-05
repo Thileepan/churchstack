@@ -1281,7 +1281,7 @@ else if($req == 15)
 	{
 		if ($_FILES["profilePhotoPath"]["error"] > 0)
 		{
-			echo "Error: " . $_FILES["file"]["error"];
+			echo "Error: " . $_FILES["profilePhotoPath"]["error"];
 		}
 		else
 		{
