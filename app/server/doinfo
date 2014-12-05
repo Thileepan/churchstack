@@ -333,7 +333,10 @@ else if($req == 4)
 							$to_return .= '<div style="padding-bottom:6px;">';
 								$to_return .= '<label class="control-label muted">License Status</label>';
 								$to_return .= '<div class="controls" style="padding-top:5px;">';
-									$to_return .= (($is_trial == 1)?'Trial &nbsp;&nbsp;<span class="label label-info curHand" onclick="getPaymentWorkFlow();">Buy Now</span>':'Paid');
+									$to_return .= (($is_trial == 1)?'Trial':'Paid');
+									//UNCOMMENT THE FOLLOWING LINE ONCE PAYPAL INTEGRATION IS COMPLETED 
+									//$to_return .= '&nbsp;&nbsp;<span class="label label-info curHand" onclick="getPaymentWorkFlow();">Buy Now</span>';
+
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div style="padding-bottom:6px;">';
@@ -740,13 +743,13 @@ else if($req == 15)
 								$to_return .= '<label class="control-label muted">Billing Plan</label>';
 								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
 									$to_return .= '<span id="oldPlanName">'.$plan_name.'</span><BR>';
-									$to_return .= '<span id="oldPlanPricing">'.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
+									$to_return .= '<span id="oldPlanPricing">USD '.$pricing .' / '. (($is_yearly)?"Year":"Month").'</span>';
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div style="padding-bottom:6px;">';
 								//$to_return .= '<label class="control-label muted">Billing Plan</label>';
 								$to_return .= '<div class="controls muted" style="padding-top:5px;">';
-									$to_return .= ($is_trial)?'Your account is in trial and it will expire on '.$trial_expiry_date:'Your license will be expire on '.$lic_expiry_date;
+									$to_return .= ($is_trial)?'Your account is on trial which expires/expired on '.$trial_expiry_date:'Your license expires/expired on '.$lic_expiry_date;
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 							$to_return .= '<div class="form-actions">';
