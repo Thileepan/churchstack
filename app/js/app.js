@@ -153,29 +153,14 @@ function listAllProfiles(profileStatus)
 		profileStatus = cValue;
 	}
 
+	_profileStatus = profileStatus;
 	var columnNames = getProfileColumnsInCookie();
 	if(columnNames == '') {
 		setDefaultProfileColumns();
 	} else {
 		checkProfileColumns(columnNames);
 	}
-	
-	var table = '<div class="row-fluid">';
-			table += '<div class="span6">';
-				table += 'Filter by profile status: ';
-				table += '<select onchange="filterProfilesList(this)">';
-					table += '<option value="1"'+ ((profileStatus == 1 || cValue == '')?'selected':'') +'>Active</option>';
-					table += '<option value="2"'+ ((profileStatus == 2)?'selected':'') +'>Inactive</option>';
-					table += '<option value="3"'+ ((profileStatus == 3)?'selected':'') +'>All</option>';
-				table += '</select>';
-			table += '</div>';
-			table += '<div class="span6">';
-				table += '<a href="#columnsModal" role="button" data-toggle="modal" class="pull-right"><i class="icon-align-justify"></i>&nbsp;Select Columns</a>';
-			table += '</div>';
-		table += '</div>';
-	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th>Family Head</th><th></th><th>Name</th><th>DOB</th><th>Age</th><th>Gender</th><th>Relationship</th><th>Marital Status</th><th>Mariage Date</th><th>Marriage Location</th><th>Address</th><th>Mobile</th><th>Home Phone</th><th>Work Phone</th><th>Email</th><th>Babtised</th><th>Confirmation</th><th>Occupation</th><th>Is Another Church Member</th><th>Email Notification</th><th>SMS Notification</th><th>Profile Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
-	document.getElementById('listProfilesContent').innerHTML = table;
-	
+
 	var formPostData = "req=1&profileStatus=" + profileStatus;
 	$.ajax({
 		type:'POST',
@@ -188,6 +173,23 @@ function listAllProfiles(profileStatus)
 
 function listAllProfilesResponse(response)
 {
+	var table = '';
+	table += '<div class="row-fluid">';
+		table += '<div class="span6">';
+			table += 'Filter by profile status: ';
+			table += '<select onchange="filterProfilesList(this)">';
+				table += '<option value="1"'+ ((_profileStatus == 1)?'selected':'') +'>Active</option>';
+				table += '<option value="2"'+ ((_profileStatus == 2)?'selected':'') +'>Inactive</option>';
+				table += '<option value="3"'+ ((_profileStatus == 3)?'selected':'') +'>All</option>';
+			table += '</select>';
+		table += '</div>';
+		table += '<div class="span6">';
+			table += '<a href="#columnsModal" role="button" data-toggle="modal" class="pull-right"><i class="icon-align-justify"></i>&nbsp;Select Columns</a>';
+		table += '</div>';
+	table += '</div>';
+	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th>Family Head</th><th></th><th>Name</th><th>DOB</th><th>Age</th><th>Gender</th><th>Relationship</th><th>Marital Status</th><th>Mariage Date</th><th>Marriage Location</th><th>Address</th><th>Mobile</th><th>Home Phone</th><th>Work Phone</th><th>Email</th><th>Babtised</th><th>Confirmation</th><th>Occupation</th><th>Is Another Church Member</th><th>Email Notification</th><th>SMS Notification</th><th>Profile Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	document.getElementById('listProfilesContent').innerHTML = table;
+
 	var dataObj = eval("(" + response + ")" );
 	oTable = $('#listProfilesTable').DataTable( {
 		"oTableTools": {

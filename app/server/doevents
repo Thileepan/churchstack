@@ -1,6 +1,8 @@
 <?php
 $APPLICATION_PATH = "../";
 
+//error_reporting(E_ALL);
+//ini_set("display_errors", "On");
 //This files secures the action being triggered by cross-domain attacks
 include $APPLICATION_PATH."utils/validateauth.php";
 
@@ -9,7 +11,7 @@ include_once $APPLICATION_PATH . '/classes/class.events.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';
 include_once $APPLICATION_PATH . '/classes/class.groups.php';
 include_once $APPLICATION_PATH . '/classes/class.recurr.php';
-include $APPLICATION_PATH."utils/utilfunctions.php";
+include_once $APPLICATION_PATH."utils/utilfunctions.php";
 
 //process request
 $req = $_REQUEST['req'];
