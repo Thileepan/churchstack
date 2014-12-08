@@ -362,6 +362,7 @@ class Events
 	public function getEventOccurrences($start_date, $end_date, $time_zone, $virtualLimit=50)
 	{
 		include_once $this->APPLICATION_PATH . 'classes/class.recurr.php';
+		include_once $this->APPLICATION_PATH . 'utils/utilfunctions.php';
 
 		$event_info = array();
 		$list_all_events = false;
@@ -371,6 +372,11 @@ class Events
 		//echo "eventdetails::::::::".$total_events;
 		if(is_array($event_details) && $total_events > 0)
 		{
+			$time_zone = $_SESSION['churchTimeZone'];
+			$dt = Carbon::now($time_zone);
+			$today = $dt->year."-".$dt->month."-".$dt->day;
+			$today_timestamp = $dt->timestamp;
+
 			// Recurr Transformer Initialization
 			$type = 2;
 			$recurr_obj = new RecurrInterface($this->APPLICATION_PATH);
@@ -393,6 +399,7 @@ class Events
 					$recurr_obj->setRRule($rrule);
 					$recurr_obj->setStartDate($start_date_db);
 					$recurr_obj->setEndDate($end_date_db);
+					$recurr_obj->setBetweenConstraintDate($start_date, $end_date, true);
 					$recurr_obj->setVirtualLimit($virtualLimit);
 					$occurrences = $recurr_obj->getOccurrences();
 					//print_r($occurrences);
@@ -409,6 +416,8 @@ class Events
 								
 								if($event_date >= $start_date && $event_date <= $end_date)
 								{
+									$start_time = convertRailwayTimeToFullTime($start_time);
+									/*
 									if(strlen($start_time) > 3) {
 										$hour = substr($start_time, 0, 2);
 										$min = substr($start_time, 2, 2);
@@ -416,9 +425,10 @@ class Events
 										$hour = "0".substr($start_time, 0, 1);
 										$min = substr($start_time, 1, 2);
 									}
+									*/
 									$sec = '00';
 									$event_start_date_alone = $event_date;
-									$event_date .= ' ' . $hour . ':' . $min . ':' . $sec;
+									$event_date .= ' ' . $start_time;
 									$event_start_time_alone = $hour.''.$min;
 									$event_info[] = array('start'=>$event_date, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$start_date_db, "startTimeAlone"=>$event_start_time_alone);
 								}
@@ -446,7 +456,7 @@ class Events
 		return $event_info;
 	}
 
-	public function getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit)
+	public function getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit, $today_with_time)
 	{
 		$event_date = '';
 		if(!$is_obj_initialized)
@@ -469,6 +479,9 @@ class Events
 			$recurr_obj->setRRule($rrule);
 			$recurr_obj->setStartDate($start_date);
 			$recurr_obj->setEndDate($end_date);
+			$recurr_obj->setStartTime($start_time);
+			$recurr_obj->setEndTime($end_time);
+			$recurr_obj->setAfterConstraintDate($today_with_time, true);
 			$recurr_obj->setVirtualLimit($virtualLimit);
 			$occurrences = $recurr_obj->getOccurrences();
 			//print_r($occurrences);
@@ -479,16 +492,7 @@ class Events
 				if($total_occurrence > 0)
 				{
 					$event_date = $occurrences[0]->getStart()->format("Y-m-d");	
-					
-					if(strlen($start_time) > 3) {
-						$hour = substr($start_time, 0, 2);
-						$min = substr($start_time, 2, 2);
-					} else {
-						$hour = "0".substr($start_time, 0, 1);
-						$min = substr($start_time, 1, 2);
-					}
-					$sec = '00';
-					$event_date .= ' ' . $hour . ':' . $min . ':' . $sec;					
+					$event_date .= " ".$start_time;					
 				}
 			}
 		}
@@ -544,10 +548,10 @@ class Events
 		$time_zone = $this->time_zone;
 		$current_time = Carbon::now($this->time_zone);
 		$today = $current_time->year."-".$current_time->month."-".$current_time->day;	
+		$today_with_time = $today." ".$current_time->hour.":".$current_time->minute.":".$current_time->second;
 
 		$to_return = array();
 		//$notification_type = 1; //EMAIL NOTIFICATIONS
-		
 		$event_details = $this->getUpcomingEventNotificationDetails($today);
 		if(is_array($event_details))
 		{
@@ -571,8 +575,8 @@ class Events
 					$location = $event_details[$i][3];
                     $start_date = $event_details[$i][4];
 					$end_date = $event_details[$i][5];
-					$start_time = $event_details[$i][6];
-					$end_time = $event_details[$i][7];
+					$start_time = convertRailwayTimeToFullTime($event_details[$i][6]);
+					$end_time = convertRailwayTimeToFullTime($event_details[$i][7]);
 					$rrule = $event_details[$i][8];
 					$priority = $event_details[$i][9];
 					$organiser = $event_details[$i][10];
@@ -582,11 +586,11 @@ class Events
 					$notification_period = $event_details[$i][14];
 					
 					if($rrule != '') {
-						$next_event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $today, $end_date, $start_time, $end_time, $this->time_zone, $rrule, $virtualLimit);					
+						$next_event_date = $this->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $today, $end_date, $start_time, $end_time, $this->time_zone, $rrule, $virtualLimit, $today_with_time);					
 					} else {
-						$next_event_date = $start_date." ".convertRailwayTimeToFullTime($start_time);
+						$next_event_date = $start_date." ".$start_time;
 					}
-				
+
 					if($next_event_date != '-')
 					{
 						$event_time = Carbon::createFromFormat('Y-m-d H:i:s', $next_event_date, $this->time_zone);

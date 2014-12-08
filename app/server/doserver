@@ -24,7 +24,17 @@ if($req == 1)
 	$profiles = $profiles_obj->getAllProfiles($profile_status);
 	$settings_obj = new ProfileSettings($APPLICATION_PATH);
 	$salutation_values = $settings_obj->getOptions(1);
+	$relation_ship_results = $settings_obj->getOptions(2);
+	
+	//values
+	$gender_values = array('Not Sure', 'Male', 'Female');
+	$marital_values = array('Not sure', 'Single', 'Married', 'Widow', 'Widower');
+	$baptised_values = array('Not sure', 'Yes', 'No');
+	$confirmation_values = array('Not sure', 'Yes', 'No');
+	$is_another_church_values = array('Not sure', 'Yes', 'No');
+	$profile_status_values = array('Active', 'InActive', 'Deleted');
 	$re_arranged_salutation = array();
+	$relation_ship_values = array();
 	if(is_array($salutation_values))
 	{
 		foreach($salutation_values as $key => $value)
@@ -40,6 +50,11 @@ if($req == 1)
 		}
 	}
 
+	foreach($relation_ship_results as $rel_key=>$rel_details)
+	{
+		$relation_ship_values[$rel_details[$rel_key][0]] = $rel_details[$rel_key][1];
+	}
+
 	$is_results_available = false;
 	if(is_array($profiles))
 	{
@@ -49,20 +64,12 @@ if($req == 1)
 			$is_results_available = true;
 			for($i=0; $i<$profile_count; $i++) {
 				
+				//Profile ID and Icon
 				$is_profile_head = (($profiles[$i][25] == -1)?1:0);
 				$profile_id = 'CS'.appendZeroInUniqueID($profiles[$i][0]);
-				$parent_head_icon = (($is_profile_head)?'<i class="icon-user"></i>':'');
-
-				$actions = '<div class="dropdown">';
-					$actions .= '<i title="Edit Profile" class="curHand icon-pencil" onclick="getAddOrEditProfileForm(1, '.$profiles[$i][0].')"></i>&nbsp;&nbsp;&nbsp;';
-					$actions .= '<i title="Delete Profile" class="curHand icon-trash" onclick="deleteProfileConfirmation('.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>&nbsp;&nbsp;&nbsp;';
-					if($profiles[$i][19] == 1) {
-						$actions .= '<i title="Deactivate Profile" class="curHand icon-ban-circle" onclick="deactivateProfileConfirmation(1, '.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>';
-					} else if($profiles[$i][19] == 2) {
-						$actions .= '<i title="Activate This Profile" class="curHand icon-play" onclick="deactivateProfileConfirmation(2, '.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>';
-					}
-				$actions .= '</div>';				
+				$parent_head_icon = (($is_profile_head)?'<i class="icon-user"></i>':'');								
 				
+				//Date Of Birth & Age
 				$age = '-';
 				$date_of_birth = $profiles[$i][4];
 				if($date_of_birth != '0000-00-00') {
@@ -70,43 +77,109 @@ if($req == 1)
 					$age = Carbon::createFromDate($dob_arr[0], $dob_arr[1], $dob_arr[2])->age;
 				}
 
+				//Profile Names
 				$salutation_id = $profiles[$i][1];
 				if($salutation_id != "") {
 					$salutation_value = $re_arranged_salutation[$salutation_id];
 				}
 				$profile_name = $salutation_value .'. '. $profiles[$i][2].' '.$profiles[$i][26].' '.$profiles[$i][27];
+				$family_head_name = (($is_profile_head)?$profile_name:'-');
 
-				$append_status = '';
-				if($profiles[$i][19] == 2) {
-					$append_status = '&nbsp;<span class="label label-important">Inactive</span>';
-				}
-
-				if(trim($profiles[$i][4]) != "" && trim($profiles[$i][4]) != "0000-00-00") {
-					$readable_dob = formatDateOfBirth($profiles[$i][4]);
-					$dob_time_stamp = strtotime($profiles[$i][4]);
-					$dob_time_stamp = $dob_time_stamp+10000000000;//to make it positive
-					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+				//Gender
+				$gender_id = $profiles[$i][5];
+				if($gender_id == -1) {
+					$gender = $gender_values[0];
 				} else {
-					$readable_dob = "-";
-					$dob_time_stamp = '0';
-					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+					$gender = $gender_values[$gender_id];
 				}
-				$date_of_birth_to_show = '<span style="display:none;">'.$dob_time_stamp.'</span>'.$readable_dob;
 
-				if(trim($profiles[$i][8]) != "" && trim($profiles[$i][8]) != "0000-00-00") {
-					$readable_dom = formatDateOfBirth($profiles[$i][8]);
-					$dom_time_stamp = strtotime($profiles[$i][8]);
-					$dom_time_stamp = $dom_time_stamp+10000000000;//to make it positive
-					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+				//relationship
+				$relation_ship_id = $profiles[$i][6];
+				if($relation_ship_id == -1) {
+					$relation_ship = 'Not Sure';
 				} else {
-					$readable_dom = "-";
-					$dom_time_stamp = 0;
-					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+					$relation_ship = $relation_ship_values[$relation_ship_id];
 				}
-				$date_of_mrg_to_show = '<span style="display:none;">'.$dom_time_stamp.'</span>'.$readable_dom;
 
+				//Marital Details
+				$marital_status_id = $profiles[$i][7];
+				if($marital_status_id == -1) {
+					$marital_status = $marital_values[0];
+				} else {
+					$marital_status = $marital_values[$marital_status_id];
+				}
+				$marriage_date = formatDateOfBirth($profiles[$i][8]);
+				$marriage_place = $profiles[$i][9];
 
-				$to_return['aaData'][] = array($profile_id, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>'.$append_status, $date_of_birth_to_show, $age, $date_of_mrg_to_show, $profiles[$i][16], $actions);
+				//Address
+				$address1 = $profiles[$i][10];
+				$address2 = $profiles[$i][11];
+				$address3 = $profiles[$i][12];
+				$area = $profiles[$i][13];
+				$pincode = $profiles[$i][14];
+				$full_address = $address1;
+				if(trim($address2) != "") {
+					$full_address .= ',<BR>' . $address2;
+				}
+				if(trim($address3) != "") {
+					$full_address .= ',<BR>' . $address3;
+				}
+				if(trim($area) != "") {
+					$full_address .= ',<BR>' . $area;
+				}
+				if(trim($pincode) != "") {
+					$full_address .= ' - ' . $pincode;
+				}
+
+				//Contact Details
+				$mobile = $profiles[$i][16];
+				$home_phone = $profiles[$i][15];
+				$work_phone = $profiles[$i][28];
+				$email = $profiles[$i][18];
+
+				//Other Details
+				$baptised_id = $profiles[$i][21];
+				if($baptised_id == -1) {
+					$baptised = $baptised_values[0];
+				} else {
+					$baptised = $baptised_values[$babtised_id];
+				}
+				$confirmation_id = $profiles[$i][22];
+				if($confirmation_id == -1) {
+					$confirmation = $confirmation_values[0];
+				} else {
+					$confirmation = $confirmation_values[$confirmation_id];
+				}
+				$occupation = $profiles[$i][23];
+				$is_another_church_member_id = $profiles[$i][24];
+				if($is_another_church_member_id == -1) {
+					$is_another_church_member = $is_another_church_values[0];
+				} else {
+					$is_another_church_member = $is_another_church_values[$is_another_church_member_id];
+				}
+				$email_notification = $profiles[$i][31];
+				$sms_notification = $profiles[$i][32];
+				//Profile Status
+				$profile_status_id = $profiles[$i][19];
+				if($profile_status_id == 1) {
+					$profile_status = '<span class="label label-success">Active</span>';
+				} else if($profile_status_id == 2) {
+					$profile_status = '<span class="label label-important">Inactive</span>';
+				}
+				$notes = $profiles[$i][20];
+
+				//Actions
+				$actions = '<div class="dropdown">';
+					$actions .= '<i title="Edit Profile" class="curHand icon-pencil" onclick="getAddOrEditProfileForm(1, '.$profiles[$i][0].')"></i>&nbsp;';
+					$actions .= '<i title="Delete Profile" class="curHand icon-trash" onclick="deleteProfileConfirmation('.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>&nbsp;';
+					if($profiles[$i][19] == 1) {
+						$actions .= '<i title="Deactivate Profile" class="curHand icon-ban-circle" onclick="deactivateProfileConfirmation(1, '.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>';
+					} else if($profiles[$i][19] == 2) {
+						$actions .= '<i title="Activate This Profile" class="curHand icon-play" onclick="deactivateProfileConfirmation(2, '.$profiles[$i][0].',\''. $profile_id. '\', \''.$profiles[$i][2].'\','. $is_profile_head .')"></i>';
+					}
+				$actions .= '</div>';
+
+				$to_return['aaData'][] = array($profile_id, $family_head_name, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $gender, $relation_ship, $marital_status, $marriage_date, $marriage_place, $full_address, $mobile, $home_phone, $work_phone, $email, $baptised, $confirmation, $occupation, $is_another_church_member, $email_notification, $sms_notification, $profile_status, $notes, $actions);
 			}
 		}
 	}

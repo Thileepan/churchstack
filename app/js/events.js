@@ -422,18 +422,27 @@ function listAllEvents(eventStatus, doNotHideAlertDiv)
 	}
 	document.getElementById('hiddenEventTabID').value = eventStatus;
 	
-	var table = '<table id="eventList" class="table table-condensed"><thead><tr><th>Event</th><th>Description</th><th>Start Date</th><th>End Date</th><th>Next Event Date</th><th>Location</th><th>Organiser</th><th>Actions</th></tr></thead></table>';
+	var tableID = 'eventList-' + eventStatus;
+	var table = '<table id="'+ tableID +'" class="table table-condensed"><thead><tr><th>Event</th><th>Description</th><th>Start Date</th><th>End Date</th>';
+	if(eventStatus == 1) {
+		table += '<th>Next Event Date</th>';
+	}	
+	table += '<th>Location</th><th>Organiser</th><th>Actions</th></tr></thead></table>';
 
 	if(eventStatus == 1) {
 		document.getElementById('pageHeader').innerHTML = 'Upcoming Events';
 		document.getElementById('upcomingEventsDiv').innerHTML = table;
+		document.getElementById('upcomingEventsDiv').className = 'tab-pane active';
+		document.getElementById('pastEventsDiv').className = 'tab-pane';
 	} else if(eventStatus == 2) {
 		document.getElementById('pageHeader').innerHTML = 'Past Events';
 		document.getElementById('pastEventsDiv').innerHTML = table;
+		document.getElementById('upcomingEventsDiv').className = 'tab-pane';
+		document.getElementById('pastEventsDiv').className = 'tab-pane active';
 	}
 	document.getElementById('pageContent').className = "span12";
 
-	oTable = $('#eventList').dataTable( {
+	oTable = $('#'+tableID).dataTable( {
 /*		"aoColumns": [
 			{ "sWidth": "15%" },
 			{ "sWidth": "20%"  },

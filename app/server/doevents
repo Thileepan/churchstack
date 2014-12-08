@@ -9,6 +9,7 @@ include_once $APPLICATION_PATH . '/classes/class.events.php';
 include_once $APPLICATION_PATH . '/classes/class.profiles.php';
 include_once $APPLICATION_PATH . '/classes/class.groups.php';
 include_once $APPLICATION_PATH . '/classes/class.recurr.php';
+include $APPLICATION_PATH."utils/utilfunctions.php";
 
 //process request
 $req = $_REQUEST['req'];
@@ -542,8 +543,8 @@ else if($req == 5)
 	$time_zone = $_SESSION['churchTimeZone'];
 	$dt = Carbon::now($time_zone);
 	$today = $dt->year."-".$dt->month."-".$dt->day;
-	//echo $today;
-
+	$today_with_time = $today." ".$dt->hour.":".$dt->minute.":".$dt->second;
+	
 	$events_obj = new Events($APPLICATION_PATH);
 	$event_details = $events_obj->getAllEvents($list_all_events, $start_date, $today, $start_time, $end_time, $event_status);
 	//print_r($event_details);
@@ -575,19 +576,18 @@ else if($req == 5)
 				$virtualLimit = 1;
 				$start_date = $event_details[$i][4];
 				$end_date = $event_details[$i][5];
-				$start_time = $event_details[$i][6];
-				$end_time = $event_details[$i][7];
+				$start_time = convertRailwayTimeToFullTime($event_details[$i][6]);
+				$end_time = convertRailwayTimeToFullTime($event_details[$i][7]);
 				$rrule = $event_details[$i][8];				
 				if($rrule != '') {
-					if($start_date > $today) {
-						$event_start_date = $start_date;
-					} else {
-						$event_start_date = $today;
-					}
-					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $event_start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit);					
+					$next_event_date = $events_obj->getNextImmediateEventDate($is_obj_initialized, $recurr_obj, $start_date, $end_date, $start_time, $end_time, $time_zone, $rrule, $virtualLimit, $today_with_time);					
 				}
 
-				$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $next_event_date, $event_details[$i][3], $event_details[$i][10], $actions);
+				if($event_status == 1) {
+					$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $next_event_date, $event_details[$i][3], $event_details[$i][10], $actions);
+				} else {
+					$to_return['aaData'][] = array($event_details[$i][1], $event_details[$i][2], $start_date, $end_date, $event_details[$i][3], $event_details[$i][10], $actions);
+				}
 			}
 		}
 	}

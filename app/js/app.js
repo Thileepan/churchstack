@@ -152,43 +152,145 @@ function listAllProfiles(profileStatus)
 	if(cValue != '') {
 		profileStatus = cValue;
 	}
+
+	var columnNames = getProfileColumnsInCookie();
+	if(columnNames == '') {
+		setDefaultProfileColumns();
+	} else {
+		checkProfileColumns(columnNames);
+	}
 	
-	var table = '<div class="pull-right">';
-		table += 'Filter by profile status: ';
-		table += '<select onchange="filterProfilesList(this)">';
-			table += '<option value="1"'+ ((profileStatus == 1 || cValue == '')?'selected':'') +'>Active</option>';
-			table += '<option value="2"'+ ((profileStatus == 2)?'selected':'') +'>Inactive</option>';
-			table += '<option value="3"'+ ((profileStatus == 3)?'selected':'') +'>All</option>';
-		table += '</select>';
-	table += '</div>';
-	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th></th><th>Name</th><th>Date Of Birth</th><th>Age</th><th>Marriage Date</th><th>Mobile Number</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	var table = '<div class="row-fluid">';
+			table += '<div class="span6">';
+				table += 'Filter by profile status: ';
+				table += '<select onchange="filterProfilesList(this)">';
+					table += '<option value="1"'+ ((profileStatus == 1 || cValue == '')?'selected':'') +'>Active</option>';
+					table += '<option value="2"'+ ((profileStatus == 2)?'selected':'') +'>Inactive</option>';
+					table += '<option value="3"'+ ((profileStatus == 3)?'selected':'') +'>All</option>';
+				table += '</select>';
+			table += '</div>';
+			table += '<div class="span6">';
+				table += '<a href="#columnsModal" role="button" data-toggle="modal" class="pull-right"><i class="icon-align-justify"></i>&nbsp;Select Columns</a>';
+			table += '</div>';
+		table += '</div>';
+	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th>Family Head</th><th></th><th>Name</th><th>DOB</th><th>Age</th><th>Gender</th><th>Relationship</th><th>Marital Status</th><th>Mariage Date</th><th>Marriage Location</th><th>Address</th><th>Mobile</th><th>Home Phone</th><th>Work Phone</th><th>Email</th><th>Babtised</th><th>Confirmation</th><th>Occupation</th><th>Is Another Church Member</th><th>Email Notification</th><th>SMS Notification</th><th>Profile Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('listProfilesContent').innerHTML = table;
 	
-	oTable = $('#listProfilesTable').dataTable( {
-		"aoColumns": [
-			{ "sWidth": "10%" },
-			{ "sWidth": "5%"  },
-			{ "sWidth": "25%" },
-			{ "sWidth": "10%"  },
-			{ "sWidth": "10%"  },
-			{ "sWidth": "15%"  },
-			{ "sWidth": "15%"  },
-			{ "sWidth": "10%"  },
-		],
-        "bProcessing": true,
-		"bDestroy": true,
-        "sAjaxSource": "server/doserver",
-		"iDisplayLength":100,
-        "fnServerData": function ( sSource, aoData, fnCallback ) {
-            $.ajax( {
-                "dataType": 'json',
-                "type": "POST",
-                "url": sSource,
-                "data": "req=1&profileStatus=" + profileStatus,
-                "success": fnCallback
-            } );
-        }
+	var formPostData = "req=1&profileStatus=" + profileStatus;
+	$.ajax({
+		type:'POST',
+		url:serverFile,
+		data:formPostData,
+		success:listAllProfilesResponse,
+		error:HandleAjaxError
 	});
+}
+
+function listAllProfilesResponse(response)
+{
+	var dataObj = eval("(" + response + ")" );
+	oTable = $('#listProfilesTable').DataTable( {
+		"oTableTools": {
+		"aButtons": [
+			"copy",
+			"print",
+			"csv",
+			"xls",
+			"pdf",
+		 ],
+		"sSwfPath": "plugins/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        },
+        "bProcessing": true,
+		"aaData": dataObj.aaData,		
+	});
+	showOrHideProfileColumns();
+}
+
+function saveProfileColumns()
+{
+	var columns = new Array();
+	var columnNames = $('#columnNames').val().split(',');
+	for(var i=0; i<columnNames.length; i++)
+	{
+		if($('#'+columnNames[i]).is(':checked')) {
+			columns.push(columnNames[i]);
+		}
+	}
+
+	var selectedColumnNames = columns.join(',');
+	setProfileColumnsInCookie(selectedColumnNames);
+	checkProfileColumns(selectedColumnNames);
+	showOrHideProfileColumns();
+}
+
+function setDefaultProfileColumns()
+{
+	var columnNames = 'profileID,icon,name,dob,age,gender,address,mobile,profileStatus';
+	setProfileColumnsInCookie(columnNames);
+	checkProfileColumns(columnsNames);
+}
+
+function setProfileColumnsInCookie(columnNames)
+{
+	//set cookie to remember the filter option.
+	var exDays = 1;
+	var cName = 'cs_profiles_columns_value';
+	var cValue = columnNames;
+	setCookie(cName, cValue, exDays);	
+}
+
+function checkProfileColumns(columnNames)
+{
+	//check the options in UI
+	var columns = new Array();
+	var columnNames = columnNames.split(',');
+	for(var i=0; i<columnNames.length; i++)
+	{
+		$('#'+columnNames[i]).attr('checked','checked');
+	}
+}
+
+function getProfileColumnsInCookie()
+{
+	//get cookie
+	var columnNames = '';
+	var cName = 'cs_profiles_columns_value';
+	var cValue = getCookie(cName);
+	if(cValue != '') {
+		columnNames = cValue;
+	}
+	return columnNames;
+}
+
+function showOrHideProfileColumns()
+{
+	/* Get the DataTables object again
+	this is not a recreation, just a get of the object */
+
+	// Get the column API object
+	var oTable = $('#listProfilesTable').DataTable();
+
+	var columns = new Array();
+	var columnNames = $('#columnNames').val().split(',');
+	for(var i=0; i<columnNames.length; i++)
+	{
+		//hide all columns
+		oTable.fnSetColumnVis( i, false );
+		if($('#'+columnNames[i]).is(':checked')) {
+			columns.push($('#'+columnNames[i]).val());
+		}
+	}
+
+	console.log(columns);
+	for(var j=0; j<columns.length; j++)
+	{
+		//show only selected columns
+		var iCol = columns[j];
+		oTable.fnSetColumnVis( iCol, true );
+	}
+	/* 3 - indicates profile name index - DO NOT CHANGE */
+	var profileNameIndex = $.inArray('3', columns);
+	$('#listProfilesTable thead th:eq('+profileNameIndex+')').width('20%');
 }
 
 function getAddOrEditProfileForm(val, profileID)

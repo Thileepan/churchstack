@@ -110,6 +110,50 @@ include $APPLICATION_PATH."header";
 			</div>
 			<input type="hidden" id="screenID" value="1" />
 
+			<div id="columnsModal" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-header" id="modalHeader">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4>Select your columns</h4>
+					<span class="muted">Select your favourite columns here to show always in list profile page. If you want to view custom fields data, please use the reports section.</span>
+				</div>
+				<div class="modal-body" id="modalBody">
+					<div class="row-fluid">
+						<div class="span6">
+							<div><input type="checkbox" id="profileID" value="0">&nbsp;Profile ID</div>
+							<div style="display:none"><input type="checkbox" id="headName" value="1">&nbsp;Family Head Name</div>
+							<div style="display:none"><input type="checkbox" id="icon" value="2" checked>&nbsp;Icon</div>
+							<div style="display:none"><input type="checkbox" id="name" value="3" checked>&nbsp;Name</div>
+							<div><input type="checkbox" id="dob" value="4">&nbsp;DOB</div>
+							<div><input type="checkbox" id="age" value="5">&nbsp;Age</div>
+							<div><input type="checkbox" id="gender" value="6">&nbsp;Gender</div>
+							<div><input type="checkbox" id="relationship" value="7">&nbsp;Relationship</div>
+							<div><input type="checkbox" id="maritalStatus" value="8">&nbsp;Marital Status</div>
+							<div><input type="checkbox" id="marriageDate" value="9">&nbsp;Marriage Date</div>
+							<div><input type="checkbox" id="marriagePlace" value="10">&nbsp;Marriage Place</div>
+							<div><input type="checkbox" id="address" value="11">&nbsp;Address</div>							
+						</div>
+						<div class="span6">
+							<div><input type="checkbox" id="mobile" value="12">&nbsp;Mobile</div>
+							<div><input type="checkbox" id="homeWork" value="13">&nbsp;Home Work</div>
+							<div><input type="checkbox" id="workPhone" value="14">&nbsp;Work Phone</div>
+							<div><input type="checkbox" id="email" value="15">&nbsp;Email</div>
+							<div><input type="checkbox" id="babtised" value="16">&nbsp;Babtised</div>
+							<div><input type="checkbox" id="confirmation" value="17">&nbsp;Confirmation</div>
+							<div><input type="checkbox" id="occupation" value="18">&nbsp;Occupation</div>
+							<div><input type="checkbox" id="isAnotherChurch" value="19">&nbsp;Is Another Church Member</div>
+							<div><input type="checkbox" id="emailNotification" value="20">&nbsp;Email Notification</div>
+							<div><input type="checkbox" id="smsNotification" value="21">&nbsp;SMS Notification</div>
+							<div><input type="checkbox" id="profileStatus" value="22">&nbsp;Profile Status</div>
+							<div><input type="checkbox" id="notes" value="23">&nbsp;Notes</div>
+						</div>
+						<input type="hidden" id="columnNames" value="profileID,headName,icon,name,dob,age,gender,relationship,maritalStatus,marriageDate,marriagePlace,address,mobile,homeWork,workPhone,email,babtised,confirmation,occupation,isAnotherChurch,emailNotification,smsNotification,profileStatus,notes" />
+					</div>
+				</div>
+				<div class="modal-footer" id="modalFooter">
+					<a href="#" class="btn" data-dismiss="modal" aria-hidden="true" id="subcolumnsModalCloseBtn">Close</a>
+					<a id="saveColumnsBtn" href="#" class="btn btn-primary" onclick="saveProfileColumns();$('#subcolumnsModalCloseBtn').click();">Save changes</a>
+				</div>
+			</div>
         </div>
     </div>
 </div>

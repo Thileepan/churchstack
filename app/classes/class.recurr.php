@@ -36,13 +36,15 @@ class RecurrInterface
 //			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Recurrence.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/RecurrenceCollection.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/ArrayTransformer.php";
+//			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/Constraint.php";
+//			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/ConstraintInterface.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DateUtil.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DateInfo.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DaySet.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Time.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Weekday.php";
 
-			$this->transformer = new \Recurr\Transformer\ArrayTransformer();			
+			$this->transformer = new \Recurr\Transformer\ArrayTransformer();
 		}		
 	}
 
@@ -54,6 +56,37 @@ class RecurrInterface
 	public function setEndDate($end_date)
 	{
 		$this->end_date = $end_date;
+	}
+
+	public function setStartTime($start_time)
+	{
+		$this->start_time = $start_time;
+	}
+
+	public function setEndTime($end_time)
+	{
+		$this->end_time = $end_time;
+	}
+
+	public function setAfterConstraintDate($after_date, $inc)
+	{
+		//$inc defines what happens if $after or $before are themselves recurrences. 
+		//If $inc = true, they will be included in the collection
+		$after_date   = new \DateTime($after_date, new \DateTimeZone($this->timezone));
+		$this->afterConstraint = new \Recurr\Transformer\Constraint\AfterConstraint($after_date, $inc);
+	}
+
+	public function setBeforeConstraintDate($before_date, $inc)
+	{
+		$before_date   = new \DateTime($before_date, new \DateTimeZone($this->timezone));
+		$this->afterConstraint = new \Recurr\Transformer\Constraint\BeforeConstraint($before_date, $inc);
+	}
+
+	public function setBetweenConstraintDate($after_date, $before_date, $inc)
+	{
+		$after_date   = new \DateTime($after_date, new \DateTimeZone($this->timezone));
+		$before_date   = new \DateTime($before_date, new \DateTimeZone($this->timezone));
+		$this->afterConstraint = new \Recurr\Transformer\Constraint\BetweenConstraint($after_date, $before_date, $inc);
 	}
 
 	public function setTimeZone($timezone)
@@ -148,6 +181,13 @@ class RecurrInterface
 
 	public function getOccurrences()
 	{
+		if(isset($this->start_time) && $this->start_time != '') {
+			$this->start_date = $this->start_date . $this->start_time;
+		}
+		if(isset($this->end_time) && $this->end_time != '') {
+			$this->end_date = $this->end_date . $this->end_time;
+		}
+
 		$start_date   = new \DateTime($this->start_date, new \DateTimeZone($this->timezone));
 		if($this->end_date != '0000-00-00') {
 			$end_date   = new \DateTime($this->end_date, new \DateTimeZone($this->timezone)); //optional
@@ -159,7 +199,7 @@ class RecurrInterface
 			$this->transformer->setVirtualLimit($this->virtualLimit);
 		}
 		
-		return $this->transformer->transform($rule)->toArray();
+		return $this->transformer->transform($rule, null, $this->afterConstraint)->toArray();
 	}
 }
 
