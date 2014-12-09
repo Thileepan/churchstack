@@ -89,8 +89,8 @@ class Reports
 		//print_r($report_columns);
 		//echo "<BR>";
 		/***** CONSTRUCTING COLUMNS ************/
-		$column_names = array('Profile ID', 'Family Head Name', 'Profile Full Name', 'Date Of Birth', 'Gender', 'Related To Family Head As', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Full Address', 'Mobile Number', 'Home Number', 'Work Number', 'Email', 'Age', 'Profile Status', 'Notes');
-		$column_names_in_db = array('UNIQUE_ID', 'NAME', 'NAME', 'DOB', 'GENDER', 'RELATION_SHIP', 'MARITAL_STATUS', 'MARRIAGE_DATE', 'MARRIAGE_PLACE', 'BABTISED', 'CONFIRMATION', 'OCCUPATION', 'IS_ANOTHER_CHURCH_MEMBER', 'ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE', 'LANDLINE, MOBILE1, MOBILE2', 'EMAIL', 'PROFILE_STATUS', 'NOTES', 'DOB');
+		$column_names = array('Profile ID', 'Family Head Name', 'Profile Full Name', 'Date Of Birth', 'Gender', 'Related To Family Head As', 'Marital Status', 'Date Of Marriage', 'Place Of Marriage', 'Baptised', 'Confirmation', 'Occupation', 'Is Another Church Member', 'Full Address', 'Mobile Number', 'Home Number', 'Work Number', 'Email', 'Age', 'Profile Status', 'Notes', 'Family ID');
+//		$column_names_in_db = array('UNIQUE_ID', 'NAME', 'NAME', 'DOB', 'GENDER', 'RELATION_SHIP', 'MARITAL_STATUS', 'MARRIAGE_DATE', 'MARRIAGE_PLACE', 'BABTISED', 'CONFIRMATION', 'OCCUPATION', 'IS_ANOTHER_CHURCH_MEMBER', 'ADDRESS1, ADDRESS2, ADDRESS3, AREA, PINCODE', 'LANDLINE, MOBILE1, MOBILE2', 'EMAIL', 'PROFILE_STATUS', 'NOTES', 'DOB');
 
 		$profiles_obj = new Profiles($APPLICATION_PATH);
 		$parent_list = $profiles_obj->getAllParentProfiles();
@@ -107,7 +107,7 @@ class Reports
 		$baptised_values = array('Not sure', 'Yes', 'No');
 		$confirmation_values = array('Not sure', 'Yes', 'No');
 		$is_another_church_values = array('Not sure', 'Yes', 'No');
-		$profile_status_values = array('Active', 'InActive', 'Deleted');
+		$profile_status_values = array('Active', 'Inactive', 'Deleted');
 		$settings_obj = new ProfileSettings($this->APPLICATION_PATH);
 		$salutation_values = $settings_obj->getOptions(1);
 		$relation_ship_values = $settings_obj->getOptions(4);
@@ -905,13 +905,17 @@ class Reports
 								}
 								$temp_value = $age;
 							} else if($report_columns[$i] == 19) {
-								if($profile_status_id == -1) {
+								if($profile_status_id == 1) {
 									$temp_value = $profile_status_values[0];
-								} else {
-									$temp_value = $profile_status_values[$profile_status_id];
+								} else if($profile_status_id == 2 || $profile_status_id == 0) {
+									$temp_value = $profile_status_values[1];
+								} else if($profile_status_id == 3) {
+									$temp_value = $profile_status_values[2];
 								}
 							} else if($report_columns[$i] == 20) {
 								$temp_value = $notes;
+							} else if($report_columns[$i] == 21) {
+								$temp_value = 'FAM' . appendZeroInUniqueID($unique_id);
 							}
 							$value[] = $temp_value;
 							$j++;							

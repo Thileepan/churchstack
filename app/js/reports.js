@@ -577,7 +577,7 @@ function performSearch()
 		var columnData = '';
 		if(reqFrom == 1)
 		{
-			for(i=0; i<19; i++)
+			for(i=0; i<=21; i++)
 			{
 				if(document.getElementById('column' + i).checked) {
 					if(columnData.length > 0) {

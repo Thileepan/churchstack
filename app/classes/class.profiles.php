@@ -61,9 +61,9 @@ class Profiles
 		if($this->db_conn)
 		{
 			//always don't show deleted profiles
-			$query = 'select * from PROFILE_DETAILS where PROFILE_STATUS != 3';
+			$query = 'select pd.PROFILE_ID, pd.SALUTATION_ID, pd.NAME, pd.UNIQUE_ID, pd.DOB, pd.GENDER, pd.RELATION_SHIP, pd.MARITAL_STATUS, pd.MARRIAGE_DATE, pd.MARRIAGE_PLACE, pd.ADDRESS1, pd.ADDRESS2, pd.ADDRESS3, pd.AREA, pd.PINCODE, pd.LANDLINE, pd.MOBILE1, pd.MOBILE2, pd.EMAIL, pd.PROFILE_STATUS, pd.NOTES, pd.BABTISED, pd.CONFIRMATION, pd.OCCUPATION, pd.IS_ANOTHER_CHURCH_MEMBER, pd.PARENT_PROFILE_ID, pd.MIDDLE_NAME, pd.LAST_NAME, pd.WORK_PHONE, pd.FAMILY_PHOTO_LOCATION, pd.PROFILE_PHOTO_LOCATION, pd.EMAIL_NOTIFICATION, pd.SMS_NOTIFICATION, inner_pd.SALUTATION_ID as FAM_HEAD_SALUTATION_ID, inner_pd.NAME AS FAM_HEAD_FIRST_NAME, inner_pd.MIDDLE_NAME AS FAM_HEAD_MIDDLE_NAME, inner_pd.LAST_NAME AS FAM_HEAD_LAST_NAME from PROFILE_DETAILS as pd INNER JOIN PROFILE_DETAILS as inner_pd where ((pd.PARENT_PROFILE_ID != -1 and inner_pd.PROFILE_ID=pd.PARENT_PROFILE_ID) or (pd.PARENT_PROFILE_ID = -1 and inner_pd.PROFILE_ID=pd.PROFILE_ID)) and pd.PROFILE_STATUS != 3';
 			if($profile_status != 3) {
-				$query .= ' and PROFILE_STATUS=' . $profile_status;
+				$query .= ' and pd.PROFILE_STATUS=' . $profile_status;
 			}
 
 		   $result = $this->db_conn->Execute($query);
@@ -105,8 +105,12 @@ class Profiles
 						$profile_photo_location = $result->fields[30];
 						$email_subscription = $result->fields[31];
 						$sms_subscription = $result->fields[32];
+						$fam_head_salutation_id = $result->fields[33];
+						$fam_head_first_name = $result->fields[34];
+						$fam_head_middle_name = $result->fields[35];
+						$fam_head_last_name = $result->fields[36];
 
-						$profile_details[] = array($profile_id, $salution_id, $name, $unique_id, $dob, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $parent_profile_id, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $email_subscription, $sms_subscription); //(0-32)
+						$profile_details[] = array($profile_id, $salution_id, $name, $unique_id, $dob, $gender_id, $relation_ship_id, $marital_status_id, $marriage_date, $marriage_place, $address1, $address2, $address3, $area, $pincode, $landline, $mobile1, $mobile2, $email, $profile_status_id, $notes, $is_babtised, $is_confirmed, $occupation, $is_another_church_member, $parent_profile_id, $middle_name, $last_name, $work_phone, $family_photo_location, $profile_photo_location, $email_subscription, $sms_subscription, $fam_head_salutation_id, $fam_head_first_name, $fam_head_middle_name, $fam_head_last_name); //(0-36)
                         
 						$result->MoveNext();                        
                     }

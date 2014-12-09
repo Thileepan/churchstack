@@ -83,7 +83,16 @@ if($req == 1)
 					$salutation_value = $re_arranged_salutation[$salutation_id];
 				}
 				$profile_name = $salutation_value .'. '. $profiles[$i][2].' '.$profiles[$i][26].' '.$profiles[$i][27];
-				$family_head_name = (($is_profile_head)?$profile_name:'-');
+//				$family_head_name = (($is_profile_head)?$profile_name:'-');
+
+				$fam_head_salutation_id = $profiles[$i][33];
+				if($fam_head_salutation_id != "") {
+					$fam_head_salutation_value = $re_arranged_salutation[$fam_head_salutation_id];
+				}
+				$family_head_name = $fam_head_salutation_value .'. '. $profiles[$i][34].' '.$profiles[$i][35].' '.$profiles[$i][36];
+
+
+				$family_id = 'FAM'.appendZeroInUniqueID($profiles[$i][3]);
 
 				//Gender
 				$gender_id = $profiles[$i][5];
@@ -184,7 +193,9 @@ if($req == 1)
 					$is_another_church_member = $is_another_church_values[$is_another_church_member_id];
 				}
 				$email_notification = $profiles[$i][31];
+				$email_notification_text = (($email_notification==1)? "Yes" : "No");
 				$sms_notification = $profiles[$i][32];
+				$sms_notification_text = (($sms_notification==1)? "Yes" : "No");
 				//Profile Status
 				$profile_status_id = $profiles[$i][19];
 				if($profile_status_id == 1) {
@@ -205,7 +216,7 @@ if($req == 1)
 					}
 				$actions .= '</div>';
 
-				$to_return['aaData'][] = array($profile_id, $family_head_name, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', $date_of_birth_to_show, $age, $gender, $relation_ship, $marital_status, $date_of_mrg_to_show, $marriage_place, $full_address, $mobile, $home_phone, $work_phone, $email, $baptised, $confirmation, $occupation, $is_another_church_member, $email_notification, $sms_notification, $profile_status, $notes, $actions);
+				$to_return['aaData'][] = array($profile_id, $family_head_name, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', $family_id, $date_of_birth_to_show, $age, $gender, $relation_ship, $marital_status, $date_of_mrg_to_show, $marriage_place, $full_address, $mobile, $home_phone, $work_phone, $email, $baptised, $confirmation, $occupation, $is_another_church_member, $email_notification_text, $sms_notification_text, $profile_status, $notes, $actions);
 			}
 		}
 	}

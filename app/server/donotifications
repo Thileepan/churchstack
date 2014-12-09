@@ -475,7 +475,8 @@ else if($req == 11)
 				$trimmed_content .= "...";
 			}
 			$sent_time_timestamp = strtotime($sent_time);
-			$time_to_show = '<span style="display:none;">'.$sent_time_timestamp.'</span>'.$sent_time;
+			$readable_sent_time = date("d/M/Y  h:i A", $sent_time_timestamp);
+			$time_to_show = '<span style="display:none;">'.$sent_time_timestamp.'</span>'.$readable_sent_time;
 			$to_return['aaData'][] = array($comm_type, $triggered_for, $trimmed_content, $time_to_show, $recipients_count);
 		}
 	}

@@ -97,6 +97,7 @@ if($req == 1)
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column0" checked>Profile ID</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column1" checked>Family Head Name</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column2" checked>Profile Name</label>';	
+								$to_return .= '<label class="checkbox"><input type="checkbox" id="column21">Family ID</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column3">Date of Birth</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column18">Age</label>';
 								$to_return .= '<label class="checkbox"><input type="checkbox" id="column4">Gender</label>';
