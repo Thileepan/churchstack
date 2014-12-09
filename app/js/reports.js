@@ -196,13 +196,13 @@ function addReportRuleRow()
 	var reportTypeDivID = 'divReportType-'+newRowID;
 	var reportTypeDiv = document.createElement('div');
 	reportTypeDiv.setAttribute('id', reportTypeDivID);
-	reportTypeDiv.setAttribute('class', 'span3');
+	reportTypeDiv.setAttribute('class', 'span4');
 	rowDiv.appendChild(reportTypeDiv);
 
 	var reportValueDivID = 'divReportValue-'+newRowID;
 	var reportValueDiv = document.createElement('div');
 	reportValueDiv.setAttribute('id', reportValueDivID);
-	reportValueDiv.setAttribute('class', 'span9');
+	reportValueDiv.setAttribute('class', 'span6');
 	//reportValueDiv.setAttribute('style', 'display:none');
 	rowDiv.appendChild(reportValueDiv);	
 
@@ -297,11 +297,11 @@ function changeRuleSubTypeAndValue(rowID)
 	} else if(ruleType == 'BIRTH_DATE') {
 			ruleValue = '<input type="text" id="inputFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
-			ruleValue += '&nbsp;&nbsp;<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkBirthdayIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
+			ruleValue += '&nbsp;&nbsp;<BR><span class="muted" title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkBirthdayIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
 	} else if(ruleType == 'MARRIAGE_DATE') {
 			ruleValue = '<input type="text" id="inputMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
-			ruleValue += '&nbsp;&nbsp;<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkMarriageIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
+			ruleValue += '&nbsp;&nbsp;<BR><span class="muted" title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="chkMarriageIgnoreYear-'+ rowID +'" value="1" checked />&nbsp;Ignore year</span>';
 	} else if(ruleType == 'BIRTH_MARRIAGE_DATE') {
 			ruleValue = '<input type="text" id="inputBMFromDate-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="inputBMToDate-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />';
@@ -346,7 +346,7 @@ function changeRuleSubTypeAndValue(rowID)
 		{
 			ruleValue = '<input type="text" id="customFieldDateFromValue-'+ rowID +'" value="" placeholder="From Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
 			ruleValue += '<input type="text" id="customFieldDateToValue-'+ rowID +'" value="" placeholder="To Date" data-date-format="dd/mm/yyyy" />&nbsp;&nbsp;';
-			ruleValue += '<span title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="customFieldDateIgnoreYear-'+ rowID +'" value="1"/>&nbsp;Ignore year</span>';
+			ruleValue += '<BR><span class="muted" title="Tick this box if you are concerned only about the date & month and NOT the year"><input type="checkbox" id="customFieldDateIgnoreYear-'+ rowID +'" value="1"/>&nbsp;Ignore year</span>';
 			idsToSetDatePicker.push('customFieldDateFromValue-'+ rowID);
 			idsToSetDatePicker.push('customFieldDateToValue-'+ rowID);
 		}

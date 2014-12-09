@@ -33,12 +33,12 @@ if($req == 1)
 	$to_return .= '<div id="divProfileSearchForm" class="row-fluid">';
 		$to_return .= '<div class="span12">';			
 				$to_return .= '<div class="row-fluid">';
-					$to_return .= '<div class="span12">';
+					$to_return .= '<div class="offset1 span11">';
 						//$to_return .= '<p class="muted">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign curHand" onclick="addReportRuleRow()"></i></p>';						
 						$to_return .= '<div id="addRuleOuterDiv">';
 							$to_return .= '<div class="row-fluid" id="divAddRule-1">';
 								//$to_return .= '<div class="span1"></div>';
-								$to_return .= '<div class="span3" id="divReportType-1">';
+								$to_return .= '<div class="span4" id="divReportType-1">';
 									$to_return .= '&nbsp;&nbsp;&nbsp;&nbsp;<select onChange="changeRuleSubTypeAndValue(1);" id="selReportType-1" disabled>';
 										$to_return .= '<option value="PROFILE_STATUS" selected>PROFILE STATUS</option>';
 										$to_return .= '<option value="PROFILES">PROFILE POSITION</option>';
@@ -58,8 +58,8 @@ if($req == 1)
 											}
 										}
 									$to_return .= '</select>';
-								$to_return .= '</div>';+
-								$to_return .= '<div class="span9" id="divReportValue-1">';
+								$to_return .= '</div>';
+								$to_return .= '<div class="span6" id="divReportValue-1">';
 									$to_return .= '<select id="selRuleValueItem-1"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="ALL">Both Active & Inactive</option></select>';
 									//$to_return .= '<select id="selRuleValueItem-1"><option value="ALL">All</option><option value="FAMILY_HEAD">Family Head</option><option value="INDIVIDUAL">Individual</option></select>';
 								$to_return .= '</div>';
@@ -69,16 +69,17 @@ if($req == 1)
 							$to_return .= '</div>'; //end of rule1
 						$to_return .= '</div>';
 						$to_return .= '<div class="pull-left">';
-							$to_return .= '<p class="muted curHand" onclick="addReportRuleRow()">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign"></i></p>';						
+							$to_return .= '<p class="muted curHand" onclick="addReportRuleRow()">&nbsp;&nbsp;&nbsp;&nbsp;Add Filter Row &nbsp; <i class="icon-plus-sign"></i></p>';
+							$to_return .= '<input type="hidden" id="maxReportRuleRowID" value="1" />';
+							$to_return .= '<input type="hidden" id="reportRuleRowIDList" value="1" />';					
+							for($f=0; $f < COUNT($all_custom_fields); $f++)
+							{
+								$to_return .= '<input type="hidden" id="customFieldNameWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][1].'" />';
+								$to_return .= '<input type="hidden" id="customFieldTypeWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][2].'" />';
+								$to_return .= '<input type="hidden" id="customFieldCSVOptionsWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][3].'" />';
+							}
 						$to_return .= '</div>';
-						$to_return .= '<input type="hidden" id="maxReportRuleRowID" value="1" />';
-						$to_return .= '<input type="hidden" id="reportRuleRowIDList" value="1" />';					
-						for($f=0; $f < COUNT($all_custom_fields); $f++)
-						{
-							$to_return .= '<input type="hidden" id="customFieldNameWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][1].'" />';
-							$to_return .= '<input type="hidden" id="customFieldTypeWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][2].'" />';
-							$to_return .= '<input type="hidden" id="customFieldCSVOptionsWithFieldID-'.$all_custom_fields[$f][0].'" value="'.$all_custom_fields[$f][3].'" />';
-						}
+						
 				$to_return .= '</div>';
 			$to_return .= '</div>';
 			
