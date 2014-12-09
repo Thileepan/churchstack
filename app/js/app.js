@@ -188,7 +188,7 @@ function listAllProfilesResponse(response)
 			table += '<a href="#columnsModal" role="button" data-toggle="modal" class="pull-right"><i class="icon-align-justify"></i>&nbsp;Select Columns</a>';
 		table += '</div>';
 	table += '</div>';
-	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th>Family Head</th><th></th><th>Name</th><th>Family ID</th><th>DOB</th><th>Age</th><th>Gender</th><th>Relationship</th><th>Marital Status</th><th>Mariage Date</th><th>Marriage Location</th><th>Address</th><th>Mobile</th><th>Home Phone</th><th>Work Phone</th><th>Email</th><th>Babtised</th><th>Confirmation</th><th>Occupation</th><th>Is Another Church Member</th><th>Email Notification</th><th>SMS Notification</th><th>Profile Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
+	table += '<table id="listProfilesTable" class="table table-striped"><thead><tr><th>Profile ID</th><th>Family Head</th><th></th><th>Name</th><th>Family ID</th><th>DOB</th><th>Age</th><th>Gender</th><th>Relationship</th><th>Marital Status</th><th>Mariage Date</th><th>Marriage Location</th><th>Address</th><th>Mobile</th><th>Home Phone</th><th>Work Phone</th><th>Email</th><th>Babtised</th><th>Confirmation</th><th>Occupation</th><th>Is Another Church Member</th><th>Email Notification</th><th>SMS Notification</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead><tbody></tbody></table>';		
 	document.getElementById('listProfilesContent').innerHTML = table;
 
 	var dataObj = eval("(" + response + ")" );
@@ -286,7 +286,6 @@ function showOrHideProfileColumns()
 		}
 	}
 
-	console.log(columns);
 	for(var j=0; j<columns.length; j++)
 	{
 		//show only selected columns
