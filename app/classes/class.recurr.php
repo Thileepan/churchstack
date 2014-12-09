@@ -42,7 +42,7 @@ class RecurrInterface
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DateInfo.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/DaySet.php";
 			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Time.php";
-			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Weekday.php";
+			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Weekday.php";			
 
 			$this->transformer = new \Recurr\Transformer\ArrayTransformer();
 		}		
@@ -99,9 +99,19 @@ class RecurrInterface
 		$this->rule->setFreq($freq);
 	}
 
+	public function getFreq()
+	{
+		$this->rule->getFreq();
+	}
+
 	public function setCount($count)
 	{
 		$this->rule->setCount($count);
+	}
+
+	public function getCount()
+	{
+		$this->rule->getCount();
 	}
 
 	public function setInterval($interval)
@@ -179,6 +189,11 @@ class RecurrInterface
 		return $this->rule->getString();
 	}
 
+	public function getFromRRule()
+	{
+		return $this->rule->loadFromString($this->rrule);
+	}
+
 	public function getOccurrences()
 	{
 		if(isset($this->start_time) && $this->start_time != '') {
@@ -200,6 +215,22 @@ class RecurrInterface
 		}
 		
 		return $this->transformer->transform($rule, null, $this->afterConstraint)->toArray();
+	}
+
+	public function getRRuleText()
+	{
+		try
+		{
+			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/TextTransformer.php";
+			$rule = new \Recurr\Rule($this->rrule, new \DateTime($this->timezone));
+			
+			$textTransformer = new \Recurr\Transformer\TextTransformer();
+			return $textTransformer->transform($rule);
+		}
+		catch(Exception $e) {
+			//Few RRULE's can't be transformed by library yet.
+			return '';
+		}
 	}
 }
 

@@ -18,13 +18,51 @@ function showMonthlyCalendar(reqFrom)
 		// put your options and callbacks here
 		//events: eval("(" + response + ")" )
 		//events: 'server/doevents?req=1'
-
+		header: {
+		  left: 'prevYear,nextYear, today, prev,next',
+		  center: 'title',
+		  right: 'basicDay,basicWeek,month, agendaDay'
+		},
+		buttonText: {
+			today: 'Today',
+			basicDay: 'Day',
+			basicWeek: 'Week',
+			month: 'Month',
+			agendaDay: 'Today Agenda',
+			agendaWeek: 'Weekly Agenda',
+		},
+		displayEventEnd: {
+			month: false,
+			basicDay: true,
+			basicWeek: false,
+			agendaDay: true,
+			agendaWeek: true,
+			'default': false
+		},
+		eventMouseover: function( event, jsEvent, view ) {
+			var content = '';
+			content += '<b>When: </b>' + event.start._i;
+			content += '<BR><b>Where: </b>' + event.location;
+			content += '<BR><b>Organiser: </b>' + event.organiser;
+			if(event.info != '') {
+				content += '<BR><BR><span class="muted">This event will occur on ' + event.info + '</span>';
+			}
+			
+			$(this).attr('data-toggle', 'popover');
+			$(this).attr('data-placement', 'top');
+			$(this).attr('data-content', content);
+			$(this).attr('data-title', event.title);
+			$(this).popover({html : true });
+			$(this).popover('show');
+		},
+		eventMouseout: function( event, jsEvent, view ) {
+			$(this).popover('hide');
+		},
 		events: {
 			url: 'server/doevents',
 			type: 'POST',
 			data: {
-				req: 1,
-				custom_param2: 'somethingelse'
+				req: 1
 			},
 			error: function() {
 				alert('there was an error while fetching events!');

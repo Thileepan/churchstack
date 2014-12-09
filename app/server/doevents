@@ -28,10 +28,10 @@ if($req == 1)
 //	$dt = Carbon::now($time_zone)->lastOfMonth();
 //	$end_date = $dt->year."-".$dt->month."-".$dt->day;
 
-	$start_time_stamp = $_REQUEST['start'];
-	$end_time_stamp = $_REQUEST['end'];
-	$start_date = date("Y-m-d", $start_time_stamp);
-	$end_date = date("Y-m-d", $end_time_stamp);
+	$start_date = $_REQUEST['start'];
+	$end_date = $_REQUEST['end'];
+//	$start_date = date("Y-m-d", $start_time_stamp);
+//	$end_date = date("Y-m-d", $end_time_stamp);
 //	echo $start_date;
 //	$start_date = "2014-03-05";
 //	$end_date = "2014-03-25";
@@ -65,7 +65,7 @@ else if($req == 2)
 			$event_desc = $event_details[2];
 			$event_location = $event_details[3];
 			$start_date = $event_details[4];
-			$end_date = $event_details[5];
+			$end_date = $event_details[5];			
 
 			if($start_date != '') {
 				$start_date = explode("-", $start_date);
@@ -75,7 +75,7 @@ else if($req == 2)
 				$end_date = explode("-", $end_date);
 				$end_date = $end_date[2].'/'.$end_date[1].'/'.$end_date[0];
 			}
-
+						
 			$start_time = $event_details[6];
 			$end_time = $event_details[7];
 
@@ -93,18 +93,19 @@ else if($req == 2)
 				$end_hour = "0".substr($end_time, 0, 1);
 				$end_min = substr($end_time, 1, 2);
 			}
-
-			$rrule = $event_details[8];
-			if($rrule == '') {
-				$rrule_params = explode(";", $rrule);
-				foreach($rrule_params as $key => $value)
-				{
-//					$rrule_keyexplode("=", $rrule_params);
-				}
-			}
 			$priority = $event_details[9];
-			$organiser = $event_details[10];
+			$event_organiser = $event_details[10];
 			$access_level = $event_details[11];
+
+			//Get Event Occurrence details from RRULE
+			//error_reporting(E_ALL);
+			//ini_set("display_errors", "On");
+			$type = 1;
+			$rrule = $event_details[8];
+			$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+			$recurr_obj->setUp($type);
+			$recurr_obj->setRRule($rrule);
+			$recurr_obj->getFromRRule();
 		}
 	}
 	

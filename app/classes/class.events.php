@@ -391,8 +391,10 @@ class Events
 				$title = $event_details[$i][1];
 				$start_date_db = $event_details[$i][4];
 				$end_date_db = $event_details[$i][5];
-				$start_time = $event_details[$i][6];
-				$end_time = $event_details[$i][7];
+				$start_time = convertRailwayTimeToFullTime($event_details[$i][6]);
+				$end_time = convertRailwayTimeToFullTime($event_details[$i][7]);
+				$location = $event_details[$i][3];
+				$organiser = $event_details[$i][10];
 
 				if($rrule != '')
 				{
@@ -402,6 +404,7 @@ class Events
 					$recurr_obj->setBetweenConstraintDate($start_date, $end_date, true);
 					$recurr_obj->setVirtualLimit($virtualLimit);
 					$occurrences = $recurr_obj->getOccurrences();
+					$rrule_text = $recurr_obj->getRRuleText();
 					//print_r($occurrences);
 
 					if(is_array($occurrences))
@@ -416,21 +419,9 @@ class Events
 								
 								if($event_date >= $start_date && $event_date <= $end_date)
 								{
-									$start_time = convertRailwayTimeToFullTime($start_time);
-									/*
-									if(strlen($start_time) > 3) {
-										$hour = substr($start_time, 0, 2);
-										$min = substr($start_time, 2, 2);
-									} else {
-										$hour = "0".substr($start_time, 0, 1);
-										$min = substr($start_time, 1, 2);
-									}
-									*/
-									$sec = '00';
-									$event_start_date_alone = $event_date;
-									$event_date .= ' ' . $start_time;
-									$event_start_time_alone = $hour.''.$min;
-									$event_info[] = array('start'=>$event_date, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$start_date_db, "startTimeAlone"=>$event_start_time_alone);
+									$event_start_date = $event_date. ' ' . $start_time;
+									$event_end_date = $event_date. ' '. $end_time;
+									$event_info[] = array('start'=>$event_start_date, 'end'=>$event_end_date, 'allDay'=>false, "eventID"=>$event_id, 'title'=>$title, 'info'=>$rrule_text, 'location'=>$location, 'organiser'=>$organiser);
 								}
 							}
 						}
@@ -438,17 +429,9 @@ class Events
 				}
 				else
 				{
-					//"2014-11-04 14:00:00" => This should be the format for "start" param
-					if(strlen($start_time) > 3) {
-						$hour = substr($start_time, 0, 2);
-						$min = substr($start_time, 2, 2);
-					} else {
-						$hour = "0".substr($start_time, 0, 1);
-						$min = substr($start_time, 1, 2);
-					}
-					$sec = '00';
-					$start_date_and_time = $start_date_db.' '.$hour.':'.$min.':'.$sec;
-					$event_info[] = array('start'=>$start_date_and_time, 'title'=>$title, 'allDay'=>false, "eventID"=>$event_id, "startDateAlone"=>$event_start_date_alone, "startTimeAlone"=>$start_time);
+					$event_start_date = $start_date_db. ' ' . $start_time;
+					$event_end_date = $end_date_db. ' '. $end_time;
+					$event_info[] = array('start'=>$event_start_date, 'end'=>$event_end_date, 'allDay'=>false, "eventID"=>$event_id, 'title'=>$title, 'info'=>'today only', 'location'=>$location, 'organiser'=>$organiser);
 				}
 			}
 		}
