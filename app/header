@@ -43,8 +43,9 @@ include $APPLICATION_PATH."utils/validateauth.php";
 	<script type="text/javascript" src="plugins/datatables/extras/RowReordering/reordering.js"></script>
 
 	<!-- Events -->
-	<script type="text/javascript" src="plugins/fullcalendar1/fullcalendar.js"></script>
-	<link href="<?php echo $APPLICATION_PATH; ?>plugins/fullcalendar1/fullcalendar.css" rel="stylesheet">	
+	<script type="text/javascript" src="plugins/fullcalendar/lib/moment.min.js"></script>
+	<script type="text/javascript" src="plugins/fullcalendar/fullcalendar.min.js"></script>	
+	<link href="<?php echo $APPLICATION_PATH; ?>plugins/fullcalendar/fullcalendar.min.css" rel="stylesheet">	
 	
   </head>
 
