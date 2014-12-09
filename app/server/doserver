@@ -108,7 +108,33 @@ if($req == 1)
 				} else {
 					$marital_status = $marital_values[$marital_status_id];
 				}
-				$marriage_date = formatDateOfBirth($profiles[$i][8]);
+
+				//DOB follows
+				if(trim($profiles[$i][4]) != "" && trim($profiles[$i][4]) != "0000-00-00") {
+					$readable_dob = formatDateOfBirth($profiles[$i][4]);
+					$dob_time_stamp = strtotime($profiles[$i][4]);
+					$dob_time_stamp = $dob_time_stamp+10000000000;//to make it positive
+					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+				} else {
+					$readable_dob = "-";
+					$dob_time_stamp = '0';
+					$dob_time_stamp = prependZeroForUniformLength($dob_time_stamp, 13);
+				}
+				$date_of_birth_to_show = '<span style="display:none;">'.$dob_time_stamp.'</span>'.$readable_dob;
+
+				//DOM follows
+				if(trim($profiles[$i][8]) != "" && trim($profiles[$i][8]) != "0000-00-00") {
+					$readable_dom = formatDateOfBirth($profiles[$i][8]);
+					$dom_time_stamp = strtotime($profiles[$i][8]);
+					$dom_time_stamp = $dom_time_stamp+10000000000;//to make it positive
+					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+				} else {
+					$readable_dom = "-";
+					$dom_time_stamp = 0;
+					$dom_time_stamp = prependZeroForUniformLength($dom_time_stamp, 13);
+				}
+				$date_of_mrg_to_show = '<span style="display:none;">'.$dom_time_stamp.'</span>'.$readable_dom;
+
 				$marriage_place = $profiles[$i][9];
 
 				//Address
@@ -179,7 +205,7 @@ if($req == 1)
 					}
 				$actions .= '</div>';
 
-				$to_return['aaData'][] = array($profile_id, $family_head_name, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', formatDateOfBirth($profiles[$i][4]), $age, $gender, $relation_ship, $marital_status, $marriage_date, $marriage_place, $full_address, $mobile, $home_phone, $work_phone, $email, $baptised, $confirmation, $occupation, $is_another_church_member, $email_notification, $sms_notification, $profile_status, $notes, $actions);
+				$to_return['aaData'][] = array($profile_id, $family_head_name, $parent_head_icon, '<a href="#" onclick="showProfileDetails('.$profiles[$i][0].')">'.$profile_name.'</a>', $date_of_birth_to_show, $age, $gender, $relation_ship, $marital_status, $date_of_mrg_to_show, $marriage_place, $full_address, $mobile, $home_phone, $work_phone, $email, $baptised, $confirmation, $occupation, $is_another_church_member, $email_notification, $sms_notification, $profile_status, $notes, $actions);
 			}
 		}
 	}

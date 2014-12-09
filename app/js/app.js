@@ -144,7 +144,8 @@ function listAllProfiles(profileStatus)
 	document.getElementById('alertRow').style.display = 'none';
 	document.getElementById('pageContent').innerHTML = '';
 	document.getElementById('pageContent').style.display = 'none';
-	document.getElementById('listProfilesContent').style.display = '';
+	document.getElementById('listProfilesContent').style.display = 'none';
+	document.getElementById('loadingDiv').style.display = '';
 
 	//get profiles filter option value from cookie if exists
 	var cName = 'cs_list_profiles_filter_value';
@@ -206,6 +207,8 @@ function listAllProfilesResponse(response)
 		"aaData": dataObj.aaData,		
 	});
 	showOrHideProfileColumns();
+	document.getElementById('loadingDiv').style.display = 'none';
+	document.getElementById('listProfilesContent').style.display = '';
 }
 
 function saveProfileColumns()
