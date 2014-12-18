@@ -30,6 +30,7 @@ function getDatabaseConnection($APPLICATION_PATH, $connectShardDB=false, $sharde
 		$returnValue = $conn->PConnect('127.0.0.1', DB_USER_NAME, DB_PASSWORD, $db_name);
 		if($conn->IsConnected())
 		{
+			$conn->Execute("SET collation_connection = 'latin1_general_cs'");
 			$return_data[0] = 0;
 			$return_data[1] = $conn;
 		}

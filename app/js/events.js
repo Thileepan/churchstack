@@ -45,7 +45,7 @@ function showMonthlyCalendar(reqFrom)
 			content += '<BR><b>Where: </b>' + event.location;
 			content += '<BR><b>Organiser: </b>' + event.organiser;
 			if(event.info != '') {
-				content += '<BR><BR><span class="muted">This event will occur on ' + event.info + '</span>';
+				content += '<BR><BR><span class="muted">This event occurs ' + event.info + '</span>';
 			}
 			
 			$(this).attr('data-toggle', 'popover');

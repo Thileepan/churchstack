@@ -232,7 +232,7 @@ function setDefaultProfileColumns()
 {
 	var columnNames = 'profileID,icon,name,dob,age,gender,address,mobile,profileStatus';
 	setProfileColumnsInCookie(columnNames);
-	checkProfileColumns(columnsNames);
+	checkProfileColumns(columnNames);
 }
 
 function setProfileColumnsInCookie(columnNames)
