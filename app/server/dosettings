@@ -1295,7 +1295,7 @@ else if($req==18)
 					{
 						$toReturn .= '<div style="padding-bottom:6px;">';
 							$toReturn .= '<div class="controls">';
-								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="notifications#sms-config" target="_parent" onclick="Javascript:window.location.href = \'settings#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
+								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="notifications#sms-config" target="_parent" onclick="Javascript:window.location.href = \'notifications#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
 							$toReturn .= '</div>';
 						$toReturn .= '</div>';
 					}
@@ -1401,7 +1401,7 @@ else if($req==18)
 					{
 						$toReturn .= '<div style="padding-bottom:6px;">';
 							$toReturn .= '<div class="controls">';
-								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="notifications#sms-config" target="_parent" onclick="Javascript:window.location.href = \'settings#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
+								$toReturn .= '<div class="alert alert-warning">SMS greetings cannot be enabled because you have not yet set your SMS Gateway/Provider. <a href="notifications#sms-config" target="_parent" onclick="Javascript:window.location.href = \'notifications#sms-config\'; window.location.reload();">Click here to set it now</a> if you wish to send SMS greetings as well.</div>';
 							$toReturn .= '</div>';
 						$toReturn .= '</div>';
 					}
