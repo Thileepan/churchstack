@@ -1120,8 +1120,9 @@ else if($req == 11)
 				$to_return .= '</div>';
 			$to_return .= '</div>';
 			*/
+			$to_return .= '<div class="well">';
 			$to_return .= '<div class="row-fluid">';
-				$to_return .= '<div class="span12 well">';
+				$to_return .= '<div class="span12">';
 					$to_return .= '<strong>Profile Information</strong><BR>';
 
 					$age = '-';
@@ -1159,7 +1160,7 @@ else if($req == 11)
 			$to_return .= '</div>';
 			$to_return .= '<BR>';
 			$to_return .= '<div class="row-fluid">';
-				$to_return .= '<div class="span12 well">';
+				$to_return .= '<div class="span12">';
 					$to_return .= '<strong>Custom Fields</strong><BR>';
 
 					$field_details = $settings_obj->getAllCustomProfileFields();
@@ -1231,6 +1232,7 @@ else if($req == 11)
 						$to_return .= (($profile_details[20] == '')?'No Information is available':$profile_details[20]);
 					//$to_return .= '</div>';
 				$to_return .= '</div>';
+			$to_return .= '</div>';
 			$to_return .= '</div>';
 			$to_return .= '<BR>';
 			$to_return .= '<BR>';
