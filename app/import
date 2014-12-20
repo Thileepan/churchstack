@@ -290,12 +290,12 @@ else if($req == 2)
 				/**/
 				$marriage_place = (($default_columns[10] != -1)?$profile_info[$default_columns[10]]:'');
 				$is_babtised_text = (($default_columns[11] != -1)?$profile_info[$default_columns[11]]:'');
-				$is_babtised = ((strtolower($is_babtised_text) == 'yes')?1:((strtolower($is_babtised_text) == 'no')?0:-1));
+				$is_babtised = ((strtolower($is_babtised_text) == 'yes')?1:((strtolower($is_babtised_text) == 'no')?2:-1));
 				$is_confirmed_text = (($default_columns[12] != -1)?$profile_info[$default_columns[12]]:'');
-				$is_confirmed = ((strtolower($is_confirmed_text) == 'yes')?1:((strtolower($is_confirmed_text) == 'no')?0:-1));
+				$is_confirmed = ((strtolower($is_confirmed_text) == 'yes')?1:((strtolower($is_confirmed_text) == 'no')?2:-1));
 				$occupation = (($default_columns[13] != -1)?$profile_info[$default_columns[13]]:'');
 				$is_another_church_member_text = (($default_columns[14] != -1)?$profile_info[$default_columns[14]]:'');
-				$is_another_church_member = ((strtolower($is_another_church_member_text) == 'yes')?1:((strtolower($is_another_church_member_text) == 'no')?0:-1));
+				$is_another_church_member = ((strtolower($is_another_church_member_text) == 'yes')?1:((strtolower($is_another_church_member_text) == 'no')?2:-1));
 				$address1 = (($default_columns[15] != -1)?$profile_info[$default_columns[15]]:'');
 				$address2 = (($default_columns[16] != -1)?$profile_info[$default_columns[16]]:'');
 				$address3 = (($default_columns[17] != -1)?$profile_info[$default_columns[17]]:'');

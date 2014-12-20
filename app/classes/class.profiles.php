@@ -96,7 +96,7 @@ class Profiles
 						$is_babtised = $result->fields[21];
 						$is_confirmed = $result->fields[22];
 						$occupation = $result->fields[23];
-						$is_another_chruch_member = $result->fields[24];
+						$is_another_church_member = $result->fields[24];
                         $parent_profile_id = $result->fields[25];
 						$middle_name = $result->fields[26];
 						$last_name = $result->fields[27];

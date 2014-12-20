@@ -182,19 +182,37 @@ class Events
 		return $return_data;
 	}
 
-	public function updateEvent($title, $desc, $start_date, $end_date, $repeat_type, $repeat_period, $repeat_on, $repeat_on_day, $repeat_on_date, $repeat_on_month, $priority, $organiser, $status, $access_level, $participant_type, $participant_period, $participant_email, $notification_type, $notification_period)
+	public function updateEvent($title, $desc, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details)
 	{
-		$this->updateEventDetails($title, $desc, $start_date, $end_date, $repeat_type, $repeat_period, $repeat_on, $repeat_on_day, $repeat_on_date, $repeat_on_month, $priority, $organiser, $status, $access_level);
-		$this->updateEventParticipants($participant_type, $participant_period, $participant_email);
-		$this->updateEventNotifications($notification_type, $notification_period);
+		$return_data = array();
+		$return_data[0] = 0;
+		$return_data[1] = 'Failed to update the event';
+
+		$status = $this->updateEventDetails($title, $desc, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level);
+		if($status)
+		{
+			if($this->deleteEventParticipants())
+			{
+				$return_data = $this->addEventParticipants($participant_details);
+				if($return_data[0] == 1)
+				{
+					if($this->deleteEventNotifications()) {
+						$this->addEventNotifications($notification_details);
+						$return_data[0] = 1;
+						$return_data[1] = 'Event has been updated successfully';
+					}
+				}			
+			}
+		}
+		return $return_data;
 	}
 
-	private function updateEventDetails($title, $desc, $location, $start_date, $end_date, $rrule, $priority, $organiser, $status, $access_level)
+	private function updateEventDetails($title, $desc, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level)
 	{
 		if($this->db_conn)
 		{
-			$query = 'update EVENT_DETAILS set TITLE=?, DESCRIPTION=?, LOCATION=?, START_DATE=?, END_DATE=?, RRULE=?, PRIORITY=?, ORGANISER=?, STATUS=?, ACCESS_LEVEL=? where EVENT_ID=?';
-			$result = $this->db_conn->Execute($query, array($title, $desc, $location, $start_date, $end_date, $rrule, $priority, $organiser, $status, $access_level, $this->event_id));
+			$query = 'update EVENT_DETAILS set TITLE=?, DESCRIPTION=?, EVENT_LOCATION=?, START_DATE=?, END_DATE=?, START_TIME=?, END_TIME=?, RRULE=?, PRIORITY=?, ORGANISER=?, ACCESS_LEVEL=? where EVENT_ID=?';
+			$result = $this->db_conn->Execute($query, array($title, $desc, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $this->event_id));
 			if($result) {
 				return true;
 			}
@@ -287,24 +305,54 @@ class Events
 		$event_details = array();
 		if($this->db_conn)
 		{
-			$query = 'select * from EVENT_DETAILS where EVENT_ID = ?';
-			$result = $this->db_conn->Execute($query, array($event_id));
+			$query1 = 'select * from EVENT_DETAILS where EVENT_ID = ?';
+			$query2 = 'select a.PARTICIPANT_ID, a.PARTICIPANT_TYPE, CONCAT_WS(" ", b.NAME, b.MIDDLE_NAME, b.LAST_NAME) from EVENT_PARTICIPANTS as a, PROFILE_DETAILS as b where a.PARTICIPANT_ID = b.PROFILE_ID and a.EVENT_ID = ?';
+			$query3 = 'select * from EVENT_NOTIFICATIONS where EVENT_ID = ?';
+			$result1 = $this->db_conn->Execute($query1, array($event_id));
 
-			if($result) {
-                if(!$result->EOF) {
-					$event_id = $result->fields[0];
-					$title = $result->fields[1];
-					$description = $result->fields[2];
-					$location = $result->fields[3];
-					$start_date = $result->fields[4];
-					$end_date = $result->fields[5];
-					$start_time = $result->fields[6];
-					$end_time = $result->fields[7];
-					$rrule = $result->fields[8];
-					$priority = $result->fields[9];
-					$organiser = $result->fields[10];
-					$access_level = $result->fields[11];
-					$event_details = array($event_id, $title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level);
+			if($result1) {
+                if(!$result1->EOF) {
+					$event_id = $result1->fields[0];
+					$title = $result1->fields[1];
+					$description = $result1->fields[2];
+					$location = $result1->fields[3];
+					$start_date = $result1->fields[4];
+					$end_date = $result1->fields[5];
+					$start_time = $result1->fields[6];
+					$end_time = $result1->fields[7];
+					$rrule = $result1->fields[8];
+					$priority = $result1->fields[9];
+					$organiser = $result1->fields[10];
+					$access_level = $result1->fields[11];
+
+					$result2 = $this->db_conn->Execute($query2, array($event_id));
+					if($result2) {
+						if(!$result2->EOF) {
+							while(!$result2->EOF)
+							{
+								$participant_type = $result2->fields[0];
+								$participant_id = $result2->fields[1];
+								$participant_name = $result2->fields[2];
+								$participants[] = array($participant_type, $participant_id, $participant_name);
+								$result2->MoveNext();
+							}
+						}
+					}
+					
+					$result3 = $this->db_conn->Execute($query3, array($event_id));
+					if($result3) {
+						if(!$result3->EOF) {
+							while(!$result3->EOF)
+							{
+								$notification_id = $result3->fields[1];
+								$notification_type = $result3->fields[2];
+								$notification_period = $result3->fields[3];
+								$notifications[] = array($notification_id, $notification_type, $notification_period);
+								$result3->MoveNext();
+							}
+						}
+					}
+					$event_details = array($event_id, $title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participants, $notifications);
 				}
             }
 		}

@@ -198,6 +198,7 @@ function addOrUpdateEvents(val, doValidation)
 	document.getElementById('pageContent').className = "span10";
 
 	isUpdate = val;
+	var eventID = document.getElementById('hiddenEventID').value;
 
 	//Setting default values
 	var freq = 1;
@@ -373,6 +374,8 @@ function addOrUpdateEvents(val, doValidation)
 	}
 
 	var formPostData = "req=3";
+	formPostData += "&isUpdate=" + isUpdate;
+	formPostData += "&eventID=" + eventID;
 	formPostData += "&title=" + escString(title);
 	formPostData += "&desc=" + escString(desc);
 	formPostData += "&location=" + escString(loc);
@@ -634,12 +637,14 @@ function getParticipantsListResponse(response)
 
 function addNewParticipant(item, val, text)
 {
-	document.getElementById('spanNoParticipants').style.display = 'none';
+	if(document.getElementById('spanNoParticipants')) {
+		document.getElementById('spanNoParticipants').style.display = 'none';
+	}
 
 	var participantArr = val.split("<:|:>");
-	var participantID = participantArr[0];
-	var participantType = participantArr[1];
-	var participantList = participantID + ":" + participantType;
+	var participantType = participantArr[0];
+	var participantID = participantArr[1];
+	var participantList = participantType + ":" + participantID;
 
 	document.getElementById('inputAddEventParticipant').value = '';
 	var maxRow = document.getElementById('maxParticipantRowID').value;

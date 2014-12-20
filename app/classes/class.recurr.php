@@ -101,7 +101,17 @@ class RecurrInterface
 
 	public function getFreq()
 	{
-		$this->rule->getFreq();
+		/*
+		YEARLY   = 0;
+		MONTHLY  = 1;
+		WEEKLY   = 2;
+		DAILY    = 3;
+		HOURLY   = 4;
+		MINUTELY = 5;
+		SECONDLY = 6;
+		*/
+		$freq = array('YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY', 'HOURLY', 'MINUTELY', 'SECONDLY');
+		return $freq[$this->rule->getFreq()];
 	}
 
 	public function setCount($count)
@@ -111,12 +121,17 @@ class RecurrInterface
 
 	public function getCount()
 	{
-		$this->rule->getCount();
+		return $this->rule->getCount();
 	}
 
 	public function setInterval($interval)
 	{
 		$this->rule->setInterval($interval);
+	}
+
+	public function getInterval()
+	{
+		return $this->rule->getInterval();
 	}
 
 	public function setBySecond($second)
@@ -139,9 +154,19 @@ class RecurrInterface
 		$this->rule->setByDay($day);
 	}
 
+	public function getByDay()
+	{
+		return $this->rule->getByDay();
+	}
+
 	public function setByMonthDay($month_day)
 	{
 		$this->rule->setByMonthDay($month_day);
+	}
+
+	public function getByMonthDay()
+	{
+		return $this->rule->getByMonthDay();
 	}
 
 	public function setByYearDay($year_day)
@@ -157,6 +182,11 @@ class RecurrInterface
 	public function setByMonth($month)
 	{
 		$this->rule->setByMonth($month);
+	}
+
+	public function getByMonth($month)
+	{
+		return $this->rule->getByMonth();
 	}
 
 	public function setBySetPosition($position)
@@ -191,7 +221,7 @@ class RecurrInterface
 
 	public function getFromRRule()
 	{
-		return $this->rule->loadFromString($this->rrule);
+		$this->rule->loadFromString($this->rrule);
 	}
 
 	public function getOccurrences()
@@ -221,7 +251,7 @@ class RecurrInterface
 	{
 		try
 		{
-			include $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/TextTransformer.php";
+			include_once $this->APPLICATION_PATH."plugins/recurr/src/Recurr/Transformer/TextTransformer.php";
 			$rule = new \Recurr\Rule($this->rrule, new \DateTime($this->timezone));
 			
 			$textTransformer = new \Recurr\Transformer\TextTransformer();
