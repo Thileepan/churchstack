@@ -97,4 +97,17 @@ function prependZeroForUniformLength($input, $total_expected_length)
 	return $input;
 }
 
+function convertSecondsToHoursOrDays($seconds)
+{
+	$is_hours_or_days = '';
+	$clock_value = $seconds/3600;
+	if($clock_value <= 23) {
+		$is_hours_or_days = 'hours';		
+	} else {
+		$clock_value = $clock_value/60;
+		$is_hours_or_days = 'days';
+	}
+	return array($is_hours_or_days, $clock_value);
+}
+
 ?>
