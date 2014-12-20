@@ -51,14 +51,21 @@ else if($req == 2)
 	$date_list = array('1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '16th', '17th', '18th', '19th', '20th', '21th', '22nd', '23rd', '24th', '25th', '26th', '27th', '28th', '29th', '30th', '31th');
 	$day_list = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 	$week_list = array('First', 'Second', 'Third', 'Fourth', 'Last');
+	$week_list_val = array('1', '2', '3', '4', '-1');
 	$month_list = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 	$event_repeat_list = array('No', 'Daily', 'Weekly', 'Monthly', 'Yearly');
 
 	$is_update = trim($_POST['isEdit']);
+	$event_repeat_count = 1;
+	$is_byday_selected = 'checked';
+	$participant_row_id = 0;
+	$participant_row_id_list = '';
+	$participant_list = '';
 	if($is_update) {
 		$event_id = trim($_POST['eventID']);
 		$events_obj = new Events($APPLICATION_PATH);
 		$event_details = $events_obj->getEventInformation($event_id);
+		print_r($event_details);
 		if(is_array($event_details) && COUNT($event_details) > 0)
 		{
 			$event_title = $event_details[1];
@@ -100,12 +107,118 @@ else if($req == 2)
 			//Get Event Occurrence details from RRULE
 			//error_reporting(E_ALL);
 			//ini_set("display_errors", "On");
-			$type = 1;
+			$freq = 0;
 			$rrule = $event_details[8];
-			$recurr_obj = new RecurrInterface($APPLICATION_PATH);
-			$recurr_obj->setUp($type);
-			$recurr_obj->setRRule($rrule);
-			$recurr_obj->getFromRRule();
+			//echo $rrule;
+			if($rrule != '')
+			{
+				$type = 1;
+				$recurr_obj = new RecurrInterface($APPLICATION_PATH);
+				$recurr_obj->setUp($type);
+				$recurr_obj->setRRule($rrule);
+				$recurr_obj->getFromRRule();
+				$freq_value = $recurr_obj->getFreq();
+				//converting recurr object freq value to our system value
+				switch($freq_value) {
+					case 'YEARLY':
+						$freq = 4;
+						break;
+					case 'MONTHLY':
+						$freq = 3;
+						 break;
+					case 'WEEKLY':
+						$freq = 2;
+						 break;
+					case 'DAILY':
+						$freq = 1;
+						 break;
+					default:
+						$freq = 0;
+				}
+				$event_repeat_count = $recurr_obj->getInterval();
+				$event_day = $recurr_obj->getByDay();
+				$month_day = $recurr_obj->getByMonthDay();
+				$month = $recurr_obj->getByMonth();
+
+				$is_byday_selected = '';
+				$is_bymonthday_selected = '';
+				if($freq == 3 || $freq == 4)
+				{
+					if(is_array($event_day) && COUNT($event_day) > 0) {
+						$is_byday_selected = 'checked';
+					} else {
+						$is_bymonthday_selected = 'checked';
+					}
+				}
+				/*
+				echo "AAAAA:";
+				print_r($event_day);
+				echo "BBBBB:";
+				print_r($month_day);
+				echo "CCCCC:";
+				print_r($month);
+				*/				
+			}
+
+			//Event Participants
+			$participant_content = '';			
+			if(is_array($event_details[12]))
+			{
+				$total_participants = COUNT($event_details[12]);
+				if($total_participants > 0)
+				{						
+					$participant_row_id = $total_participants;
+					for($i=0; $i<$total_participants; $i++)
+					{
+						$participant_id = $event_details[12][$i][0];
+						$participant_type = $event_details[12][$i][1];
+						$participant_name = $event_details[12][$i][2];
+						$participant_content .= '<p id="divParticipantRow-'.($i+1).'"><i class="icon-user"></i>&nbsp;'.$participant_name.'&nbsp;<i class="icon-remove-sign curHand" onclick="removeParticipant(\''.($i+1).'\');"></i></p>';
+						if($participant_row_id_list != '') {
+							$participant_row_id_list .= ',';
+						}
+						if($participant_list != '') {
+							$participant_list .= ',';
+						}
+						$participant_row_id_list .= $i;
+						$participant_list .= $participant_type . ':' . $participant_id;
+					}
+				}
+			}
+
+			//Event Notifications
+			if(is_array($event_details[13]) && COUNT($event_details[13]) > 0)
+			{
+				$email_remainder_hours_selected = '';
+				$email_remainder_sms_selected = '';
+				$sms_remainder_hours_selected = '';
+				$sms_remainder_sms_selected = '';
+				for($i=0; $i<COUNT($event_details[13]); $i++)
+				{
+					$notification_type = $event_details[13][$i][1];
+					$notification_period = convertSecondsToHoursOrDays($event_details[13][$i][2]);
+					if($notification_type == 1)
+					{
+						$is_email_remainder_checked = 'checked';
+						if($notification_period[0] == 'hours') {
+							$email_remainder_hours_selected = 'selected';
+						} else {
+							$email_remainder_days_selected = 'selected';
+						}
+						$email_remainder_period_value = $notification_period[1];
+					}
+					else
+					{
+						$is_sms_remainder_checked = 'checked';
+						if($notification_period[0] == 'hours') {
+							$sms_remainder_hours_selected = 'selected';
+						} else {
+							$sms_remainder_days_selected = 'selected';
+						}
+						$sms_remainder_period_value = $notification_period[1];
+					}					
+				}
+			}
 		}
 	}
 	
@@ -225,64 +338,91 @@ else if($req == 2)
 						$to_return .= '<div class="controls">';
 							$to_return .= '<select class="span8" id="inputEventRepeats" onchange="onchangeEventRepeats(this);">';
 							for($i=0; $i<COUNT($event_repeat_list); $i++) {
-								$to_return .= '<option value="'.($i+1).'"'. (($is_upadte)?'':'').'>'.$event_repeat_list[$i].'</option>';
+								$is_selected = '';
+								if($is_update && $freq == $i)								{
+									$is_selected = 'selected';										
+								}
+								$to_return .= '<option value="'.($i+1).'"'. $is_selected .' >'.$event_repeat_list[$i].'</option>';
 							}
 							$to_return .= '</select>';
 						$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group" id="divOuterEventEvery" style="display:none">';
+				$to_return .= '<div class="control-group" id="divOuterEventEvery" style="display:'. (($is_update && $freq > 0)?"":"none") .'">';
 					$to_return .= '<label class="control-label" for="inputEventEvery">Every</label>';
 						$to_return .= '<div class="controls" id="divInnerEventEvery">';
-							$to_return .= '<input type="text" class="span4" placeholder="" id="inputEventEvery" value="1"/>&nbsp;<span id="spanEventEveryText"></span>';
+							$to_return .= '<input type="text" class="span4" placeholder="" id="inputEventEvery" value="'.$event_repeat_count.'"/>&nbsp;<span id="spanEventEveryText"></span>';
 						$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group" id="divOuterEventOccursOn" style="display:none">';
+				$to_return .= '<div class="control-group" id="divOuterEventOccursOn" style="display:'. (($is_update && $freq > 1)?"":"none") .'">';
 					$to_return .= '<label class="control-label" for="inputEventOccursOn">Occurs On</label>';
 						$to_return .= '<div class="controls">';
-							
-							$to_return .= '<div class="row-fluid" id="divInnerEventOccursOn_1" style="display:none">';
+							$to_return .= '<div class="row-fluid" id="divInnerEventOccursOn_1" style="display:'.(($is_update && $freq == 2)?"":"none").'">';
 								$to_return .= '<div class="span12">';
 									for($i=0; $i<COUNT($day_list); $i++)
 									{
-										$to_return .= '<input type="checkbox" id="day'.$i.'">&nbsp;'.$day_list[$i].'<BR>';
+										$is_checked = '';
+										if($is_update && $freq == 2) {
+											if(strtoupper(substr($day_list[$i], 0, 2)) == $event_day[$i]) {
+												$is_checked = 'checked';
+											}
+										}
+										$to_return .= '<input type="checkbox" id="day'.$i.'" '.$is_checked.'>&nbsp;'.$day_list[$i].'<BR>';
 									}									
 								$to_return .= '</div>';
 							$to_return .= '</div>';
 
-							$to_return .= '<div class="row-fluid" id="divInnerEventOccursOn_2" style="display:none">';
+							$to_return .= '<div class="row-fluid" id="divInnerEventOccursOn_2" style="display:'.(($is_update && ($freq == 3 || $freq == 4))?"":"none").'">';
 								$to_return .= '<div class="span12">';
 									$to_return .= '<table>';
 										$to_return .= '<tr id="rowDateList">';
-											$to_return .= '<td><input type="radio" name="radOccursOn" id="radOccursOn_1" checked onclick="OnChangeOccursOn(1);"></td>';
-											$to_return .= '<td><select class="span4" id="monthDay">';
+											$to_return .= '<td><input type="radio" name="radOccursOn" id="radOccursOn_1" '.$is_bymonthday_selected.' onclick="OnChangeOccursOn(1);"></td>';
+											$to_return .= '<td><select class="span4" id="monthDay" '.(($is_bymonthday_selected != '')?"":"disabled").'>';
 												for($i=0; $i<COUNT($date_list); $i++)
 												{
-													$to_return .= '<option value="'.($i+1).'">'.$date_list[$i]	.'</option>';
+													$is_selected = '';
+													if($is_update && $month_day[0] == $i+1) {
+														$is_selected = 'selected';
+													}
+													$to_return .= '<option value="'.($i+1).'" '.$is_selected.'>'.$date_list[$i]	.'</option>';
 												}
 											$to_return .= '</select></td>';
 										$to_return .= '</tr>';
 										$to_return .= '<tr id="rowWeekList">';
-											$to_return .= '<td><input type="radio" name="radOccursOn" id="radOccursOn_2" onclick="OnChangeOccursOn(2);"></td>';
-											$to_return .= '<td><select id="weekNumber" class="span6" disabled>';
+											$to_return .= '<td><input type="radio" name="radOccursOn" id="radOccursOn_2" '.$is_byday_selected.' onclick="OnChangeOccursOn(2);"></td>';
+											$to_return .= '<td><select id="weekNumber" class="span6" '.(($is_byday_selected != '')?"":"disabled").'>';
 												for($i=0; $i<COUNT($week_list); $i++)
 												{
-													$to_return .= '<option value="'.($i+1).'">'.$week_list[$i]	.'</option>';
+													$is_checked = '';
+													//echo substr($event_day[0], 0, 1)."::".$week_list_val[$i];
+													if(substr($event_day[0], 0, 1) == $week_list_val[$i]) {
+														$is_checked = 'selected';
+													}
+													$to_return .= '<option value="'.($i+1).'" '.$is_checked.'>'.$week_list[$i]	.'</option>';
 												}
 											$to_return .= '</select>';
-											$to_return .= '&nbsp;<select id="weekDay" class="span6" disabled>';
+											$to_return .= '&nbsp;<select id="weekDay" class="span6" '.(($is_byday_selected != '')?"":"disabled").'>';
 												for($i=0; $i<COUNT($day_list); $i++)
 												{
-													$to_return .= '<option value="'.($i+1).'">'.$day_list[$i]	.'</option>';
+													$is_checked = '';
+													//echo strtoupper(substr($day_list[$i], 0, 2))."::".substr($event_day[0], 1, 3);
+													if(strtoupper(substr($day_list[$i], 0, 2)) == substr($event_day[0], 1, 3)) {
+														$is_checked = 'selected';
+													}
+													$to_return .= '<option value="'.($i+1).'" '.$is_checked.'>'.$day_list[$i]	.'</option>';
 												}
 											$to_return .= '</select>';
 											$to_return .= '</td>';
 										$to_return .= '</tr>';
-										$to_return .= '<tr id="rowMonthList">';
+										$to_return .= '<tr id="rowMonthList" style="display:'.(($is_update && $freq == 4)?"":"none").'">';
 											$to_return .= '<td></td>';
 											$to_return .= '<td colspan="2"><select id="month">';
 												for($i=0; $i<COUNT($month_list); $i++)
-												{
-													$to_return .= '<option value="'.($i+1).'">'.$month_list[$i]	.'</option>';
+												{												
+													$is_selected = '';
+													if($is_update && $month[0] == $i+1) {
+														$is_selected = 'selected';
+													}
+													$to_return .= '<option value="'.($i+1).'" '.$is_selected.'>'.$month_list[$i]	.'</option>';
 												}
 											$to_return .= '</select></td>';
 										$to_return .= '</tr>';
@@ -292,11 +432,12 @@ else if($req == 2)
 
 						$to_return .= '</div>';
 				$to_return .= '</div>';
-				$to_return .= '<div class="control-group" id="divOuterEventEndDate" style="display:none">';
+				$is_end_date_available = (($end_date != '00/00/0000')?1:0);
+				$to_return .= '<div class="control-group" id="divOuterEventEndDate" style="display:'.(($is_update && $freq > 0)?"":"none").'">';
 					$to_return .= '<label class="control-label" for="inputEventEndDate">End Date</label>';
 						$to_return .= '<div class="controls" id="divInnerEventEndDate">';
-							$to_return .= '<input type="text" class="span8" id="inputEventEndDate" placeholder="End Date" value="'.$end_date.'" data-date-format="dd/mm/yyyy" /><BR>';
-							$to_return .= '<input type="checkbox" id="inputNoEventEndDate" onclick="((this.checked == true)?(document.getElementById(\'inputEventEndDate\').disabled = true):(document.getElementById(\'inputEventEndDate\').disabled = false))"/>&nbsp;No End Date';
+							$to_return .= '<input type="text" class="span8" id="inputEventEndDate" placeholder="End Date" value="'.$end_date.'" data-date-format="dd/mm/yyyy" '.(($is_end_date_available)?"":"disabled").' /><BR>';
+							$to_return .= '<input type="checkbox" id="inputNoEventEndDate" onclick="((this.checked == true)?(document.getElementById(\'inputEventEndDate\').disabled = true):(document.getElementById(\'inputEventEndDate\').disabled = false))" '.(($is_end_date_available)?"":"checked").' />&nbsp;No End Date';
 						$to_return .= '</div>';
 				$to_return .= '</div>';
 				/*
@@ -321,14 +462,18 @@ else if($req == 2)
 					$to_return .= '<div class="controls">';
 						$to_return .= '<input type="text" id="inputAddEventParticipant" data-provide="typeahead" autocomplete="off" value="" placeholder="Start type profile/group name" />';
 						//$to_return .= '<HR>';
-						$to_return .= '<input type="hidden" id="maxParticipantRowID" value="0" />';
-						$to_return .= '<input type="hidden" id="participantRowIDList" value="" />';
-						$to_return .= '<input type="hidden" id="participantList" value="" />';
+						$to_return .= '<input type="hidden" id="maxParticipantRowID" value="'.$participant_row_id.'" />';
+						$to_return .= '<input type="hidden" id="participantRowIDList" value="'.$participant_row_id_list.'" />';
+						$to_return .= '<input type="hidden" id="participantList" value="'.$participant_list.'" />';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<div class="controls" id="participantsDiv">';
-						$to_return .= '<span class="muted" id="spanNoParticipants">No participants added yet.</span>';
+						if($is_update && $participant_content != '') {
+							$to_return .= $participant_content;
+						} else {
+							$to_return .= '<span class="muted" id="spanNoParticipants">No participants added yet.</span>';
+						}
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 			$to_return .= '</form>';
@@ -338,22 +483,22 @@ else if($req == 2)
 				$to_return .= '<p class="text-left muted">Event Notifications <input type="checkbox" id="inputEventNotifications" style="display:none;"/></p>';
 				
 				$to_return .= '<div class="control-group">';
-					$to_return .= '<label class="control-label" for="checkEmailReminder"><input type="checkbox" id="checkEmailReminder" />&nbsp;Email Reminder</label>';
+					$to_return .= '<label class="control-label" for="checkEmailReminder"><input type="checkbox" id="checkEmailReminder" '.$is_email_remainder_checked.' />&nbsp;Email Reminder</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="text" id="inputRemainderPeriod1" class="input-mini" onblur="validateEventRemainder(1);" value="1" />&nbsp;';
+						$to_return .= '<input type="text" id="inputRemainderPeriod1" class="input-mini" onblur="validateEventRemainder(1);" value="'.$email_remainder_period_value.'" />&nbsp;';
 						$to_return .= '<select id="inputRemainderType1" class="input-small">';
-							$to_return .= '<option value="1">Hours</option>';
-							$to_return .= '<option value="2">Days</option>';
+							$to_return .= '<option value="1" '.$email_remainder_hours_selected.'>Hours</option>';
+							$to_return .= '<option value="2" '.$email_remainder_days_selected.'>Days</option>';
 						$to_return .= '</select>';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
 				$to_return .= '<div class="control-group" style="display:;">';
-					$to_return .= '<label class="control-label" for="checkSMSReminder"><input type="checkbox" id="checkSMSReminder" />&nbsp;SMS Reminder&nbsp;&nbsp;</label>';
+					$to_return .= '<label class="control-label" for="checkSMSReminder"><input type="checkbox" id="checkSMSReminder" '.$is_sms_remainder_checked.' />&nbsp;SMS Reminder&nbsp;&nbsp;</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="text" id="inputRemainderPeriod2" class="input-mini" onblur="validateEventRemainder(2);" value="1" />&nbsp;';
+						$to_return .= '<input type="text" id="inputRemainderPeriod2" class="input-mini" onblur="validateEventRemainder(2);" value="'.$sms_remainder_period_value.'" />&nbsp;';
 						$to_return .= '<select id="inputRemainderType2" class="input-small">';
-							$to_return .= '<option value="1">Hours</option>';
-							$to_return .= '<option value="2">Days</option>';
+							$to_return .= '<option value="1" '.$sms_remainder_hours_selected.'>Hours</option>';
+							$to_return .= '<option value="2" '.$sms_remainder_days_selected.'>Days</option>';
 						$to_return .= '</select>';
 					$to_return .= '</div>';	
 				$to_return .= '</div>';
@@ -366,8 +511,9 @@ else if($req == 2)
 			$to_return .= '<div class="form-actions" align="center">';
 				$to_return .= '<button id="btnPreviousStep" class="btn btn-primary" onclick="showpreviousEventStep('.$is_update.');" style="display:none;">Previous</button>&nbsp;';
 				$to_return .= '<button id="btnNextStep" class="btn btn-primary" onclick="showNextEventStep('.$is_update.');">Next</button>&nbsp;';
-				$to_return .= '<button id="btnSaveEvent" class="btn btn-primary" onclick="addOrUpdateEvents('.$is_update.', 0);" style="display:none;">Save</button>&nbsp;';
+				$to_return .= '<button id="btnSaveEvent" class="btn btn-primary" onclick="addOrUpdateEvents('.$is_update.', 0);" style="display:none;">'.(($is_update)?"Update Event":"Create Event").'</button>&nbsp;';
 				$to_return .= '<input type="hidden" id="currentEventStep" value="1" />';
+				$to_return .= '<input type="hidden" id="hiddenEventID" value="'.$event_id.'" />';
 			$to_return .= '</div>';
 		$to_return .= '</div>';
 	$to_return .= '</div>';
@@ -377,6 +523,8 @@ else if($req == 2)
 }
 else if($req == 3)
 {
+	$is_update	= trim($_POST['isUpdate']);
+	$event_id	= trim($_POST['eventID']);
 	$title		= trim(stripslashes(rawurldecode($_POST['title'])));
 	$description= trim(stripslashes(rawurldecode($_POST['desc'])));
 	$location	= trim(stripslashes(rawurldecode($_POST['location'])));
@@ -498,7 +646,12 @@ else if($req == 3)
 
 	//echo $rrule;exit;
 	$events_obj = new Events($APPLICATION_PATH);
-	$status = $events_obj->addEvent($title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details);
+	if(!$is_update) {
+		$status = $events_obj->addEvent($title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details);
+	} else {
+		$events_obj->event_id = $event_id;
+		$status = $events_obj->updateEvent($title, $description, $location, $start_date, $end_date, $start_time, $end_time, $rrule, $priority, $organiser, $access_level, $participant_details, $notification_details);
+	}
 
 	$json = new Services_JSON();
 	$encode_obj = $json->encode($status);
