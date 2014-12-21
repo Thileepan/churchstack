@@ -48,7 +48,7 @@ if($req == 1)
 				$to_return .= '<div class="control-group" id="divToPeople">';
 				$to_return .= '<label class="control-label" for="inputTo">To</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="text" class="span12" id="inputTo" value="" data-provide="typeahead" autocomplete="off" placeholder="Receipient Address"><BR><input type="checkbox" id="inputToAll" onclick="((this.checked)?(document.getElementById(\'inputTo\').disabled=true):(document.getElementById(\'inputTo\').disabled=false))">&nbsp;Send message to all people in the church<BR>';
+						$to_return .= '<input type="text" class="span12" id="inputTo" value="" data-provide="typeahead" autocomplete="off" placeholder="Receipient Address"><BR><input type="checkbox" id="inputToAll" onclick="((this.checked)?(document.getElementById(\'inputTo\').disabled=true):(document.getElementById(\'inputTo\').disabled=false))">&nbsp;Send message to all church members<BR>';
 						$to_return .= '<input type="text" class="span12" id="selectedPariticipants" value="" data-role="tagsinput" style="display:none">';
 					$to_return .= '</div>';
 				$to_return .= '</div>';
