@@ -306,8 +306,10 @@ class Events
 		if($this->db_conn)
 		{
 			$query1 = 'select * from EVENT_DETAILS where EVENT_ID = ?';
-			$query2 = 'select a.PARTICIPANT_ID, a.PARTICIPANT_TYPE, CONCAT_WS(" ", b.NAME, b.MIDDLE_NAME, b.LAST_NAME) from EVENT_PARTICIPANTS as a, PROFILE_DETAILS as b where a.PARTICIPANT_ID = b.PROFILE_ID and a.EVENT_ID = ?';
+			$query2 = 'select a.PARTICIPANT_ID, a.PARTICIPANT_TYPE, CONCAT_WS(" ", b.NAME, b.MIDDLE_NAME, b.LAST_NAME) from EVENT_PARTICIPANTS as a, PROFILE_DETAILS as b where a.PARTICIPANT_ID = b.PROFILE_ID and a.PARTICIPANT_TYPE=1 and a.EVENT_ID = ?';
 			$query3 = 'select * from EVENT_NOTIFICATIONS where EVENT_ID = ?';
+			$query4 = 'select a.PARTICIPANT_ID, a.PARTICIPANT_TYPE, b.GROUP_NAME from EVENT_PARTICIPANTS as a, GROUP_DETAILS as b where a.PARTICIPANT_ID=b.GROUP_ID and a.PARTICIPANT_TYPE=2 and a.EVENT_ID=?';
+			$query5 = 'select * from EVENT_PARTICIPANTS where PARTICIPANT_TYPE = 3 and EVENT_ID=?';
 			$result1 = $this->db_conn->Execute($query1, array($event_id));
 
 			if($result1) {
@@ -325,19 +327,46 @@ class Events
 					$organiser = $result1->fields[10];
 					$access_level = $result1->fields[11];
 
-					$result2 = $this->db_conn->Execute($query2, array($event_id));
-					if($result2) {
-						if(!$result2->EOF) {
-							while(!$result2->EOF)
-							{
-								$participant_type = $result2->fields[0];
-								$participant_id = $result2->fields[1];
-								$participant_name = $result2->fields[2];
-								$participants[] = array($participant_type, $participant_id, $participant_name);
-								$result2->MoveNext();
+					$result5 = $this->db_conn->Execute($query5, array($event_id));
+					if($result5)
+					{
+						if($result5->EOF)
+						{
+							$result2 = $this->db_conn->Execute($query2, array($event_id));
+							$result4 = $this->db_conn->Execute($query4, array($event_id));
+							if($result2) {
+								if(!$result2->EOF) {
+									while(!$result2->EOF)
+									{
+										$participant_id = $result2->fields[0];
+										$participant_type = $result2->fields[1];
+										$participant_name = $result2->fields[2];
+										$participants[] = array($participant_id, $participant_type, $participant_name);
+										$result2->MoveNext();
+									}
+								}
+							}
+
+							if($result4) {
+								if(!$result4->EOF) {
+									while(!$result4->EOF)
+									{
+										$participant_id = $result4->fields[0];
+										$participant_type = $result4->fields[1];
+										$participant_name = $result4->fields[2];
+										$participants[] = array($participant_id, $participant_type, $participant_name);
+										$result4->MoveNext();
+									}
+								}
 							}
 						}
+						else
+						{
+							//If participant is entire church
+							$participants[] = array(0, 3, '');
+						}
 					}
+					
 					
 					$result3 = $this->db_conn->Execute($query3, array($event_id));
 					if($result3) {

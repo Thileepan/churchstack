@@ -65,7 +65,7 @@ else if($req == 2)
 		$event_id = trim($_POST['eventID']);
 		$events_obj = new Events($APPLICATION_PATH);
 		$event_details = $events_obj->getEventInformation($event_id);
-		print_r($event_details);
+		//print_r($event_details);
 		if(is_array($event_details) && COUNT($event_details) > 0)
 		{
 			$event_title = $event_details[1];
@@ -173,6 +173,11 @@ else if($req == 2)
 						$participant_id = $event_details[12][$i][0];
 						$participant_type = $event_details[12][$i][1];
 						$participant_name = $event_details[12][$i][2];
+						if($participant_type == 3) {
+							//Notification is sent to entire church
+							//No need to process further
+							break;
+						}
 						$participant_content .= '<p id="divParticipantRow-'.($i+1).'"><i class="icon-user"></i>&nbsp;'.$participant_name.'&nbsp;<i class="icon-remove-sign curHand" onclick="removeParticipant(\''.($i+1).'\');"></i></p>';
 						if($participant_row_id_list != '') {
 							$participant_row_id_list .= ',';
@@ -460,7 +465,8 @@ else if($req == 2)
 				$to_return .= '<div class="control-group">';
 					$to_return .= '<label class="control-label" for="inputAddEventParticipant">Participants</label>';
 					$to_return .= '<div class="controls">';
-						$to_return .= '<input type="text" id="inputAddEventParticipant" data-provide="typeahead" autocomplete="off" value="" placeholder="Start type profile/group name" />';
+						$to_return .= '<input type="text" id="inputAddEventParticipant" data-provide="typeahead" autocomplete="off" value="" placeholder="Start type profile/group name" '.(($participant_type == 3)?'disabled':'').' />';
+						$to_return .= '<BR><input type="checkbox" id="inputAllParticipants" onclick="((this.checked)?(document.getElementById(\'inputAddEventParticipant\').disabled=true):(document.getElementById(\'inputAddEventParticipant\').disabled=false))" '.(($participant_type == 3)?'checked':'').' />&nbsp;Add all church people to this event';
 						//$to_return .= '<HR>';
 						$to_return .= '<input type="hidden" id="maxParticipantRowID" value="'.$participant_row_id.'" />';
 						$to_return .= '<input type="hidden" id="participantRowIDList" value="'.$participant_row_id_list.'" />';

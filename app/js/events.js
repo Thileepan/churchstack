@@ -389,7 +389,12 @@ function addOrUpdateEvents(val, doValidation)
 	formPostData += "&day=" + day;
 	formPostData += "&monthDay=" + monthDay;
 	formPostData += "&month=" + month;
-	formPostData += "&participantList=" + document.getElementById('participantList').value;
+	if(document.getElementById('inputAllParticipants').checked) {
+		formPostData += "&participantList=3:0";
+	} else {
+		formPostData += "&participantList=" + document.getElementById('participantList').value;
+	}
+	
 //	formPostData += "&notifications=" + emailRemainder + ',' + smsRemainder;
 	formPostData += "&emailnotificationperiod=" + emailRemainder;
 	formPostData += "&smsnotificationperiod=" + smsRemainder;
