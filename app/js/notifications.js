@@ -141,7 +141,12 @@ function sendMessage(isDraft)
 	}
 	var index = document.getElementById('inputNotificationType').selectedIndex;
 	var msgType = document.getElementById('inputNotificationType').options[index].value;
-	var participantsList = $('#selectedPariticipants').val();
+	var isParticipantEntireChurch = document.getElementById('inputToAll').checked;
+	if(!isParticipantEntireChurch) {
+		var participantsList = $('#selectedPariticipants').val();
+	} else {
+		var participantsList = '3<:|:>0<:|:>ToAll';
+	}
 	var subject = $('#inputSubject').val();
 	if(msgType == 1) {
 		var msg = $('#inputEmailMessage').code();
@@ -398,9 +403,14 @@ function getMessageInformationResponse(response)
 				} else if(participantType == 2) {
 					var val = participantType + "<:|:>" + participantID + "<:|:>" + participantName;
 					var text = participantName;
-				}				
+				}
 				
-				addToTag(val, text);
+				if(participantType == 3) {
+					document.getElementById('inputTo').disabled = true;
+					document.getElementById('inputToAll').checked = true;
+				} else {
+					addToTag(val, text);
+				}				
 			}
 		}
 	} else {

@@ -468,6 +468,7 @@ class Notification
 			$query1 = 'select NOTIFICATION_ID, NOTIFICATION_TYPE, NOTIFICATION_SUBJECT, NOTIFICATION_CONTENT, IS_DRAFT, CREATED_BY, LAST_UPDATE_USER_ID, LAST_UPDATE_TIME, IS_NOTIFICATION_SENT from MASS_NOTIFICATION_DETAILS where NOTIFICATION_ID=?';
 			$query2 = 'select a.PARTICIPANT_TYPE, a.PARTICIPANT_ID, b.NAME, b.MIDDLE_NAME, b.LAST_NAME, b.EMAIL, b.MOBILE1 from MASS_NOTIFICATION_PARTICIPANTS as a, PROFILE_DETAILS as b where a.NOTIFICATION_ID=? and a.PARTICIPANT_ID=b.PROFILE_ID and a.PARTICIPANT_TYPE=1';
 			$query3 = 'select a.PARTICIPANT_TYPE, a.PARTICIPANT_ID, b.GROUP_NAME from MASS_NOTIFICATION_PARTICIPANTS as a, GROUP_DETAILS as b where a.NOTIFICATION_ID=? and a.PARTICIPANT_ID=b.GROUP_ID and a.PARTICIPANT_TYPE=2';
+			$query4 = 'select * from MASS_NOTIFICATION_PARTICIPANTS where PARTICIPANT_TYPE = 3 and NOTIFICATION_ID=?';
 
 			$result = $this->db_conn->Execute($query1, array($notification_id));
 			
@@ -476,25 +477,35 @@ class Notification
                     $notification_details[0] = array($result->fields[0], $result->fields[1], $result->fields[2], $result->fields[3], $result->fields[4], $result->fields[5], $result->fields[6], $result->fields[7], $result->fields[8]);
 					$notification_details[1] = array();
 
-					$result2 = $this->db_conn->Execute($query2, array($notification_id));
-					$result3 = $this->db_conn->Execute($query3, array($notification_id));
-					if($result2) {
-						if(!$result2->EOF) {
-							while(!$result2->EOF) {
-								$notification_details[1][] = array($result2->fields[0], $result2->fields[1], $result2->fields[2], $result2->fields[3], $result2->fields[4], $result2->fields[5], $result2->fields[6]);
-								$result2->MoveNext();
+					$result4 = $this->db_conn->Execute($query4, array($notification_id));
+					if($result4)
+					{
+						if($result4->EOF) {
+							$result2 = $this->db_conn->Execute($query2, array($notification_id));
+							$result3 = $this->db_conn->Execute($query3, array($notification_id));
+							if($result2) {
+								if(!$result2->EOF) {
+									while(!$result2->EOF) {
+										$notification_details[1][] = array($result2->fields[0], $result2->fields[1], $result2->fields[2], $result2->fields[3], $result2->fields[4], $result2->fields[5], $result2->fields[6]);
+										$result2->MoveNext();
+									}
+								}
 							}
-						}
-					}
 
-					if($result3) {
-						if(!$result3->EOF) {
-							while(!$result3->EOF) {
-								$notification_details[1][] = array($result3->fields[0], $result3->fields[1], $result3->fields[2]);
-								$result3->MoveNext();
+							if($result3) {
+								if(!$result3->EOF) {
+									while(!$result3->EOF) {
+										$notification_details[1][] = array($result3->fields[0], $result3->fields[1], $result3->fields[2]);
+										$result3->MoveNext();
+									}
+								}
 							}
+						} else {
+							//If participant is entire church
+							$notification_details[1][] = array(3, 0, '');
 						}
 					}
+					
 
 					$return_data[0] = 1;
 					$return_data[1] = $notification_details;
